@@ -1,0 +1,3 @@
+include ':notificare-core'
+include ':notificare-push'
+include ':sample'
