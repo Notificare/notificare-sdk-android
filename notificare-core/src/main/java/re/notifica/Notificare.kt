@@ -103,13 +103,13 @@ object Notificare {
         this.applicationKey = applicationKey
         this.applicationSecret = applicationSecret
 
-        // Notificare.logger.debug("Configuring network services.")
+        logger.debug("Configuring network services.")
         configureNetworking(applicationKey, applicationSecret, services)
 
-        // Notificare.logger.debug("Loading available modules.")
+        logger.debug("Loading available modules.")
         createAvailableModules(applicationKey, applicationSecret)
 
-        // Notificare.logger.debug("Configuring available modules.")
+        logger.debug("Configuring available modules.")
         // sessionManager.configure()
         // crashReporter.configure()
         // database.configure()
@@ -117,7 +117,7 @@ object Notificare {
         // deviceManager.configure()
         // pushManager?.configure()
 
-        // Notificare.logger.debug("Notificare configured for '\(services)' services.")
+        logger.debug("Notificare configured for '${services.name}' services.")
         state = NotificareLaunchState.CONFIGURED
     }
 

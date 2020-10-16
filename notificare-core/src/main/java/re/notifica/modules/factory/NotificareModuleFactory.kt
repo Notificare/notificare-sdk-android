@@ -1,6 +1,7 @@
 package re.notifica.modules.factory
 
 import android.util.Log
+import re.notifica.Notificare
 import re.notifica.modules.NotificarePushModule
 
 private const val PUSH_MODULE_CLASS = "re.notifica.push.NotificarePushManager"
@@ -20,8 +21,7 @@ internal class NotificareModuleFactory(
         }
 
         if (instance == null) {
-            // Notificare.logger.debug("Could not load NotificarePushManager.")
-            Log.i("Notificare", "Could not load NotificarePushManager")
+            Notificare.logger.debug("Could not load $PUSH_MODULE_CLASS.")
         }
 
         return instance
