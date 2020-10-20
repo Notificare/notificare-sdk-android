@@ -7,6 +7,7 @@ import re.notifica.internal.NotificareUtils
 import re.notifica.internal.common.toByteArray
 import re.notifica.internal.common.toHex
 import re.notifica.internal.network.push.payloads.NotificareDeviceRegistration
+import re.notifica.internal.network.push.payloads.NotificareDeviceUpdateLanguage
 import re.notifica.internal.network.push.payloads.NotificareTagsPayload
 import re.notifica.models.NotificareDevice
 import re.notifica.models.NotificareDoNotDisturb
@@ -80,7 +81,28 @@ class NotificareDeviceManager {
         }
 
     suspend fun updatePreferredLanguage(preferredLanguage: String?) {
-        TODO("Missing implementation")
+        val device = checkNotificareReady()
+
+        if (preferredLanguage != null) {
+            val parts = preferredLanguage.split("-")
+            if (
+                parts.size != 2 ||
+                !Locale.getISOLanguages().contains(parts[0]) ||
+                !Locale.getISOCountries().contains(parts[1])
+            ) {
+                throw IllegalArgumentException("Invalid preferred language value: $preferredLanguage")
+            }
+
+            Notificare.sharedPreferences.preferredLanguage = parts[0]
+            Notificare.sharedPreferences.preferredRegion = parts[1]
+
+            updateLanguage()
+        } else {
+            Notificare.sharedPreferences.preferredLanguage = null
+            Notificare.sharedPreferences.preferredRegion = null
+
+            updateLanguage()
+        }
     }
 
     suspend fun fetchTags(): List<String> {
@@ -310,6 +332,46 @@ class NotificareDeviceManager {
     private fun getRegion(): String {
         return Notificare.sharedPreferences.preferredRegion ?: NotificareUtils.deviceRegion
     }
+
+    private suspend fun updateLanguage() {
+        val device = checkNotificareReady()
+
+        Notificare.pushService.updateDevice(
+            device.deviceId,
+            NotificareDeviceUpdateLanguage(
+                language = getLanguage(),
+                region = getRegion()
+            )
+        )
+    }
+
+//    func updateLanguage(_ completion: @escaping NotificareCallback<NotificareDevice>) {
+//        guard Notificare.shared.isReady,
+//        let device = self.device,
+//        let pushApi = Notificare.shared.pushApi
+//        else {
+//            completion(.failure(.notReady))
+//            return
+//        }
+//
+//        let payload = NotificareDeviceUpdateLanguage(
+//                language: getLanguage(),
+//        region: getRegion()
+//        )
+//
+//        pushApi.updateDevice(device.deviceID, with: payload) { result in
+//                switch result {
+//            case .success:
+//            // Update current device properties.
+//            self.device!.language = payload.language
+//            self.device!.region = payload.region
+//
+//            completion(.success(self.device!))
+//            case let .failure(error):
+//            completion(.failure(error))
+//        }
+//        }
+//    }
 
     // endregion
 }
