@@ -238,9 +238,10 @@ class NotificareDeviceManager {
     }
 
     private suspend fun registerTemporary(): NotificareDevice {
-        val token = UUID.randomUUID()
-            .toByteArray()
-            .toHex()
+        val token = currentDevice?.deviceId
+            ?: UUID.randomUUID()
+                .toByteArray()
+                .toHex()
 
         val device = register(
             token = token,
@@ -344,34 +345,6 @@ class NotificareDeviceManager {
             )
         )
     }
-
-//    func updateLanguage(_ completion: @escaping NotificareCallback<NotificareDevice>) {
-//        guard Notificare.shared.isReady,
-//        let device = self.device,
-//        let pushApi = Notificare.shared.pushApi
-//        else {
-//            completion(.failure(.notReady))
-//            return
-//        }
-//
-//        let payload = NotificareDeviceUpdateLanguage(
-//                language: getLanguage(),
-//        region: getRegion()
-//        )
-//
-//        pushApi.updateDevice(device.deviceID, with: payload) { result in
-//                switch result {
-//            case .success:
-//            // Update current device properties.
-//            self.device!.language = payload.language
-//            self.device!.region = payload.region
-//
-//            completion(.success(self.device!))
-//            case let .failure(error):
-//            completion(.failure(error))
-//        }
-//        }
-//    }
 
     // endregion
 }
