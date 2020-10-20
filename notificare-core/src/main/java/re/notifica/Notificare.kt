@@ -1,19 +1,21 @@
 package re.notifica
 
 import android.content.Context
-import android.util.Log
-import com.squareup.moshi.Moshi
-import kotlinx.coroutines.*
-import okhttp3.*
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import re.notifica.internal.NotificareLaunchState
 import re.notifica.internal.NotificareLogger
 import re.notifica.internal.NotificareServices
+import re.notifica.internal.NotificareUtils
 import re.notifica.internal.network.push.NotificareBasicAuthenticator
 import re.notifica.internal.network.push.NotificareHeadersInterceptor
 import re.notifica.internal.network.push.NotificarePushService
+import re.notifica.internal.storage.preferences.NotificareSharedPreferences
 import re.notifica.models.NotificareApplication
 import re.notifica.modules.NotificareCrashReporter
+import re.notifica.modules.NotificareDeviceManager
 import re.notifica.modules.NotificarePushModule
 import re.notifica.modules.NotificareSessionManager
 import re.notifica.modules.factory.NotificareModuleFactory
@@ -26,16 +28,19 @@ object Notificare {
 
     // Internal modules
     val logger = NotificareLogger()
+    internal lateinit var sharedPreferences: NotificareSharedPreferences
+        private set
     internal val crashReporter = NotificareCrashReporter()
     internal val sessionManager = NotificareSessionManager()
 
     // internal val database =
     // internal var reachability: NotificareReachability? = null
     //     private set
-    internal var pushService: NotificarePushService? = null
+    internal lateinit var pushService: NotificarePushService
         private set
 
     // Consumer modules
+    val deviceManager = NotificareDeviceManager()
     var pushManager: NotificarePushModule? = null
         private set
 
@@ -73,9 +78,48 @@ object Notificare {
     }
 
     fun launch() {
+        if (state == NotificareLaunchState.NONE) {
+            logger.warning("Notificare.configure() has never been called. Cannot launch.")
+            return
+        }
+
+        if (state > NotificareLaunchState.CONFIGURED) {
+            logger.warning("Notificare has already been launched. Skipping...")
+            return
+        }
+
+        logger.info("Launching Notificare.")
+        state = NotificareLaunchState.LAUNCHING
+
         GlobalScope.launch {
-            val application = pushService!!.fetchApplication()
-            Log.i("Notificare", application.toString())
+            try {
+                val (application) = pushService.fetchApplication()
+
+                deviceManager.launch()
+
+
+                Notificare.application = application
+                state = NotificareLaunchState.READY
+
+                val enabledServices = application.services.filter { it.value }.map { it.key }
+                // val enabledModules = NotificareUtils.getLoadedModules()
+
+                logger.debug("/==================================================================================/")
+                logger.debug("Notificare SDK is ready to use for application")
+                logger.debug("App name: ${application.name}")
+                logger.debug("App ID: ${application.id}")
+                logger.debug("App services: ${enabledServices.joinToString(", ")}")
+                logger.debug("/==================================================================================/")
+                logger.debug("SDK version: ${NotificareDefinitions.SDK_VERSION}")
+                // Notificare.logger.debug("SDK modules: ${enabledModules.joined(separator: ", ")}")
+                logger.debug("/==================================================================================/")
+
+                // We're done launching. Notify the delegate.
+                // delegate?.notificare(self, onReady: application)
+            } catch (e: Exception) {
+                logger.error("Failed to launch Notificare.", e)
+                state = NotificareLaunchState.CONFIGURED
+            }
         }
     }
 
@@ -103,6 +147,9 @@ object Notificare {
         this.applicationKey = applicationKey
         this.applicationSecret = applicationSecret
 
+        // Late init modules
+        this.sharedPreferences = NotificareSharedPreferences(context.applicationContext)
+
         logger.debug("Configuring network services.")
         configureNetworking(applicationKey, applicationSecret, services)
 
@@ -126,11 +173,9 @@ object Notificare {
         applicationSecret: String,
         services: NotificareServices
     ) {
-        val moshi = Moshi.Builder().build()
-
         val httpLogger = HttpLoggingInterceptor().apply {
             if (BuildConfig.DEBUG) {
-                level = HttpLoggingInterceptor.Level.HEADERS
+                level = HttpLoggingInterceptor.Level.BASIC
             }
         }
 
@@ -143,7 +188,7 @@ object Notificare {
         pushService = Retrofit.Builder()
             .client(httpClient)
             .baseUrl(services.pushHost)
-            .addConverterFactory(MoshiConverterFactory.create(moshi))
+            .addConverterFactory(MoshiConverterFactory.create(NotificareUtils.createMoshi()))
             .build()
             .create(NotificarePushService::class.java)
     }

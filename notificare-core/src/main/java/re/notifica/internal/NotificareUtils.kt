@@ -3,7 +3,11 @@ package re.notifica.internal
 import android.content.pm.PackageManager
 import android.os.Build
 import android.util.Log
+import com.squareup.moshi.Moshi
+import com.squareup.moshi.adapters.Rfc3339DateJsonAdapter
 import re.notifica.Notificare
+import re.notifica.internal.adapters.NotificareTimeAdapter
+import re.notifica.internal.adapters.NotificareTransportAdapter
 import java.util.*
 
 internal object NotificareUtils {
@@ -37,4 +41,12 @@ internal object NotificareUtils {
 
             return timeZone.getOffset(calendar.timeInMillis) / 3600000f
         }
+
+    fun createMoshi(): Moshi {
+        return Moshi.Builder()
+            .add(Date::class.java, Rfc3339DateJsonAdapter())
+            .add(NotificareTimeAdapter())
+            .add(NotificareTransportAdapter())
+            .build()
+    }
 }
