@@ -4,6 +4,7 @@ import re.notifica.Notificare
 import re.notifica.NotificareDefinitions
 import re.notifica.NotificareException
 import re.notifica.internal.NotificareUtils
+import re.notifica.internal.common.toByteArray
 import re.notifica.internal.common.toHex
 import re.notifica.internal.network.push.payloads.NotificareDeviceRegistration
 import re.notifica.internal.network.push.payloads.NotificareTagsPayload
@@ -216,9 +217,7 @@ class NotificareDeviceManager {
 
     private suspend fun registerTemporary(): NotificareDevice {
         val token = UUID.randomUUID()
-            .toString()
             .toByteArray()
-            .let { ByteArray(16) { index -> it[index] } }
             .toHex()
 
         val device = register(
