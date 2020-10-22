@@ -2,6 +2,7 @@ package re.notifica.internal.network.push
 
 import re.notifica.internal.network.push.payloads.NotificareDeviceRegistration
 import re.notifica.internal.network.push.payloads.NotificareDeviceUpdateLanguage
+import re.notifica.internal.network.push.payloads.NotificareDeviceUpdateTimeZone
 import re.notifica.internal.network.push.payloads.NotificareTagsPayload
 import re.notifica.internal.network.push.responses.NotificareApplicationResponse
 import re.notifica.internal.network.push.responses.NotificareDeviceDoNotDisturbResponse
@@ -25,6 +26,12 @@ internal interface NotificarePushService {
     suspend fun updateDevice(
         @Path("id") deviceId: String,
         @Body payload: NotificareDeviceUpdateLanguage
+    )
+
+    @PUT("/device/{id}")
+    suspend fun updateDevice(
+        @Path("id") deviceId: String,
+        @Body payload: NotificareDeviceUpdateTimeZone
     )
 
     // TODO update device calls

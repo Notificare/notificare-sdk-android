@@ -5,9 +5,18 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application>
+        <!-- Provider to auto configure Notificare -->
         <provider
             android:name="re.notifica.NotificareConfigurationProvider"
             android:authorities="${applicationId}.NotificareConfigurationProvider"
             android:exported="false" />
+
+        <!-- Receiver for locale and timezone changes -->
+        <receiver android:name="re.notifica.internal.receivers.NotificareSystemIntentReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.TIMEZONE_CHANGED" />
+                <action android:name="android.intent.action.LOCALE_CHANGED" />
+            </intent-filter>
+        </receiver>
     </application>
 </manifest>

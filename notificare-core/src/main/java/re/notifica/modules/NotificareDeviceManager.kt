@@ -8,6 +8,7 @@ import re.notifica.internal.common.toByteArray
 import re.notifica.internal.common.toHex
 import re.notifica.internal.network.push.payloads.NotificareDeviceRegistration
 import re.notifica.internal.network.push.payloads.NotificareDeviceUpdateLanguage
+import re.notifica.internal.network.push.payloads.NotificareDeviceUpdateTimeZone
 import re.notifica.internal.network.push.payloads.NotificareTagsPayload
 import re.notifica.models.NotificareDevice
 import re.notifica.models.NotificareDoNotDisturb
@@ -81,7 +82,7 @@ class NotificareDeviceManager {
         }
 
     suspend fun updatePreferredLanguage(preferredLanguage: String?) {
-        val device = checkNotificareReady()
+        checkNotificareReady()
 
         if (preferredLanguage != null) {
             val parts = preferredLanguage.split("-")
@@ -334,7 +335,7 @@ class NotificareDeviceManager {
         return Notificare.sharedPreferences.preferredRegion ?: NotificareUtils.deviceRegion
     }
 
-    private suspend fun updateLanguage() {
+    internal suspend fun updateLanguage() {
         val device = checkNotificareReady()
 
         Notificare.pushService.updateDevice(
@@ -342,6 +343,19 @@ class NotificareDeviceManager {
             NotificareDeviceUpdateLanguage(
                 language = getLanguage(),
                 region = getRegion()
+            )
+        )
+    }
+
+    internal suspend fun updateTimeZone() {
+        val device = checkNotificareReady()
+
+        Notificare.pushService.updateDevice(
+            device.deviceId,
+            NotificareDeviceUpdateTimeZone(
+                language = getLanguage(),
+                region = getRegion(),
+                timeZoneOffset = NotificareUtils.timeZoneOffset,
             )
         )
     }
