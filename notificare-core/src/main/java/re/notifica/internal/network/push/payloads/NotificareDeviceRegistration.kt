@@ -20,7 +20,7 @@ internal data class NotificareDeviceRegistration(
     val appVersion: String,
     val deviceString: String,
     val timeZoneOffset: Float,
-    //val backgroundAppRefresh: Boolean
+    val backgroundAppRefresh: Boolean,
     val allowedUI: Boolean,
     val locationServicesAuthStatus: String,
     val bluetoothEnabled: Boolean,

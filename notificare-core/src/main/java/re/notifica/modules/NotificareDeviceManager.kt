@@ -215,6 +215,7 @@ class NotificareDeviceManager {
                 appVersion = NotificareUtils.applicationVersion,
                 deviceString = NotificareUtils.deviceString,
                 timeZoneOffset = NotificareUtils.timeZoneOffset,
+                backgroundAppRefresh = true,
                 allowedUI = false, // TODO me,
                 locationServicesAuthStatus = "none", // TODO me
                 bluetoothEnabled = false, // TODO me
