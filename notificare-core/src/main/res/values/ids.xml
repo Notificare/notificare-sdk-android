@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <item name="notificare_application_key" type="string" />
-    <item name="notificare_application_secret" type="string" />
-    <item name="notificare_services" type="string" />
+    <item name="notificare_services_application_key" type="string" />
+    <item name="notificare_services_application_secret" type="string" />
+    <item name="notificare_services_use_test_api" type="bool" />
 </resources>

@@ -59,19 +59,22 @@ object Notificare {
         get() = state == NotificareLaunchState.READY
 
     fun configure(context: Context) {
-        val applicationKey = context.getString(R.string.notificare_application_key)
-        val applicationSecret = context.getString(R.string.notificare_application_secret)
+        val applicationKey = context.getString(R.string.notificare_services_application_key)
+        val applicationSecret = context.getString(R.string.notificare_services_application_secret)
 
         configure(context, applicationKey, applicationSecret)
     }
 
     fun configure(context: Context, applicationKey: String, applicationSecret: String) {
-        val services = context.getString(R.string.notificare_services).let {
-            try {
-                NotificareServices.valueOf(it.toUpperCase(Locale.ROOT))
-            } catch (e: IllegalArgumentException) {
+        val services = try {
+            val useTestApi = context.resources.getBoolean(R.bool.notificare_services_use_test_api)
+            if (useTestApi) {
+                NotificareServices.TEST
+            } else {
                 NotificareServices.PRODUCTION
             }
+        } catch (e: Resources.NotFoundException) {
+            NotificareServices.PRODUCTION
         }
 
         configure(context, applicationKey, applicationSecret, services)
