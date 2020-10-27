@@ -3,6 +3,7 @@ package re.notifica.modules
 import re.notifica.Notificare
 import re.notifica.NotificareDefinitions
 import re.notifica.models.NotificareEvent
+import re.notifica.models.NotificareEventData
 
 class NotificareEventsManager {
 
@@ -38,11 +39,11 @@ class NotificareEventsManager {
         log(NotificareDefinitions.Events.APPLICATION_CLOSE)
     }
 
-    suspend fun logCustom(event: String, data: Map<String, Any>) {
+    suspend fun logCustom(event: String, data: NotificareEventData? = null) {
         log("re.notifica.event.custom.${event}", data)
     }
 
-    private suspend fun log(event: String, data: Map<String, Any>? = null) {
+    private suspend fun log(event: String, data: NotificareEventData? = null) {
         val device = Notificare.deviceManager.currentDevice ?: run {
             Notificare.logger.warning("Cannot send an event before a device is registered.")
             return
@@ -71,7 +72,7 @@ class NotificareEventsManager {
             Notificare.pushService.createEvent(event)
             Notificare.logger.info("Event sent successfully.")
         } catch (e: Exception) {
-            Notificare.logger.error("Failed to send the event: ${event.type}", e)
+            Notificare.logger.warning("Failed to send the event: ${event.type}", e)
 
             // TODO check if the error is recoverable
             if (!discardableEvents.contains(event.type)) {
