@@ -30,3 +30,4 @@ gradle.properties
 
 # Sample configurations
 sample/**/notificare.xml
+sample/**/notificare-services.json

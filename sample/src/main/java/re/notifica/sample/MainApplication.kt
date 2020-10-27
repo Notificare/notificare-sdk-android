@@ -9,5 +9,6 @@ class MainApplication : Application() {
         super.onCreate()
 
         Notificare.logger.useAdvancedLogging = true
+        Notificare.launch()
     }
 }
