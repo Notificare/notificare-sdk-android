@@ -1,12 +1,17 @@
 package re.notifica.modules
 
+import com.squareup.moshi.Types
 import re.notifica.Notificare
 import re.notifica.NotificareDefinitions
+import re.notifica.internal.NotificareUtils
+import re.notifica.internal.common.recoverable
+import re.notifica.internal.storage.database.entities.NotificareEventEntity
 import re.notifica.models.NotificareEvent
 import re.notifica.models.NotificareEventData
 
 class NotificareEventsManager {
 
+    private val moshi = NotificareUtils.createMoshi()
     private val discardableEvents = listOf<String>()
 
     internal fun configure() {
@@ -74,9 +79,32 @@ class NotificareEventsManager {
         } catch (e: Exception) {
             Notificare.logger.warning("Failed to send the event: ${event.type}", e)
 
-            // TODO check if the error is recoverable
-            if (!discardableEvents.contains(event.type)) {
-                // TODO save in the database to process later.
+            if (!discardableEvents.contains(event.type) && e.recoverable) {
+                Notificare.logger.info("Queuing event to be sent whenever possible.")
+
+                val adapter = moshi.adapter<Map<String, String?>>(
+                    Types.newParameterizedType(
+                        Map::class.java,
+                        String::class.java,
+                        String::class.java
+                    )
+                )
+
+                Notificare.database.events().insert(
+                    NotificareEventEntity(
+                        type = event.type,
+                        timestamp = event.timestamp,
+                        deviceId = event.deviceId,
+                        sessionId = event.sessionId,
+                        notificationId = event.notificationId,
+                        userId = event.userId,
+                        data = adapter.toJson(event.data),
+                        retries = 0,
+                        ttl = 86400, // 24 hours
+                    )
+                )
+
+                Notificare.logger.debug("Event stored in the local database.")
             }
         }
     }
