@@ -161,7 +161,7 @@ object Notificare {
         createAvailableModules(applicationKey, applicationSecret)
 
         logger.debug("Configuring available modules.")
-        // sessionManager.configure()
+        sessionManager.configure()
         // crashReporter.configure()
         // database.configure()
         // eventsManager.configure()

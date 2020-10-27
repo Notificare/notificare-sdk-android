@@ -1,4 +1,83 @@
 package re.notifica.modules
 
-internal class NotificareSessionManager {
+import android.app.Activity
+import android.app.Application
+import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import re.notifica.Notificare
+import java.text.SimpleDateFormat
+import java.util.*
+
+internal class NotificareSessionManager : NotificareModule<Unit>() {
+
+    private val handler = Handler(Looper.getMainLooper())
+
+    private var activityCounter = 0
+    private var sessionStart: Date? = null
+    private var sessionEnd: Date? = null
+
+    private val runnable = Runnable {
+        // Skip when no session has started. Should never happen.
+        val sessionStart = sessionStart ?: return@Runnable
+        val sessionEnd = sessionEnd ?: return@Runnable
+
+        val sessionDuration = (sessionEnd.time - sessionStart.time) / 1000
+        Notificare.logger.debug(" Registering 'application closed' event with a duration of $sessionDuration seconds.")
+
+        this.sessionStart = null
+        this.sessionEnd = null
+    }
+
+    override fun configure() {
+        val context = Notificare.requireContext() as Application
+
+        context.registerActivityLifecycleCallbacks(object : Application.ActivityLifecycleCallbacks {
+            override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {}
+
+            override fun onActivityStarted(activity: Activity) {
+                activityCounter++
+                Notificare.logger.debug("Activity counter: $activityCounter")
+
+                // Cancel any session timeout.
+                handler.removeCallbacks(runnable)
+
+                if (sessionStart != null) return
+
+                sessionStart = Date().also {
+                    val format = SimpleDateFormat("HH:mm:ss", Locale.getDefault())
+                    Notificare.logger.debug("Session started at ${format.format(it)}")
+                }
+            }
+
+            override fun onActivityResumed(activity: Activity) {}
+
+            override fun onActivityPaused(activity: Activity) {}
+
+            override fun onActivityStopped(activity: Activity) {
+                activityCounter--
+                Notificare.logger.debug("Activity counter: $activityCounter")
+
+                // Skip when not going into the background.
+                if (activityCounter > 0) return
+
+                sessionEnd = Date().also {
+                    val format = SimpleDateFormat("HH:mm:ss", Locale.getDefault())
+                    Notificare.logger.debug("Session stopped at ${format.format(it)}")
+                }
+
+                // Wait a few seconds before sending a close event.
+                // This prevents quick app swaps, navigation pulls, etc.
+                handler.postDelayed(runnable, 10000)
+            }
+
+            override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) {}
+
+            override fun onActivityDestroyed(activity: Activity) {}
+        })
+    }
+
+    override suspend fun launch() {
+
+    }
 }
