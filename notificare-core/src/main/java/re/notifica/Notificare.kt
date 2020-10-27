@@ -13,27 +13,26 @@ import re.notifica.internal.NotificareUtils
 import re.notifica.internal.network.push.NotificareBasicAuthenticator
 import re.notifica.internal.network.push.NotificareHeadersInterceptor
 import re.notifica.internal.network.push.NotificarePushService
+import re.notifica.internal.storage.database.NotificareDatabase
 import re.notifica.internal.storage.preferences.NotificareSharedPreferences
 import re.notifica.models.NotificareApplication
 import re.notifica.modules.*
-import re.notifica.modules.NotificareCrashReporter
-import re.notifica.modules.NotificareSessionManager
 import re.notifica.modules.factory.NotificareModuleFactory
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import java.lang.ref.WeakReference
-import java.util.*
 
 object Notificare {
 
     // Internal modules
     val logger = NotificareLogger()
+    internal lateinit var database: NotificareDatabase
+        private set
     internal lateinit var sharedPreferences: NotificareSharedPreferences
         private set
     internal val crashReporter = NotificareCrashReporter()
     internal val sessionManager = NotificareSessionManager()
 
-    // internal val database =
     // internal var reachability: NotificareReachability? = null
     //     private set
     internal lateinit var pushService: NotificarePushService
@@ -152,6 +151,7 @@ object Notificare {
         this.applicationSecret = applicationSecret
 
         // Late init modules
+        this.database = NotificareDatabase.create(context.applicationContext)
         this.sharedPreferences = NotificareSharedPreferences(context.applicationContext)
 
         logger.debug("Configuring network services.")
