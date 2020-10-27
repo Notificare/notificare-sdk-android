@@ -1,6 +1,7 @@
 package re.notifica
 
 import android.content.Context
+import android.content.res.Resources
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
@@ -14,9 +15,8 @@ import re.notifica.internal.network.push.NotificareHeadersInterceptor
 import re.notifica.internal.network.push.NotificarePushService
 import re.notifica.internal.storage.preferences.NotificareSharedPreferences
 import re.notifica.models.NotificareApplication
+import re.notifica.modules.*
 import re.notifica.modules.NotificareCrashReporter
-import re.notifica.modules.NotificareDeviceManager
-import re.notifica.modules.NotificarePushModule
 import re.notifica.modules.NotificareSessionManager
 import re.notifica.modules.factory.NotificareModuleFactory
 import retrofit2.Retrofit
@@ -40,6 +40,7 @@ object Notificare {
         private set
 
     // Consumer modules
+    val eventsManager = NotificareEventsManager()
     val deviceManager = NotificareDeviceManager()
     var pushManager: NotificarePushModule? = null
         private set

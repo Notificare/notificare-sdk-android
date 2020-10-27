@@ -9,6 +9,7 @@ import re.notifica.internal.network.push.responses.NotificareDeviceDoNotDisturbR
 import re.notifica.internal.network.push.responses.NotificareDeviceTagsResponse
 import re.notifica.internal.network.push.responses.NotificareDeviceUserDataResponse
 import re.notifica.models.NotificareDoNotDisturb
+import re.notifica.models.NotificareEvent
 import re.notifica.models.NotificareUserData
 import retrofit2.http.*
 
@@ -84,4 +85,7 @@ internal interface NotificarePushService {
         @Path("id") deviceId: String,
         @Body payload: NotificareUserData
     )
+
+    @POST("/event")
+    suspend fun createEvent(@Body event: NotificareEvent)
 }
