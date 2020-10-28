@@ -9,6 +9,7 @@ buildscript {
         kotlin_version = '1.4.10'
         coroutines_version = '1.3.7'
         room_version = '2.2.5'
+        work_manager_version = '2.4.0'
 
         // Networking
         moshi_version = '1.11.0'

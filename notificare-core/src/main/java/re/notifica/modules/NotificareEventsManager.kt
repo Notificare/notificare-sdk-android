@@ -1,11 +1,13 @@
 package re.notifica.modules
 
+import androidx.work.*
 import com.squareup.moshi.Types
 import re.notifica.Notificare
 import re.notifica.NotificareDefinitions
 import re.notifica.internal.NotificareUtils
 import re.notifica.internal.common.recoverable
 import re.notifica.internal.storage.database.entities.NotificareEventEntity
+import re.notifica.internal.workers.ProcessEventsWorker
 import re.notifica.models.NotificareEvent
 import re.notifica.models.NotificareEventData
 
@@ -104,8 +106,26 @@ class NotificareEventsManager {
                     )
                 )
 
-                Notificare.logger.debug("Event stored in the local database.")
+                scheduleUploadWorker()
             }
         }
+    }
+
+    private fun scheduleUploadWorker() {
+        Notificare.logger.debug("Scheduling a worker to process stored events when there's connectivity.")
+
+        WorkManager
+            .getInstance(Notificare.requireContext())
+            .enqueueUniqueWork(
+                NotificareDefinitions.Tasks.PROCESS_EVENTS,
+                ExistingWorkPolicy.KEEP,
+                OneTimeWorkRequestBuilder<ProcessEventsWorker>()
+                    .setConstraints(
+                        Constraints.Builder()
+                            .setRequiredNetworkType(NetworkType.CONNECTED)
+                            .build()
+                    )
+                    .build()
+            )
     }
 }

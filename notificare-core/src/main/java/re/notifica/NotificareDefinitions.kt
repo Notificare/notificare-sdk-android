@@ -19,4 +19,8 @@ internal object NotificareDefinitions {
         const val PREFERRED_LANGUAGE = "re.notifica.preferences.preferred_language"
         const val PREFERRED_REGION = "re.notifica.preferences.preferred_region"
     }
+
+    object Tasks {
+        const val PROCESS_EVENTS = "re.notifica.tasks.process_events"
+    }
 }
