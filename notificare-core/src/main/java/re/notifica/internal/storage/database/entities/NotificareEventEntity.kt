@@ -15,5 +15,5 @@ data class NotificareEventEntity(
     @ColumnInfo(name = "user_id") val userId: String?,
     val data: String?,
     val ttl: Int,
-    val retries: Int,
+    var retries: Int,
 )
