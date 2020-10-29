@@ -48,27 +48,24 @@ class NotificareEventsManager {
     }
 
     private suspend fun log(event: String, data: NotificareEventData? = null) {
-        val device = Notificare.deviceManager.currentDevice ?: run {
-            Notificare.logger.warning("Cannot send an event before a device is registered.")
-            return
-        }
+        val device = Notificare.deviceManager.currentDevice
 
         log(
             NotificareEvent(
                 type = event,
                 timestamp = System.currentTimeMillis(),
-                deviceId = device.deviceId,
+                deviceId = device?.deviceId,
                 sessionId = null, // TODO me
                 notificationId = null,
-                userId = device.userId,
+                userId = device?.userId,
                 data = data
             )
         )
     }
 
     private suspend fun log(event: NotificareEvent) {
-        if (!Notificare.isReady) {
-            Notificare.logger.debug("Notificare is not ready. Skipping event log...")
+        if (!Notificare.isConfigured) {
+            Notificare.logger.debug("Notificare is not configured. Skipping event log...")
             return
         }
 
