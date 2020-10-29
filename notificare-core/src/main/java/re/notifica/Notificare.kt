@@ -55,6 +55,9 @@ object Notificare {
 
     // region Public API
 
+    val isConfigured: Boolean
+        get() = state >= NotificareLaunchState.CONFIGURED
+
     val isReady: Boolean
         get() = state == NotificareLaunchState.READY
 
