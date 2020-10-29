@@ -102,6 +102,7 @@ object Notificare {
                 val (application) = pushService.fetchApplication()
 
                 deviceManager.launch()
+                eventsManager.launch()
 
 
                 Notificare.application = application
@@ -167,7 +168,7 @@ object Notificare {
         sessionManager.configure()
         // crashReporter.configure()
         // database.configure()
-        // eventsManager.configure()
+        eventsManager.configure()
         // deviceManager.configure()
         // pushManager?.configure()
 
