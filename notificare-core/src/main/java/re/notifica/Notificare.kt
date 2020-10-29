@@ -2,8 +2,7 @@ package re.notifica
 
 import android.content.Context
 import android.content.res.Resources
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import re.notifica.internal.NotificareLaunchState
@@ -97,7 +96,7 @@ object Notificare {
         logger.info("Launching Notificare.")
         state = NotificareLaunchState.LAUNCHING
 
-        GlobalScope.launch {
+        runBlocking {
             try {
                 val (application) = pushService.fetchApplication()
 
