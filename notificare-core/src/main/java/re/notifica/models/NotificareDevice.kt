@@ -1,10 +1,13 @@
 package re.notifica.models
 
+import android.os.Parcelable
 import com.squareup.moshi.JsonClass
+import kotlinx.android.parcel.Parcelize
 import java.util.*
 
 typealias NotificareUserData = Map<String, String>
 
+@Parcelize
 @JsonClass(generateAdapter = true)
 data class NotificareDevice internal constructor(
     val deviceId: String,
@@ -37,4 +40,4 @@ data class NotificareDevice internal constructor(
     val allowedUI: Boolean,
     // val backgroundAppRefresh: Boolean, // iOS
     val bluetoothEnabled: Boolean
-)
+) : Parcelable
