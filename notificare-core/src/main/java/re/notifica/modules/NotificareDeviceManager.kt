@@ -3,6 +3,7 @@ package re.notifica.modules
 import re.notifica.Notificare
 import re.notifica.NotificareDefinitions
 import re.notifica.NotificareException
+import re.notifica.internal.NotificareIntentEmitter
 import re.notifica.internal.NotificareUtils
 import re.notifica.internal.common.toByteArray
 import re.notifica.internal.common.toHex
@@ -16,7 +17,7 @@ import re.notifica.models.NotificareTransport
 import re.notifica.models.NotificareUserData
 import java.util.*
 
-class NotificareDeviceManager {
+class NotificareDeviceManager : NotificareModule<Unit>() {
 
     var currentDevice: NotificareDevice?
         get() = Notificare.sharedPreferences.device
@@ -24,11 +25,9 @@ class NotificareDeviceManager {
             Notificare.sharedPreferences.device = value
         }
 
-    internal fun configure() {
-        // TODO listen to device property changes
-    }
+    override fun configure() {}
 
-    internal suspend fun launch() {
+    override suspend fun launch() {
         // TODO check registration status and act accordingly
         val device = currentDevice
 
@@ -38,7 +37,7 @@ class NotificareDeviceManager {
                 Notificare.logger.debug("New version detected")
 
                 // Log an application upgrade event.
-                // Notificare.eventsManager.logApplicationUpgrade()
+                Notificare.eventsManager.logApplicationUpgrade()
             }
         } else {
             Notificare.logger.debug("New install detected")
@@ -49,23 +48,18 @@ class NotificareDeviceManager {
             // Let's logout the user in case there's an account in the keychain
             // TODO: [[NotificareAuth shared] logoutAccount]
 
-            registerTemporary()
+            try {
+                registerTemporary()
 
-//            registerTemporary { result in
-//                switch result {
-//                case .success:
-//                      // We will log the Install here since this will execute only one time at the start.
-//                      Notificare.shared.eventsManager.logApplicationInstall()
-//
-//                      // We will log the App Open this first time here.
-//                      Notificare.shared.eventsManager.logApplicationOpen()
-//
-//                      completion(.success(()))
-//                case let .failure(error):
-//                      Notificare.shared.logger.warning("Failed to register temporary device: \(error)")
-//                      completion(.failure(error))
-//                }
-//            }
+                // We will log the Install here since this will execute only one time at the start.
+                Notificare.eventsManager.logApplicationInstall()
+
+                // We will log the App Open this first time here.
+                Notificare.eventsManager.logApplicationOpen()
+            } catch (e: Exception) {
+                Notificare.logger.warning("Failed to register temporary device.", e)
+                throw e
+            }
         }
     }
 
@@ -223,13 +217,14 @@ class NotificareDeviceManager {
 
             Notificare.pushService.createDevice(deviceRegistration)
 
-            // TODO create NotificareDevice from the registration payload
-            // TODO emit 'deviceRegistered' event
             // TODO check and log an 'applicationRegistration' event
 
             val device = deviceRegistration.toStoredDevice(currentDevice).also {
                 currentDevice = it
             }
+
+            // Send a device registered broadcast.
+            NotificareIntentEmitter.onDeviceRegistered(device)
 
             return device
         } else {

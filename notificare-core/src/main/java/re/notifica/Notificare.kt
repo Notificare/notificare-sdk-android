@@ -5,10 +5,8 @@ import android.content.res.Resources
 import kotlinx.coroutines.runBlocking
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
-import re.notifica.internal.NotificareLaunchState
-import re.notifica.internal.NotificareLogger
-import re.notifica.internal.NotificareServices
-import re.notifica.internal.NotificareUtils
+import re.notifica.app.NotificareIntentReceiver
+import re.notifica.internal.*
 import re.notifica.internal.network.push.NotificareBasicAuthenticator
 import re.notifica.internal.network.push.NotificareHeadersInterceptor
 import re.notifica.internal.network.push.NotificarePushService
@@ -53,6 +51,8 @@ object Notificare {
     private var application: NotificareApplication? = null
 
     // region Public API
+
+    var intentReceiver: Class<out NotificareIntentReceiver> = NotificareIntentReceiver::class.java
 
     val isConfigured: Boolean
         get() = state >= NotificareLaunchState.CONFIGURED
@@ -120,8 +120,8 @@ object Notificare {
                 // Notificare.logger.debug("SDK modules: ${enabledModules.joined(separator: ", ")}")
                 logger.debug("/==================================================================================/")
 
-                // We're done launching. Notify the delegate.
-                // delegate?.notificare(self, onReady: application)
+                // We're done launching. Send a broadcast.
+                NotificareIntentEmitter.onReady()
             } catch (e: Exception) {
                 logger.error("Failed to launch Notificare.", e)
                 state = NotificareLaunchState.CONFIGURED
