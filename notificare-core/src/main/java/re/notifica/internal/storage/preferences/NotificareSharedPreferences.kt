@@ -1,10 +1,11 @@
 package re.notifica.internal.storage.preferences
 
+import android.annotation.SuppressLint
 import android.content.Context
-import re.notifica.Notificare
 import re.notifica.NotificareDefinitions
 import re.notifica.internal.NotificareUtils
 import re.notifica.models.NotificareDevice
+import re.notifica.models.NotificareEvent
 
 internal class NotificareSharedPreferences(context: Context) {
 
@@ -65,5 +66,21 @@ internal class NotificareSharedPreferences(context: Context) {
                     }
                 }
                 .apply()
+        }
+
+    var crashReport: NotificareEvent?
+        get() {
+            return sharedPreferences.getString(NotificareDefinitions.Preferences.CRASH_REPORT, null)
+                ?.let { moshi.adapter(NotificareEvent::class.java).fromJson(it) }
+        }
+        @SuppressLint("ApplySharedPref")
+        set(value) {
+            sharedPreferences.edit().also {
+                if (value == null) it.remove(NotificareDefinitions.Preferences.CRASH_REPORT)
+                else it.putString(
+                    NotificareDefinitions.Preferences.CRASH_REPORT,
+                    moshi.adapter(NotificareEvent::class.java).toJson(value)
+                )
+            }.commit()
         }
 }

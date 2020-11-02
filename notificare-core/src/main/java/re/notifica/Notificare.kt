@@ -27,7 +27,7 @@ object Notificare {
         private set
     internal lateinit var sharedPreferences: NotificareSharedPreferences
         private set
-    internal val crashReporter = NotificareCrashReporter()
+    val crashReporter = NotificareCrashReporter()
     internal val sessionManager = NotificareSessionManager()
 
     // internal var reachability: NotificareReachability? = null
@@ -102,6 +102,7 @@ object Notificare {
 
                 deviceManager.launch()
                 eventsManager.launch()
+                crashReporter.launch()
 
 
                 Notificare.application = application
@@ -165,7 +166,7 @@ object Notificare {
 
         logger.debug("Configuring available modules.")
         sessionManager.configure()
-        // crashReporter.configure()
+        crashReporter.configure()
         // database.configure()
         eventsManager.configure()
         // deviceManager.configure()
