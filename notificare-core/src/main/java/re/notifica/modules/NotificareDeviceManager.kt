@@ -199,7 +199,6 @@ class NotificareDeviceManager : NotificareModule<Unit>() {
                 oldDeviceId = oldDeviceId,
                 userId = userId,
                 userName = userName,
-                country = currentDevice?.countryCode, // TODO confirm this value
                 language = getLanguage(),
                 region = getRegion(),
                 platform = "Android",
@@ -369,8 +368,7 @@ private fun NotificareDeviceRegistration.toStoredDevice(previous: NotificareDevi
         sdkVersion = this.sdkVersion,
         appVersion = this.appVersion,
         deviceString = this.deviceString,
-        country = previous?.country,
-        countryCode = previous?.countryCode,
+        country = previous?.country, // country code (NL)
         language = this.language,
         region = this.region,
         transport = this.transport,

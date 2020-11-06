@@ -10,7 +10,6 @@ internal data class NotificareDeviceRegistration(
     @Json(name = "oldDeviceID") val oldDeviceId: String?,
     @Json(name = "userID") val userId: String?,
     val userName: String?,
-    val country: String?,
     val language: String,
     val region: String,
     val platform: String,

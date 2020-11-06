@@ -19,7 +19,6 @@ data class NotificareDevice internal constructor(
     val appVersion: String,
     val deviceString: String,
     val country: String?,
-    val countryCode: String?, // TODO check this property: doesn't exist in v2
     val language: String,
     val region: String,
     val transport: NotificareTransport,
