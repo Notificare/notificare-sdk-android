@@ -60,7 +60,7 @@ class NotificareEventsManager : NotificareModule<Unit>() {
                     type = event,
                     timestamp = System.currentTimeMillis(),
                     deviceId = device?.deviceId,
-                    sessionId = null, // TODO me
+                    sessionId = Notificare.sessionManager.sessionId,
                     notificationId = null,
                     userId = device?.userId,
                     data = data
@@ -79,7 +79,7 @@ class NotificareEventsManager : NotificareModule<Unit>() {
 
         try {
             Notificare.pushService.createEvent(event)
-            Notificare.logger.info("Event sent successfully.")
+            Notificare.logger.info("Event '${event.type}' sent successfully.")
         } catch (e: Exception) {
             Notificare.logger.warning("Failed to send the event: ${event.type}", e)
 

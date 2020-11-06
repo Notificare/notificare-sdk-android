@@ -68,7 +68,7 @@ class NotificareCrashReporter : NotificareModule<Unit>() {
             type = NotificareDefinitions.Events.APPLICATION_EXCEPTION,
             timestamp = timestamp,
             deviceId = Notificare.deviceManager.currentDevice?.deviceId,
-            sessionId = null, // TODO me
+            sessionId = Notificare.sessionManager.sessionId,
             notificationId = null,
             userId = Notificare.deviceManager.currentDevice?.userId,
             data = mapOf(

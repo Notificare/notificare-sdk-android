@@ -17,14 +17,19 @@ internal class NotificareSessionManager : NotificareModule<Unit>() {
     private var sessionStart: Date? = null
     private var sessionEnd: Date? = null
 
+    var sessionId: String? = null
+        private set
+
     private val runnable = Runnable {
         // Skip when no session has started. Should never happen.
         val sessionStart = sessionStart ?: return@Runnable
         val sessionEnd = sessionEnd ?: return@Runnable
 
-        val sessionDuration = (sessionEnd.time - sessionStart.time) / 1000
-        Notificare.logger.debug(" Registering 'application closed' event with a duration of $sessionDuration seconds.")
+        Notificare.eventsManager.logApplicationClose(
+            sessionLength = sessionEnd.time - sessionStart.time / 1000.toDouble()
+        )
 
+        this.sessionId = null
         this.sessionStart = null
         this.sessionEnd = null
     }
@@ -37,16 +42,25 @@ internal class NotificareSessionManager : NotificareModule<Unit>() {
 
             override fun onActivityStarted(activity: Activity) {
                 activityCounter++
-                Notificare.logger.debug("Activity counter: $activityCounter")
 
                 // Cancel any session timeout.
                 handler.removeCallbacks(runnable)
 
-                if (sessionStart != null) return
+                if (sessionStart != null) {
+                    Notificare.logger.debug("Resuming previous session.")
+                    return
+                }
 
+                sessionId = UUID.randomUUID().toString()
+                sessionEnd = null
                 sessionStart = Date().also {
-                    val format = SimpleDateFormat("HH:mm:ss", Locale.getDefault())
-                    Notificare.logger.debug("Session started at ${format.format(it)}")
+                    try {
+                        val format = SimpleDateFormat("HH:mm:ss", Locale.getDefault())
+                        Notificare.logger.debug("Session started at ${format.format(it)}")
+
+                        Notificare.eventsManager.logApplicationOpen()
+                    } catch (e: Exception) {
+                    }
                 }
             }
 
@@ -56,7 +70,6 @@ internal class NotificareSessionManager : NotificareModule<Unit>() {
 
             override fun onActivityStopped(activity: Activity) {
                 activityCounter--
-                Notificare.logger.debug("Activity counter: $activityCounter")
 
                 // Skip when not going into the background.
                 if (activityCounter > 0) return
