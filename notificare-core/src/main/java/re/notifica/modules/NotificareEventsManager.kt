@@ -1,6 +1,7 @@
 package re.notifica.modules
 
 import androidx.work.*
+import kotlinx.coroutines.runBlocking
 import re.notifica.Notificare
 import re.notifica.NotificareDefinitions
 import re.notifica.internal.common.recoverable
@@ -22,45 +23,52 @@ class NotificareEventsManager : NotificareModule<Unit>() {
         scheduleUploadWorker()
     }
 
-    suspend fun logApplicationInstall() {
+    fun logApplicationInstall() {
         log(NotificareDefinitions.Events.APPLICATION_INSTALL)
     }
 
-    suspend fun logApplicationRegistration() {
+    fun logApplicationRegistration() {
         log(NotificareDefinitions.Events.APPLICATION_REGISTRATION)
     }
 
-    suspend fun logApplicationUpgrade() {
+    fun logApplicationUpgrade() {
         log(NotificareDefinitions.Events.APPLICATION_UPGRADE)
     }
 
-    suspend fun logApplicationOpen() {
+    fun logApplicationOpen() {
         log(NotificareDefinitions.Events.APPLICATION_OPEN)
     }
 
-    suspend fun logApplicationClose() {
-        // TODO log the session length
-        log(NotificareDefinitions.Events.APPLICATION_CLOSE)
+    fun logApplicationClose(sessionLength: Double) {
+        log(
+            NotificareDefinitions.Events.APPLICATION_CLOSE, mapOf(
+                "length" to sessionLength.toString()
+            )
+        )
     }
 
-    suspend fun logCustom(event: String, data: NotificareEventData? = null) {
+    fun logCustom(event: String, data: NotificareEventData? = null) {
         log("re.notifica.event.custom.${event}", data)
     }
 
-    private suspend fun log(event: String, data: NotificareEventData? = null) {
+    private fun log(event: String, data: NotificareEventData? = null) = runBlocking {
         val device = Notificare.deviceManager.currentDevice
 
-        log(
-            NotificareEvent(
-                type = event,
-                timestamp = System.currentTimeMillis(),
-                deviceId = device?.deviceId,
-                sessionId = null, // TODO me
-                notificationId = null,
-                userId = device?.userId,
-                data = data
+        try {
+            log(
+                NotificareEvent(
+                    type = event,
+                    timestamp = System.currentTimeMillis(),
+                    deviceId = device?.deviceId,
+                    sessionId = null, // TODO me
+                    notificationId = null,
+                    userId = device?.userId,
+                    data = data
+                )
             )
-        )
+        } catch (e: Exception) {
+            Notificare.logger.error("Failed to log an event.", e)
+        }
     }
 
     private suspend fun log(event: NotificareEvent) {
