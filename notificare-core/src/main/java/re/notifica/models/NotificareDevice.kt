@@ -18,7 +18,6 @@ data class NotificareDevice internal constructor(
     val sdkVersion: String,
     val appVersion: String,
     val deviceString: String,
-    val country: String?,
     val language: String,
     val region: String,
     val transport: NotificareTransport,
@@ -38,6 +37,7 @@ data class NotificareDevice internal constructor(
     @Parcelize
     @JsonClass(generateAdapter = true)
     data class Location internal constructor(
+        val country: String?,
         val latitude: Float?,
         val longitude: Float?,
         val altitude: Float?,

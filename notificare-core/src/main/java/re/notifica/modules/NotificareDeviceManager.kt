@@ -364,7 +364,6 @@ private fun NotificareDeviceRegistration.toStoredDevice(previous: NotificareDevi
         sdkVersion = this.sdkVersion,
         appVersion = this.appVersion,
         deviceString = this.deviceString,
-        country = previous?.country, // country code (NL)
         language = this.language,
         region = this.region,
         transport = this.transport,
