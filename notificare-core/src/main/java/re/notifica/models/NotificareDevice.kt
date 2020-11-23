@@ -10,7 +10,7 @@ typealias NotificareUserData = Map<String, String>
 @Parcelize
 @JsonClass(generateAdapter = true)
 data class NotificareDevice internal constructor(
-    val deviceId: String,
+    val id: String,
     val userId: String?,
     val userName: String?,
     val timeZoneOffset: Float,
@@ -24,13 +24,7 @@ data class NotificareDevice internal constructor(
     val transport: NotificareTransport,
     var dnd: NotificareDoNotDisturb?,
     var userData: NotificareUserData?,
-    val latitude: Float?,
-    val longitude: Float?,
-    val altitude: Float?,
-    val accuracy: Float?,
-    val floor: Float?,
-    val speed: Float?,
-    val course: Float?,
+    val location: Location?,
     val lastRegistered: Date,
     val locationServicesAuthStatus: String?,
     // val locationServicesAccuracyAuth: String?, // iOS
@@ -39,4 +33,17 @@ data class NotificareDevice internal constructor(
     val allowedUI: Boolean,
     // val backgroundAppRefresh: Boolean, // iOS
     val bluetoothEnabled: Boolean
-) : Parcelable
+) : Parcelable {
+
+    @Parcelize
+    @JsonClass(generateAdapter = true)
+    data class Location internal constructor(
+        val latitude: Float?,
+        val longitude: Float?,
+        val altitude: Float?,
+        val accuracy: Float?,
+        val floor: Float?,
+        val speed: Float?,
+        val course: Float?,
+    ) : Parcelable
+}

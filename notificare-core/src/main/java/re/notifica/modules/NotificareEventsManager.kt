@@ -59,7 +59,7 @@ class NotificareEventsManager : NotificareModule<Unit>() {
                 NotificareEvent(
                     type = event,
                     timestamp = System.currentTimeMillis(),
-                    deviceId = device?.deviceId,
+                    deviceId = device?.id,
                     sessionId = Notificare.sessionManager.sessionId,
                     notificationId = null,
                     userId = device?.userId,

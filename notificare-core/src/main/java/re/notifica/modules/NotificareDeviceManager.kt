@@ -104,7 +104,7 @@ class NotificareDeviceManager : NotificareModule<Unit>() {
         val device = checkNotificareReady()
 
         // TODO consider wrapping this in a try catch block to rewrite the exception into a NotificareException.Network.
-        val response = Notificare.pushService.getDeviceTags(device.deviceId)
+        val response = Notificare.pushService.getDeviceTags(device.id)
         return response.tags
     }
 
@@ -112,24 +112,24 @@ class NotificareDeviceManager : NotificareModule<Unit>() {
 
     suspend fun addTags(tags: List<String>) {
         val device = checkNotificareReady()
-        Notificare.pushService.addDeviceTags(device.deviceId, NotificareTagsPayload(tags))
+        Notificare.pushService.addDeviceTags(device.id, NotificareTagsPayload(tags))
     }
 
     suspend fun removeTag(tag: String) = removeTags(listOf(tag))
 
     suspend fun removeTags(tags: List<String>) {
         val device = checkNotificareReady()
-        Notificare.pushService.removeDeviceTags(device.deviceId, NotificareTagsPayload(tags))
+        Notificare.pushService.removeDeviceTags(device.id, NotificareTagsPayload(tags))
     }
 
     suspend fun clearTags() {
         val device = checkNotificareReady()
-        Notificare.pushService.clearDeviceTags(device.deviceId)
+        Notificare.pushService.clearDeviceTags(device.id)
     }
 
     suspend fun fetchDoNotDisturb(): NotificareDoNotDisturb? {
         val device = checkNotificareReady()
-        val (dnd) = Notificare.pushService.getDeviceDoNotDisturb(device.deviceId)
+        val (dnd) = Notificare.pushService.getDeviceDoNotDisturb(device.id)
 
         // Update current device properties.
         currentDevice?.dnd = dnd
@@ -139,7 +139,7 @@ class NotificareDeviceManager : NotificareModule<Unit>() {
 
     suspend fun updateDoNotDisturb(dnd: NotificareDoNotDisturb) {
         val device = checkNotificareReady()
-        Notificare.pushService.updateDeviceDoNotDisturb(device.deviceId, dnd)
+        Notificare.pushService.updateDeviceDoNotDisturb(device.id, dnd)
 
         // Update current device properties.
         currentDevice?.dnd = dnd
@@ -147,7 +147,7 @@ class NotificareDeviceManager : NotificareModule<Unit>() {
 
     suspend fun clearDoNotDisturb() {
         val device = checkNotificareReady()
-        Notificare.pushService.clearDeviceDoNotDisturb(device.deviceId)
+        Notificare.pushService.clearDeviceDoNotDisturb(device.id)
 
         // Update current device properties.
         currentDevice?.dnd = null
@@ -155,7 +155,7 @@ class NotificareDeviceManager : NotificareModule<Unit>() {
 
     suspend fun fetchUserData(): NotificareUserData? {
         val device = checkNotificareReady()
-        val (userData) = Notificare.pushService.getDeviceUserData(device.deviceId)
+        val (userData) = Notificare.pushService.getDeviceUserData(device.id)
 
         // Update current device properties.
         currentDevice?.userData = userData
@@ -165,7 +165,7 @@ class NotificareDeviceManager : NotificareModule<Unit>() {
 
     suspend fun updateUserData(userData: NotificareUserData) {
         val device = checkNotificareReady()
-        Notificare.pushService.updateDeviceUserData(device.deviceId, userData)
+        Notificare.pushService.updateDeviceUserData(device.id, userData)
 
         // Update current device properties.
         currentDevice?.userData = userData
@@ -185,13 +185,12 @@ class NotificareDeviceManager : NotificareModule<Unit>() {
 
     private suspend fun register(
         token: String,
-        temporary: Boolean,
         userId: String?,
-        userName: String?
+        userName: String?,
     ): NotificareDevice {
         if (registrationChanged(token, userId, userName)) {
             val oldDeviceId =
-                if (currentDevice?.deviceId != null && currentDevice?.deviceId != token) currentDevice?.deviceId
+                if (currentDevice?.id != null && currentDevice?.id != token) currentDevice?.id
                 else null
 
             val deviceRegistration = NotificareDeviceRegistration(
@@ -233,22 +232,19 @@ class NotificareDeviceManager : NotificareModule<Unit>() {
         }
     }
 
-    private suspend fun registerTemporary(): NotificareDevice {
-        val token = currentDevice?.deviceId
+    private suspend fun registerTemporary() {
+        val token = currentDevice?.id
             ?: UUID.randomUUID()
                 .toByteArray()
                 .toHex()
 
-        val device = register(
+        register(
             token = token,
-            temporary = true,
             userId = currentDevice?.userId,
             userName = currentDevice?.userName,
         )
 
         // TODO updateNotificationSettings(allowedUI: false)
-
-        return device
     }
 
     private fun registrationChanged(token: String?, userId: String?, userName: String?): Boolean {
@@ -269,7 +265,7 @@ class NotificareDeviceManager : NotificareModule<Unit>() {
             changed = true
         }
 
-        if (device.deviceId != token) {
+        if (device.id != token) {
             Notificare.logger.debug("Registration check: device token changed")
             changed = true
         }
@@ -334,7 +330,7 @@ class NotificareDeviceManager : NotificareModule<Unit>() {
         val device = checkNotificareReady()
 
         Notificare.pushService.updateDevice(
-            device.deviceId,
+            device.id,
             NotificareDeviceUpdateLanguage(
                 language = getLanguage(),
                 region = getRegion()
@@ -346,7 +342,7 @@ class NotificareDeviceManager : NotificareModule<Unit>() {
         val device = checkNotificareReady()
 
         Notificare.pushService.updateDevice(
-            device.deviceId,
+            device.id,
             NotificareDeviceUpdateTimeZone(
                 language = getLanguage(),
                 region = getRegion(),
@@ -360,7 +356,7 @@ class NotificareDeviceManager : NotificareModule<Unit>() {
 
 private fun NotificareDeviceRegistration.toStoredDevice(previous: NotificareDevice?): NotificareDevice {
     return NotificareDevice(
-        deviceId = this.deviceId,
+        id = this.deviceId,
         userId = this.userId,
         userName = this.userName,
         timeZoneOffset = this.timeZoneOffset,
@@ -374,13 +370,7 @@ private fun NotificareDeviceRegistration.toStoredDevice(previous: NotificareDevi
         transport = this.transport,
         dnd = previous?.dnd,
         userData = previous?.userData,
-        latitude = previous?.latitude,
-        longitude = previous?.longitude,
-        altitude = previous?.altitude,
-        accuracy = previous?.accuracy,
-        floor = previous?.floor,
-        speed = previous?.speed,
-        course = previous?.course,
+        location = previous?.location,
         lastRegistered = Date(),
         locationServicesAuthStatus = this.locationServicesAuthStatus,
         allowedUI = this.allowedUI,
