@@ -3,5 +3,5 @@ package re.notifica
 interface NotificareCallback<T> {
     fun onSuccess(result: T)
 
-    fun onFailure(e: NotificareException)
+    fun onFailure(e: Exception)
 }
