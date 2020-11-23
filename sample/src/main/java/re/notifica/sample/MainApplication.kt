@@ -9,6 +9,7 @@ class MainApplication : Application() {
         super.onCreate()
 
         Notificare.logger.useAdvancedLogging = true
+        Notificare.crashReporter.enabled = true
         Notificare.launch()
     }
 }

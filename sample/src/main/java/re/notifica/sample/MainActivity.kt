@@ -4,23 +4,37 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.runBlocking
 import re.notifica.Notificare
+import re.notifica.NotificareCallback
+import re.notifica.callbacks.fetchTags
 import re.notifica.models.NotificareDoNotDisturb
 import re.notifica.models.NotificareTime
+import re.notifica.sample.databinding.ActivityMainBinding
 import java.util.*
 
 class MainActivity : AppCompatActivity() {
+
+    private lateinit var binding: ActivityMainBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater).also {
+            setContentView(it.root)
+        }
     }
 
     fun onFetchTagsClick(@Suppress("UNUSED_PARAMETER") view: View) {
-        runBlocking {
-            val tags = Notificare.deviceManager.fetchTags()
-            Log.i(TAG, "$tags")
-        }
+        Notificare.deviceManager.fetchTags(object : NotificareCallback<List<String>> {
+            override fun onSuccess(result: List<String>) {
+                Snackbar.make(binding.root, "$result", Snackbar.LENGTH_LONG).show()
+            }
+
+            override fun onFailure(e: Exception) {
+                Snackbar.make(binding.root, "Failed to fetch device tags", Snackbar.LENGTH_LONG).show()
+            }
+        })
 
 //        runBlocking {
 //            // Notificare.eventsManager.logApplicationOpen()
