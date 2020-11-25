@@ -55,7 +55,7 @@ internal class NotificareSessionManager : NotificareModule<Unit>() {
                 sessionEnd = null
                 sessionStart = Date().also {
                     val format = SimpleDateFormat("HH:mm:ss", Locale.getDefault())
-                    Notificare.logger.debug("Session started at ${format.format(it)}")
+                    Notificare.logger.debug("Session '$sessionId' started at ${format.format(it)}")
                     Notificare.eventsManager.logApplicationOpen()
                 }
             }
@@ -72,7 +72,7 @@ internal class NotificareSessionManager : NotificareModule<Unit>() {
 
                 sessionEnd = Date().also {
                     val format = SimpleDateFormat("HH:mm:ss", Locale.getDefault())
-                    Notificare.logger.debug("Session stopped at ${format.format(it)}")
+                    Notificare.logger.debug("Session '$sessionId' stopped at ${format.format(it)}")
                 }
 
                 // Wait a few seconds before sending a close event.
