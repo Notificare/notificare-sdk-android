@@ -42,6 +42,16 @@ internal object NotificareUtils {
             return timeZone.getOffset(calendar.timeInMillis) / 3600000f
         }
 
+    val availableModules: List<String>
+        get() {
+            val modules = mutableListOf("core")
+
+            if (Notificare.pushManager != null) modules.add("push")
+            //if (Notificare.locationManager != null) modules.add("location")
+
+            return modules
+        }
+
     fun createMoshi(): Moshi {
         return Moshi.Builder()
             .add(Date::class.java, Rfc3339DateJsonAdapter())

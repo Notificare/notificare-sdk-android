@@ -109,7 +109,6 @@ object Notificare {
                 state = NotificareLaunchState.READY
 
                 val enabledServices = application.services.filter { it.value }.map { it.key }
-                // val enabledModules = NotificareUtils.getLoadedModules()
 
                 logger.debug("/==================================================================================/")
                 logger.debug("Notificare SDK is ready to use for application")
@@ -118,7 +117,7 @@ object Notificare {
                 logger.debug("App services: ${enabledServices.joinToString(", ")}")
                 logger.debug("/==================================================================================/")
                 logger.debug("SDK version: ${NotificareDefinitions.SDK_VERSION}")
-                // Notificare.logger.debug("SDK modules: ${enabledModules.joined(separator: ", ")}")
+                logger.debug("SDK modules: ${NotificareUtils.availableModules.joinToString(", ")}")
                 logger.debug("/==================================================================================/")
 
                 // We're done launching. Send a broadcast.
