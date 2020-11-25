@@ -5,12 +5,12 @@ import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.coroutines.runBlocking
 import re.notifica.Notificare
 import re.notifica.NotificareCallback
-import re.notifica.callbacks.fetchTags
+import re.notifica.callbacks.*
 import re.notifica.models.NotificareDoNotDisturb
 import re.notifica.models.NotificareTime
+import re.notifica.models.NotificareUserData
 import re.notifica.sample.databinding.ActivityMainBinding
 import java.util.*
 
@@ -35,91 +35,148 @@ class MainActivity : AppCompatActivity() {
                 Snackbar.make(binding.root, "Failed to fetch device tags", Snackbar.LENGTH_LONG).show()
             }
         })
-
-//        runBlocking {
-//            // Notificare.eventsManager.logApplicationOpen()
-//            Notificare.eventsManager.logCustom("hello", mapOf(
-//                Pair("name", "Helder"),
-//            ))
-//        }
     }
 
     fun onAddTagsClick(@Suppress("UNUSED_PARAMETER") view: View) {
-        runBlocking {
-            Notificare.deviceManager.addTags(
-                listOf(
-                    "hpinhal",
-                    "android",
-                    "remove-me",
-                )
-            )
-        }
+        val tags = listOf(
+            "hpinhal",
+            "android",
+            "remove-me",
+        )
+
+        Notificare.deviceManager.addTags(tags, object : NotificareCallback<Unit> {
+            override fun onSuccess(result: Unit) {
+                Snackbar.make(binding.root, "Done.", Snackbar.LENGTH_SHORT).show()
+            }
+
+            override fun onFailure(e: Exception) {
+                Snackbar.make(binding.root, "Error: ${e.message}", Snackbar.LENGTH_SHORT).show()
+            }
+        })
     }
 
     fun onRemoveTagsClick(@Suppress("UNUSED_PARAMETER") view: View) {
-        runBlocking {
-            Notificare.deviceManager.removeTag("remove-me")
-        }
+        Notificare.deviceManager.removeTag("remove-me", object : NotificareCallback<Unit> {
+            override fun onSuccess(result: Unit) {
+                Snackbar.make(binding.root, "Done.", Snackbar.LENGTH_SHORT).show()
+            }
+
+            override fun onFailure(e: Exception) {
+                Snackbar.make(binding.root, "Error: ${e.message}", Snackbar.LENGTH_SHORT).show()
+            }
+        })
     }
 
     fun onClearTagsClick(@Suppress("UNUSED_PARAMETER") view: View) {
-        runBlocking {
-            Notificare.deviceManager.clearTags()
-        }
+        Notificare.deviceManager.clearTags(object : NotificareCallback<Unit> {
+            override fun onSuccess(result: Unit) {
+                Snackbar.make(binding.root, "Done.", Snackbar.LENGTH_SHORT).show()
+            }
+
+            override fun onFailure(e: Exception) {
+                Snackbar.make(binding.root, "Error: ${e.message}", Snackbar.LENGTH_SHORT).show()
+            }
+        })
     }
 
     fun onFetchDndClick(@Suppress("UNUSED_PARAMETER") view: View) {
-        runBlocking {
-            val dnd = Notificare.deviceManager.fetchDoNotDisturb()
-            Log.i(TAG, "$dnd")
-        }
+        Notificare.deviceManager.fetchDoNotDisturb(object : NotificareCallback<NotificareDoNotDisturb?> {
+            override fun onSuccess(result: NotificareDoNotDisturb?) {
+                Log.i(TAG, "Do not disturb: $result")
+                Snackbar.make(binding.root, "$result", Snackbar.LENGTH_SHORT).show()
+            }
+
+            override fun onFailure(e: Exception) {
+                Snackbar.make(binding.root, "Error: ${e.message}", Snackbar.LENGTH_SHORT).show()
+            }
+        })
     }
 
     fun onUpdateDndClick(@Suppress("UNUSED_PARAMETER") view: View) {
-        runBlocking {
-            Notificare.deviceManager.updateDoNotDisturb(
-                NotificareDoNotDisturb(
-                    start = NotificareTime("00:00"),
-                    end = NotificareTime(8, Calendar.getInstance().get(Calendar.MINUTE))
-                )
-            )
-        }
+        val dnd = NotificareDoNotDisturb(
+            start = NotificareTime("00:00"),
+            end = NotificareTime(8, Calendar.getInstance().get(Calendar.MINUTE))
+        )
+
+        Notificare.deviceManager.updateDoNotDisturb(dnd, object : NotificareCallback<Unit> {
+            override fun onSuccess(result: Unit) {
+                Snackbar.make(binding.root, "Done.", Snackbar.LENGTH_SHORT).show()
+            }
+
+            override fun onFailure(e: Exception) {
+                Snackbar.make(binding.root, "Error: ${e.message}", Snackbar.LENGTH_SHORT).show()
+            }
+        })
     }
 
     fun onClearDndClick(@Suppress("UNUSED_PARAMETER") view: View) {
-        runBlocking {
-            Notificare.deviceManager.clearDoNotDisturb()
-        }
+        Notificare.deviceManager.clearDoNotDisturb(object : NotificareCallback<Unit> {
+            override fun onSuccess(result: Unit) {
+                Snackbar.make(binding.root, "Done.", Snackbar.LENGTH_SHORT).show()
+            }
+
+            override fun onFailure(e: Exception) {
+                Snackbar.make(binding.root, "Error: ${e.message}", Snackbar.LENGTH_SHORT).show()
+            }
+        })
     }
 
     fun onFetchUserDataClick(@Suppress("UNUSED_PARAMETER") view: View) {
-        runBlocking {
-            val userData = Notificare.deviceManager.fetchUserData()
-            Log.i(TAG, "$userData")
-        }
+        Notificare.deviceManager.fetchUserData(object : NotificareCallback<NotificareUserData?> {
+            override fun onSuccess(result: NotificareUserData?) {
+                Log.i(TAG, "User data: $result")
+                Snackbar.make(binding.root, "$result", Snackbar.LENGTH_SHORT).show()
+            }
+
+            override fun onFailure(e: Exception) {
+                Snackbar.make(binding.root, "Error: ${e.message}", Snackbar.LENGTH_SHORT).show()
+            }
+        })
     }
 
     fun onUpdateUserDataClick(@Suppress("UNUSED_PARAMETER") view: View) {
-        runBlocking {
-            Notificare.deviceManager.updateUserData(
-                mapOf(
-                    Pair("firstName", "Helder"),
-                    Pair("lastName", "Pinhal"),
-                )
-            )
-        }
+        val userData = mapOf(
+            Pair("firstName", "Helder"),
+            Pair("lastName", "Pinhal"),
+        )
+
+        Notificare.deviceManager.updateUserData(userData, object : NotificareCallback<Unit> {
+            override fun onSuccess(result: Unit) {
+                Snackbar.make(binding.root, "Done.", Snackbar.LENGTH_SHORT).show()
+            }
+
+            override fun onFailure(e: Exception) {
+                Snackbar.make(binding.root, "Error: ${e.message}", Snackbar.LENGTH_SHORT).show()
+            }
+        })
+    }
+
+    fun onGetPreferredLanguage(@Suppress("UNUSED_PARAMETER") view: View) {
+        Snackbar.make(binding.root, "${Notificare.deviceManager.preferredLanguage}", Snackbar.LENGTH_SHORT).show()
     }
 
     fun onUpdatePreferredLanguage(@Suppress("UNUSED_PARAMETER") view: View) {
-        runBlocking {
-            Notificare.deviceManager.updatePreferredLanguage("en-NL")
-        }
+        Notificare.deviceManager.updatePreferredLanguage("en-NL", object : NotificareCallback<Unit> {
+            override fun onSuccess(result: Unit) {
+                Snackbar.make(binding.root, "Done.", Snackbar.LENGTH_SHORT).show()
+            }
+
+            override fun onFailure(e: Exception) {
+                Snackbar.make(binding.root, "Error: ${e.message}", Snackbar.LENGTH_SHORT).show()
+            }
+        })
     }
 
     fun onClearPreferredLanguage(@Suppress("UNUSED_PARAMETER") view: View) {
-        runBlocking {
-            Notificare.deviceManager.updatePreferredLanguage(null)
-        }
+        Notificare.deviceManager.updatePreferredLanguage(null, object : NotificareCallback<Unit> {
+            override fun onSuccess(result: Unit) {
+                Snackbar.make(binding.root, "Done.", Snackbar.LENGTH_SHORT).show()
+            }
+
+            override fun onFailure(e: Exception) {
+                Snackbar.make(binding.root, "Error: ${e.message}", Snackbar.LENGTH_SHORT).show()
+            }
+        })
     }
 
     companion object {

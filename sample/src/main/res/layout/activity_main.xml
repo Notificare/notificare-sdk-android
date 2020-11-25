@@ -92,6 +92,14 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="16dp"
                 android:layout_marginVertical="8dp"
+                android:onClick="onGetPreferredLanguage"
+                android:text="Get preferred language" />
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginVertical="8dp"
                 android:onClick="onUpdatePreferredLanguage"
                 android:text="Update preferred language 'en-NL'" />
 
