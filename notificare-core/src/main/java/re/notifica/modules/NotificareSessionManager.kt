@@ -54,13 +54,9 @@ internal class NotificareSessionManager : NotificareModule<Unit>() {
                 sessionId = UUID.randomUUID().toString()
                 sessionEnd = null
                 sessionStart = Date().also {
-                    try {
-                        val format = SimpleDateFormat("HH:mm:ss", Locale.getDefault())
-                        Notificare.logger.debug("Session started at ${format.format(it)}")
-
-                        Notificare.eventsManager.logApplicationOpen()
-                    } catch (e: Exception) {
-                    }
+                    val format = SimpleDateFormat("HH:mm:ss", Locale.getDefault())
+                    Notificare.logger.debug("Session started at ${format.format(it)}")
+                    Notificare.eventsManager.logApplicationOpen()
                 }
             }
 

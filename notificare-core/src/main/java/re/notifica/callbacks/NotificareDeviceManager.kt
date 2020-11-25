@@ -69,7 +69,7 @@ fun NotificareDeviceManager.clearDoNotDisturb(
 // region User data
 
 fun NotificareDeviceManager.fetchUserData(
-    callback: NotificareCallback<Map<String, String>?>,
+    callback: NotificareCallback<NotificareUserData?>,
 ) = runBlockingNotificare(callback) { fetchUserData() }
 
 fun NotificareDeviceManager.updateUserData(

@@ -28,7 +28,6 @@ class NotificareDeviceManager : NotificareModule<Unit>() {
     override fun configure() {}
 
     override suspend fun launch() {
-        // TODO check registration status and act accordingly
         val device = currentDevice
 
         if (device != null) {
@@ -42,20 +41,15 @@ class NotificareDeviceManager : NotificareModule<Unit>() {
         } else {
             Notificare.logger.debug("New install detected")
 
-            // Let's avoid the new registration event for a temporary device
-            //NotificareUserDefaults.newRegistration = false
-
             // Let's logout the user in case there's an account in the keychain
             // TODO: [[NotificareAuth shared] logoutAccount]
 
             try {
                 registerTemporary()
 
-                // We will log the Install here since this will execute only one time at the start.
+                // We will log the Install & Registration events here since this will execute only one time at the start.
                 Notificare.eventsManager.logApplicationInstall()
-
-                // We will log the App Open this first time here.
-                Notificare.eventsManager.logApplicationOpen()
+                Notificare.eventsManager.logApplicationRegistration()
             } catch (e: Exception) {
                 Notificare.logger.warning("Failed to register temporary device.", e)
                 throw e
@@ -64,7 +58,8 @@ class NotificareDeviceManager : NotificareModule<Unit>() {
     }
 
     suspend fun register(userId: String?, userName: String?) {
-        TODO("Missing implementation")
+        val currentDevice = checkNotificareReady()
+        register(currentDevice.id, userId, userName)
     }
 
     val preferredLanguage: String?
@@ -183,14 +178,12 @@ class NotificareDeviceManager : NotificareModule<Unit>() {
         return device
     }
 
-    private suspend fun register(
-        token: String,
-        userId: String?,
-        userName: String?,
-    ): NotificareDevice {
-        if (registrationChanged(token, userId, userName)) {
+    private suspend fun register(token: String, userId: String?, userName: String?) {
+        var currentDevice = currentDevice
+
+        if (currentDevice == null || registrationChanged(token, userId, userName)) {
             val oldDeviceId =
-                if (currentDevice?.id != null && currentDevice?.id != token) currentDevice?.id
+                if (currentDevice?.id != null && currentDevice.id != token) currentDevice.id
                 else null
 
             val deviceRegistration = NotificareDeviceRegistration(
@@ -201,7 +194,7 @@ class NotificareDeviceManager : NotificareModule<Unit>() {
                 language = getLanguage(),
                 region = getRegion(),
                 platform = "Android",
-                transport = NotificareTransport.NOTIFICARE, // TODO change when the push module is in place
+                transport = NotificareTransport.NOTIFICARE,
                 osVersion = NotificareUtils.osVersion,
                 sdkVersion = NotificareDefinitions.SDK_VERSION,
                 appVersion = NotificareUtils.applicationVersion,
@@ -215,21 +208,15 @@ class NotificareDeviceManager : NotificareModule<Unit>() {
 
             Notificare.pushService.createDevice(deviceRegistration)
 
-            // TODO check and log an 'applicationRegistration' event
-
-            val device = deviceRegistration.toStoredDevice(currentDevice).also {
-                currentDevice = it
+            currentDevice = deviceRegistration.toStoredDevice(currentDevice).also {
+                this.currentDevice = it
             }
-
-            // Send a device registered broadcast.
-            NotificareIntentEmitter.onDeviceRegistered(device)
-
-            return device
         } else {
             Notificare.logger.info("Skipping device registration, nothing changed.")
-            // Notificare.shared.delegate?.notificare(Notificare.shared, didRegisterDevice: device!)
-            return requireNotNull(currentDevice)
         }
+
+        // Send a device registered broadcast.
+        NotificareIntentEmitter.onDeviceRegistered(currentDevice)
     }
 
     private suspend fun registerTemporary() {
