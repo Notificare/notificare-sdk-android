@@ -1,12 +1,12 @@
 package re.notifica.internal.storage.database.ktx
 
 import com.squareup.moshi.Types
-import re.notifica.internal.NotificareUtils
+import re.notifica.Notificare
 import re.notifica.internal.storage.database.entities.NotificareEventEntity
 import re.notifica.models.NotificareEvent
 import re.notifica.models.NotificareEventData
 
-private val eventDataAdapter = NotificareUtils.createMoshi().adapter<NotificareEventData>(
+private val eventDataAdapter = Notificare.moshi.adapter<NotificareEventData>(
     Types.newParameterizedType(
         Map::class.java,
         String::class.java,

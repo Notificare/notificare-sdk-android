@@ -23,6 +23,7 @@ object Notificare {
 
     // Internal modules
     val logger = NotificareLogger()
+    internal val moshi = NotificareUtils.createMoshi()
     internal lateinit var database: NotificareDatabase
         private set
     internal lateinit var sharedPreferences: NotificareSharedPreferences
@@ -195,7 +196,7 @@ object Notificare {
         pushService = Retrofit.Builder()
             .client(httpClient)
             .baseUrl(services.pushHost)
-            .addConverterFactory(MoshiConverterFactory.create(NotificareUtils.createMoshi()))
+            .addConverterFactory(MoshiConverterFactory.create(moshi))
             .build()
             .create(NotificarePushService::class.java)
     }

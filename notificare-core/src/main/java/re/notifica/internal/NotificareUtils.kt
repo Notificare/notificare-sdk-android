@@ -10,7 +10,7 @@ import re.notifica.internal.adapters.NotificareTimeAdapter
 import re.notifica.internal.adapters.NotificareTransportAdapter
 import java.util.*
 
-internal object NotificareUtils {
+object NotificareUtils {
     val applicationVersion: String
         get() {
             return try {
