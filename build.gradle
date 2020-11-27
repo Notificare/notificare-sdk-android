@@ -8,10 +8,14 @@ buildscript {
         maven { url 'https://maven.notifica.re/releases' }
     }
     dependencies {
-        classpath "com.android.tools.build:gradle:4.1.0"
+        classpath 'com.android.tools.build:gradle:4.1.1'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath 're.notifica.gradle:notificare-services:1.0.0'
     }
+}
+
+plugins {
+    id 'maven-publish'
 }
 
 allprojects {
