@@ -38,6 +38,8 @@ class NotificareDeviceManager : NotificareModule<Unit>() {
                 // Log an application upgrade event.
                 Notificare.eventsManager.logApplicationUpgrade()
             }
+
+            registerTemporary()
         } else {
             Notificare.logger.debug("New install detected")
 
