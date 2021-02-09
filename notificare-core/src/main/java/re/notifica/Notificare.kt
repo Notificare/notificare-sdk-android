@@ -113,6 +113,7 @@ object Notificare {
                 state = NotificareLaunchState.READY
 
                 val enabledServices = application.services.filter { it.value }.map { it.key }
+                val enabledModules = NotificareUtils.getLoadedModules()
 
                 NotificareLogger.debug("/==================================================================================/")
                 NotificareLogger.debug("Notificare SDK is ready to use for application")
@@ -121,7 +122,7 @@ object Notificare {
                 NotificareLogger.debug("App services: ${enabledServices.joinToString(", ")}")
                 NotificareLogger.debug("/==================================================================================/")
                 NotificareLogger.debug("SDK version: ${NotificareDefinitions.SDK_VERSION}")
-                NotificareLogger.debug("SDK modules: ${NotificareUtils.availableModules.joinToString(", ")}")
+                NotificareLogger.debug("SDK modules: ${enabledModules.joinToString(", ")}")
                 NotificareLogger.debug("/==================================================================================/")
 
                 // We're done launching. Send a broadcast.
@@ -165,7 +166,7 @@ object Notificare {
         configureNetworking(applicationKey, applicationSecret, services)
 
         NotificareLogger.debug("Loading available modules.")
-        createAvailableModules(applicationKey, applicationSecret)
+//        createAvailableModules(applicationKey, applicationSecret)
 
         NotificareLogger.debug("Configuring available modules.")
         sessionManager.configure()
@@ -202,10 +203,5 @@ object Notificare {
             .addConverterFactory(MoshiConverterFactory.create(moshi))
             .build()
             .create(NotificarePushService::class.java)
-    }
-
-    private fun createAvailableModules(applicationKey: String, applicationSecret: String) {
-//        val factory = NotificareModuleFactory(applicationKey, applicationSecret)
-//        pushManager = factory.createPushManager()
     }
 }

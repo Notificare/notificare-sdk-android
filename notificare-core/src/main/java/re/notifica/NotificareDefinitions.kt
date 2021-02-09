@@ -35,4 +35,20 @@ internal object NotificareDefinitions {
     object Tasks {
         const val PROCESS_EVENTS = "re.notifica.tasks.process_events"
     }
+
+    enum class Module(val fqn: String) {
+        PUSH(fqn = "re.notifica.push.NotificarePush");
+
+        val isAvailable: Boolean
+            get() {
+                return try {
+                    // Will throw unless the class can be found.
+                    Class.forName(fqn)
+
+                    true
+                } catch (e: Exception) {
+                    false
+                }
+            }
+    }
 }

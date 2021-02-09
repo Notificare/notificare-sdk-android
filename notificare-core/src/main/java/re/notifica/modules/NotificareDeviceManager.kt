@@ -18,7 +18,7 @@ import re.notifica.models.NotificareTransport
 import re.notifica.models.NotificareUserData
 import java.util.*
 
-class NotificareDeviceManager : NotificareModule<Unit>() {
+class NotificareDeviceManager {
 
     var currentDevice: NotificareDevice?
         get() = Notificare.sharedPreferences.device
@@ -26,9 +26,9 @@ class NotificareDeviceManager : NotificareModule<Unit>() {
             Notificare.sharedPreferences.device = value
         }
 
-    override fun configure() {}
+    fun configure() {}
 
-    override suspend fun launch() {
+    suspend fun launch() {
         val device = currentDevice
 
         if (device != null) {

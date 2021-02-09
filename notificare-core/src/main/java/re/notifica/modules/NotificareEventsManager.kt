@@ -11,16 +11,16 @@ import re.notifica.internal.workers.ProcessEventsWorker
 import re.notifica.models.NotificareEvent
 import re.notifica.models.NotificareEventData
 
-class NotificareEventsManager : NotificareModule<Unit>() {
+class NotificareEventsManager {
 
     private val discardableEvents = listOf<String>()
 
-    override fun configure() {
+    fun configure() {
         // TODO listen to connectivity changes
         // TODO listen to lifecycle changes (app open)
     }
 
-    override suspend fun launch() {
+    suspend fun launch() {
         scheduleUploadWorker()
     }
 

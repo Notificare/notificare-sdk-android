@@ -1,8 +1,8 @@
 package re.notifica.modules
 
-abstract class NotificareModule<LaunchResult> {
+abstract class NotificareModule {
 
-    internal abstract fun configure()
+    abstract fun configure()
 
-    internal abstract suspend fun launch(): LaunchResult
+    abstract suspend fun launch()
 }

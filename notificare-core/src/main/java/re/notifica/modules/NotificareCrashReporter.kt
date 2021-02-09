@@ -6,7 +6,7 @@ import re.notifica.NotificareLogger
 import re.notifica.internal.NotificareUtils
 import re.notifica.models.NotificareEvent
 
-class NotificareCrashReporter : NotificareModule<Unit>() {
+class NotificareCrashReporter {
 
     private var defaultUncaughtExceptionHandler: Thread.UncaughtExceptionHandler? = null
     private val uncaughtExceptionHandler = Thread.UncaughtExceptionHandler { thread: Thread, throwable: Throwable ->
@@ -31,11 +31,11 @@ class NotificareCrashReporter : NotificareModule<Unit>() {
             setupHandler(value)
         }
 
-    override fun configure() {
+    fun configure() {
         setupHandler(enabled)
     }
 
-    override suspend fun launch() {
+    suspend fun launch() {
         val crashReport = Notificare.sharedPreferences.crashReport ?: run {
             NotificareLogger.debug("No crash report to process.")
             return

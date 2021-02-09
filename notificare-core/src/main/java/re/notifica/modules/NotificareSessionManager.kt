@@ -10,7 +10,7 @@ import re.notifica.NotificareLogger
 import java.text.SimpleDateFormat
 import java.util.*
 
-internal class NotificareSessionManager : NotificareModule<Unit>() {
+internal class NotificareSessionManager {
 
     private val handler = Handler(Looper.getMainLooper())
 
@@ -35,7 +35,7 @@ internal class NotificareSessionManager : NotificareModule<Unit>() {
         this.sessionEnd = null
     }
 
-    override fun configure() {
+    fun configure() {
         val context = Notificare.requireContext() as Application
 
         context.registerActivityLifecycleCallbacks(object : Application.ActivityLifecycleCallbacks {
@@ -87,5 +87,5 @@ internal class NotificareSessionManager : NotificareModule<Unit>() {
         })
     }
 
-    override suspend fun launch() {}
+    suspend fun launch() {}
 }

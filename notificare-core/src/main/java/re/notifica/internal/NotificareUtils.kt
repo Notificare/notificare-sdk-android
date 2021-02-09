@@ -6,6 +6,7 @@ import android.util.Log
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.adapters.Rfc3339DateJsonAdapter
 import re.notifica.Notificare
+import re.notifica.NotificareDefinitions
 import re.notifica.internal.adapters.NotificareTimeAdapter
 import re.notifica.internal.adapters.NotificareTransportAdapter
 import java.util.*
@@ -42,15 +43,17 @@ object NotificareUtils {
             return timeZone.getOffset(calendar.timeInMillis) / 3600000f
         }
 
-    val availableModules: List<String>
-        get() {
-            val modules = mutableListOf("core")
+    fun getLoadedModules(): List<String> {
+        val modules = mutableListOf<String>()
 
-            //if (Notificare.pushManager != null) modules.add("push")
-            //if (Notificare.locationManager != null) modules.add("location")
-
-            return modules
+        NotificareDefinitions.Module.values().forEach { module ->
+            if (module.isAvailable) {
+                modules.add(module.name.toLowerCase(Locale.ROOT))
+            }
         }
+
+        return modules
+    }
 
     fun createMoshi(): Moshi {
         return Moshi.Builder()
