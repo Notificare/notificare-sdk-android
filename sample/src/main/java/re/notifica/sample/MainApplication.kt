@@ -8,7 +8,7 @@ class MainApplication : Application() {
     override fun onCreate() {
         super.onCreate()
 
-        Notificare.logger.useAdvancedLogging = true
+        Notificare.useAdvancedLogging = true
         Notificare.crashReporter.enabled = true
         Notificare.launch()
     }

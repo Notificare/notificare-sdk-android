@@ -17,7 +17,7 @@ class NotificareConfigurationProvider : ContentProvider() {
             context ?: throw IllegalStateException("Cannot find context from the provider.")
 
         Notificare.configure(context)
-        Notificare.logger.info("Notificare configured automatically.")
+        NotificareLogger.info("Notificare configured automatically.")
 
         return true
     }

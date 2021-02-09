@@ -4,6 +4,7 @@ import androidx.work.*
 import kotlinx.coroutines.runBlocking
 import re.notifica.Notificare
 import re.notifica.NotificareDefinitions
+import re.notifica.NotificareLogger
 import re.notifica.internal.common.recoverable
 import re.notifica.internal.storage.database.ktx.toEntity
 import re.notifica.internal.workers.ProcessEventsWorker
@@ -67,24 +68,24 @@ class NotificareEventsManager : NotificareModule<Unit>() {
                 )
             )
         } catch (e: Exception) {
-            Notificare.logger.error("Failed to log an event.", e)
+            NotificareLogger.error("Failed to log an event.", e)
         }
     }
 
     private suspend fun log(event: NotificareEvent) {
         if (!Notificare.isConfigured) {
-            Notificare.logger.debug("Notificare is not configured. Skipping event log...")
+            NotificareLogger.debug("Notificare is not configured. Skipping event log...")
             return
         }
 
         try {
             Notificare.pushService.createEvent(event)
-            Notificare.logger.info("Event '${event.type}' sent successfully.")
+            NotificareLogger.info("Event '${event.type}' sent successfully.")
         } catch (e: Exception) {
-            Notificare.logger.warning("Failed to send the event: ${event.type}", e)
+            NotificareLogger.warning("Failed to send the event: ${event.type}", e)
 
             if (!discardableEvents.contains(event.type) && e.recoverable) {
-                Notificare.logger.info("Queuing event to be sent whenever possible.")
+                NotificareLogger.info("Queuing event to be sent whenever possible.")
                 Notificare.database.events().insert(event.toEntity())
                 scheduleUploadWorker()
             }
@@ -92,7 +93,7 @@ class NotificareEventsManager : NotificareModule<Unit>() {
     }
 
     private fun scheduleUploadWorker() {
-        Notificare.logger.debug("Scheduling a worker to process stored events when there's connectivity.")
+        NotificareLogger.debug("Scheduling a worker to process stored events when there's connectivity.")
 
         WorkManager
             .getInstance(Notificare.requireContext())

@@ -46,7 +46,7 @@ object NotificareUtils {
         get() {
             val modules = mutableListOf("core")
 
-            if (Notificare.pushManager != null) modules.add("push")
+            //if (Notificare.pushManager != null) modules.add("push")
             //if (Notificare.locationManager != null) modules.add("location")
 
             return modules

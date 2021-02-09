@@ -25,7 +25,7 @@ data class NotificareDevice internal constructor(
     var userData: NotificareUserData?,
     val location: Location?,
     val lastRegistered: Date,
-    val locationServicesAuthStatus: String?,
+    // val locationServicesAuthStatus: String?,
     // val locationServicesAccuracyAuth: String?, // iOS
     // val registeredForNotifications: Boolean, // iOS
     // val allowedLocationServices: Boolean, // iOS

@@ -3,6 +3,7 @@ package re.notifica.modules
 import re.notifica.Notificare
 import re.notifica.NotificareDefinitions
 import re.notifica.NotificareException
+import re.notifica.NotificareLogger
 import re.notifica.internal.NotificareIntentEmitter
 import re.notifica.internal.NotificareUtils
 import re.notifica.internal.common.toByteArray
@@ -33,15 +34,13 @@ class NotificareDeviceManager : NotificareModule<Unit>() {
         if (device != null) {
             if (device.appVersion != NotificareUtils.applicationVersion) {
                 // It's not the same version, let's log it as an upgrade.
-                Notificare.logger.debug("New version detected")
-
-                // Log an application upgrade event.
+                NotificareLogger.debug("New version detected")
                 Notificare.eventsManager.logApplicationUpgrade()
             }
 
             registerTemporary()
         } else {
-            Notificare.logger.debug("New install detected")
+            NotificareLogger.debug("New install detected")
 
             // Let's logout the user in case there's an account in the keychain
             // TODO: [[NotificareAuth shared] logoutAccount]
@@ -53,7 +52,7 @@ class NotificareDeviceManager : NotificareModule<Unit>() {
                 Notificare.eventsManager.logApplicationInstall()
                 Notificare.eventsManager.logApplicationRegistration()
             } catch (e: Exception) {
-                Notificare.logger.warning("Failed to register temporary device.", e)
+                NotificareLogger.warning("Failed to register temporary device.", e)
                 throw e
             }
         }
@@ -214,7 +213,7 @@ class NotificareDeviceManager : NotificareModule<Unit>() {
                 this.currentDevice = it
             }
         } else {
-            Notificare.logger.info("Skipping device registration, nothing changed.")
+            NotificareLogger.info("Skipping device registration, nothing changed.")
         }
 
         // Send a device registered broadcast.
@@ -238,65 +237,65 @@ class NotificareDeviceManager : NotificareModule<Unit>() {
 
     private fun registrationChanged(token: String?, userId: String?, userName: String?): Boolean {
         val device = currentDevice ?: run {
-            Notificare.logger.debug("Registration check: fresh installation")
+            NotificareLogger.debug("Registration check: fresh installation")
             return true
         }
 
         var changed = false
 
         if (device.userId != userId) {
-            Notificare.logger.debug("Registration check: user id changed")
+            NotificareLogger.debug("Registration check: user id changed")
             changed = true
         }
 
         if (device.userName != userName) {
-            Notificare.logger.debug("Registration check: user name changed")
+            NotificareLogger.debug("Registration check: user name changed")
             changed = true
         }
 
         if (device.id != token) {
-            Notificare.logger.debug("Registration check: device token changed")
+            NotificareLogger.debug("Registration check: device token changed")
             changed = true
         }
 
         if (device.deviceString != NotificareUtils.deviceString) {
-            Notificare.logger.debug("Registration check: device string changed")
+            NotificareLogger.debug("Registration check: device string changed")
             changed = true
         }
 
         if (device.appVersion != NotificareUtils.applicationVersion) {
-            Notificare.logger.debug("Registration check: application version changed")
+            NotificareLogger.debug("Registration check: application version changed")
             changed = true
         }
 
         if (device.osVersion != NotificareUtils.osVersion) {
-            Notificare.logger.debug("Registration check: os version changed")
+            NotificareLogger.debug("Registration check: os version changed")
             changed = true
         }
 
         if (device.sdkVersion != NotificareDefinitions.SDK_VERSION) {
-            Notificare.logger.debug("Registration check: sdk version changed")
+            NotificareLogger.debug("Registration check: sdk version changed")
             changed = true
         }
 
         if (device.timeZoneOffset != NotificareUtils.timeZoneOffset) {
-            Notificare.logger.debug("Registration check: timezone offset changed")
+            NotificareLogger.debug("Registration check: timezone offset changed")
             changed = true
         }
 
         if (device.language != getLanguage()) {
-            Notificare.logger.debug("Registration check: language changed")
+            NotificareLogger.debug("Registration check: language changed")
             changed = true
         }
 
         if (device.region != getRegion()) {
-            Notificare.logger.debug("Registration check: region changed")
+            NotificareLogger.debug("Registration check: region changed")
             changed = true
         }
 
         val oneDayAgo = GregorianCalendar().apply { add(Calendar.DAY_OF_YEAR, -1) }.time
         if (device.lastRegistered.before(oneDayAgo)) {
-            Notificare.logger.debug("Registration check: region changed")
+            NotificareLogger.debug("Registration check: region changed")
             changed = true
         }
 
@@ -360,7 +359,6 @@ private fun NotificareDeviceRegistration.toStoredDevice(previous: NotificareDevi
         userData = previous?.userData,
         location = previous?.location,
         lastRegistered = Date(),
-        locationServicesAuthStatus = this.locationServicesAuthStatus,
         allowedUI = this.allowedUI,
         bluetoothEnabled = this.bluetoothEnabled,
     )

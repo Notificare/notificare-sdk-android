@@ -1,14 +1,21 @@
-package re.notifica.internal
+package re.notifica
 
 import android.os.Build
 import android.util.Log
-import re.notifica.Notificare
-import re.notifica.NotificareConfigurationProvider
 import java.io.PrintWriter
 import java.io.StringWriter
 import java.util.regex.Pattern
 
-class NotificareLogger {
+object NotificareLogger {
+
+    private const val TAG = "Notificare"
+    private const val MAX_TAG_LENGTH = 23
+    private val ANONYMOUS_CLASS = Pattern.compile("(\\$\\d+)+$")
+    private val IGNORE_FQDN = listOf(
+        Notificare::class.java.name,
+        NotificareLogger::class.java.name,
+        NotificareConfigurationProvider::class.java.name
+    )
 
     var useAdvancedLogging = false
 
@@ -73,16 +80,5 @@ class NotificareLogger {
         pw.flush()
 
         return sw.toString()
-    }
-
-    companion object {
-        private const val TAG = "Notificare"
-        private const val MAX_TAG_LENGTH = 23
-        private val ANONYMOUS_CLASS = Pattern.compile("(\\$\\d+)+$")
-        private val IGNORE_FQDN = listOf(
-            Notificare::class.java.name,
-            NotificareLogger::class.java.name,
-            NotificareConfigurationProvider::class.java.name
-        )
     }
 }

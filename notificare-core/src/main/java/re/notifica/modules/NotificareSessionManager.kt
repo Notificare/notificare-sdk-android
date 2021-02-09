@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import re.notifica.Notificare
+import re.notifica.NotificareLogger
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -47,7 +48,7 @@ internal class NotificareSessionManager : NotificareModule<Unit>() {
                 handler.removeCallbacks(runnable)
 
                 if (sessionStart != null) {
-                    Notificare.logger.debug("Resuming previous session.")
+                    NotificareLogger.debug("Resuming previous session.")
                     return
                 }
 
@@ -55,7 +56,7 @@ internal class NotificareSessionManager : NotificareModule<Unit>() {
                 sessionEnd = null
                 sessionStart = Date().also {
                     val format = SimpleDateFormat("HH:mm:ss", Locale.getDefault())
-                    Notificare.logger.debug("Session '$sessionId' started at ${format.format(it)}")
+                    NotificareLogger.debug("Session '$sessionId' started at ${format.format(it)}")
                     Notificare.eventsManager.logApplicationOpen()
                 }
             }
@@ -72,7 +73,7 @@ internal class NotificareSessionManager : NotificareModule<Unit>() {
 
                 sessionEnd = Date().also {
                     val format = SimpleDateFormat("HH:mm:ss", Locale.getDefault())
-                    Notificare.logger.debug("Session '$sessionId' stopped at ${format.format(it)}")
+                    NotificareLogger.debug("Session '$sessionId' stopped at ${format.format(it)}")
                 }
 
                 // Wait a few seconds before sending a close event.
@@ -86,7 +87,5 @@ internal class NotificareSessionManager : NotificareModule<Unit>() {
         })
     }
 
-    override suspend fun launch() {
-
-    }
+    override suspend fun launch() {}
 }

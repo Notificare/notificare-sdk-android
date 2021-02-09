@@ -2,6 +2,7 @@ package re.notifica
 
 import android.content.Context
 import android.content.res.Resources
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -14,7 +15,6 @@ import re.notifica.internal.storage.database.NotificareDatabase
 import re.notifica.internal.storage.preferences.NotificareSharedPreferences
 import re.notifica.models.NotificareApplication
 import re.notifica.modules.*
-import re.notifica.modules.factory.NotificareModuleFactory
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import java.lang.ref.WeakReference
@@ -22,7 +22,6 @@ import java.lang.ref.WeakReference
 object Notificare {
 
     // Internal modules
-    val logger = NotificareLogger()
     internal val moshi = NotificareUtils.createMoshi()
     internal lateinit var database: NotificareDatabase
         private set
@@ -39,8 +38,6 @@ object Notificare {
     // Consumer modules
     val eventsManager = NotificareEventsManager()
     val deviceManager = NotificareDeviceManager()
-    var pushManager: NotificarePushModule? = null
-        private set
 
     // Configurations
     private var context: WeakReference<Context>? = null
@@ -60,6 +57,12 @@ object Notificare {
 
     val isReady: Boolean
         get() = state == NotificareLaunchState.READY
+
+    var useAdvancedLogging: Boolean
+        get() = NotificareLogger.useAdvancedLogging
+        set(value) {
+            NotificareLogger.useAdvancedLogging = value
+        }
 
     fun configure(context: Context) {
         val applicationKey = context.getString(R.string.notificare_services_application_key)
@@ -85,19 +88,19 @@ object Notificare {
 
     fun launch() {
         if (state == NotificareLaunchState.NONE) {
-            logger.warning("Notificare.configure() has never been called. Cannot launch.")
+            NotificareLogger.warning("Notificare.configure() has never been called. Cannot launch.")
             return
         }
 
         if (state > NotificareLaunchState.CONFIGURED) {
-            logger.warning("Notificare has already been launched. Skipping...")
+            NotificareLogger.warning("Notificare has already been launched. Skipping...")
             return
         }
 
-        logger.info("Launching Notificare.")
+        NotificareLogger.info("Launching Notificare.")
         state = NotificareLaunchState.LAUNCHING
 
-        runBlocking {
+        runBlocking(Dispatchers.IO) {
             try {
                 val (application) = pushService.fetchApplication()
 
@@ -111,20 +114,20 @@ object Notificare {
 
                 val enabledServices = application.services.filter { it.value }.map { it.key }
 
-                logger.debug("/==================================================================================/")
-                logger.debug("Notificare SDK is ready to use for application")
-                logger.debug("App name: ${application.name}")
-                logger.debug("App ID: ${application.id}")
-                logger.debug("App services: ${enabledServices.joinToString(", ")}")
-                logger.debug("/==================================================================================/")
-                logger.debug("SDK version: ${NotificareDefinitions.SDK_VERSION}")
-                logger.debug("SDK modules: ${NotificareUtils.availableModules.joinToString(", ")}")
-                logger.debug("/==================================================================================/")
+                NotificareLogger.debug("/==================================================================================/")
+                NotificareLogger.debug("Notificare SDK is ready to use for application")
+                NotificareLogger.debug("App name: ${application.name}")
+                NotificareLogger.debug("App ID: ${application.id}")
+                NotificareLogger.debug("App services: ${enabledServices.joinToString(", ")}")
+                NotificareLogger.debug("/==================================================================================/")
+                NotificareLogger.debug("SDK version: ${NotificareDefinitions.SDK_VERSION}")
+                NotificareLogger.debug("SDK modules: ${NotificareUtils.availableModules.joinToString(", ")}")
+                NotificareLogger.debug("/==================================================================================/")
 
                 // We're done launching. Send a broadcast.
                 NotificareIntentEmitter.onReady()
             } catch (e: Exception) {
-                logger.error("Failed to launch Notificare.", e)
+                NotificareLogger.error("Failed to launch Notificare.", e)
                 state = NotificareLaunchState.CONFIGURED
             }
         }
@@ -158,13 +161,13 @@ object Notificare {
         this.database = NotificareDatabase.create(context.applicationContext)
         this.sharedPreferences = NotificareSharedPreferences(context.applicationContext)
 
-        logger.debug("Configuring network services.")
+        NotificareLogger.debug("Configuring network services.")
         configureNetworking(applicationKey, applicationSecret, services)
 
-        logger.debug("Loading available modules.")
+        NotificareLogger.debug("Loading available modules.")
         createAvailableModules(applicationKey, applicationSecret)
 
-        logger.debug("Configuring available modules.")
+        NotificareLogger.debug("Configuring available modules.")
         sessionManager.configure()
         crashReporter.configure()
         // database.configure()
@@ -172,7 +175,7 @@ object Notificare {
         // deviceManager.configure()
         // pushManager?.configure()
 
-        logger.debug("Notificare configured for '${services.name}' services.")
+        NotificareLogger.debug("Notificare configured for '${services.name}' services.")
         state = NotificareLaunchState.CONFIGURED
     }
 
@@ -202,7 +205,7 @@ object Notificare {
     }
 
     private fun createAvailableModules(applicationKey: String, applicationSecret: String) {
-        val factory = NotificareModuleFactory(applicationKey, applicationSecret)
-        pushManager = factory.createPushManager()
+//        val factory = NotificareModuleFactory(applicationKey, applicationSecret)
+//        pushManager = factory.createPushManager()
     }
 }

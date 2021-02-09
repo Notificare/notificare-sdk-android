@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import re.notifica.Notificare
 import re.notifica.NotificareDefinitions
+import re.notifica.NotificareLogger
 import re.notifica.models.NotificareDevice
 
 open class NotificareIntentReceiver : BroadcastReceiver() {
@@ -22,10 +23,10 @@ open class NotificareIntentReceiver : BroadcastReceiver() {
     }
 
     protected open fun onReady() {
-        Notificare.logger.info("Notificare is ready, please override onReady if you want to receive these intents.")
+        NotificareLogger.info("Notificare is ready, please override onReady if you want to receive these intents.")
     }
 
     protected open fun onDeviceRegistered(device: NotificareDevice) {
-        Notificare.logger.info("Device registered to Notificare, please override onDeviceRegistered if you want to receive these intents.")
+        NotificareLogger.info("Device registered to Notificare, please override onDeviceRegistered if you want to receive these intents.")
     }
 }
