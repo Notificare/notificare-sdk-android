@@ -88,6 +88,12 @@ private fun NotificareSystemRemoteMessage(message: RemoteMessage): NotificareSys
 }
 
 private fun NotificareNotificationRemoteMessage(message: RemoteMessage): NotificareNotificationRemoteMessage {
+    val ignoreKeys = listOf(
+        "id", "notification_id", "notification_type", "notification_channel", "notification_group", "alert",
+        "alert_title", "alert_subtitle", "attachment", "action_category", "inbox_item_id", "inbox_item_visible",
+        "inbox_item_expires", "presentation", "notify", "sound", "lights_color", "lights_on", "lights_off", "x-sender"
+    )
+
     return NotificareNotificationRemoteMessage(
         messageId = message.messageId,
         sentTime = message.sentTime,
@@ -112,8 +118,8 @@ private fun NotificareNotificationRemoteMessage(message: RemoteMessage): Notific
             }
         },
         //
-        actionCategory = "action_category",
-        extra = mapOf(), // TODO extra
+        actionCategory = message.data["action_category"],
+        extra = message.data.filterKeys { !ignoreKeys.contains(it) },
         // Inbox properties
         inboxItemId = message.data["inbox_item_id"],
         inboxItemVisible = message.data["inbox_item_visible"]?.toBoolean() ?: true,
