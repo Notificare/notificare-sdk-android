@@ -26,6 +26,14 @@ class NotificareDeviceManager {
             Notificare.sharedPreferences.device = value
         }
 
+    val preferredLanguage: String?
+        get() {
+            val preferredLanguage = Notificare.sharedPreferences.preferredLanguage ?: return null
+            val preferredRegion = Notificare.sharedPreferences.preferredRegion ?: return null
+
+            return "$preferredLanguage-$preferredRegion"
+        }
+
     fun configure() {}
 
     suspend fun launch() {
@@ -60,16 +68,33 @@ class NotificareDeviceManager {
 
     suspend fun register(userId: String?, userName: String?) {
         val currentDevice = checkNotificareReady()
-        register(currentDevice.id, userId, userName)
+        register(currentDevice.transport, currentDevice.id, userId, userName)
     }
 
-    val preferredLanguage: String?
-        get() {
-            val preferredLanguage = Notificare.sharedPreferences.preferredLanguage ?: return null
-            val preferredRegion = Notificare.sharedPreferences.preferredRegion ?: return null
+    suspend fun registerTemporary() {
+        val token = currentDevice?.id
+            ?: UUID.randomUUID()
+                .toByteArray()
+                .toHex()
 
-            return "$preferredLanguage-$preferredRegion"
-        }
+        register(
+            transport = NotificareTransport.NOTIFICARE,
+            token = token,
+            userId = currentDevice?.userId,
+            userName = currentDevice?.userName,
+        )
+
+        // TODO updateNotificationSettings(allowedUI: false)
+    }
+
+    suspend fun registerToken(transport: NotificareTransport, token: String) {
+        register(
+            transport = transport,
+            token = token,
+            userId = currentDevice?.userId,
+            userName = currentDevice?.userName,
+        )
+    }
 
     suspend fun updatePreferredLanguage(preferredLanguage: String?) {
         checkNotificareReady()
@@ -179,10 +204,10 @@ class NotificareDeviceManager {
         return device
     }
 
-    private suspend fun register(token: String, userId: String?, userName: String?) {
+    private suspend fun register(transport: NotificareTransport, token: String, userId: String?, userName: String?) {
         var currentDevice = currentDevice
 
-        if (currentDevice == null || registrationChanged(token, userId, userName)) {
+        if (currentDevice == null || registrationChanged(token, userId, userName) || transport != currentDevice.transport) {
             val oldDeviceId =
                 if (currentDevice?.id != null && currentDevice.id != token) currentDevice.id
                 else null
@@ -195,7 +220,7 @@ class NotificareDeviceManager {
                 language = getLanguage(),
                 region = getRegion(),
                 platform = "Android",
-                transport = NotificareTransport.NOTIFICARE,
+                transport = transport,
                 osVersion = NotificareUtils.osVersion,
                 sdkVersion = NotificareDefinitions.SDK_VERSION,
                 appVersion = NotificareUtils.applicationVersion,
@@ -218,21 +243,6 @@ class NotificareDeviceManager {
 
         // Send a device registered broadcast.
         NotificareIntentEmitter.onDeviceRegistered(currentDevice)
-    }
-
-    private suspend fun registerTemporary() {
-        val token = currentDevice?.id
-            ?: UUID.randomUUID()
-                .toByteArray()
-                .toHex()
-
-        register(
-            token = token,
-            userId = currentDevice?.userId,
-            userName = currentDevice?.userName,
-        )
-
-        // TODO updateNotificationSettings(allowedUI: false)
     }
 
     private fun registrationChanged(token: String?, userId: String?, userName: String?): Boolean {
@@ -357,7 +367,7 @@ private fun NotificareDeviceRegistration.toStoredDevice(previous: NotificareDevi
         transport = this.transport,
         dnd = previous?.dnd,
         userData = previous?.userData,
-        location = previous?.location,
+//        location = previous?.location,
         lastRegistered = Date(),
         allowedUI = this.allowedUI,
         bluetoothEnabled = this.bluetoothEnabled,

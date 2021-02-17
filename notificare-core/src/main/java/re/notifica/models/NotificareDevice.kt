@@ -2,7 +2,7 @@ package re.notifica.models
 
 import android.os.Parcelable
 import com.squareup.moshi.JsonClass
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 import java.util.*
 
 typealias NotificareUserData = Map<String, String>
@@ -23,8 +23,8 @@ data class NotificareDevice internal constructor(
     val transport: NotificareTransport,
     var dnd: NotificareDoNotDisturb?,
     var userData: NotificareUserData?,
-    val location: Location?,
     val lastRegistered: Date,
+//    val location: Location?,
     // val locationServicesAuthStatus: String?,
     // val locationServicesAccuracyAuth: String?, // iOS
     // val registeredForNotifications: Boolean, // iOS
@@ -34,16 +34,16 @@ data class NotificareDevice internal constructor(
     val bluetoothEnabled: Boolean
 ) : Parcelable {
 
-    @Parcelize
-    @JsonClass(generateAdapter = true)
-    data class Location internal constructor(
-        val country: String?,
-        val latitude: Float?,
-        val longitude: Float?,
-        val altitude: Float?,
-        val accuracy: Float?,
-        val floor: Float?,
-        val speed: Float?,
-        val course: Float?,
-    ) : Parcelable
+//    @Parcelize
+//    @JsonClass(generateAdapter = true)
+//    data class Location internal constructor(
+//        val country: String?,
+//        val latitude: Float?,
+//        val longitude: Float?,
+//        val altitude: Float?,
+//        val accuracy: Float?,
+//        val floor: Float?,
+//        val speed: Float?,
+//        val course: Float?,
+//    ) : Parcelable
 }

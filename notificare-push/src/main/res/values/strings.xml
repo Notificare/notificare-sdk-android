@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="notificare_default_channel_name">Push Notifications</string>
+    <string name="notificare_default_channel_description">This channel shows push notifications</string>
+    <string name="notificare_notification_group_summary">Grouped notifications</string>
+</resources>

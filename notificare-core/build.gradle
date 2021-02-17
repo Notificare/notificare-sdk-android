@@ -1,8 +1,8 @@
 plugins {
     id 'com.android.library'
     id 'kotlin-android'
-    id 'kotlin-android-extensions'
     id 'kotlin-kapt'
+    id 'kotlin-parcelize'
 }
 
 apply from: '../dependencies.gradle'
@@ -22,8 +22,6 @@ android {
                 ]
             }
         }
-
-        testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
 
     buildTypes {
@@ -40,10 +38,6 @@ android {
 
     kotlinOptions {
         jvmTarget = '1.8'
-    }
-
-    androidExtensions {
-        features = ["parcelize"]
     }
 }
 
@@ -62,7 +56,7 @@ dependencies {
     implementation "androidx.work:work-runtime-ktx:$work_manager_version"
 
     // Moshi
-    implementation "com.squareup.moshi:moshi-kotlin:$moshi_version"
+    api "com.squareup.moshi:moshi-kotlin:$moshi_version"
     kapt "com.squareup.moshi:moshi-kotlin-codegen:$moshi_version"
     implementation "com.squareup.moshi:moshi-adapters:$moshi_version"
 
@@ -71,7 +65,23 @@ dependencies {
     implementation "com.squareup.retrofit2:converter-moshi:$retrofit_version"
     implementation "com.squareup.okhttp3:logging-interceptor:$okhttp_version"
 
-    testImplementation 'junit:junit:4.13.1'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+    implementation 'com.github.bumptech.glide:glide:4.12.0'
+    kapt 'com.github.bumptech.glide:compiler:4.12.0'
+}
+
+afterEvaluate {
+    publishing {
+        publications {
+            // Creates a Maven publication called "release".
+            release(MavenPublication) {
+                // Applies the component for the release build variant.
+                from components.release
+
+                // You can then customize attributes of the publication as shown below.
+                groupId = 're.notifica'
+                artifactId = 'notificare-core'
+                version = '3.0.0'
+            }
+        }
+    }
 }

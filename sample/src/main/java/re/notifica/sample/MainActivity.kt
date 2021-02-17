@@ -11,6 +11,7 @@ import re.notifica.callbacks.*
 import re.notifica.models.NotificareDoNotDisturb
 import re.notifica.models.NotificareTime
 import re.notifica.models.NotificareUserData
+import re.notifica.push.NotificarePush
 import re.notifica.sample.databinding.ActivityMainBinding
 import java.util.*
 
@@ -177,6 +178,10 @@ class MainActivity : AppCompatActivity() {
                 Snackbar.make(binding.root, "Error: ${e.message}", Snackbar.LENGTH_SHORT).show()
             }
         })
+    }
+
+    fun onEnableRemoteNotifications(@Suppress("UNUSED_PARAMETER") view: View) {
+        NotificarePush.enableRemoteNotifications()
     }
 
     companion object {

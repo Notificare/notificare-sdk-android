@@ -1,5 +1,7 @@
 package re.notifica
 
+import re.notifica.modules.NotificareModule
+
 internal object NotificareDefinitions {
     const val SDK_VERSION = "3.0.0"
 
@@ -48,6 +50,18 @@ internal object NotificareDefinitions {
                     true
                 } catch (e: Exception) {
                     false
+                }
+            }
+
+        val instance: NotificareModule?
+            get() {
+                return try {
+                    // Will throw unless the class can be found.
+                    val klass = Class.forName(fqn)
+
+                    return klass.getDeclaredField("INSTANCE").get(null) as? NotificareModule
+                } catch (e: Exception) {
+                    null
                 }
             }
     }

@@ -23,16 +23,16 @@ class NotificareCrashReporter {
         defaultUncaughtExceptionHandler.uncaughtException(thread, throwable)
     }
 
-    var enabled: Boolean = true
-        set(value) {
-            if (field == value) return
-            field = value
-
-            setupHandler(value)
-        }
+//    var enabled: Boolean = true
+//        set(value) {
+//            if (field == value) return
+//            field = value
+//
+//            setupHandler(value)
+//        }
 
     fun configure() {
-        setupHandler(enabled)
+        setupHandler(checkNotNull(Notificare.options).crashReportsEnabled)
     }
 
     suspend fun launch() {

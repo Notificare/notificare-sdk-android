@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.res.Resources
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import re.notifica.app.NotificareIntentReceiver
@@ -14,15 +15,17 @@ import re.notifica.internal.network.push.NotificarePushService
 import re.notifica.internal.storage.database.NotificareDatabase
 import re.notifica.internal.storage.preferences.NotificareSharedPreferences
 import re.notifica.models.NotificareApplication
+import re.notifica.models.NotificareNotification
 import re.notifica.modules.*
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import java.lang.ref.WeakReference
+import java.util.*
 
 object Notificare {
 
     // Internal modules
-    internal val moshi = NotificareUtils.createMoshi()
+    val moshi = NotificareUtils.createMoshi()
     internal lateinit var database: NotificareDatabase
         private set
     internal lateinit var sharedPreferences: NotificareSharedPreferences
@@ -43,10 +46,13 @@ object Notificare {
     private var context: WeakReference<Context>? = null
     private var applicationKey: String? = null
     private var applicationSecret: String? = null
+    var options: NotificareOptions? = null
+        private set
 
     // Launch / application state
     private var state: NotificareLaunchState = NotificareLaunchState.NONE
-    private var application: NotificareApplication? = null
+    var application: NotificareApplication? = null
+        private set
 
     // region Public API
 
@@ -86,6 +92,10 @@ object Notificare {
         configure(context, applicationKey, applicationSecret, services)
     }
 
+    fun requireContext(): Context {
+        return context?.get() ?: throw IllegalStateException("Cannot find context for Notificare.")
+    }
+
     fun launch() {
         if (state == NotificareLaunchState.NONE) {
             NotificareLogger.warning("Notificare.configure() has never been called. Cannot launch.")
@@ -104,9 +114,24 @@ object Notificare {
             try {
                 val (application) = pushService.fetchApplication()
 
+                sessionManager.launch()
                 deviceManager.launch()
                 eventsManager.launch()
                 crashReporter.launch()
+
+                // Loop all possible modules and launch the available ones.
+                NotificareDefinitions.Module.values().forEach { module ->
+                    module.instance?.run {
+                        NotificareLogger.debug("Launching '${module.name.toLowerCase(Locale.ROOT)}' plugin.")
+                        try {
+                            this.launch()
+                            NotificareLogger.debug("Launched '${module.name.toLowerCase(Locale.ROOT)}' plugin.")
+                        } catch (e: Exception) {
+                            NotificareLogger.debug("Failed to launch ${module.name.toLowerCase(Locale.ROOT)}': $e")
+                            throw e
+                        }
+                    }
+                }
 
 
                 Notificare.application = application
@@ -138,11 +163,15 @@ object Notificare {
 
     }
 
-    // endregion
+    suspend fun fetchNotification(id: String): NotificareNotification = withContext(Dispatchers.IO) {
+        if (!isConfigured) {
+            throw NotificareException.NotReady
+        }
 
-    internal fun requireContext(): Context {
-        return context?.get() ?: throw IllegalStateException("Cannot find context for Notificare.")
+        pushService.fetchNotification(id).notification
     }
+
+    // endregion
 
     private fun configure(
         context: Context,
@@ -157,6 +186,7 @@ object Notificare {
         this.context = WeakReference(context.applicationContext)
         this.applicationKey = applicationKey
         this.applicationSecret = applicationSecret
+        this.options = NotificareOptions(context.applicationContext)
 
         // Late init modules
         this.database = NotificareDatabase.create(context.applicationContext)
@@ -165,18 +195,21 @@ object Notificare {
         NotificareLogger.debug("Configuring network services.")
         configureNetworking(applicationKey, applicationSecret, services)
 
-        NotificareLogger.debug("Loading available modules.")
-//        createAvailableModules(applicationKey, applicationSecret)
-
         NotificareLogger.debug("Configuring available modules.")
         sessionManager.configure()
         crashReporter.configure()
         // database.configure()
         eventsManager.configure()
-        // deviceManager.configure()
-        // pushManager?.configure()
+        deviceManager.configure()
 
-        NotificareLogger.debug("Notificare configured for '${services.name}' services.")
+        NotificareDefinitions.Module.values().forEach { module ->
+            module.instance?.run {
+                NotificareLogger.debug("Configuring plugin: ${module.name.toLowerCase(Locale.ROOT)}")
+                this.configure()
+            }
+        }
+
+        NotificareLogger.debug("Notificare configured all services.")
         state = NotificareLaunchState.CONFIGURED
     }
 
@@ -187,7 +220,7 @@ object Notificare {
     ) {
         val httpLogger = HttpLoggingInterceptor().apply {
             if (BuildConfig.DEBUG) {
-                level = HttpLoggingInterceptor.Level.BASIC
+                level = HttpLoggingInterceptor.Level.BODY
             }
         }
 

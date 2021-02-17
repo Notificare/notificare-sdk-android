@@ -21,6 +21,15 @@
         </activity>
 
         <receiver android:name="re.notifica.app.NotificareIntentReceiver" />
+        <receiver android:name="re.notifica.push.app.NotificarePushIntentReceiver" />
+
+        <!--        <meta-data-->
+        <!--            android:name="re.notifica.push.automatic_default_channel_enabled"-->
+        <!--            android:value="true" />-->
+
+        <meta-data
+            android:name="re.notifica.push.notification_small_icon"
+            android:resource="@drawable/ic_rocket_black_24dp" />
     </application>
 
 </manifest>

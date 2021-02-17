@@ -4,10 +4,7 @@ import re.notifica.internal.network.push.payloads.NotificareDeviceRegistration
 import re.notifica.internal.network.push.payloads.NotificareDeviceUpdateLanguage
 import re.notifica.internal.network.push.payloads.NotificareDeviceUpdateTimeZone
 import re.notifica.internal.network.push.payloads.NotificareTagsPayload
-import re.notifica.internal.network.push.responses.NotificareApplicationResponse
-import re.notifica.internal.network.push.responses.NotificareDeviceDoNotDisturbResponse
-import re.notifica.internal.network.push.responses.NotificareDeviceTagsResponse
-import re.notifica.internal.network.push.responses.NotificareDeviceUserDataResponse
+import re.notifica.internal.network.push.responses.*
 import re.notifica.models.NotificareDoNotDisturb
 import re.notifica.models.NotificareEvent
 import re.notifica.models.NotificareUserData
@@ -88,4 +85,9 @@ internal interface NotificarePushService {
 
     @POST("/event")
     suspend fun createEvent(@Body event: NotificareEvent)
+
+    @GET("/notification/{id}")
+    suspend fun fetchNotification(
+        @Path("id") notificationId: String,
+    ): NotificareNotificationResponse
 }

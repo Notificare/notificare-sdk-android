@@ -1,10 +1,14 @@
 package re.notifica.internal
 
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.os.Build
 import android.util.Log
+import com.bumptech.glide.Glide
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.adapters.Rfc3339DateJsonAdapter
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import re.notifica.Notificare
 import re.notifica.NotificareDefinitions
 import re.notifica.internal.adapters.NotificareTimeAdapter
@@ -61,5 +65,18 @@ object NotificareUtils {
             .add(NotificareTimeAdapter())
             .add(NotificareTransportAdapter())
             .build()
+    }
+
+    suspend fun loadBitmap(url: String): Bitmap {
+        return withContext(Dispatchers.IO) {
+            @Suppress("BlockingMethodInNonBlockingContext")
+            val bitmap = Glide.with(Notificare.requireContext())
+                .asBitmap()
+                .load(url)
+                .submit()
+                .get()
+
+            withContext(Dispatchers.Main) { bitmap }
+        }
     }
 }

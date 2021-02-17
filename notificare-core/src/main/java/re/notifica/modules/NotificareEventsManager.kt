@@ -1,6 +1,8 @@
 package re.notifica.modules
 
+import androidx.annotation.RestrictTo
 import androidx.work.*
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import re.notifica.Notificare
 import re.notifica.NotificareDefinitions
@@ -52,23 +54,26 @@ class NotificareEventsManager {
         log("re.notifica.event.custom.${event}", data)
     }
 
-    private fun log(event: String, data: NotificareEventData? = null) = runBlocking {
-        val device = Notificare.deviceManager.currentDevice
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP_PREFIX)
+    fun log(event: String, data: NotificareEventData? = null, notificationId: String? = null) {
+        runBlocking(Dispatchers.IO) {
+            val device = Notificare.deviceManager.currentDevice
 
-        try {
-            log(
-                NotificareEvent(
-                    type = event,
-                    timestamp = System.currentTimeMillis(),
-                    deviceId = device?.id,
-                    sessionId = Notificare.sessionManager.sessionId,
-                    notificationId = null,
-                    userId = device?.userId,
-                    data = data
+            try {
+                log(
+                    NotificareEvent(
+                        type = event,
+                        timestamp = System.currentTimeMillis(),
+                        deviceId = device?.id,
+                        sessionId = Notificare.sessionManager.sessionId,
+                        notificationId = notificationId,
+                        userId = device?.userId,
+                        data = data
+                    )
                 )
-            )
-        } catch (e: Exception) {
-            NotificareLogger.error("Failed to log an event.", e)
+            } catch (e: Exception) {
+                NotificareLogger.error("Failed to log an event.", e)
+            }
         }
     }
 

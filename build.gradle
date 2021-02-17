@@ -1,16 +1,22 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 buildscript {
     apply from: 'dependencies.gradle'
+    ext {
+        kotlin_version = '1.4.30'
+    }
 
     repositories {
         google()
         jcenter()
         maven { url 'https://maven.notifica.re/releases' }
+        maven { url 'https://developer.huawei.com/repo/' }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.1.1'
+        classpath 'com.android.tools.build:gradle:4.1.2'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath 're.notifica.gradle:notificare-services:1.0.0'
+        classpath 'com.google.gms:google-services:4.3.5'
+        classpath 'com.huawei.agconnect:agcp:1.4.2.300'
     }
 }
 
@@ -22,6 +28,7 @@ allprojects {
     repositories {
         google()
         jcenter()
+        maven { url 'https://developer.huawei.com/repo/' }
     }
 }
 

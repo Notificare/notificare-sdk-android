@@ -6,18 +6,25 @@ plugins {
 
 apply from: '../dependencies.gradle'
 
+def startParameter = getGradle().getStartParameter().getTaskRequests().toString().toLowerCase()
+if (startParameter.contains("google")) {
+    println("Building flavor with Google GMS - applying plugin")
+    apply plugin: 'com.google.gms.google-services'
+} else if (startParameter.contains("huawei")) {
+    println("Building flavor with Huawei HMS - applying plugin")
+    apply plugin: 'com.huawei.agconnect'
+}
+
 android {
     compileSdkVersion 30
-    buildToolsVersion "30.0.2"
+    buildToolsVersion "30.0.3"
 
     defaultConfig {
-        applicationId "re.notifica.sample"
+        applicationId "re.notifica.demo"
         minSdkVersion 22
         targetSdkVersion 30
         versionCode 1
         versionName "1.0.0"
-
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
@@ -26,15 +33,29 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+
     buildFeatures {
         viewBinding true
     }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+
     kotlinOptions {
         jvmTarget = '1.8'
+    }
+
+    flavorDimensions "provider"
+    productFlavors {
+        google {
+            dimension "provider"
+        }
+
+        huawei {
+            dimension "provider"
+        }
     }
 }
 
@@ -44,13 +65,12 @@ dependencies {
 
     implementation 'androidx.core:core-ktx:1.3.2'
     implementation 'androidx.appcompat:appcompat:1.2.0'
-    implementation 'com.google.android.material:material:1.2.1'
-    implementation 'androidx.constraintlayout:constraintlayout:2.0.2'
+    implementation 'com.google.android.material:material:1.3.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
 
     implementation project(':notificare-core')
     implementation project(':notificare-push')
 
-    testImplementation 'junit:junit:4.13.1'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+    googleImplementation project(':notificare-push-fcm')
+    huaweiImplementation project(':notificare-push-hms')
 }

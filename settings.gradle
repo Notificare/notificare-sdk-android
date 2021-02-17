@@ -1,3 +1,5 @@
 include ':notificare-core'
 include ':notificare-push'
+include ':notificare-push-fcm'
+include ':notificare-push-hms'
 include ':sample'
