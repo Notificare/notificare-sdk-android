@@ -102,7 +102,7 @@ private fun NotificareNotificationRemoteMessage(message: RemoteMessage): Notific
         // Notification properties
         id = requireNotNull(message.data["id"]),
         notificationId = requireNotNull(message.data["notification_id"]),
-        notificationType = requireNotNull(message.data["notification_type"]),
+        notificationType = message.data["notification_type"] ?: "re.notifica.notification.Alert",
         notificationChannel = message.data["notification_channel"],
         notificationGroup = message.data["notification_group"],
         // Alert properties
