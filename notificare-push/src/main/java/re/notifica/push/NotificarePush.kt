@@ -76,7 +76,16 @@ object NotificarePush : NotificareModule() {
         manager.registerDeviceToken()
     }
 
-    fun disableRemoteNotifications() {}
+    fun disableRemoteNotifications() {
+        GlobalScope.launch {
+            try {
+                Notificare.deviceManager.registerTemporary()
+                NotificareLogger.info("Unregistered from push provider.")
+            } catch (e: Exception) {
+                NotificareLogger.error("Failed to register a temporary device.", e)
+            }
+        }
+    }
 
 
     private fun checkPushPermissions(): Boolean {
