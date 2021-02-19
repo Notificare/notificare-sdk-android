@@ -8,13 +8,14 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
 import android.graphics.Color
 import android.net.Uri
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import re.notifica.Notificare
 import re.notifica.NotificareLogger
@@ -22,6 +23,7 @@ import re.notifica.internal.NotificareUtils
 import re.notifica.models.NotificareApplication
 import re.notifica.modules.NotificareModule
 import re.notifica.push.app.NotificarePushIntentReceiver
+import re.notifica.push.internal.NotificarePushSystemIntentReceiver
 import re.notifica.push.models.NotificareNotificationRemoteMessage
 import re.notifica.push.models.NotificareRemoteMessage
 import re.notifica.push.models.NotificareSystemRemoteMessage
@@ -136,25 +138,8 @@ object NotificarePush : NotificareModule() {
 
     fun handleRemoteMessage(message: NotificareRemoteMessage) {
         when (message) {
-            is NotificareSystemRemoteMessage -> {
-                handleSystemNotification(message)
-            }
-            is NotificareNotificationRemoteMessage -> {
-                Notificare.eventsManager.logNotificationReceived(message.id)
-
-                // TODO add to inbox
-
-                // TODO fetch notification
-
-                val attachmentImage = runBlocking {
-                    message.attachment?.uri?.let { NotificareUtils.loadBitmap(it) }
-                }
-
-                generateNotification(
-                    message = message,
-                    bitmap = attachmentImage,
-                )
-            }
+            is NotificareSystemRemoteMessage -> handleSystemNotification(message)
+            is NotificareNotificationRemoteMessage -> handleNotification(message)
             is NotificareUnknownRemoteMessage -> {
                 val notification = message.toNotification()
 
@@ -226,37 +211,63 @@ object NotificarePush : NotificareModule() {
         }
     }
 
-    private fun generateNotification(message: NotificareNotificationRemoteMessage, bitmap: Bitmap? = null) {
+    private fun handleNotification(message: NotificareNotificationRemoteMessage) {
+        Notificare.eventsManager.logNotificationReceived(message.id)
+
+        GlobalScope.launch {
+            try {
+                val notification = Notificare.fetchNotification(message.id)
+
+                // TODO notify listeners
+
+                Notificare.requireContext().sendBroadcast(
+                    Intent(Notificare.requireContext(), intentReceiver)
+                        .setAction(NotificarePushIntentReceiver.Actions.NOTIFICATION_RECEIVED)
+                        .putExtra(NotificarePushIntentReceiver.Extras.NOTIFICATION, notification)
+                )
+            } catch (e: Exception) {
+                NotificareLogger.error("Failed to fetch notification.", e)
+            }
+        }
+
+        // TODO add to inbox
+
+        if (message.notify) {
+            generateNotification(
+                type = NotificationIntentType.NOTIFICATION,
+                message = message,
+            )
+        }
+    }
+
+    private fun generateNotification(type: NotificationIntentType, message: NotificareNotificationRemoteMessage) {
         val openIntent = PendingIntent.getBroadcast(
             Notificare.requireContext(),
             createUniqueNotificationId(),
-            Intent(Notificare.requireContext(), intentReceiver).apply {
-                action = "intentAction passed by parameter"
-//                putExtra("remote message", remoteMessage)
+            Intent(Notificare.requireContext(), NotificarePushSystemIntentReceiver::class.java).apply {
+                action = when (type) {
+                    NotificationIntentType.NOTIFICATION -> NotificarePushSystemIntentReceiver.Actions.REMOTE_MESSAGE_OPENED
+//                    NotificationIntentType.RELEVANCE_NOTIFICATION -> NotificarePushSystemIntentReceiver.Actions.RELEVANCE_REMOTE_MESSAGE_OPENED
+                }
 
-                // if (notification != null)
-                putExtra("notification", "notification object here")
+                putExtra(NotificarePushSystemIntentReceiver.Extras.REMOTE_MESSAGE, message)
             },
             PendingIntent.FLAG_CANCEL_CURRENT
         )
 
-        val deleteIntent = PendingIntent.getBroadcast(
-            Notificare.requireContext(),
-            createUniqueNotificationId(),
-            Intent(Notificare.requireContext(), intentReceiver).apply {
-//                if (intentAction == Notificare.INTENT_ACTION_RELEVANCE_NOTIFICATION_OPENED) {
-//                    action = Notificare.INTENT_ACTION_RELEVANCE_NOTIFICATION_DELETED
-//                } else {
-//                    action = Notificare.INTENT_ACTION_NOTIFICATION_DELETED
+//        val deleteIntent = PendingIntent.getBroadcast(
+//            Notificare.requireContext(),
+//            createUniqueNotificationId(),
+//            Intent(Notificare.requireContext(), NotificarePushSystemIntentReceiver::class.java).apply {
+//                action = when (type) {
+//                    NotificationIntentType.NOTIFICATION -> NotificarePushSystemIntentReceiver.Actions.REMOTE_MESSAGE_DELETED
+//                    NotificationIntentType.RELEVANCE_NOTIFICATION -> NotificarePushSystemIntentReceiver.Actions.RELEVANCE_REMOTE_MESSAGE_DELETED
 //                }
-
-//                putExtra("remote message", remoteMessage)
-
-                // if (notification != null)
-                putExtra("notification", "notification object here")
-            },
-            PendingIntent.FLAG_CANCEL_CURRENT
-        )
+//
+//                putExtra(NotificarePushSystemIntentReceiver.Extras.REMOTE_MESSAGE, message)
+//            },
+//            PendingIntent.FLAG_CANCEL_CURRENT
+//        )
 
         val notificationManager = NotificationManagerCompat.from(Notificare.requireContext())
 
@@ -269,12 +280,12 @@ object NotificarePush : NotificareModule() {
         val builder = NotificationCompat.Builder(Notificare.requireContext(), channel)
             .setAutoCancel(checkNotNull(Notificare.options).notificationAutoCancel)
             .setSmallIcon(checkNotNull(Notificare.options).notificationSmallIcon)
+            .setContentTitle(message.alertTitle)
             .setContentText(message.alert)
             .setTicker(message.alert)
             .setWhen(message.sentTime)
             .setContentIntent(openIntent)
-            .setDeleteIntent(deleteIntent)
-            .setContentTitle(message.alertTitle)
+//            .setDeleteIntent(deleteIntent)
 
         if (message.notificationGroup != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             val notificationService =
@@ -307,16 +318,19 @@ object NotificarePush : NotificareModule() {
             builder.color = ContextCompat.getColor(Notificare.requireContext(), notificationAccentColor)
         }
 
-
 //        if (largeIcon != null) {
 //            builder.setLargeIcon(largeIcon)
 //        }
 
-        if (bitmap != null) {
+        val attachmentImage = runBlocking {
+            message.attachment?.uri?.let { NotificareUtils.loadBitmap(it) }
+        }
+
+        if (attachmentImage != null) {
             builder.setStyle(
                 NotificationCompat.BigPictureStyle()
                     .setSummaryText(message.alert)
-                    .bigPicture(bitmap)
+                    .bigPicture(attachmentImage)
             )
         } else {
             builder.setStyle(
@@ -385,5 +399,10 @@ object NotificarePush : NotificareModule() {
         }
 
         notificationManager.notify(message.notificationId, 0, builder.build())
+    }
+
+    private enum class NotificationIntentType {
+        NOTIFICATION,
+//        RELEVANCE_NOTIFICATION
     }
 }

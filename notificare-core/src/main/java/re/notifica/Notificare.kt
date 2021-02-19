@@ -220,7 +220,7 @@ object Notificare {
     ) {
         val httpLogger = HttpLoggingInterceptor().apply {
             if (BuildConfig.DEBUG) {
-                level = HttpLoggingInterceptor.Level.BODY
+                level = HttpLoggingInterceptor.Level.BASIC
             }
         }
 

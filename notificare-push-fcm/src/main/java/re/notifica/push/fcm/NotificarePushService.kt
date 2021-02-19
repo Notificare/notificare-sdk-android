@@ -126,7 +126,7 @@ private fun NotificareNotificationRemoteMessage(message: RemoteMessage): Notific
         inboxItemExpires = message.data["inbox_item_expires"]?.toLongOrNull(),
         // Presentation options
         presentation = message.data["presentation"]?.toBoolean() ?: false,
-        notify = message.data["notify"]?.toBoolean() ?: false,
+        notify = message.data["notify"] == "1" || message.data["notify"]?.toBoolean() ?: false,
         // Customisation options,
         sound = message.data["sound"],
         lightsColor = message.data["lights_color"],

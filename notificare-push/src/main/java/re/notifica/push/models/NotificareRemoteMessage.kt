@@ -1,5 +1,7 @@
 package re.notifica.push.models
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 import re.notifica.models.NotificareNotification
 
 interface NotificareRemoteMessage {
@@ -51,6 +53,7 @@ data class NotificareSystemRemoteMessage(
     val systemType: String,
 ) : NotificareRemoteMessage
 
+@Parcelize
 data class NotificareNotificationRemoteMessage(
     override val messageId: String?,
     override val sentTime: Long,
@@ -87,4 +90,4 @@ data class NotificareNotificationRemoteMessage(
     val lightsColor: String?,
     val lightsOn: Int?,
     val lightsOff: Int?,
-) : NotificareRemoteMessage
+) : NotificareRemoteMessage, Parcelable

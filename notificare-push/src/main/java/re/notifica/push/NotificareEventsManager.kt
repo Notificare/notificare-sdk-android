@@ -9,3 +9,11 @@ fun NotificareEventsManager.logNotificationReceived(id: String) {
         notificationId = id
     )
 }
+
+fun NotificareEventsManager.logNotificationOpened(id: String) {
+    log(
+        event = "re.notifica.event.notification.Open",
+        data = null,
+        notificationId = id
+    )
+}
