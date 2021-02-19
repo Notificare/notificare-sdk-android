@@ -46,7 +46,12 @@ class NotificareDeviceManager {
                 Notificare.eventsManager.logApplicationUpgrade()
             }
 
-            registerTemporary()
+            register(
+                transport = device.transport,
+                token = device.id,
+                userId = device.userId,
+                userName = device.userName,
+            )
         } else {
             NotificareLogger.debug("New install detected")
 
@@ -205,9 +210,9 @@ class NotificareDeviceManager {
     }
 
     private suspend fun register(transport: NotificareTransport, token: String, userId: String?, userName: String?) {
-        var currentDevice = currentDevice
+        if (registrationChanged(token, userId, userName)) {
+            val currentDevice = currentDevice
 
-        if (currentDevice == null || registrationChanged(token, userId, userName) || transport != currentDevice.transport) {
             val oldDeviceId =
                 if (currentDevice?.id != null && currentDevice.id != token) currentDevice.id
                 else null
@@ -234,7 +239,7 @@ class NotificareDeviceManager {
 
             Notificare.pushService.createDevice(deviceRegistration)
 
-            currentDevice = deviceRegistration.toStoredDevice(currentDevice).also {
+            deviceRegistration.toStoredDevice(currentDevice).also {
                 this.currentDevice = it
             }
         } else {
@@ -242,7 +247,7 @@ class NotificareDeviceManager {
         }
 
         // Send a device registered broadcast.
-        NotificareIntentEmitter.onDeviceRegistered(currentDevice)
+        NotificareIntentEmitter.onDeviceRegistered(checkNotNull(currentDevice))
     }
 
     private fun registrationChanged(token: String?, userId: String?, userName: String?): Boolean {
