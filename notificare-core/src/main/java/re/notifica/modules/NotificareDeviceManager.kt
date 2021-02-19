@@ -77,10 +77,13 @@ class NotificareDeviceManager {
     }
 
     suspend fun registerTemporary() {
-        val token = currentDevice?.id
-            ?: UUID.randomUUID()
-                .toByteArray()
-                .toHex()
+        val device = currentDevice
+
+        // NOTE: keep the same token if available and only when not changing transport providers.
+        val token = when {
+            device != null && device.transport == NotificareTransport.NOTIFICARE -> device.id
+            else -> UUID.randomUUID().toByteArray().toHex()
+        }
 
         register(
             transport = NotificareTransport.NOTIFICARE,
