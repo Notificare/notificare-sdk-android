@@ -54,7 +54,7 @@ class NotificareEventsManager {
         log("re.notifica.event.custom.${event}", data)
     }
 
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP_PREFIX)
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     fun log(event: String, data: NotificareEventData? = null, notificationId: String? = null) {
         runBlocking(Dispatchers.IO) {
             val device = Notificare.deviceManager.currentDevice

@@ -11,6 +11,7 @@ import android.content.pm.PackageManager
 import android.graphics.Color
 import android.net.Uri
 import android.os.Build
+import androidx.annotation.RestrictTo
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
@@ -53,9 +54,7 @@ object NotificarePush : NotificareModule() {
         )
     }
 
-    override suspend fun launch() {
-
-    }
+    override suspend fun launch() {}
 
 
     fun enableRemoteNotifications() {
@@ -88,7 +87,7 @@ object NotificarePush : NotificareModule() {
         }
     }
 
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP_PREFIX)
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     suspend fun registerPushToken(transport: NotificareTransport, token: String) {
         Notificare.deviceManager.registerPushToken(transport, token)
 
@@ -99,6 +98,24 @@ object NotificarePush : NotificareModule() {
         }
     }
 
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    fun handleRemoteMessage(message: NotificareRemoteMessage) {
+        when (message) {
+            is NotificareSystemRemoteMessage -> handleSystemNotification(message)
+            is NotificareNotificationRemoteMessage -> handleNotification(message)
+            is NotificareUnknownRemoteMessage -> {
+                val notification = message.toNotification()
+
+                // TODO notify listeners
+
+                Notificare.requireContext().sendBroadcast(
+                    Intent(Notificare.requireContext(), intentReceiver)
+                        .setAction(NotificarePushIntentReceiver.Actions.UNKNOWN_NOTIFICATION_RECEIVED)
+                        .putExtra(NotificarePushIntentReceiver.Extras.NOTIFICATION, notification)
+                )
+            }
+        }
+    }
 
     private fun checkPushPermissions(): Boolean {
         var granted = true
@@ -154,25 +171,6 @@ object NotificarePush : NotificareModule() {
 
     private fun createUniqueNotificationId(): Int {
         return notificationSequence.incrementAndGet()
-    }
-
-
-    fun handleRemoteMessage(message: NotificareRemoteMessage) {
-        when (message) {
-            is NotificareSystemRemoteMessage -> handleSystemNotification(message)
-            is NotificareNotificationRemoteMessage -> handleNotification(message)
-            is NotificareUnknownRemoteMessage -> {
-                val notification = message.toNotification()
-
-                // TODO notify listeners
-
-                Notificare.requireContext().sendBroadcast(
-                    Intent(Notificare.requireContext(), intentReceiver)
-                        .setAction(NotificarePushIntentReceiver.Actions.UNKNOWN_NOTIFICATION_RECEIVED)
-                        .putExtra(NotificarePushIntentReceiver.Extras.NOTIFICATION, notification)
-                )
-            }
-        }
     }
 
     private fun handleSystemNotification(message: NotificareSystemRemoteMessage) {
