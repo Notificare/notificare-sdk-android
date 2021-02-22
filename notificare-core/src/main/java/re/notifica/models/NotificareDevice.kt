@@ -29,7 +29,7 @@ data class NotificareDevice internal constructor(
     // val locationServicesAccuracyAuth: String?, // iOS
     // val registeredForNotifications: Boolean, // iOS
     // val allowedLocationServices: Boolean, // iOS
-    val allowedUI: Boolean,
+    var allowedUI: Boolean,
     // val backgroundAppRefresh: Boolean, // iOS
     val bluetoothEnabled: Boolean
 ) : Parcelable {

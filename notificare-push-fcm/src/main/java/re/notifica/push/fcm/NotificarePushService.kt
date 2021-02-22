@@ -25,7 +25,7 @@ class NotificarePushService : FirebaseMessagingService() {
         if (Notificare.isReady) {
             runBlocking {
                 try {
-                    Notificare.deviceManager.registerToken(NotificareTransport.GCM, token)
+                    Notificare.deviceManager.registerPushToken(NotificareTransport.GCM, token)
                     NotificareLogger.debug("Registered the device with a FCM token.")
                 } catch (e: Exception) {
                     NotificareLogger.debug("Failed to register the device with a FCM token.", e)

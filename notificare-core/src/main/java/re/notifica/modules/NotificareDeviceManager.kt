@@ -8,10 +8,7 @@ import re.notifica.internal.NotificareIntentEmitter
 import re.notifica.internal.NotificareUtils
 import re.notifica.internal.common.toByteArray
 import re.notifica.internal.common.toHex
-import re.notifica.internal.network.push.payloads.NotificareDeviceRegistration
-import re.notifica.internal.network.push.payloads.NotificareDeviceUpdateLanguage
-import re.notifica.internal.network.push.payloads.NotificareDeviceUpdateTimeZone
-import re.notifica.internal.network.push.payloads.NotificareTagsPayload
+import re.notifica.internal.network.push.payloads.*
 import re.notifica.models.NotificareDevice
 import re.notifica.models.NotificareDoNotDisturb
 import re.notifica.models.NotificareTransport
@@ -91,11 +88,13 @@ class NotificareDeviceManager {
             userId = currentDevice?.userId,
             userName = currentDevice?.userName,
         )
-
-        // TODO updateNotificationSettings(allowedUI: false)
     }
 
-    suspend fun registerToken(transport: NotificareTransport, token: String) {
+    suspend fun registerPushToken(transport: NotificareTransport, token: String) {
+        if (transport == NotificareTransport.NOTIFICARE) {
+            throw IllegalArgumentException("Invalid transport '$transport'.")
+        }
+
         register(
             transport = transport,
             token = token,
@@ -200,6 +199,22 @@ class NotificareDeviceManager {
         currentDevice?.userData = userData
     }
 
+    suspend fun updateNotificationSettings(allowedUI: Boolean) {
+        val device = checkNotificareReady()
+
+        Notificare.pushService.updateDevice(
+            device.id,
+            NotificareDeviceUpdateAllowedUI(
+                language = getLanguage(),
+                region = getRegion(),
+                allowedUI = allowedUI,
+            )
+        )
+
+        // Update current device properties.
+        currentDevice?.allowedUI = allowedUI
+    }
+
     // region Private API
 
     private fun checkNotificareReady(): NotificareDevice {
@@ -234,8 +249,9 @@ class NotificareDeviceManager {
                 appVersion = NotificareUtils.applicationVersion,
                 deviceString = NotificareUtils.deviceString,
                 timeZoneOffset = NotificareUtils.timeZoneOffset,
+                allowedUI = if (transport == NotificareTransport.NOTIFICARE) false else currentDevice?.allowedUI
+                    ?: false,
                 backgroundAppRefresh = true,
-                allowedUI = false, // TODO me,
                 locationServicesAuthStatus = "none", // TODO me
                 bluetoothEnabled = false, // TODO me
             )

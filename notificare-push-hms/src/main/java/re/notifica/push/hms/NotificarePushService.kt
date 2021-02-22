@@ -25,7 +25,7 @@ class NotificarePushService : HmsMessageService() {
         if (Notificare.isReady) {
             runBlocking {
                 try {
-                    Notificare.deviceManager.registerToken(NotificareTransport.HMS, token)
+                    Notificare.deviceManager.registerPushToken(NotificareTransport.HMS, token)
                     NotificareLogger.debug("Registered the device with a HMS token.")
                 } catch (e: Exception) {
                     NotificareLogger.debug("Failed to register the device with a HMS token.", e)

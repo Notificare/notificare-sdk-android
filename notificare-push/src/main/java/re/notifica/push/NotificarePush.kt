@@ -21,6 +21,7 @@ import re.notifica.Notificare
 import re.notifica.NotificareLogger
 import re.notifica.internal.NotificareUtils
 import re.notifica.models.NotificareApplication
+import re.notifica.models.NotificareTransport
 import re.notifica.modules.NotificareModule
 import re.notifica.push.app.NotificarePushIntentReceiver
 import re.notifica.push.internal.NotificarePushSystemIntentReceiver
@@ -84,6 +85,17 @@ object NotificarePush : NotificareModule() {
             } catch (e: Exception) {
                 NotificareLogger.error("Failed to register a temporary device.", e)
             }
+        }
+    }
+
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP_PREFIX)
+    suspend fun registerPushToken(transport: NotificareTransport, token: String) {
+        Notificare.deviceManager.registerPushToken(transport, token)
+
+        try {
+            Notificare.deviceManager.updateNotificationSettings(allowedUI = getAllowedUI())
+        } catch (e: Exception) {
+            NotificareLogger.warning("Failed to update the device's notification settings.", e)
         }
     }
 
@@ -408,6 +420,10 @@ object NotificarePush : NotificareModule() {
         }
 
         notificationManager.notify(message.notificationId, 0, builder.build())
+    }
+
+    private fun getAllowedUI(): Boolean {
+        return NotificationManagerCompat.from(Notificare.requireContext()).areNotificationsEnabled()
     }
 
     private enum class NotificationIntentType {

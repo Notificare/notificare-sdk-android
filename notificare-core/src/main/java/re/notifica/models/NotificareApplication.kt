@@ -42,4 +42,17 @@ data class NotificareApplication(
         val keyboard: Boolean = false,
         val destructive: Boolean = false
     )
+
+    object ServiceKeys {
+        const val OAUTH2 = "oauth2"
+        const val RICH_PUSH = "richPush"
+        const val LOCATION_SERVICES = "locationServices"
+        const val APNS = "apns"
+        const val GCM = "gcm"
+        const val WEBSOCKETS = "websockets"
+        const val PASSBOOK = "passbook"
+        const val IN_APP_PURCHASE = "inAppPurchase"
+        const val INBOX = "inbox"
+        const val STORAGE = "storage"
+    }
 }
