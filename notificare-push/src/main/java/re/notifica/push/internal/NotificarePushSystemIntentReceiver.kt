@@ -36,11 +36,30 @@ internal class NotificarePushSystemIntentReceiver : BroadcastReceiver() {
 
                 // TODO notify listeners
 
+                // Notify the consumer's intent receiver.
                 Notificare.requireContext().sendBroadcast(
                     Intent(Notificare.requireContext(), NotificarePush.intentReceiver)
                         .setAction(NotificarePushIntentReceiver.Actions.NOTIFICATION_OPENED)
                         .putExtra(NotificarePushIntentReceiver.Extras.NOTIFICATION, notification)
                 )
+
+                // Notify the consumer's custom activity about the notification open event.
+                val notificationIntent = Intent()
+                    .setAction(NotificarePush.INTENT_ACTION_NOTIFICATION_OPENED)
+                    .putExtra(NotificarePush.INTENT_EXTRA_NOTIFICATION, notification)
+                    // .putExtra(Notificare.INTENT_EXTRA_ACTION, action)
+                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                    .setPackage(Notificare.requireContext().packageName)
+
+                val canHandleNotificationOpenIntent =
+                    notificationIntent.resolveActivity(Notificare.requireContext().packageManager) != null
+
+                if (canHandleNotificationOpenIntent) {
+                    // Notification handled by custom activity in package
+                    Notificare.requireContext().startActivity(notificationIntent)
+                } else {
+                    NotificareLogger.warning("Could not find an activity with the '${NotificarePush.INTENT_ACTION_NOTIFICATION_OPENED}' action.")
+                }
             } catch (e: Exception) {
                 NotificareLogger.error("Failed to fetch notification.", e)
             }
@@ -49,10 +68,6 @@ internal class NotificarePushSystemIntentReceiver : BroadcastReceiver() {
 
     object Actions {
         const val REMOTE_MESSAGE_OPENED = "re.notifica.intent.action.RemoteMessageOpened"
-
-        // const val REMOTE_MESSAGE_DELETED = "re.notifica.intent.action.RemoteMessageDeleted"
-        // const val RELEVANCE_REMOTE_MESSAGE_OPENED = "re.notifica.intent.action.RelevanceRemoteMessageOpened"
-        // const val RELEVANCE_REMOTE_MESSAGE_DELETED = "re.notifica.intent.action.RelevanceRemoteMessageDeleted"
     }
 
     object Extras {

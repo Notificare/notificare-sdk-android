@@ -47,4 +47,38 @@ data class NotificareNotification(
         val mimeType: String,
         val uri: String,
     ) : Parcelable
+
+
+    enum class NotificationType {
+        NONE,
+        ALERT,
+        WEB_VIEW,
+        URL,
+        URL_SCHEME,
+        IMAGE,
+        VIDEO,
+        MAP,
+        RATE,
+        PASSBOOK,
+        STORE;
+
+        companion object {
+            fun from(type: String): NotificationType? {
+                return when (type) {
+                    "re.notifica.notification.None" -> NONE
+                    "re.notifica.notification.Alert" -> ALERT
+                    "re.notifica.notification.WebView" -> WEB_VIEW
+                    "re.notifica.notification.URL" -> URL
+                    "re.notifica.notification.URLScheme" -> URL_SCHEME
+                    "re.notifica.notification.Image" -> IMAGE
+                    "re.notifica.notification.Video" -> VIDEO
+                    "re.notifica.notification.Map" -> MAP
+                    "re.notifica.notification.Rate" -> RATE
+                    "re.notifica.notification.Passbook" -> PASSBOOK
+                    "re.notifica.notification.Store" -> STORE
+                    else -> null
+                }
+            }
+        }
+    }
 }

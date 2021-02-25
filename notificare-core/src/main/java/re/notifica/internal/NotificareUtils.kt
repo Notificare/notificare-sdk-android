@@ -16,6 +16,19 @@ import re.notifica.internal.adapters.NotificareTransportAdapter
 import java.util.*
 
 object NotificareUtils {
+    val applicationName: String
+        get() {
+            return try {
+                val context = Notificare.requireContext().applicationContext
+                context.packageManager.getApplicationLabel(
+                    context.packageManager.getApplicationInfo(context.packageName, 0)
+                ).toString()
+            } catch (e: Exception) {
+                Log.e("Notificare", "Application name not found.", e)
+                return "unknown"
+            }
+        }
+
     val applicationVersion: String
         get() {
             return try {

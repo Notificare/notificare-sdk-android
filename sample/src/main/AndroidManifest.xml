@@ -11,14 +11,25 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Notificaresdkandroid">
-        <activity android:name=".MainActivity">
+        android:theme="@style/Theme.Notificare">
+        <activity
+            android:name=".MainActivity"
+            android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <intent-filter>
+                <action android:name="re.notifica.intent.action.NotificationOpened" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
         </activity>
+
+        <activity
+            android:name="re.notifica.push.ui.NotificationActivity"
+            android:hardwareAccelerated="true"
+            android:theme="@style/Theme.Notificare.Translucent" />
 
         <receiver android:name="re.notifica.app.NotificareIntentReceiver" />
         <receiver android:name="re.notifica.push.app.NotificarePushIntentReceiver" />

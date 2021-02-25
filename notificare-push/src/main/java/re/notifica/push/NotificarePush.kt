@@ -35,6 +35,8 @@ import java.util.concurrent.atomic.AtomicInteger
 object NotificarePush : NotificareModule() {
 
     const val DEFAULT_NOTIFICATION_CHANNEL_ID = "notificare_channel_default"
+    const val INTENT_ACTION_NOTIFICATION_OPENED = "re.notifica.intent.action.NotificationOpened"
+    const val INTENT_EXTRA_NOTIFICATION = "re.notifica.intent.extra.Notification"
 
     private var serviceManager: NotificareServiceManager? = null
     private val notificationSequence = AtomicInteger()

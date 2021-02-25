@@ -1,0 +1,5 @@
+<resources>
+    <string name="notificare_dialog_cancel_button">Cancel</string>
+    <string name="notificare_dialog_ok_button">OK</string>
+    <string name="notificare_dialog_open_pass_button">Open pass&#8230;</string>
+</resources>

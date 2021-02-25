@@ -1,5 +1,6 @@
 package re.notifica.sample
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -9,9 +10,11 @@ import re.notifica.Notificare
 import re.notifica.NotificareCallback
 import re.notifica.callbacks.*
 import re.notifica.models.NotificareDoNotDisturb
+import re.notifica.models.NotificareNotification
 import re.notifica.models.NotificareTime
 import re.notifica.models.NotificareUserData
 import re.notifica.push.NotificarePush
+import re.notifica.push.ui.NotificarePushUI
 import re.notifica.sample.databinding.ActivityMainBinding
 import java.util.*
 
@@ -24,6 +27,31 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater).also {
             setContentView(it.root)
         }
+
+        if (intent != null) handleNotificareIntent(intent)
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+
+        if (intent != null) handleNotificareIntent(intent)
+    }
+
+    private fun handleNotificareIntent(intent: Intent) {
+        when (intent.action) {
+            NotificarePush.INTENT_ACTION_NOTIFICATION_OPENED -> {
+                val notification: NotificareNotification = requireNotNull(
+                    intent.getParcelableExtra(NotificarePush.INTENT_EXTRA_NOTIFICATION)
+                )
+
+                val type = NotificareNotification.NotificationType.from(notification.type)
+                if (type == NotificareNotification.NotificationType.ALERT && notification.actions.isEmpty()) {
+                    Snackbar.make(binding.root, notification.message, Snackbar.LENGTH_LONG).show()
+                } else {
+                    NotificarePushUI.presentNotification(this, notification)
+                }
+            }
+        }
     }
 
     fun onFetchTagsClick(@Suppress("UNUSED_PARAMETER") view: View) {
@@ -33,7 +61,8 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun onFailure(e: Exception) {
-                Snackbar.make(binding.root, "Failed to fetch device tags", Snackbar.LENGTH_LONG).show()
+                Snackbar.make(binding.root, "Failed to fetch device tags", Snackbar.LENGTH_LONG)
+                    .show()
             }
         })
     }
@@ -81,7 +110,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun onFetchDndClick(@Suppress("UNUSED_PARAMETER") view: View) {
-        Notificare.deviceManager.fetchDoNotDisturb(object : NotificareCallback<NotificareDoNotDisturb?> {
+        Notificare.deviceManager.fetchDoNotDisturb(object :
+            NotificareCallback<NotificareDoNotDisturb?> {
             override fun onSuccess(result: NotificareDoNotDisturb?) {
                 Log.i(TAG, "Do not disturb: $result")
                 Snackbar.make(binding.root, "$result", Snackbar.LENGTH_SHORT).show()
@@ -153,19 +183,25 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun onGetPreferredLanguage(@Suppress("UNUSED_PARAMETER") view: View) {
-        Snackbar.make(binding.root, "${Notificare.deviceManager.preferredLanguage}", Snackbar.LENGTH_SHORT).show()
+        Snackbar.make(
+            binding.root,
+            "${Notificare.deviceManager.preferredLanguage}",
+            Snackbar.LENGTH_SHORT
+        ).show()
     }
 
     fun onUpdatePreferredLanguage(@Suppress("UNUSED_PARAMETER") view: View) {
-        Notificare.deviceManager.updatePreferredLanguage("en-NL", object : NotificareCallback<Unit> {
-            override fun onSuccess(result: Unit) {
-                Snackbar.make(binding.root, "Done.", Snackbar.LENGTH_SHORT).show()
-            }
+        Notificare.deviceManager.updatePreferredLanguage(
+            "en-NL",
+            object : NotificareCallback<Unit> {
+                override fun onSuccess(result: Unit) {
+                    Snackbar.make(binding.root, "Done.", Snackbar.LENGTH_SHORT).show()
+                }
 
-            override fun onFailure(e: Exception) {
-                Snackbar.make(binding.root, "Error: ${e.message}", Snackbar.LENGTH_SHORT).show()
-            }
-        })
+                override fun onFailure(e: Exception) {
+                    Snackbar.make(binding.root, "Error: ${e.message}", Snackbar.LENGTH_SHORT).show()
+                }
+            })
     }
 
     fun onClearPreferredLanguage(@Suppress("UNUSED_PARAMETER") view: View) {
