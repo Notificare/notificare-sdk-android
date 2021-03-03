@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="notificare_google_play_intent_failed">Could not launch Google Play Store app</string>
+</resources>

@@ -29,7 +29,17 @@ data class NotificareNotification(
     data class Content(
         val type: String,
         val data: @WriteWith<NotificationContentDataParceler> Any,
-    ) : Parcelable
+    ) : Parcelable {
+
+        companion object {
+            const val TYPE_GOOGLE_PLAY_DETAILS = "re.notifica.content.GooglePlayDetails"
+            const val TYPE_GOOGLE_PLAY_DEVELOPER = "re.notifica.content.GooglePlayDeveloper"
+            const val TYPE_GOOGLE_PLAY_SEARCH = "re.notifica.content.GooglePlaySearch"
+            const val TYPE_GOOGLE_PLAY_COLLECTION = "re.notifica.content.GooglePlayCollection"
+            const val TYPE_APP_GALLERY_DETAILS = "re.notifica.content.AppGalleryDetails"
+            const val TYPE_APP_GALLERY_SEARCH = "re.notifica.content.AppGallerySearch"
+        }
+    }
 
     @Parcelize
     @JsonClass(generateAdapter = true)

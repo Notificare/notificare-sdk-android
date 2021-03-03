@@ -32,14 +32,28 @@ object NotificarePushUI {
 
         return when (type) {
             NotificareNotification.NotificationType.NONE -> {
-                NotificareLogger.debug("Attempting to present a notification of type 'none'. These should be handled by the application instead.")
+                NotificareLogger.debug("Attempting to create a fragment for a notification of type 'none'. This type contains to visual interface.")
                 return null
             }
             NotificareNotification.NotificationType.ALERT -> NotificareAlertFragment::class.java.canonicalName
             NotificareNotification.NotificationType.WEB_VIEW -> null
             NotificareNotification.NotificationType.URL -> NotificareUrlFragment::class.java.canonicalName
-            NotificareNotification.NotificationType.URL_SCHEME -> null
-            NotificareNotification.NotificationType.RATE -> null
+            NotificareNotification.NotificationType.URL_SCHEME -> {
+                NotificareLogger.debug("Attempting to create a fragment for a notification of type 'urlScheme'. This type contains to visual interface.")
+                return null
+            }
+            NotificareNotification.NotificationType.RATE -> {
+                val serviceManager = NotificarePush.serviceManager ?: run {
+                    NotificareLogger.warning("No push dependencies have been detected. Please include one of the platform-specific push packages.")
+                    return null
+                }
+
+                when (serviceManager.transport) {
+                    NotificareTransport.NOTIFICARE -> null
+                    NotificareTransport.GCM -> "re.notifica.push.ui.fcm.NotificareRateFragment"
+                    NotificareTransport.HMS -> "re.notifica.push.ui.hms.NotificareRateFragment"
+                }
+            }
             NotificareNotification.NotificationType.IMAGE -> NotificareImageFragment::class.java.canonicalName
             NotificareNotification.NotificationType.MAP -> {
                 val serviceManager = NotificarePush.serviceManager ?: run {
@@ -57,7 +71,18 @@ object NotificarePushUI {
                 // TODO: handle passbook notification
                 return null
             }
-            NotificareNotification.NotificationType.STORE -> null
+            NotificareNotification.NotificationType.STORE -> {
+                val serviceManager = NotificarePush.serviceManager ?: run {
+                    NotificareLogger.warning("No push dependencies have been detected. Please include one of the platform-specific push packages.")
+                    return null
+                }
+
+                when (serviceManager.transport) {
+                    NotificareTransport.NOTIFICARE -> null
+                    NotificareTransport.GCM -> "re.notifica.push.ui.fcm.NotificareStoreFragment"
+                    NotificareTransport.HMS -> "re.notifica.push.ui.hms.NotificareStoreFragment"
+                }
+            }
             NotificareNotification.NotificationType.VIDEO -> NotificareVideoFragment::class.java.canonicalName
         }
     }
