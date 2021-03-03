@@ -1,4 +1,4 @@
-package re.notifica.push.ui.fragments
+package re.notifica.push.ui.fragments.base
 
 import android.content.Intent
 import android.os.Bundle

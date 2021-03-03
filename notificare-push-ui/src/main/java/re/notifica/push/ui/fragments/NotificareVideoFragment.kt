@@ -10,6 +10,7 @@ import android.webkit.WebViewClient
 import android.widget.FrameLayout
 import androidx.core.view.isVisible
 import re.notifica.push.ui.databinding.NotificareNotificationVideoFragmentBinding
+import re.notifica.push.ui.fragments.base.NotificationFragment
 
 class NotificareVideoFragment : NotificationFragment() {
 
