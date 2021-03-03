@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.webkit.WebChromeClient
 import re.notifica.push.ui.databinding.NotificareNotificationUrlFragmentBinding
+import re.notifica.push.ui.fragments.base.NotificationFragment
 import re.notifica.push.ui.utils.NotificationWebViewClient
 
 class NotificareUrlFragment : NotificationFragment() {

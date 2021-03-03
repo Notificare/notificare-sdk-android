@@ -4,6 +4,7 @@ import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.os.Build
 import android.util.Log
+import android.widget.ImageView
 import com.bumptech.glide.Glide
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.adapters.Rfc3339DateJsonAdapter
@@ -91,5 +92,11 @@ object NotificareUtils {
 
             withContext(Dispatchers.Main) { bitmap }
         }
+    }
+
+    fun loadImage(url: String, view: ImageView) {
+        Glide.with(Notificare.requireContext())
+            .load(url)
+            .into(view)
     }
 }

@@ -6,7 +6,7 @@ import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import re.notifica.models.NotificareNotification
-import re.notifica.push.ui.fragments.NotificationFragment
+import re.notifica.push.ui.fragments.base.NotificationFragment
 
 open class NotificationWebViewClient(
     private val notification: NotificareNotification,

@@ -38,7 +38,9 @@ object NotificarePush : NotificareModule() {
     const val INTENT_ACTION_NOTIFICATION_OPENED = "re.notifica.intent.action.NotificationOpened"
     const val INTENT_EXTRA_NOTIFICATION = "re.notifica.intent.extra.Notification"
 
-    private var serviceManager: NotificareServiceManager? = null
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    var serviceManager: NotificareServiceManager? = null
+        private set
     private val notificationSequence = AtomicInteger()
 
     var intentReceiver: Class<out NotificarePushIntentReceiver> = NotificarePushIntentReceiver::class.java

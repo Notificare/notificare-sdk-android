@@ -29,6 +29,7 @@
         <activity
             android:name="re.notifica.push.ui.NotificationActivity"
             android:hardwareAccelerated="true"
+            android:parentActivityName=".MainActivity"
             android:theme="@style/Theme.Notificare.Translucent" />
 
         <receiver android:name="re.notifica.app.NotificareIntentReceiver" />
@@ -41,6 +42,10 @@
         <meta-data
             android:name="re.notifica.push.notification_small_icon"
             android:resource="@drawable/ic_rocket_black_24dp" />
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="${googleMapsApiKey}" />
     </application>
 
 </manifest>

@@ -11,9 +11,7 @@ import re.notifica.NotificareLogger
 import re.notifica.models.NotificareNotification
 import re.notifica.push.NotificarePush
 import re.notifica.push.ui.databinding.NotificareNotificationContainerFragmentBinding
-import re.notifica.push.ui.fragments.NotificareAlertFragment
-import re.notifica.push.ui.fragments.NotificareUrlFragment
-import re.notifica.push.ui.fragments.NotificationFragment
+import re.notifica.push.ui.fragments.base.NotificationFragment
 
 class NotificationContainerFragment
     : Fragment(), NotificationFragment.Callback, NotificationDialog.Callback {
@@ -56,33 +54,32 @@ class NotificationContainerFragment
         if (savedInstanceState != null) return
 
         val type = NotificareNotification.NotificationType.from(notification.type)
-        val fragmentClassName = when (type) {
-            NotificareNotification.NotificationType.ALERT -> NotificareAlertFragment::class.java.canonicalName!!
-            NotificareNotification.NotificationType.URL -> NotificareUrlFragment::class.java.canonicalName!!
-            else -> NotificareAlertFragment::class.java.canonicalName!!
+        val fragmentClassName = NotificarePushUI.getFragmentCanonicalClassName(notification)
+
+        val fragment = fragmentClassName?.let {
+            try {
+                val klass = Class.forName(it)
+                klass.getConstructor().newInstance() as Fragment
+            } catch (e: Exception) {
+                NotificareLogger.error(
+                    "Failed to dynamically create the concrete notification fragment.",
+                    e
+                )
+
+                null
+            }
         }
 
-        val fragment = try {
-            val klass = Class.forName(fragmentClassName)
-            klass.getConstructor().newInstance() as Fragment
-        } catch (e: Exception) {
-            NotificareLogger.error(
-                "Failed to dynamically create the concrete notification fragment.",
-                e
-            )
+        if (fragment != null) {
+            fragment.arguments = Bundle().apply {
+                putParcelable(NotificarePush.INTENT_EXTRA_NOTIFICATION, notification)
+            }
 
-            // Default to an Alert fragment.
-            NotificareAlertFragment()
+            childFragmentManager
+                .beginTransaction()
+                .add(binding.notificareNotificationFragmentContainer.id, fragment)
+                .commit()
         }
-
-        fragment.arguments = Bundle().apply {
-            putParcelable(NotificarePush.INTENT_EXTRA_NOTIFICATION, notification)
-        }
-
-        childFragmentManager
-            .beginTransaction()
-            .add(binding.notificareNotificationFragmentContainer.id, fragment)
-            .commit()
 
         // TODO action == null &&
         if (type == NotificareNotification.NotificationType.ALERT || type == NotificareNotification.NotificationType.PASSBOOK) {

@@ -6,6 +6,9 @@ plugins {
 
 apply from: '../dependencies.gradle'
 
+def properties = new Properties()
+properties.load(project.rootProject.file('local.properties').newDataInputStream())
+
 def startParameter = getGradle().getStartParameter().getTaskRequests().toString().toLowerCase()
 if (startParameter.contains("google")) {
     println("Building flavor with Google GMS - applying plugin")
@@ -25,6 +28,10 @@ android {
         targetSdkVersion 30
         versionCode 1
         versionName "1.0.0"
+
+        manifestPlaceholders = [
+                googleMapsApiKey: properties.getProperty('google.maps.key')
+        ]
     }
 
     buildTypes {
@@ -69,9 +76,12 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
 
     implementation project(':notificare-core')
-    implementation project(':notificare-push')
-    implementation project(':notificare-push-ui')
 
+    implementation project(':notificare-push')
     googleImplementation project(':notificare-push-fcm')
     huaweiImplementation project(':notificare-push-hms')
+
+    implementation project(':notificare-push-ui')
+    googleImplementation project(':notificare-push-ui-fcm')
+    huaweiImplementation project(':notificare-push-ui-hms')
 }
