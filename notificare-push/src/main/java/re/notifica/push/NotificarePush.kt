@@ -14,6 +14,7 @@ import android.os.Build
 import androidx.annotation.RestrictTo
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.core.app.RemoteInput
 import androidx.core.content.ContextCompat
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -35,8 +36,18 @@ import java.util.concurrent.atomic.AtomicInteger
 object NotificarePush : NotificareModule() {
 
     const val DEFAULT_NOTIFICATION_CHANNEL_ID = "notificare_channel_default"
+
+    // Intent actions
+    const val INTENT_ACTION_REMOTE_MESSAGE_OPENED = "re.notifica.intent.action.RemoteMessageOpened"
+    const val INTENT_ACTION_NOTIFICATION_RECEIVED = "re.notifica.intent.action.NotificationReceived"
+    const val INTENT_ACTION_SYSTEM_NOTIFICATION_RECEIVED = "re.notifica.intent.action.SystemNotificationReceived"
+    const val INTENT_ACTION_UNKNOWN_NOTIFICATION_RECEIVED = "re.notifica.intent.action.UnknownNotificationReceived"
     const val INTENT_ACTION_NOTIFICATION_OPENED = "re.notifica.intent.action.NotificationOpened"
-    const val INTENT_EXTRA_NOTIFICATION = "re.notifica.intent.extra.Notification"
+    const val INTENT_ACTION_ACTION_OPENED = "re.notifica.intent.action.ActionOpened"
+
+    // Intent extras
+    const val INTENT_EXTRA_REMOTE_MESSAGE = "re.notifica.intent.extra.RemoteMessage"
+    const val INTENT_EXTRA_TEXT_RESPONSE = "re.notifica.intent.extra.TextResponse"
 
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     var serviceManager: NotificareServiceManager? = null
@@ -114,8 +125,8 @@ object NotificarePush : NotificareModule() {
 
                 Notificare.requireContext().sendBroadcast(
                     Intent(Notificare.requireContext(), intentReceiver)
-                        .setAction(NotificarePushIntentReceiver.Actions.UNKNOWN_NOTIFICATION_RECEIVED)
-                        .putExtra(NotificarePushIntentReceiver.Extras.NOTIFICATION, notification)
+                        .setAction(INTENT_ACTION_UNKNOWN_NOTIFICATION_RECEIVED)
+                        .putExtra(Notificare.INTENT_EXTRA_NOTIFICATION, notification)
                 )
             }
         }
@@ -245,8 +256,8 @@ object NotificarePush : NotificareModule() {
 
                 Notificare.requireContext().sendBroadcast(
                     Intent(Notificare.requireContext(), intentReceiver)
-                        .setAction(NotificarePushIntentReceiver.Actions.NOTIFICATION_RECEIVED)
-                        .putExtra(NotificarePushIntentReceiver.Extras.NOTIFICATION, notification)
+                        .setAction(INTENT_ACTION_NOTIFICATION_RECEIVED)
+                        .putExtra(Notificare.INTENT_EXTRA_NOTIFICATION, notification)
                 )
             } catch (e: Exception) {
                 NotificareLogger.error("Failed to fetch notification.", e)
@@ -269,11 +280,11 @@ object NotificarePush : NotificareModule() {
             createUniqueNotificationId(),
             Intent(Notificare.requireContext(), NotificarePushSystemIntentReceiver::class.java).apply {
                 action = when (type) {
-                    NotificationIntentType.NOTIFICATION -> NotificarePushSystemIntentReceiver.Actions.REMOTE_MESSAGE_OPENED
+                    NotificationIntentType.NOTIFICATION -> INTENT_ACTION_REMOTE_MESSAGE_OPENED
 //                    NotificationIntentType.RELEVANCE_NOTIFICATION -> NotificarePushSystemIntentReceiver.Actions.RELEVANCE_REMOTE_MESSAGE_OPENED
                 }
 
-                putExtra(NotificarePushSystemIntentReceiver.Extras.REMOTE_MESSAGE, message)
+                putExtra(INTENT_EXTRA_REMOTE_MESSAGE, message)
             },
             PendingIntent.FLAG_CANCEL_CURRENT
         )
@@ -386,8 +397,69 @@ object NotificarePush : NotificareModule() {
         carExtender.setUnreadConversation(unreadConversationBuilder.build());
         */
 
-        // TODO handle action categories
+        // TODO why allow them to disable action categories?
+        // Handle action category
+        val application = Notificare.application ?: run {
+            NotificareLogger.debug("Notificare application was null when generation a remote notification.")
+            null
+        }
 
+        if (message.actionCategory != null && application != null) {
+            val category = application.actionCategories.firstOrNull { it.name == message.actionCategory }
+            category?.actions?.forEach { action ->
+                val actionIntent =
+                    Intent(Notificare.requireContext(), NotificarePushSystemIntentReceiver::class.java).apply {
+                        setAction(INTENT_ACTION_REMOTE_MESSAGE_OPENED)
+                        putExtra(INTENT_EXTRA_REMOTE_MESSAGE, message)
+                        putExtra(Notificare.INTENT_EXTRA_ACTION, action)
+                        // actionIntent.putExtras(notificationIntent.getExtras());
+                    }
+
+                builder.addAction(
+                    NotificationCompat.Action.Builder(
+                        0,
+                        action.getLocalizedLabel(Notificare.requireContext()),
+                        PendingIntent.getBroadcast(
+                            Notificare.requireContext(),
+                            createUniqueNotificationId(),
+                            actionIntent,
+                            PendingIntent.FLAG_CANCEL_CURRENT
+                        )
+                    ).build()
+                )
+
+                wearableExtender.addAction(
+                    NotificationCompat.Action.Builder(
+                        0,
+                        action.getLocalizedLabel(Notificare.requireContext()),
+                        PendingIntent.getBroadcast(
+                            Notificare.requireContext(),
+                            createUniqueNotificationId(),
+                            actionIntent,
+                            PendingIntent.FLAG_CANCEL_CURRENT
+                        )
+                    ).apply {
+                        if (action.keyboard && !action.camera) {
+                            addRemoteInput(
+                                RemoteInput.Builder(INTENT_EXTRA_TEXT_RESPONSE)
+                                    .setLabel(action.getLocalizedLabel(Notificare.requireContext()))
+                                    .build()
+                            )
+                        }
+                    }.build()
+                )
+            }
+
+            // If there are more than 2 category actions, add a more button
+            // TODO check this functionality in v2
+//            if (Notificare.shared().getShowMoreActionsButton() && categoryActions.length() > 2) {
+//                builder.addAction(
+//                    0,
+//                    Notificare.shared().getApplicationContext().getString(re.notifica.R.string.notificare_action_title_intent_more),
+//                    broadcast
+//                )
+//            }
+        }
 
         builder.extend(wearableExtender)
 

@@ -8,12 +8,12 @@ import re.notifica.NotificareLogger
 import re.notifica.models.NotificareNotification
 import re.notifica.models.NotificareTransport
 import re.notifica.push.NotificarePush
-import re.notifica.push.ui.fragments.NotificareAlertFragment
-import re.notifica.push.ui.fragments.NotificareImageFragment
-import re.notifica.push.ui.fragments.NotificareUrlFragment
-import re.notifica.push.ui.fragments.NotificareVideoFragment
+import re.notifica.push.ui.notifications.NotificationActivity
+import re.notifica.push.ui.notifications.fragments.*
 
 object NotificarePushUI {
+
+    internal const val CONTENT_FILE_PROVIDER_AUTHORITY_SUFFIX = ".notificare.fileprovider"
 
     fun presentNotification(activity: Activity, notification: NotificareNotification) {
         val type = NotificareNotification.NotificationType.from(notification.type) ?: run {
@@ -30,7 +30,7 @@ object NotificarePushUI {
             NotificareNotification.NotificationType.URL_SCHEME -> presentUrlScheme(activity, notification)
             else -> {
                 val intent = Intent(Notificare.requireContext(), NotificationActivity::class.java)
-                    .putExtra(NotificarePush.INTENT_EXTRA_NOTIFICATION, notification)
+                    .putExtra(Notificare.INTENT_EXTRA_NOTIFICATION, notification)
 //                  .putExtra(Notificare.INTENT_EXTRA_ACTION, action)
 //                  .setPackage(Notificare.requireContext().packageName)
 
@@ -52,7 +52,7 @@ object NotificarePushUI {
                 return null
             }
             NotificareNotification.NotificationType.ALERT -> NotificareAlertFragment::class.java.canonicalName
-            NotificareNotification.NotificationType.WEB_VIEW -> null
+            NotificareNotification.NotificationType.WEB_VIEW -> NotificareWebViewFragment::class.java.canonicalName
             NotificareNotification.NotificationType.URL -> NotificareUrlFragment::class.java.canonicalName
             NotificareNotification.NotificationType.URL_SCHEME -> {
                 NotificareLogger.debug("Attempting to create a fragment for a notification of type 'urlScheme'. This type contains to visual interface.")

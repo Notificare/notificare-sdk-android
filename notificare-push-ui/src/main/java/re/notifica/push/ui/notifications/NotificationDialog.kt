@@ -1,4 +1,4 @@
-package re.notifica.push.ui
+package re.notifica.push.ui.notifications
 
 import android.app.Dialog
 import android.content.DialogInterface
@@ -10,6 +10,7 @@ import androidx.fragment.app.DialogFragment
 import re.notifica.NotificareLogger
 import re.notifica.internal.NotificareUtils
 import re.notifica.models.NotificareNotification
+import re.notifica.push.ui.R
 import re.notifica.push.ui.databinding.NotificareAlertDialogBinding
 
 class NotificationDialog : DialogFragment() {

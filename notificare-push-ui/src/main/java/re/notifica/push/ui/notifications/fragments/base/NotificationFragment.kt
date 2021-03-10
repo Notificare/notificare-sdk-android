@@ -3,6 +3,7 @@ package re.notifica.push.ui.fragments.base
 import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
+import re.notifica.Notificare
 import re.notifica.models.NotificareNotification
 import re.notifica.push.NotificarePush
 
@@ -20,14 +21,14 @@ open class NotificationFragment : Fragment() {
             throw ClassCastException("Parent fragment must implement NotificationFragment.Callback.")
         }
 
-        notification = savedInstanceState?.getParcelable(NotificarePush.INTENT_EXTRA_NOTIFICATION)
-            ?: arguments?.getParcelable(NotificarePush.INTENT_EXTRA_NOTIFICATION)
+        notification = savedInstanceState?.getParcelable(Notificare.INTENT_EXTRA_NOTIFICATION)
+            ?: arguments?.getParcelable(Notificare.INTENT_EXTRA_NOTIFICATION)
                     ?: throw IllegalArgumentException("Missing required notification parameter.")
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putParcelable(NotificarePush.INTENT_EXTRA_NOTIFICATION, notification)
+        outState.putParcelable(Notificare.INTENT_EXTRA_NOTIFICATION, notification)
     }
 
     interface Callback {

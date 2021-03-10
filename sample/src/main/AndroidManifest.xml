@@ -27,7 +27,7 @@
         </activity>
 
         <activity
-            android:name="re.notifica.push.ui.NotificationActivity"
+            android:name="re.notifica.push.ui.notifications.NotificationActivity"
             android:hardwareAccelerated="true"
             android:parentActivityName=".MainActivity"
             android:theme="@style/Theme.Notificare.Translucent" />

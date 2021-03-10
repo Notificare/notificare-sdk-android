@@ -16,13 +16,19 @@ import re.notifica.internal.storage.database.NotificareDatabase
 import re.notifica.internal.storage.preferences.NotificareSharedPreferences
 import re.notifica.models.NotificareApplication
 import re.notifica.models.NotificareNotification
-import re.notifica.modules.*
+import re.notifica.modules.NotificareCrashReporter
+import re.notifica.modules.NotificareDeviceManager
+import re.notifica.modules.NotificareEventsManager
+import re.notifica.modules.NotificareSessionManager
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import java.lang.ref.WeakReference
 import java.util.*
 
 object Notificare {
+
+    const val INTENT_EXTRA_NOTIFICATION = "re.notifica.intent.extra.Notification"
+    const val INTENT_EXTRA_ACTION = "re.notifica.intent.extra.Action"
 
     // Internal modules
     val moshi = NotificareUtils.createMoshi()

@@ -8,7 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.Keep
-import re.notifica.push.ui.fragments.base.NotificationFragment
+import re.notifica.push.ui.notifications.fragments.base.NotificationFragment
 
 @Keep
 class NotificareRateFragment : NotificationFragment() {

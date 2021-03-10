@@ -6,7 +6,7 @@ import android.net.Uri
 import android.os.Bundle
 import androidx.annotation.Keep
 import re.notifica.models.NotificareNotification
-import re.notifica.push.ui.fragments.base.NotificationFragment
+import re.notifica.push.ui.notifications.fragments.base.NotificationFragment
 
 @Keep
 class NotificareStoreFragment : NotificationFragment() {

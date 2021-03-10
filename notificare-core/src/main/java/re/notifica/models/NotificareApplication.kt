@@ -36,11 +36,8 @@ data class NotificareApplication(
     @JsonClass(generateAdapter = true)
     data class ActionCategory(
         val type: String,
-        val label: String?,
-        val target: String?,
-        val camera: Boolean = false,
-        val keyboard: Boolean = false,
-        val destructive: Boolean = false
+        val name: String,
+        val actions: List<NotificareNotification.Action>
     )
 
     object ServiceKeys {

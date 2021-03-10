@@ -5,8 +5,19 @@
     <application>
 
         <activity
-            android:name=".NotificationActivity"
+            android:name=".notifications.NotificationActivity"
             android:hardwareAccelerated="true" />
+
+        <!-- Provider for camera replies -->
+        <provider
+            android:name=".content.FileProvider"
+            android:authorities="${applicationId}.notificare.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/notificare_file_paths" />
+        </provider>
 
     </application>
 

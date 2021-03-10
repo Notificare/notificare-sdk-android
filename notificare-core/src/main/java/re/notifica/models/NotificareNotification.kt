@@ -1,10 +1,12 @@
 package re.notifica.models
 
+import android.content.Context
 import android.os.Parcelable
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 import kotlinx.parcelize.Parcelize
 import kotlinx.parcelize.WriteWith
+import re.notifica.Notificare
 import re.notifica.internal.parcelize.NotificationContentDataParceler
 import re.notifica.internal.parcelize.NotificationExtraParceler
 import java.util.*
@@ -32,6 +34,7 @@ data class NotificareNotification(
     ) : Parcelable {
 
         companion object {
+            const val TYPE_HTML = "re.notifica.content.HTML"
             const val TYPE_GOOGLE_PLAY_DETAILS = "re.notifica.content.GooglePlayDetails"
             const val TYPE_GOOGLE_PLAY_DEVELOPER = "re.notifica.content.GooglePlayDeveloper"
             const val TYPE_GOOGLE_PLAY_SEARCH = "re.notifica.content.GooglePlaySearch"
@@ -49,7 +52,16 @@ data class NotificareNotification(
         val target: String?,
         val keyboard: Boolean,
         val camera: Boolean,
-    ) : Parcelable
+    ) : Parcelable {
+
+        fun getLocalizedLabel(context: Context): String {
+            val prefix = Notificare.options?.notificationActionLabelPrefix ?: ""
+            val resourceName = "$prefix$label"
+            val resource = context.resources.getIdentifier(resourceName, "string", context.packageName)
+
+            return if (resource == 0) label else context.getString(resource)
+        }
+    }
 
     @Parcelize
     @JsonClass(generateAdapter = true)

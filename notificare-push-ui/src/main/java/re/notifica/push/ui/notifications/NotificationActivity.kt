@@ -1,10 +1,10 @@
-package re.notifica.push.ui
+package re.notifica.push.ui.notifications
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
+import re.notifica.Notificare
 import re.notifica.models.NotificareNotification
-import re.notifica.push.NotificarePush
 import re.notifica.push.ui.databinding.NotificareNotificationActivityBinding
 
 class NotificationActivity : AppCompatActivity(), NotificationContainerFragment.Callback {
@@ -13,8 +13,8 @@ class NotificationActivity : AppCompatActivity(), NotificationContainerFragment.
     private lateinit var notification: NotificareNotification
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        notification = savedInstanceState?.getParcelable(NotificarePush.INTENT_EXTRA_NOTIFICATION)
-            ?: intent.getParcelableExtra(NotificarePush.INTENT_EXTRA_NOTIFICATION)
+        notification = savedInstanceState?.getParcelable(Notificare.INTENT_EXTRA_NOTIFICATION)
+            ?: intent.getParcelableExtra(Notificare.INTENT_EXTRA_NOTIFICATION)
                     ?: throw IllegalArgumentException("Missing required notification parameter.")
 
         super.onCreate(savedInstanceState)
@@ -33,7 +33,7 @@ class NotificationActivity : AppCompatActivity(), NotificationContainerFragment.
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putParcelable(NotificarePush.INTENT_EXTRA_NOTIFICATION, notification)
+        outState.putParcelable(Notificare.INTENT_EXTRA_NOTIFICATION, notification)
     }
 
     // region NotificationContainerFragment.Callback

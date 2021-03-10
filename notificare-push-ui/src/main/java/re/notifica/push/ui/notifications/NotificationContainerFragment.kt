@@ -1,30 +1,38 @@
-package re.notifica.push.ui
+package re.notifica.push.ui.notifications
 
+import android.Manifest
 import android.content.ActivityNotFoundException
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
+import re.notifica.Notificare
 import re.notifica.NotificareLogger
 import re.notifica.models.NotificareNotification
-import re.notifica.push.NotificarePush
+import re.notifica.push.ui.NotificarePushUI
+import re.notifica.push.ui.R
 import re.notifica.push.ui.databinding.NotificareNotificationContainerFragmentBinding
-import re.notifica.push.ui.fragments.base.NotificationFragment
+import re.notifica.push.ui.notifications.fragments.base.NotificationFragment
 
 class NotificationContainerFragment
     : Fragment(), NotificationFragment.Callback, NotificationDialog.Callback {
 
     private lateinit var binding: NotificareNotificationContainerFragmentBinding
-    private var notification: NotificareNotification? = null
-    private var callback: Callback? = null
+    private lateinit var notification: NotificareNotification
+    private lateinit var callback: Callback
+
+    private var pendingAction: NotificareNotification.Action? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        notification = savedInstanceState?.getParcelable(NotificarePush.INTENT_EXTRA_NOTIFICATION)
-            ?: arguments?.getParcelable(NotificarePush.INTENT_EXTRA_NOTIFICATION)
+        notification = savedInstanceState?.getParcelable(Notificare.INTENT_EXTRA_NOTIFICATION)
+            ?: arguments?.getParcelable(Notificare.INTENT_EXTRA_NOTIFICATION)
+                ?: throw IllegalArgumentException("Missing required notification parameter.")
 
         try {
             callback = activity as Callback
@@ -44,8 +52,6 @@ class NotificationContainerFragment
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        val notification = notification ?: return
 
         // Inform user that this type has actions attached
         // TODO action == null && !notification.getType().equals(NotificareNotification.TYPE_ALERT) && !notification.getType().equals(NotificareNotification.TYPE_PASSBOOK) && notification.getActions().size() > 0
@@ -72,7 +78,7 @@ class NotificationContainerFragment
 
         if (fragment != null) {
             fragment.arguments = Bundle().apply {
-                putParcelable(NotificarePush.INTENT_EXTRA_NOTIFICATION, notification)
+                putParcelable(Notificare.INTENT_EXTRA_NOTIFICATION, notification)
             }
 
             childFragmentManager
@@ -83,34 +89,99 @@ class NotificationContainerFragment
 
         // TODO action == null &&
         if (type == NotificareNotification.NotificationType.ALERT || type == NotificareNotification.NotificationType.PASSBOOK) {
-            callback?.onNotificationFragmentCanHideActionBar(notification)
+            callback.onNotificationFragmentCanHideActionBar(notification)
             // TODO keep an instance variable
             NotificationDialog.newInstance(notification)
                 .show(childFragmentManager, "dialog")
         } else {
-            callback?.onNotificationFragmentShouldShowActionBar(notification)
+            callback.onNotificationFragmentShouldShowActionBar(notification)
         }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putParcelable(NotificarePush.INTENT_EXTRA_NOTIFICATION, notification)
+        outState.putParcelable(Notificare.INTENT_EXTRA_NOTIFICATION, notification)
     }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        when (requestCode) {
+            CAMERA_REQUEST_CODE -> {
+                val pendingAction = pendingAction
+
+                if (
+                    permissions.isNotEmpty() &&
+                    grantResults.isNotEmpty() &&
+                    permissions.first() == Manifest.permission.CAMERA &&
+                    grantResults.first() == PackageManager.PERMISSION_GRANTED &&
+                    pendingAction != null
+                ) {
+                    handleAction(pendingAction)
+                } else {
+                    callback.onNotificationFragmentActionFailed(
+                        notification,
+                        resources.getString(R.string.notificare_action_camera_failed)
+                    )
+
+                    callback.onNotificationFragmentFinished()
+                }
+            }
+            else -> super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        }
+    }
+
+    private fun handleAction(action: NotificareNotification.Action) {
+        if (action.camera && isCameraPermissionNeeded && !isCameraPermissionGranted) {
+            pendingAction = action
+            requestPermissions(arrayOf(Manifest.permission.CAMERA), CAMERA_REQUEST_CODE)
+
+            return
+        }
+
+        callback.onNotificationFragmentStartProgress(notification)
+        // TODO
+    }
+
+    private val isCameraPermissionNeeded: Boolean
+        get() {
+            val packageManager = Notificare.requireContext().packageManager
+            val packageName = Notificare.requireContext().packageName
+
+            try {
+                val info = packageManager.getPackageInfo(packageName, PackageManager.GET_PERMISSIONS)
+                val requestedPermissions = info.requestedPermissions
+
+                if (requestedPermissions != null) {
+                    return requestedPermissions.any { it == Manifest.permission.CAMERA }
+                }
+            } catch (e: PackageManager.NameNotFoundException) {
+                NotificareLogger.warning("Failed to read the manifest.", e)
+            }
+
+            return false
+        }
+
+    private val isCameraPermissionGranted: Boolean
+        get() {
+            val context = context ?: return false
+
+            return ActivityCompat.checkSelfPermission(
+                context,
+                Manifest.permission.CAMERA
+            ) == PackageManager.PERMISSION_GRANTED
+        }
 
     // region NotificationFragment.Callback
 
     override fun onNotificationFragmentFinished() {
-        callback?.onNotificationFragmentFinished()
+        callback.onNotificationFragmentFinished()
     }
 
     override fun onNotificationFragmentShouldShowActionBar() {
-        val notification = notification ?: return
-        callback?.onNotificationFragmentShouldShowActionBar(notification)
+        callback.onNotificationFragmentShouldShowActionBar(notification)
     }
 
     override fun onNotificationFragmentCanHideActionBar() {
-        val notification = notification ?: return
-        callback?.onNotificationFragmentCanHideActionBar(notification)
+        callback.onNotificationFragmentCanHideActionBar(notification)
     }
 
     override fun onNotificationFragmentCanHideActionsMenu() {
@@ -118,28 +189,23 @@ class NotificationContainerFragment
     }
 
     override fun onNotificationFragmentStartProgress() {
-        val notification = notification ?: return
-        callback?.onNotificationFragmentStartProgress(notification)
+        callback.onNotificationFragmentStartProgress(notification)
     }
 
     override fun onNotificationFragmentEndProgress() {
-        val notification = notification ?: return
-        callback?.onNotificationFragmentEndProgress(notification)
+        callback.onNotificationFragmentEndProgress(notification)
     }
 
     override fun onNotificationFragmentActionCanceled() {
-        val notification = notification ?: return
-        callback?.onNotificationFragmentActionCanceled(notification)
+        callback.onNotificationFragmentActionCanceled(notification)
     }
 
     override fun onNotificationFragmentActionFailed(reason: String) {
-        val notification = notification ?: return
-        callback?.onNotificationFragmentActionFailed(notification, reason)
+        callback.onNotificationFragmentActionFailed(notification, reason)
     }
 
     override fun onNotificationFragmentActionSucceeded() {
-        val notification = notification ?: return
-        callback?.onNotificationFragmentActionSucceeded(notification)
+        callback.onNotificationFragmentActionSucceeded(notification)
     }
 
     override fun onNotificationFragmentShowActions() {
@@ -175,19 +241,18 @@ class NotificationContainerFragment
         //        if (notification.getType().equals(NotificareNotification.TYPE_ALERT) || notification.getType().equals(NotificareNotification.TYPE_PASSBOOK)) {
 //            if (callback != null && pendingResult == null) {
 
-        callback?.onNotificationFragmentFinished()
+        callback.onNotificationFragmentFinished()
     }
 
     override fun onNotificationDialogActionClick(position: Int) {
         NotificareLogger.debug("User clicked on action index $position.")
 
-        val notification = notification ?: return
         if (position >= notification.actions.size) {
             // This is the cancel button
-            callback?.onNotificationFragmentFinished()
+            callback.onNotificationFragmentFinished()
         } else {
             // Perform the action
-            // handleAction(position)
+            handleAction(notification.actions[position])
         }
     }
 
@@ -198,10 +263,12 @@ class NotificationContainerFragment
     // endregion
 
     companion object {
+        private const val CAMERA_REQUEST_CODE = 1
+
         fun newInstance(notification: NotificareNotification): NotificationContainerFragment {
             return NotificationContainerFragment().apply {
                 arguments = Bundle().apply {
-                    putParcelable(NotificarePush.INTENT_EXTRA_NOTIFICATION, notification)
+                    putParcelable(Notificare.INTENT_EXTRA_NOTIFICATION, notification)
                     //putParcelable(NotificarePush.INTENT_EXTRA_ACTION, action)
                 }
             }

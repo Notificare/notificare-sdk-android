@@ -10,9 +10,9 @@ import com.huawei.hms.maps.model.LatLng
 import com.huawei.hms.maps.model.LatLngBounds
 import com.huawei.hms.maps.model.Marker
 import com.huawei.hms.maps.model.MarkerOptions
+import re.notifica.Notificare
 import re.notifica.internal.common.waitForLayout
 import re.notifica.models.NotificareNotification
-import re.notifica.push.NotificarePush
 
 @Keep
 class NotificareMapFragment : SupportMapFragment(), OnMapReadyCallback {
@@ -30,8 +30,8 @@ class NotificareMapFragment : SupportMapFragment(), OnMapReadyCallback {
 //            throw ClassCastException("Parent fragment must implement NotificationFragment.Callback.")
 //        }
 
-        notification = savedInstanceState?.getParcelable(NotificarePush.INTENT_EXTRA_NOTIFICATION)
-            ?: arguments?.getParcelable(NotificarePush.INTENT_EXTRA_NOTIFICATION)
+        notification = savedInstanceState?.getParcelable(Notificare.INTENT_EXTRA_NOTIFICATION)
+            ?: arguments?.getParcelable(Notificare.INTENT_EXTRA_NOTIFICATION)
                 ?: throw IllegalArgumentException("Missing required notification parameter.")
 
         getMapAsync(this)
@@ -39,7 +39,7 @@ class NotificareMapFragment : SupportMapFragment(), OnMapReadyCallback {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putParcelable(NotificarePush.INTENT_EXTRA_NOTIFICATION, notification)
+        outState.putParcelable(Notificare.INTENT_EXTRA_NOTIFICATION, notification)
     }
 
     // region OnMapReadyCallback

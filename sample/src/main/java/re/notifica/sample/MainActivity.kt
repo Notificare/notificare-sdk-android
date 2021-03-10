@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.snackbar.Snackbar
 import re.notifica.Notificare
 import re.notifica.NotificareCallback
+import re.notifica.NotificareLogger
 import re.notifica.callbacks.*
 import re.notifica.models.NotificareDoNotDisturb
 import re.notifica.models.NotificareNotification
@@ -41,7 +42,7 @@ class MainActivity : AppCompatActivity() {
         when (intent.action) {
             NotificarePush.INTENT_ACTION_NOTIFICATION_OPENED -> {
                 val notification: NotificareNotification = requireNotNull(
-                    intent.getParcelableExtra(NotificarePush.INTENT_EXTRA_NOTIFICATION)
+                    intent.getParcelableExtra(Notificare.INTENT_EXTRA_NOTIFICATION)
                 )
 
                 val type = NotificareNotification.NotificationType.from(notification.type)
@@ -52,6 +53,9 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+
+        val uri = intent.data ?: return
+        NotificareLogger.info("Received deep link with uri = $uri")
     }
 
     fun onFetchTagsClick(@Suppress("UNUSED_PARAMETER") view: View) {
