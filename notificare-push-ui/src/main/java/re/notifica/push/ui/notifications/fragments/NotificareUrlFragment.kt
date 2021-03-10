@@ -1,4 +1,4 @@
-package re.notifica.push.ui.fragments
+package re.notifica.push.ui.notifications.fragments
 
 import android.annotation.SuppressLint
 import android.os.Bundle
@@ -7,7 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.webkit.WebChromeClient
 import re.notifica.push.ui.databinding.NotificareNotificationUrlFragmentBinding
-import re.notifica.push.ui.fragments.base.NotificationFragment
+import re.notifica.push.ui.notifications.fragments.base.NotificationFragment
 import re.notifica.push.ui.utils.NotificationWebViewClient
 
 class NotificareUrlFragment : NotificationFragment() {

@@ -1,11 +1,10 @@
-package re.notifica.push.ui.fragments.base
+package re.notifica.push.ui.notifications.fragments.base
 
 import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import re.notifica.Notificare
 import re.notifica.models.NotificareNotification
-import re.notifica.push.NotificarePush
 
 open class NotificationFragment : Fragment() {
 

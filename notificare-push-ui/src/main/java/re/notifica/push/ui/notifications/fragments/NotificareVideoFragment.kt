@@ -1,4 +1,4 @@
-package re.notifica.push.ui.fragments
+package re.notifica.push.ui.notifications.fragments
 
 import android.annotation.SuppressLint
 import android.os.Bundle
@@ -10,7 +10,7 @@ import android.webkit.WebViewClient
 import android.widget.FrameLayout
 import androidx.core.view.isVisible
 import re.notifica.push.ui.databinding.NotificareNotificationVideoFragmentBinding
-import re.notifica.push.ui.fragments.base.NotificationFragment
+import re.notifica.push.ui.notifications.fragments.base.NotificationFragment
 
 class NotificareVideoFragment : NotificationFragment() {
 
