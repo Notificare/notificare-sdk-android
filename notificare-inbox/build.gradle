@@ -58,10 +58,11 @@ dependencies {
     // Work Manager
     implementation "androidx.work:work-runtime-ktx:$work_manager_version"
 
+    // OkHttp
+    implementation "com.squareup.okhttp3:okhttp:$okhttp_version"
+
     // Moshi
     api "com.squareup.moshi:moshi-kotlin:$moshi_version"
     kapt "com.squareup.moshi:moshi-kotlin-codegen:$moshi_version"
     implementation "com.squareup.moshi:moshi-adapters:$moshi_version"
-
-    implementation "com.squareup.retrofit2:retrofit:$retrofit_version"
 }

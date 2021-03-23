@@ -16,7 +16,7 @@ import re.notifica.NotificareException
 import re.notifica.NotificareLogger
 import re.notifica.inbox.internal.database.InboxDatabase
 import re.notifica.inbox.internal.database.entities.InboxItemEntity
-import re.notifica.inbox.internal.network.push.PushResponse
+import re.notifica.inbox.internal.network.push.InboxResponse
 import re.notifica.inbox.internal.workers.ExpireItemWorker
 import re.notifica.inbox.models.NotificareInboxItem
 import re.notifica.internal.network.NetworkException
@@ -316,7 +316,7 @@ object NotificareInbox : NotificareModule() {
             NotificareRequest.Builder()
                 .get("/notification/inbox/fordevice/${device.id}")
                 .query("ifModifiedSince", mostRecentItem.time.time.toString())
-                .responseDecodable(PushResponse.Inbox::class)
+                .responseDecodable(InboxResponse::class)
 
             NotificareLogger.info("The inbox has been modified. Performing a full sync.")
             reloadInbox()
@@ -354,7 +354,7 @@ object NotificareInbox : NotificareModule() {
             .get("/notification/inbox/fordevice/${device.id}")
             .query("skip", (step * 100).toString())
             .query("limit", "100")
-            .responseDecodable(PushResponse.Inbox::class)
+            .responseDecodable(InboxResponse::class)
 
         // Add all items to the database.
         response.inboxItems.forEach {

@@ -1,4 +1,4 @@
-package re.notifica.internal.network.push
+package re.notifica.internal.network
 
 import okhttp3.Interceptor
 import okhttp3.Response

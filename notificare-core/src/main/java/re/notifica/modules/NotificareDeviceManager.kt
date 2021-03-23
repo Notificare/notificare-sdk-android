@@ -8,7 +8,7 @@ import re.notifica.internal.NotificareIntentEmitter
 import re.notifica.internal.NotificareUtils
 import re.notifica.internal.common.toByteArray
 import re.notifica.internal.common.toHex
-import re.notifica.internal.network.push.payloads.*
+import re.notifica.internal.network.push.*
 import re.notifica.models.NotificareDevice
 import re.notifica.models.NotificareDoNotDisturb
 import re.notifica.models.NotificareTransport
@@ -140,14 +140,14 @@ class NotificareDeviceManager {
 
     suspend fun addTags(tags: List<String>) {
         val device = checkNotificareReady()
-        Notificare.pushService.addDeviceTags(device.id, NotificareTagsPayload(tags))
+        Notificare.pushService.addDeviceTags(device.id, DeviceTagsPayload(tags))
     }
 
     suspend fun removeTag(tag: String) = removeTags(listOf(tag))
 
     suspend fun removeTags(tags: List<String>) {
         val device = checkNotificareReady()
-        Notificare.pushService.removeDeviceTags(device.id, NotificareTagsPayload(tags))
+        Notificare.pushService.removeDeviceTags(device.id, DeviceTagsPayload(tags))
     }
 
     suspend fun clearTags() {
@@ -204,7 +204,7 @@ class NotificareDeviceManager {
 
         Notificare.pushService.updateDevice(
             device.id,
-            NotificareDeviceUpdateAllowedUI(
+            DeviceUpdateNotificationSettingsPayload(
                 language = getLanguage(),
                 region = getRegion(),
                 allowedUI = allowedUI,
@@ -235,7 +235,7 @@ class NotificareDeviceManager {
                 if (currentDevice?.id != null && currentDevice.id != token) currentDevice.id
                 else null
 
-            val deviceRegistration = NotificareDeviceRegistration(
+            val deviceRegistration = DeviceRegistrationPayload(
                 deviceId = token,
                 oldDeviceId = oldDeviceId,
                 userId = userId,
@@ -353,7 +353,7 @@ class NotificareDeviceManager {
 
         Notificare.pushService.updateDevice(
             device.id,
-            NotificareDeviceUpdateLanguage(
+            DeviceUpdateLanguagePayload(
                 language = getLanguage(),
                 region = getRegion()
             )
@@ -365,7 +365,7 @@ class NotificareDeviceManager {
 
         Notificare.pushService.updateDevice(
             device.id,
-            NotificareDeviceUpdateTimeZone(
+            DeviceUpdateTimeZonePayload(
                 language = getLanguage(),
                 region = getRegion(),
                 timeZoneOffset = NotificareUtils.timeZoneOffset,
@@ -376,7 +376,7 @@ class NotificareDeviceManager {
     // endregion
 }
 
-private fun NotificareDeviceRegistration.toStoredDevice(previous: NotificareDevice?): NotificareDevice {
+private fun DeviceRegistrationPayload.toStoredDevice(previous: NotificareDevice?): NotificareDevice {
     return NotificareDevice(
         id = this.deviceId,
         userId = this.userId,

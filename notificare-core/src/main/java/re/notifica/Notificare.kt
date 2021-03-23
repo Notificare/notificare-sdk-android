@@ -9,10 +9,11 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import re.notifica.app.NotificareIntentReceiver
 import re.notifica.internal.*
-import re.notifica.internal.network.push.NotificareBasicAuthenticator
-import re.notifica.internal.network.push.NotificareHeadersInterceptor
+import re.notifica.internal.network.NotificareBasicAuthenticator
+import re.notifica.internal.network.NotificareHeadersInterceptor
+import re.notifica.internal.network.push.ApplicationResponse
 import re.notifica.internal.network.push.NotificarePushService
-import re.notifica.internal.network.push.responses.NotificareApplicationResponse
+import re.notifica.internal.network.push.NotificationResponse
 import re.notifica.internal.network.request.NotificareRequest
 import re.notifica.internal.storage.database.NotificareDatabase
 import re.notifica.internal.storage.preferences.NotificareSharedPreferences
@@ -186,7 +187,7 @@ object Notificare {
     suspend fun fetchApplication(): NotificareApplication = withContext(Dispatchers.IO) {
         NotificareRequest.Builder()
             .get("/application/info")
-            .responseDecodable(NotificareApplicationResponse::class)
+            .responseDecodable(ApplicationResponse::class)
             .application
     }
 

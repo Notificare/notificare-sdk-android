@@ -1,7 +1,5 @@
 package re.notifica.internal.network.push
 
-import re.notifica.internal.network.push.payloads.*
-import re.notifica.internal.network.push.responses.*
 import re.notifica.models.NotificareDoNotDisturb
 import re.notifica.models.NotificareEvent
 import re.notifica.models.NotificareUserData
@@ -10,29 +8,29 @@ import retrofit2.http.*
 internal interface NotificarePushService {
 
     @GET("/application/info")
-    suspend fun fetchApplication(): NotificareApplicationResponse
+    suspend fun fetchApplication(): ApplicationResponse
 
     @POST("/device")
     suspend fun createDevice(
-        @Body registration: NotificareDeviceRegistration
+        @Body registration: DeviceRegistrationPayload
     )
 
     @PUT("/device/{id}")
     suspend fun updateDevice(
         @Path("id") deviceId: String,
-        @Body payload: NotificareDeviceUpdateLanguage
+        @Body payload: DeviceUpdateLanguagePayload
     )
 
     @PUT("/device/{id}")
     suspend fun updateDevice(
         @Path("id") deviceId: String,
-        @Body payload: NotificareDeviceUpdateTimeZone
+        @Body payload: DeviceUpdateTimeZonePayload
     )
 
     @PUT("/device/{id}")
     suspend fun updateDevice(
         @Path("id") deviceId: String,
-        @Body payload: NotificareDeviceUpdateAllowedUI
+        @Body payload: DeviceUpdateNotificationSettingsPayload
     )
 
     // TODO update device calls
@@ -40,18 +38,18 @@ internal interface NotificarePushService {
     @GET("/device/{id}/tags")
     suspend fun getDeviceTags(
         @Path("id") deviceId: String
-    ): NotificareDeviceTagsResponse
+    ): DeviceTagsResponse
 
     @PUT("/device/{id}/addtags")
     suspend fun addDeviceTags(
         @Path("id") deviceId: String,
-        @Body payload: NotificareTagsPayload
+        @Body payload: DeviceTagsPayload
     )
 
     @PUT("/device/{id}/removetags")
     suspend fun removeDeviceTags(
         @Path("id") deviceId: String,
-        @Body payload: NotificareTagsPayload
+        @Body payload: DeviceTagsPayload
     )
 
     @PUT("/device/{id}/cleartags")
@@ -62,7 +60,7 @@ internal interface NotificarePushService {
     @GET("/device/{id}/dnd")
     suspend fun getDeviceDoNotDisturb(
         @Path("id") deviceId: String
-    ): NotificareDeviceDoNotDisturbResponse
+    ): DeviceDoNotDisturbResponse
 
     @PUT("/device/{id}/dnd")
     suspend fun updateDeviceDoNotDisturb(
@@ -78,7 +76,7 @@ internal interface NotificarePushService {
     @GET("/device/{id}/userdata")
     suspend fun getDeviceUserData(
         @Path("id") deviceId: String
-    ): NotificareDeviceUserDataResponse
+    ): DeviceUserDataResponse
 
     @PUT("/device/{id}/userdata")
     suspend fun updateDeviceUserData(
@@ -92,5 +90,5 @@ internal interface NotificarePushService {
     @GET("/notification/{id}")
     suspend fun fetchNotification(
         @Path("id") notificationId: String,
-    ): NotificareNotificationResponse
+    ): NotificationResponse
 }

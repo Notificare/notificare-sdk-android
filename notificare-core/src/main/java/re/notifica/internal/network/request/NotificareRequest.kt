@@ -12,8 +12,8 @@ import re.notifica.BuildConfig
 import re.notifica.Notificare
 import re.notifica.internal.NotificareUtils
 import re.notifica.internal.network.NetworkException
-import re.notifica.internal.network.push.NotificareBasicAuthenticator
-import re.notifica.internal.network.push.NotificareHeadersInterceptor
+import re.notifica.internal.network.NotificareBasicAuthenticator
+import re.notifica.internal.network.NotificareHeadersInterceptor
 import java.io.IOException
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException

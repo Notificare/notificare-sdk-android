@@ -6,14 +6,12 @@ import re.notifica.internal.moshi.UseDefaultsWhenNull
 import re.notifica.models.NotificareNotification
 import java.util.*
 
-internal sealed class PushResponse {
-
-    @JsonClass(generateAdapter = true)
-    data class Inbox(
-        val inboxItems: List<InboxItem>,
-        val count: Int,
-        val unread: Int,
-    )
+@JsonClass(generateAdapter = true)
+data class InboxResponse(
+    val inboxItems: List<InboxItem>,
+    val count: Int,
+    val unread: Int,
+) {
 
     @UseDefaultsWhenNull
     @JsonClass(generateAdapter = true)

@@ -14,6 +14,6 @@ buildscript {
         // Networking
         moshi_version = '1.11.0'
         retrofit_version = '2.9.0'
-        okhttp_version = '4.5.0'
+        okhttp_version = '4.9.0'
     }
 }
