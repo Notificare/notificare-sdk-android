@@ -8,7 +8,7 @@ import re.notifica.Notificare
 import re.notifica.NotificareLogger
 import java.util.*
 
-class NotificareSystemIntentReceiver : BroadcastReceiver() {
+internal class NotificareSystemIntentReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {
         if (intent == null) return
 

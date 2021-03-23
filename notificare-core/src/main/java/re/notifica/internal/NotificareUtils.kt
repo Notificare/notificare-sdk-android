@@ -12,8 +12,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import re.notifica.Notificare
 import re.notifica.NotificareDefinitions
-import re.notifica.internal.adapters.NotificareTimeAdapter
-import re.notifica.internal.adapters.NotificareTransportAdapter
+import re.notifica.internal.moshi.NotificareTimeAdapter
+import re.notifica.internal.moshi.NotificareTransportAdapter
+import re.notifica.internal.moshi.UseDefaultsWhenNullFactory
 import java.util.*
 
 object NotificareUtils {
@@ -75,6 +76,7 @@ object NotificareUtils {
 
     fun createMoshi(): Moshi {
         return Moshi.Builder()
+            .add(UseDefaultsWhenNullFactory())
             .add(Date::class.java, Rfc3339DateJsonAdapter())
             .add(NotificareTimeAdapter())
             .add(NotificareTransportAdapter())

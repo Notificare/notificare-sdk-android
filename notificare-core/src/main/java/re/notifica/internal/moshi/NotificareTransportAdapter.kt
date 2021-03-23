@@ -1,4 +1,4 @@
-package re.notifica.internal.adapters
+package re.notifica.internal.moshi
 
 import com.squareup.moshi.FromJson
 import com.squareup.moshi.JsonDataException

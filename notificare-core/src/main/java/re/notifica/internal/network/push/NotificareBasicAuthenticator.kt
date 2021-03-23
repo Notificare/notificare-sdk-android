@@ -1,13 +1,20 @@
 package re.notifica.internal.network.push
 
 import okhttp3.*
+import re.notifica.Notificare
+import re.notifica.NotificareLogger
 
-internal class NotificareBasicAuthenticator(
-    private val username: String,
-    private val password: String
-) : Authenticator {
-    override fun authenticate(route: Route?, response: Response): Request? {
-        val credential = Credentials.basic(username, password)
+internal class NotificareBasicAuthenticator : Authenticator {
+    override fun authenticate(route: Route?, response: Response): Request {
+        val key = Notificare.applicationKey
+        val secret = Notificare.applicationSecret
+
+        if (key == null || secret == null) {
+            NotificareLogger.warning("Performing unauthenticated request.")
+            return response.request
+        }
+
+        val credential = Credentials.basic(key, secret)
         return response.request.newBuilder()
             .header("Authorization", credential)
             .build()

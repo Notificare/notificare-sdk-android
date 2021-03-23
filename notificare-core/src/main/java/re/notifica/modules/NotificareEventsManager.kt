@@ -50,6 +50,14 @@ class NotificareEventsManager {
         )
     }
 
+    fun logNotificationOpened(id: String) {
+        log(
+            event = "re.notifica.event.notification.Open",
+            data = null,
+            notificationId = id
+        )
+    }
+
     fun logCustom(event: String, data: NotificareEventData? = null) {
         log("re.notifica.event.custom.${event}", data)
     }

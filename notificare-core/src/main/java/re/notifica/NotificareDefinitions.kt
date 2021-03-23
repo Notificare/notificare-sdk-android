@@ -39,7 +39,8 @@ internal object NotificareDefinitions {
     }
 
     enum class Module(val fqn: String) {
-        PUSH(fqn = "re.notifica.push.NotificarePush");
+        PUSH(fqn = "re.notifica.push.NotificarePush"),
+        INBOX(fqn = "re.notifica.inbox.NotificareInbox");
 
         val isAvailable: Boolean
             get() {

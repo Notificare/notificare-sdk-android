@@ -12,6 +12,8 @@ import re.notifica.internal.*
 import re.notifica.internal.network.push.NotificareBasicAuthenticator
 import re.notifica.internal.network.push.NotificareHeadersInterceptor
 import re.notifica.internal.network.push.NotificarePushService
+import re.notifica.internal.network.push.responses.NotificareApplicationResponse
+import re.notifica.internal.network.request.NotificareRequest
 import re.notifica.internal.storage.database.NotificareDatabase
 import re.notifica.internal.storage.preferences.NotificareSharedPreferences
 import re.notifica.models.NotificareApplication
@@ -50,8 +52,12 @@ object Notificare {
 
     // Configurations
     private var context: WeakReference<Context>? = null
-    private var applicationKey: String? = null
-    private var applicationSecret: String? = null
+    internal var servicesConfig: NotificareServices? = null
+        private set
+    internal var applicationKey: String? = null
+        private set
+    internal var applicationSecret: String? = null
+        private set
     var options: NotificareOptions? = null
         private set
 
@@ -171,10 +177,17 @@ object Notificare {
 
     suspend fun fetchNotification(id: String): NotificareNotification = withContext(Dispatchers.IO) {
         if (!isConfigured) {
-            throw NotificareException.NotReady
+            throw NotificareException.NotReady()
         }
 
         pushService.fetchNotification(id).notification
+    }
+
+    suspend fun fetchApplication(): NotificareApplication = withContext(Dispatchers.IO) {
+        NotificareRequest.Builder()
+            .get("/application/info")
+            .responseDecodable(NotificareApplicationResponse::class)
+            .application
     }
 
     // endregion
@@ -190,6 +203,7 @@ object Notificare {
         }
 
         this.context = WeakReference(context.applicationContext)
+        this.servicesConfig = services
         this.applicationKey = applicationKey
         this.applicationSecret = applicationSecret
         this.options = NotificareOptions(context.applicationContext)
@@ -231,7 +245,7 @@ object Notificare {
         }
 
         val httpClient = OkHttpClient.Builder()
-            .authenticator(NotificareBasicAuthenticator(applicationKey, applicationSecret))
+            .authenticator(NotificareBasicAuthenticator())
             .addInterceptor(NotificareHeadersInterceptor())
             .addInterceptor(httpLogger)
             .build()

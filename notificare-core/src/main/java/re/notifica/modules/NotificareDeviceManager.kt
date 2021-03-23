@@ -221,7 +221,7 @@ class NotificareDeviceManager {
         val device = currentDevice
 
         if (!Notificare.isReady || device == null) {
-            throw NotificareException.NotReady
+            throw NotificareException.NotReady()
         }
 
         return device
