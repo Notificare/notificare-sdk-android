@@ -9,6 +9,7 @@ import re.notifica.internal.NotificareUtils
 import re.notifica.internal.common.toByteArray
 import re.notifica.internal.common.toHex
 import re.notifica.internal.network.push.*
+import re.notifica.internal.network.request.NotificareRequest
 import re.notifica.models.NotificareDevice
 import re.notifica.models.NotificareDoNotDisturb
 import re.notifica.models.NotificareTransport
@@ -131,33 +132,43 @@ class NotificareDeviceManager {
     suspend fun fetchTags(): List<String> {
         val device = checkNotificareReady()
 
-        // TODO consider wrapping this in a try catch block to rewrite the exception into a NotificareException.Network.
-        val response = Notificare.pushService.getDeviceTags(device.id)
-        return response.tags
+        return NotificareRequest.Builder()
+            .get("/device/${device.id}/tags")
+            .responseDecodable(DeviceTagsResponse::class)
+            .tags
     }
 
     suspend fun addTag(tag: String) = addTags(listOf(tag))
 
     suspend fun addTags(tags: List<String>) {
         val device = checkNotificareReady()
-        Notificare.pushService.addDeviceTags(device.id, DeviceTagsPayload(tags))
+        NotificareRequest.Builder()
+            .put("/device/${device.id}/addtags", DeviceTagsPayload(tags))
+            .response()
     }
 
     suspend fun removeTag(tag: String) = removeTags(listOf(tag))
 
     suspend fun removeTags(tags: List<String>) {
         val device = checkNotificareReady()
-        Notificare.pushService.removeDeviceTags(device.id, DeviceTagsPayload(tags))
+        NotificareRequest.Builder()
+            .put("/device/${device.id}/removetags", DeviceTagsPayload(tags))
+            .response()
     }
 
     suspend fun clearTags() {
         val device = checkNotificareReady()
-        Notificare.pushService.clearDeviceTags(device.id)
+        NotificareRequest.Builder()
+            .put("/device/${device.id}/cleartags", null)
+            .response()
     }
 
     suspend fun fetchDoNotDisturb(): NotificareDoNotDisturb? {
         val device = checkNotificareReady()
-        val (dnd) = Notificare.pushService.getDeviceDoNotDisturb(device.id)
+        val dnd = NotificareRequest.Builder()
+            .get("/device/${device.id}/dnd")
+            .responseDecodable(DeviceDoNotDisturbResponse::class)
+            .dnd
 
         // Update current device properties.
         currentDevice?.dnd = dnd
@@ -167,7 +178,9 @@ class NotificareDeviceManager {
 
     suspend fun updateDoNotDisturb(dnd: NotificareDoNotDisturb) {
         val device = checkNotificareReady()
-        Notificare.pushService.updateDeviceDoNotDisturb(device.id, dnd)
+        NotificareRequest.Builder()
+            .put("/device/${device.id}/dnd", dnd)
+            .response()
 
         // Update current device properties.
         currentDevice?.dnd = dnd
@@ -175,7 +188,9 @@ class NotificareDeviceManager {
 
     suspend fun clearDoNotDisturb() {
         val device = checkNotificareReady()
-        Notificare.pushService.clearDeviceDoNotDisturb(device.id)
+        NotificareRequest.Builder()
+            .put("/device/${device.id}/cleardnd", null)
+            .response()
 
         // Update current device properties.
         currentDevice?.dnd = null
@@ -183,7 +198,10 @@ class NotificareDeviceManager {
 
     suspend fun fetchUserData(): NotificareUserData? {
         val device = checkNotificareReady()
-        val (userData) = Notificare.pushService.getDeviceUserData(device.id)
+        val userData = NotificareRequest.Builder()
+            .get("/device/${device.id}/userdata")
+            .responseDecodable(DeviceUserDataResponse::class)
+            .userData
 
         // Update current device properties.
         currentDevice?.userData = userData
@@ -193,7 +211,9 @@ class NotificareDeviceManager {
 
     suspend fun updateUserData(userData: NotificareUserData) {
         val device = checkNotificareReady()
-        Notificare.pushService.updateDeviceUserData(device.id, userData)
+        NotificareRequest.Builder()
+            .put("/device/${device.id}/userdata", userData)
+            .response()
 
         // Update current device properties.
         currentDevice?.userData = userData
@@ -202,14 +222,16 @@ class NotificareDeviceManager {
     suspend fun updateNotificationSettings(allowedUI: Boolean) {
         val device = checkNotificareReady()
 
-        Notificare.pushService.updateDevice(
-            device.id,
-            DeviceUpdateNotificationSettingsPayload(
-                language = getLanguage(),
-                region = getRegion(),
-                allowedUI = allowedUI,
+        NotificareRequest.Builder()
+            .put(
+                url = "/device/${device.id}",
+                body = DeviceUpdateNotificationSettingsPayload(
+                    language = getLanguage(),
+                    region = getRegion(),
+                    allowedUI = allowedUI,
+                ),
             )
-        )
+            .response()
 
         // Update current device properties.
         currentDevice?.allowedUI = allowedUI
@@ -256,7 +278,9 @@ class NotificareDeviceManager {
                 bluetoothEnabled = false, // TODO me
             )
 
-            Notificare.pushService.createDevice(deviceRegistration)
+            NotificareRequest.Builder()
+                .post("/device", deviceRegistration)
+                .response()
 
             deviceRegistration.toStoredDevice(currentDevice).also {
                 this.currentDevice = it
@@ -351,26 +375,30 @@ class NotificareDeviceManager {
     internal suspend fun updateLanguage() {
         val device = checkNotificareReady()
 
-        Notificare.pushService.updateDevice(
-            device.id,
-            DeviceUpdateLanguagePayload(
-                language = getLanguage(),
-                region = getRegion()
+        NotificareRequest.Builder()
+            .put(
+                url = "/device/${device.id}",
+                body = DeviceUpdateLanguagePayload(
+                    language = getLanguage(),
+                    region = getRegion(),
+                ),
             )
-        )
+            .response()
     }
 
     internal suspend fun updateTimeZone() {
         val device = checkNotificareReady()
 
-        Notificare.pushService.updateDevice(
-            device.id,
-            DeviceUpdateTimeZonePayload(
-                language = getLanguage(),
-                region = getRegion(),
-                timeZoneOffset = NotificareUtils.timeZoneOffset,
+        NotificareRequest.Builder()
+            .put(
+                url = "/device/${device.id}",
+                body = DeviceUpdateTimeZonePayload(
+                    language = getLanguage(),
+                    region = getRegion(),
+                    timeZoneOffset = NotificareUtils.timeZoneOffset,
+                ),
             )
-        )
+            .response()
     }
 
     // endregion

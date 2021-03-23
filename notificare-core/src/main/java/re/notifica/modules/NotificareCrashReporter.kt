@@ -4,6 +4,7 @@ import re.notifica.Notificare
 import re.notifica.NotificareDefinitions
 import re.notifica.NotificareLogger
 import re.notifica.internal.NotificareUtils
+import re.notifica.internal.network.request.NotificareRequest
 import re.notifica.models.NotificareEvent
 
 class NotificareCrashReporter {
@@ -42,7 +43,10 @@ class NotificareCrashReporter {
         }
 
         try {
-            Notificare.pushService.createEvent(crashReport)
+            NotificareRequest.Builder()
+                .post("/event", crashReport)
+                .response()
+
             NotificareLogger.info("Crash report processed.")
 
             // Clean up the stored crash report

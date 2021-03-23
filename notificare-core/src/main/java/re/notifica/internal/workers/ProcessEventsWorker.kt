@@ -6,6 +6,7 @@ import androidx.work.WorkerParameters
 import re.notifica.Notificare
 import re.notifica.NotificareLogger
 import re.notifica.internal.common.recoverable
+import re.notifica.internal.network.request.NotificareRequest
 import re.notifica.internal.storage.database.entities.NotificareEventEntity
 import re.notifica.internal.storage.database.ktx.toModel
 import java.util.*
@@ -46,7 +47,9 @@ internal class ProcessEventsWorker(context: Context, params: WorkerParameters) :
         }
 
         try {
-            Notificare.pushService.createEvent(entity.toModel())
+            NotificareRequest.Builder()
+                .post("/event", entity.toModel())
+                .response()
 
             NotificareLogger.debug("Event processed. Removing from storage...")
             Notificare.database.events().delete(entity)

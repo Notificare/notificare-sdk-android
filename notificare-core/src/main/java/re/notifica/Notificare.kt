@@ -5,14 +5,9 @@ import android.content.res.Resources
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
-import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
 import re.notifica.app.NotificareIntentReceiver
 import re.notifica.internal.*
-import re.notifica.internal.network.NotificareBasicAuthenticator
-import re.notifica.internal.network.NotificareHeadersInterceptor
 import re.notifica.internal.network.push.ApplicationResponse
-import re.notifica.internal.network.push.NotificarePushService
 import re.notifica.internal.network.push.NotificationResponse
 import re.notifica.internal.network.request.NotificareRequest
 import re.notifica.internal.storage.database.NotificareDatabase
@@ -23,8 +18,6 @@ import re.notifica.modules.NotificareCrashReporter
 import re.notifica.modules.NotificareDeviceManager
 import re.notifica.modules.NotificareEventsManager
 import re.notifica.modules.NotificareSessionManager
-import retrofit2.Retrofit
-import retrofit2.converter.moshi.MoshiConverterFactory
 import java.lang.ref.WeakReference
 import java.util.*
 
@@ -39,17 +32,15 @@ object Notificare {
         private set
     internal lateinit var sharedPreferences: NotificareSharedPreferences
         private set
-    val crashReporter = NotificareCrashReporter()
     internal val sessionManager = NotificareSessionManager()
 
     // internal var reachability: NotificareReachability? = null
     //     private set
-    internal lateinit var pushService: NotificarePushService
-        private set
 
     // Consumer modules
     val eventsManager = NotificareEventsManager()
     val deviceManager = NotificareDeviceManager()
+    val crashReporter = NotificareCrashReporter()
 
     // Configurations
     private var context: WeakReference<Context>? = null
@@ -125,7 +116,7 @@ object Notificare {
 
         runBlocking(Dispatchers.IO) {
             try {
-                val (application) = pushService.fetchApplication()
+                val application = fetchApplication()
 
                 sessionManager.launch()
                 deviceManager.launch()
@@ -176,19 +167,22 @@ object Notificare {
 
     }
 
-    suspend fun fetchNotification(id: String): NotificareNotification = withContext(Dispatchers.IO) {
-        if (!isConfigured) {
-            throw NotificareException.NotReady()
-        }
-
-        pushService.fetchNotification(id).notification
-    }
-
     suspend fun fetchApplication(): NotificareApplication = withContext(Dispatchers.IO) {
         NotificareRequest.Builder()
             .get("/application/info")
             .responseDecodable(ApplicationResponse::class)
             .application
+    }
+
+    suspend fun fetchNotification(id: String): NotificareNotification = withContext(Dispatchers.IO) {
+        if (!isConfigured) {
+            throw NotificareException.NotReady()
+        }
+
+        NotificareRequest.Builder()
+            .get("/notification/$id")
+            .responseDecodable(NotificationResponse::class)
+            .notification
     }
 
     // endregion
@@ -213,9 +207,6 @@ object Notificare {
         this.database = NotificareDatabase.create(context.applicationContext)
         this.sharedPreferences = NotificareSharedPreferences(context.applicationContext)
 
-        NotificareLogger.debug("Configuring network services.")
-        configureNetworking(applicationKey, applicationSecret, services)
-
         NotificareLogger.debug("Configuring available modules.")
         sessionManager.configure()
         crashReporter.configure()
@@ -232,30 +223,5 @@ object Notificare {
 
         NotificareLogger.debug("Notificare configured all services.")
         state = NotificareLaunchState.CONFIGURED
-    }
-
-    private fun configureNetworking(
-        applicationKey: String,
-        applicationSecret: String,
-        services: NotificareServices
-    ) {
-        val httpLogger = HttpLoggingInterceptor().apply {
-            if (BuildConfig.DEBUG) {
-                level = HttpLoggingInterceptor.Level.BASIC
-            }
-        }
-
-        val httpClient = OkHttpClient.Builder()
-            .authenticator(NotificareBasicAuthenticator())
-            .addInterceptor(NotificareHeadersInterceptor())
-            .addInterceptor(httpLogger)
-            .build()
-
-        pushService = Retrofit.Builder()
-            .client(httpClient)
-            .baseUrl(services.pushHost)
-            .addConverterFactory(MoshiConverterFactory.create(moshi))
-            .build()
-            .create(NotificarePushService::class.java)
     }
 }

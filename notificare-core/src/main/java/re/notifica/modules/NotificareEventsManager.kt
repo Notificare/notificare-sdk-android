@@ -8,6 +8,7 @@ import re.notifica.Notificare
 import re.notifica.NotificareDefinitions
 import re.notifica.NotificareLogger
 import re.notifica.internal.common.recoverable
+import re.notifica.internal.network.request.NotificareRequest
 import re.notifica.internal.storage.database.ktx.toEntity
 import re.notifica.internal.workers.ProcessEventsWorker
 import re.notifica.models.NotificareEvent
@@ -92,7 +93,10 @@ class NotificareEventsManager {
         }
 
         try {
-            Notificare.pushService.createEvent(event)
+            NotificareRequest.Builder()
+                .post("/event", event)
+                .response()
+
             NotificareLogger.info("Event '${event.type}' sent successfully.")
         } catch (e: Exception) {
             NotificareLogger.warning("Failed to send the event: ${event.type}", e)
