@@ -17,6 +17,7 @@ import re.notifica.models.NotificareUserData
 import re.notifica.push.NotificarePush
 import re.notifica.push.ui.NotificarePushUI
 import re.notifica.sample.databinding.ActivityMainBinding
+import re.notifica.sample.ui.inbox.InboxActivity
 import java.util.*
 
 class MainActivity : AppCompatActivity() {
@@ -56,6 +57,10 @@ class MainActivity : AppCompatActivity() {
 
         val uri = intent.data ?: return
         NotificareLogger.info("Received deep link with uri = $uri")
+    }
+
+    fun onOpenInboxClick(@Suppress("UNUSED_PARAMETER") view: View) {
+        startActivity(Intent(this, InboxActivity::class.java))
     }
 
     fun onFetchTagsClick(@Suppress("UNUSED_PARAMETER") view: View) {

@@ -76,6 +76,7 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
 
     implementation project(':notificare-core')
+    implementation project(':notificare-inbox')
 
     implementation project(':notificare-push')
     googleImplementation project(':notificare-push-fcm')
