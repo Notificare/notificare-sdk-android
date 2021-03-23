@@ -16,6 +16,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.RemoteInput
 import androidx.core.content.ContextCompat
+import androidx.core.os.bundleOf
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -23,6 +24,7 @@ import re.notifica.Notificare
 import re.notifica.NotificareLogger
 import re.notifica.internal.NotificareUtils
 import re.notifica.models.NotificareApplication
+import re.notifica.models.NotificareNotification
 import re.notifica.models.NotificareTransport
 import re.notifica.modules.NotificareModule
 import re.notifica.push.app.NotificarePushIntentReceiver
@@ -249,42 +251,67 @@ object NotificarePush : NotificareModule() {
         Notificare.eventsManager.logNotificationReceived(message.id)
 
         GlobalScope.launch {
-            try {
-                val notification = Notificare.fetchNotification(message.id)
-
-                // TODO notify listeners
-
-                Notificare.requireContext().sendBroadcast(
-                    Intent(Notificare.requireContext(), intentReceiver)
-                        .setAction(INTENT_ACTION_NOTIFICATION_RECEIVED)
-                        .putExtra(Notificare.INTENT_EXTRA_NOTIFICATION, notification)
-                )
+            val notification = try {
+                Notificare.fetchNotification(message.id)
             } catch (e: Exception) {
                 NotificareLogger.error("Failed to fetch notification.", e)
+                message.toNotification()
             }
-        }
 
-        // TODO add to inbox
+            if (message.notify) {
+                generateNotification(
+                    message = message,
+                    notification = notification,
+                )
+            }
 
-        if (message.notify) {
-            generateNotification(
-                type = NotificationIntentType.NOTIFICATION,
-                message = message,
+            try {
+                val klass = Class.forName("re.notifica.inbox.internal.NotificareInboxSystemReceiver")
+                val intent = Intent(Notificare.requireContext(), klass).apply {
+                    action = "re.notifica.inbox.intent.action.NotificationReceived"
+
+                    putExtra(Notificare.INTENT_EXTRA_NOTIFICATION, notification)
+                    putExtra(
+                        "re.notifica.inbox.intent.extra.InboxBundle",
+                        bundleOf(
+                            "inboxItemId" to message.inboxItemId,
+                            "inboxItemVisible" to message.inboxItemVisible,
+                            "inboxItemExpires" to message.inboxItemExpires
+                        )
+                    )
+                }
+
+                Notificare.requireContext().sendBroadcast(intent)
+            } catch (e: Exception) {
+                NotificareLogger.debug("Failed to send an inbox broadcast.", e)
+            }
+
+            // TODO notify listeners
+
+            Notificare.requireContext().sendBroadcast(
+                Intent(Notificare.requireContext(), intentReceiver)
+                    .setAction(INTENT_ACTION_NOTIFICATION_RECEIVED)
+                    .putExtra(Notificare.INTENT_EXTRA_NOTIFICATION, notification)
             )
         }
     }
 
-    private fun generateNotification(type: NotificationIntentType, message: NotificareNotificationRemoteMessage) {
+    private fun generateNotification(
+        message: NotificareNotificationRemoteMessage,
+        notification: NotificareNotification
+    ) {
+        val extras = bundleOf(
+            INTENT_EXTRA_REMOTE_MESSAGE to message,
+            Notificare.INTENT_EXTRA_NOTIFICATION to notification,
+        )
+
         val openIntent = PendingIntent.getBroadcast(
             Notificare.requireContext(),
             createUniqueNotificationId(),
             Intent(Notificare.requireContext(), NotificarePushSystemIntentReceiver::class.java).apply {
-                action = when (type) {
-                    NotificationIntentType.NOTIFICATION -> INTENT_ACTION_REMOTE_MESSAGE_OPENED
-//                    NotificationIntentType.RELEVANCE_NOTIFICATION -> NotificarePushSystemIntentReceiver.Actions.RELEVANCE_REMOTE_MESSAGE_OPENED
-                }
+                action = INTENT_ACTION_REMOTE_MESSAGE_OPENED
 
-                putExtra(INTENT_EXTRA_REMOTE_MESSAGE, message)
+                putExtras(extras)
             },
             PendingIntent.FLAG_CANCEL_CURRENT
         )
@@ -298,7 +325,7 @@ object NotificarePush : NotificareModule() {
 //                    NotificationIntentType.RELEVANCE_NOTIFICATION -> NotificarePushSystemIntentReceiver.Actions.RELEVANCE_REMOTE_MESSAGE_DELETED
 //                }
 //
-//                putExtra(NotificarePushSystemIntentReceiver.Extras.REMOTE_MESSAGE, message)
+//                putExtras(extras)
 //            },
 //            PendingIntent.FLAG_CANCEL_CURRENT
 //        )
@@ -410,9 +437,9 @@ object NotificarePush : NotificareModule() {
                 val actionIntent =
                     Intent(Notificare.requireContext(), NotificarePushSystemIntentReceiver::class.java).apply {
                         setAction(INTENT_ACTION_REMOTE_MESSAGE_OPENED)
-                        putExtra(INTENT_EXTRA_REMOTE_MESSAGE, message)
+
+                        putExtras(extras)
                         putExtra(Notificare.INTENT_EXTRA_ACTION, action)
-                        // actionIntent.putExtras(notificationIntent.getExtras());
                     }
 
                 builder.addAction(
@@ -498,10 +525,5 @@ object NotificarePush : NotificareModule() {
 
     private fun getAllowedUI(): Boolean {
         return NotificationManagerCompat.from(Notificare.requireContext()).areNotificationsEnabled()
-    }
-
-    private enum class NotificationIntentType {
-        NOTIFICATION,
-//        RELEVANCE_NOTIFICATION
     }
 }

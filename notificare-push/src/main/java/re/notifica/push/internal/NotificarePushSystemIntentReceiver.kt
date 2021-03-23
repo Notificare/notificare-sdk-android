@@ -10,7 +10,6 @@ import re.notifica.Notificare
 import re.notifica.NotificareLogger
 import re.notifica.models.NotificareNotification
 import re.notifica.push.NotificarePush
-import re.notifica.push.logNotificationOpened
 import re.notifica.push.models.NotificareNotificationRemoteMessage
 
 internal class NotificarePushSystemIntentReceiver : BroadcastReceiver() {
@@ -22,18 +21,23 @@ internal class NotificarePushSystemIntentReceiver : BroadcastReceiver() {
                     intent.getParcelableExtra(NotificarePush.INTENT_EXTRA_REMOTE_MESSAGE)
                 )
 
+                val notification: NotificareNotification = requireNotNull(
+                    intent.getParcelableExtra(Notificare.INTENT_EXTRA_NOTIFICATION)
+                )
+
                 val action: NotificareNotification.Action? = intent.getParcelableExtra(Notificare.INTENT_EXTRA_ACTION)
                 val responseText = RemoteInput.getResultsFromIntent(intent)
                     ?.getCharSequence(NotificarePush.INTENT_EXTRA_TEXT_RESPONSE)
                     ?.toString()
 
-                onRemoteMessageOpened(message, action, responseText)
+                onRemoteMessageOpened(message, notification, action, responseText)
             }
         }
     }
 
     private fun onRemoteMessageOpened(
         message: NotificareNotificationRemoteMessage,
+        notification: NotificareNotification,
         action: NotificareNotification.Action?,
         responseText: String?
     ) {
@@ -42,10 +46,14 @@ internal class NotificarePushSystemIntentReceiver : BroadcastReceiver() {
 
         GlobalScope.launch {
             try {
-                val notification = Notificare.fetchNotification(message.id)
-
                 // Log the notification open event.
                 Notificare.eventsManager.logNotificationOpened(notification.id)
+
+                @Suppress("NAME_SHADOWING") val notification = if (notification.partial) {
+                    Notificare.fetchNotification(message.id)
+                } else {
+                    notification
+                }
 
                 if (action != null && action.type == "callback" && !action.camera && (!action.keyboard || responseText != null)) {
                     // TODO handle the action
