@@ -3,7 +3,8 @@ package re.notifica
 import android.content.Context
 import android.content.res.Resources
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import re.notifica.app.NotificareIntentReceiver
 import re.notifica.internal.*
@@ -114,7 +115,7 @@ object Notificare {
         NotificareLogger.info("Launching Notificare.")
         state = NotificareLaunchState.LAUNCHING
 
-        runBlocking(Dispatchers.IO) {
+        GlobalScope.launch(Dispatchers.IO) {
             try {
                 val application = fetchApplication()
 
