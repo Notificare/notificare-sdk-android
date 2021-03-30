@@ -4,8 +4,6 @@ import android.content.Context
 import android.os.Parcelable
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import kotlinx.parcelize.Parcelize
 import kotlinx.parcelize.WriteWith
 import re.notifica.Notificare
@@ -63,6 +61,17 @@ data class NotificareNotification(
             val resource = context.resources.getIdentifier(resourceName, "string", context.packageName)
 
             return if (resource == 0) label else context.getString(resource)
+        }
+
+        companion object {
+            const val TYPE_APP = "re.notifica.action.App"
+            const val TYPE_BROWSER = "re.notifica.action.Browser"
+            const val TYPE_CALLBACK = "re.notifica.action.Callback"
+            const val TYPE_CUSTOM = "re.notifica.action.Custom"
+            const val TYPE_MAIL = "re.notifica.action.Mail"
+            const val TYPE_SMS = "re.notifica.action.SMS"
+            const val TYPE_TELEPHONE = "re.notifica.action.Telephone"
+            const val TYPE_WEB_VIEW = "re.notifica.action.WebView"
         }
     }
 
