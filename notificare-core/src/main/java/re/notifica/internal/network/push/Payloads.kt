@@ -49,3 +49,21 @@ internal data class DeviceUpdateTimeZonePayload(
 internal data class DeviceTagsPayload(
     val tags: List<String>,
 )
+
+@JsonClass(generateAdapter = true)
+internal data class CreateNotificationReplyPayload(
+    @Json(name = "notification") val notificationId: String,
+    @Json(name = "deviceID") val deviceId: String,
+    @Json(name = "userID") val userId: String?,
+    val label: String,
+    val data: Data,
+) {
+
+    @JsonClass(generateAdapter = true)
+    internal data class Data(
+        val target: String?,
+        val message: String?,
+        val media: String?,
+        val mimeType: String?,
+    )
+}

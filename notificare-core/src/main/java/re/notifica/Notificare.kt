@@ -14,6 +14,7 @@ import kotlinx.coroutines.withContext
 import re.notifica.app.NotificareIntentReceiver
 import re.notifica.internal.*
 import re.notifica.internal.network.push.ApplicationResponse
+import re.notifica.internal.network.push.CreateNotificationReplyPayload
 import re.notifica.internal.network.push.NotificationResponse
 import re.notifica.internal.network.request.NotificareRequest
 import re.notifica.internal.storage.database.NotificareDatabase
@@ -189,6 +190,57 @@ object Notificare {
             .get("/notification/$id")
             .responseDecodable(NotificationResponse::class)
             .notification
+    }
+
+    suspend fun createNotificationReply(
+        notification: NotificareNotification,
+        action: NotificareNotification.Action,
+        message: String? = null,
+        media: String? = null,
+        mimeType: String? = null,
+    ): Unit = withContext(Dispatchers.IO) {
+        val device = deviceManager.currentDevice
+        if (!isReady || device == null) {
+            throw NotificareException.NotReady()
+        }
+
+        NotificareRequest.Builder()
+            .post(
+                url = "/reply",
+                body = CreateNotificationReplyPayload(
+                    notificationId = notification.id,
+                    deviceId = device.id,
+                    userId = device.userId,
+                    label = action.label,
+                    data = CreateNotificationReplyPayload.Data(
+                        target = action.target,
+                        message = message,
+                        media = media,
+                        mimeType = mimeType,
+                    ),
+                )
+            )
+            .response()
+    }
+
+    suspend fun callNotificationReplyWebhook(uri: Uri, data: Map<String, String>): Unit = withContext(Dispatchers.IO) {
+        val params = mutableMapOf<String, String?>()
+
+        // Add all query parameters to the POST body.
+        uri.queryParameterNames.forEach {
+            params[it] = uri.getQueryParameter(it)
+        }
+
+        // Add our standard properties.
+        params["userID"] = deviceManager.currentDevice?.userId
+        params["deviceID"] = deviceManager.currentDevice?.id
+
+        // Add all the items passed via data.
+        params.putAll(data)
+
+        NotificareRequest.Builder()
+            .post(uri.toString(), params)
+            .response()
     }
 
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
