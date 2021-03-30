@@ -13,6 +13,7 @@ import java.util.*
 )
 internal data class InboxItemEntity(
     @PrimaryKey @ColumnInfo(name = "id") val id: String,
+    @ColumnInfo(name = "notification_id") val notificationId: String,
     @ColumnInfo(name = "notification") val notification: NotificareNotification,
     @ColumnInfo(name = "time") val time: Date,
     @ColumnInfo(name = "opened") val opened: Boolean,
@@ -35,6 +36,7 @@ internal data class InboxItemEntity(
         fun from(item: NotificareInboxItem): InboxItemEntity {
             return InboxItemEntity(
                 id = item.id,
+                notificationId = item.notification.id,
                 notification = item.notification,
                 time = item.time,
                 opened = item.opened,
@@ -46,6 +48,7 @@ internal data class InboxItemEntity(
         fun from(item: InboxResponse.InboxItem): InboxItemEntity {
             return InboxItemEntity(
                 id = item.id,
+                notificationId = item.notificationId,
                 notification = NotificareNotification(
                     partial = true,
                     id = item.notificationId,
