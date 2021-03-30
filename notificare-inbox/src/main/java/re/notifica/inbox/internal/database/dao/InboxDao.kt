@@ -10,7 +10,10 @@ internal interface InboxDao {
     @Query("SELECT * FROM inbox")
     fun getLiveItems(): LiveData<List<InboxItemEntity>>
 
-    @Query("SELECT * FROM inbox ORDER BY time DESC")
+    @Query("SELECT * FROM inbox WHERE id = :id LIMIT 1")
+    suspend fun findById(id: String): InboxItemEntity?
+
+    @Query("SELECT * FROM inbox ORDER BY time DESC LIMIT 1")
     suspend fun findMostRecent(): InboxItemEntity?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

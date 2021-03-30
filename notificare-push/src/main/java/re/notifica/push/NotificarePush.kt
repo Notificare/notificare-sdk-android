@@ -38,6 +38,7 @@ import java.util.concurrent.atomic.AtomicInteger
 object NotificarePush : NotificareModule() {
 
     const val DEFAULT_NOTIFICATION_CHANNEL_ID = "notificare_channel_default"
+    internal const val INBOX_RECEIVER_CLASS_NAME = "re.notifica.inbox.internal.NotificareInboxSystemReceiver"
 
     // Intent actions
     const val INTENT_ACTION_REMOTE_MESSAGE_OPENED = "re.notifica.intent.action.RemoteMessageOpened"
@@ -46,10 +47,14 @@ object NotificarePush : NotificareModule() {
     const val INTENT_ACTION_UNKNOWN_NOTIFICATION_RECEIVED = "re.notifica.intent.action.UnknownNotificationReceived"
     const val INTENT_ACTION_NOTIFICATION_OPENED = "re.notifica.intent.action.NotificationOpened"
     const val INTENT_ACTION_ACTION_OPENED = "re.notifica.intent.action.ActionOpened"
+    private const val INTENT_ACTION_INBOX_NOTIFICATION_RECEIVED = "re.notifica.inbox.intent.action.NotificationReceived"
+    internal const val INTENT_ACTION_INBOX_MARK_ITEM_AS_READ = "re.notifica.inbox.intent.action.MarkItemAsRead"
 
     // Intent extras
     const val INTENT_EXTRA_REMOTE_MESSAGE = "re.notifica.intent.extra.RemoteMessage"
     const val INTENT_EXTRA_TEXT_RESPONSE = "re.notifica.intent.extra.TextResponse"
+    private const val INTENT_EXTRA_INBOX_NOTIFICATION_RECEIVED_BUNDLE = "re.notifica.inbox.intent.extra.InboxBundle"
+    internal const val INTENT_EXTRA_INBOX_ITEM_ID = "re.notifica.inbox.intent.extra.InboxItemId"
 
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     var serviceManager: NotificareServiceManager? = null
@@ -265,25 +270,27 @@ object NotificarePush : NotificareModule() {
                 )
             }
 
-            try {
-                val klass = Class.forName("re.notifica.inbox.internal.NotificareInboxSystemReceiver")
-                val intent = Intent(Notificare.requireContext(), klass).apply {
-                    action = "re.notifica.inbox.intent.action.NotificationReceived"
+            if (message.inboxItemId != null) {
+                try {
+                    val klass = Class.forName("re.notifica.inbox.internal.NotificareInboxSystemReceiver")
+                    val intent = Intent(Notificare.requireContext(), klass).apply {
+                        action = INTENT_ACTION_INBOX_NOTIFICATION_RECEIVED
 
-                    putExtra(Notificare.INTENT_EXTRA_NOTIFICATION, notification)
-                    putExtra(
-                        "re.notifica.inbox.intent.extra.InboxBundle",
-                        bundleOf(
-                            "inboxItemId" to message.inboxItemId,
-                            "inboxItemVisible" to message.inboxItemVisible,
-                            "inboxItemExpires" to message.inboxItemExpires
+                        putExtra(Notificare.INTENT_EXTRA_NOTIFICATION, notification)
+                        putExtra(
+                            INTENT_EXTRA_INBOX_NOTIFICATION_RECEIVED_BUNDLE,
+                            bundleOf(
+                                "inboxItemId" to message.inboxItemId,
+                                "inboxItemVisible" to message.inboxItemVisible,
+                                "inboxItemExpires" to message.inboxItemExpires
+                            )
                         )
-                    )
-                }
+                    }
 
-                Notificare.requireContext().sendBroadcast(intent)
-            } catch (e: Exception) {
-                NotificareLogger.debug("Failed to send an inbox broadcast.", e)
+                    Notificare.requireContext().sendBroadcast(intent)
+                } catch (e: Exception) {
+                    NotificareLogger.debug("Failed to send an inbox broadcast.", e)
+                }
             }
 
             // TODO notify listeners
@@ -379,10 +386,6 @@ object NotificarePush : NotificareModule() {
             builder.color = ContextCompat.getColor(Notificare.requireContext(), notificationAccentColor)
         }
 
-//        if (largeIcon != null) {
-//            builder.setLargeIcon(largeIcon)
-//        }
-
         val attachmentImage = runBlocking {
             message.attachment?.uri?.let { NotificareUtils.loadBitmap(it) }
         }
@@ -404,27 +407,6 @@ object NotificarePush : NotificareModule() {
         // Extend for Android Wear
         val wearableExtender = NotificationCompat.WearableExtender()
 
-        /*
-        // Extend for Android Auto
-        NotificationCompat.CarExtender carExtender = new NotificationCompat.CarExtender();
-
-    	RemoteInput remoteCarInput = new RemoteInput.Builder(Notificare.INTENT_EXTRA_VOICE_REPLY)
-        .setLabel("reply")
-        .setChoices(new CharSequence[]{"yes","no"})
-        .setAllowFreeFormInput(true)
-        .build();
-
-        UnreadConversation.Builder unreadConversationBuilder =
-        	    new UnreadConversation.Builder(Notificare.shared().getApplicationName())
-        			.addMessage(notificationIntent.getStringExtra(Notificare.INTENT_EXTRA_ALERT))
-        			.setLatestTimestamp(new Date().getTime())
-        	        .setReadPendingIntent(broadcast)
-        	        .setReplyAction(broadcast, remoteCarInput);
-
-        carExtender.setUnreadConversation(unreadConversationBuilder.build());
-        */
-
-        // TODO why allow them to disable action categories?
         // Handle action category
         val application = Notificare.application ?: run {
             NotificareLogger.debug("Notificare application was null when generation a remote notification.")
@@ -452,7 +434,15 @@ object NotificarePush : NotificareModule() {
                             actionIntent,
                             PendingIntent.FLAG_CANCEL_CURRENT
                         )
-                    ).build()
+                    ).apply {
+                        if (action.keyboard && !action.camera) {
+                            addRemoteInput(
+                                RemoteInput.Builder(INTENT_EXTRA_TEXT_RESPONSE)
+                                    .setLabel(action.getLocalizedLabel(Notificare.requireContext()))
+                                    .build()
+                            )
+                        }
+                    }.build()
                 )
 
                 wearableExtender.addAction(
@@ -465,15 +455,7 @@ object NotificarePush : NotificareModule() {
                             actionIntent,
                             PendingIntent.FLAG_CANCEL_CURRENT
                         )
-                    ).apply {
-                        if (action.keyboard && !action.camera) {
-                            addRemoteInput(
-                                RemoteInput.Builder(INTENT_EXTRA_TEXT_RESPONSE)
-                                    .setLabel(action.getLocalizedLabel(Notificare.requireContext()))
-                                    .build()
-                            )
-                        }
-                    }.build()
+                    ).build()
                 )
             }
 

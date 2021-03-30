@@ -1,8 +1,5 @@
 package re.notifica.inbox
 
-import android.app.NotificationManager
-import android.content.Context
-import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import androidx.core.app.NotificationManagerCompat
@@ -28,7 +25,7 @@ import java.util.concurrent.TimeUnit
 
 object NotificareInbox : NotificareModule() {
 
-    private lateinit var database: InboxDatabase
+    internal lateinit var database: InboxDatabase
 
     private var liveItems: LiveData<List<InboxItemEntity>>? = null
     private val liveItemsObserver = Observer<List<InboxItemEntity>> { entities ->
@@ -164,7 +161,7 @@ object NotificareInbox : NotificareModule() {
         }
 
         // Remove the item from the notification center.
-        removeItemFromNotificationCenter(item)
+        Notificare.removeNotificationFromNotificationCenter(item.notification)
 
         if (item.notification.partial) {
             item._notification = Notificare.fetchNotification(item.notification.id)
@@ -202,7 +199,7 @@ object NotificareInbox : NotificareModule() {
         database.inbox().update(InboxItemEntity.from(item))
 
         // No need to keep the item in the notification center.
-        removeItemFromNotificationCenter(item)
+        Notificare.removeNotificationFromNotificationCenter(item.notification)
     }
 
     suspend fun markAllAsRead(): Unit = withContext(Dispatchers.IO) {
@@ -253,7 +250,7 @@ object NotificareInbox : NotificareModule() {
         database.inbox().remove(item.id)
 
         // Remove the item from the notification center.
-        removeItemFromNotificationCenter(item)
+        Notificare.removeNotificationFromNotificationCenter(item.notification)
     }
 
     suspend fun clear(): Unit = withContext(Dispatchers.IO) {
@@ -289,7 +286,7 @@ object NotificareInbox : NotificareModule() {
         val item = items.find { it.id == id }
 
         if (item != null) {
-            removeItemFromNotificationCenter(item)
+            Notificare.removeNotificationFromNotificationCenter(item.notification)
         }
 
         reloadLiveItems()
@@ -401,50 +398,6 @@ object NotificareInbox : NotificareModule() {
 
         WorkManager.getInstance(Notificare.requireContext())
             .enqueueUniqueWork("re.notifica.task.inbox.Expire", ExistingWorkPolicy.REPLACE, task)
-    }
-
-    private fun removeItemFromNotificationCenter(item: NotificareInboxItem) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            val notificationManager =
-                Notificare.requireContext().getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager
-
-            if (notificationManager != null) {
-                val groupKey = notificationManager.activeNotifications.find {
-                    it != null && it.tag != null && it.tag == item.notification.id
-                }?.groupKey
-
-                if (groupKey != null) {
-                    // Check if there are more and if there is a summary.
-                    var hasMore = false
-                    var summaryTag: String? = null
-
-                    for (statusBarNotification in notificationManager.activeNotifications) {
-                        if (statusBarNotification != null && statusBarNotification.groupKey != null && statusBarNotification.groupKey == groupKey) {
-                            if ((statusBarNotification.tag == null || statusBarNotification.tag != item.notification.id) && statusBarNotification.id == 0) {
-                                hasMore = true
-                            } else if (statusBarNotification.id == 1) {
-                                summaryTag = statusBarNotification.tag
-                            }
-                        }
-                    }
-
-                    if (!hasMore && summaryTag != null) {
-                        notificationManager.cancel(item.notification.id, 0)
-                        notificationManager.cancel(summaryTag, 1)
-                    } else {
-                        notificationManager.cancel(item.notification.id, 0)
-                    }
-                } else {
-                    notificationManager.cancel(item.notification.id, 0)
-                }
-            } else {
-                NotificationManagerCompat.from(Notificare.requireContext())
-                    .cancel(item.notification.id, 0)
-            }
-        } else {
-            NotificationManagerCompat.from(Notificare.requireContext())
-                .cancel(item.notification.id, 0)
-        }
     }
 
     private fun clearNotificationCenter() {

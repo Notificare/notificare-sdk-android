@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import re.notifica.Notificare
@@ -16,16 +17,23 @@ import java.util.*
 internal class NotificareInboxSystemReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         when (intent.action) {
-            "re.notifica.inbox.intent.action.NotificationReceived" -> {
+            INTENT_ACTION_INBOX_NOTIFICATION_RECEIVED -> {
                 val notification: NotificareNotification = checkNotNull(
                     intent.getParcelableExtra(Notificare.INTENT_EXTRA_NOTIFICATION)
                 )
 
                 val inboxBundle: Bundle = checkNotNull(
-                    intent.getBundleExtra("re.notifica.inbox.intent.extra.InboxBundle")
+                    intent.getBundleExtra(INTENT_EXTRA_INBOX_NOTIFICATION_RECEIVED_BUNDLE)
                 )
 
                 onNotificationReceived(notification, inboxBundle)
+            }
+            INTENT_ACTION_INBOX_MARK_ITEM_AS_READ -> {
+                val inboxItemId = checkNotNull(
+                    intent.getStringExtra(INTENT_EXTRA_INBOX_ITEM_ID)
+                )
+
+                onMarkItemAsRead(inboxItemId)
             }
         }
     }
@@ -60,5 +68,31 @@ internal class NotificareInboxSystemReceiver : BroadcastReceiver() {
                 NotificareLogger.error("Failed to save inbox item to the database.", e)
             }
         }
+    }
+
+    private fun onMarkItemAsRead(id: String) {
+        GlobalScope.launch(Dispatchers.IO) {
+            try {
+                val entity = NotificareInbox.database.inbox().findById(id) ?: run {
+                    NotificareLogger.warning("Unable to find item '$id' in the local database.")
+                    return@launch
+                }
+
+                NotificareInbox.markAsRead(entity.toInboxItem())
+            } catch (e: Exception) {
+                NotificareLogger.error("Failed to mark item '$id' as read.", e)
+            }
+        }
+    }
+
+    companion object {
+        // Intent actions
+        private const val INTENT_ACTION_INBOX_NOTIFICATION_RECEIVED =
+            "re.notifica.inbox.intent.action.NotificationReceived"
+        private const val INTENT_ACTION_INBOX_MARK_ITEM_AS_READ = "re.notifica.inbox.intent.action.MarkItemAsRead"
+
+        // Intent extras
+        private const val INTENT_EXTRA_INBOX_NOTIFICATION_RECEIVED_BUNDLE = "re.notifica.inbox.intent.extra.InboxBundle"
+        private const val INTENT_EXTRA_INBOX_ITEM_ID = "re.notifica.inbox.intent.extra.InboxItemId"
     }
 }

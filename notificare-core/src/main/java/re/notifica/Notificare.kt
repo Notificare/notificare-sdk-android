@@ -1,7 +1,12 @@
 package re.notifica
 
+import android.app.NotificationManager
 import android.content.Context
 import android.content.res.Resources
+import android.net.Uri
+import android.os.Build
+import androidx.annotation.RestrictTo
+import androidx.core.app.NotificationManagerCompat
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -184,6 +189,49 @@ object Notificare {
             .get("/notification/$id")
             .responseDecodable(NotificationResponse::class)
             .notification
+    }
+
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    fun removeNotificationFromNotificationCenter(notification: NotificareNotification) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            val notificationManager =
+                requireContext().getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager
+
+            if (notificationManager != null) {
+                val groupKey = notificationManager.activeNotifications.find {
+                    it != null && it.tag != null && it.tag == notification.id
+                }?.groupKey
+
+                if (groupKey != null) {
+                    // Check if there are more and if there is a summary.
+                    var hasMore = false
+                    var summaryTag: String? = null
+
+                    for (statusBarNotification in notificationManager.activeNotifications) {
+                        if (statusBarNotification != null && statusBarNotification.groupKey != null && statusBarNotification.groupKey == groupKey) {
+                            if ((statusBarNotification.tag == null || statusBarNotification.tag != notification.id) && statusBarNotification.id == 0) {
+                                hasMore = true
+                            } else if (statusBarNotification.id == 1) {
+                                summaryTag = statusBarNotification.tag
+                            }
+                        }
+                    }
+
+                    if (!hasMore && summaryTag != null) {
+                        notificationManager.cancel(notification.id, 0)
+                        notificationManager.cancel(summaryTag, 1)
+                    } else {
+                        notificationManager.cancel(notification.id, 0)
+                    }
+                } else {
+                    notificationManager.cancel(notification.id, 0)
+                }
+            } else {
+                NotificationManagerCompat.from(requireContext()).cancel(notification.id, 0)
+            }
+        } else {
+            NotificationManagerCompat.from(requireContext()).cancel(notification.id, 0)
+        }
     }
 
     // endregion
