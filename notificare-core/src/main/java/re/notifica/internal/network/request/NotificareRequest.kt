@@ -45,7 +45,30 @@ class NotificareRequest private constructor(
             .build()
     }
 
-    suspend fun response(): Response = suspendCoroutine { continuation ->
+    suspend fun response(): Response = response(true)
+
+    suspend fun <T : Any> responseDecodable(klass: KClass<T>): T {
+        val response = response(closeResponse = false)
+
+        val body = response.body
+            ?: throw IllegalArgumentException("The response contains an empty body. Cannot parse into '${klass.simpleName}'.")
+
+        return withContext(Dispatchers.IO) {
+            try {
+                val adapter = moshi.adapter(klass.java)
+
+                @Suppress("BlockingMethodInNonBlockingContext")
+                adapter.fromJson(body.source())
+                    ?: throw NetworkException.ParsingException(message = "JSON parsing resulted in a null object.")
+            } catch (e: Exception) {
+                throw NetworkException.ParsingException(cause = e)
+            } finally {
+                body.close()
+            }
+        }
+    }
+
+    private suspend fun response(closeResponse: Boolean = true): Response = suspendCoroutine { continuation ->
         client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
                 continuation.resumeWithException(e)
@@ -60,31 +83,14 @@ class NotificareRequest private constructor(
                         )
                     )
 
+                    if (closeResponse) response.body?.close()
                     return
                 }
 
+                if (closeResponse) response.body?.close()
                 continuation.resume(response)
             }
         })
-    }
-
-    suspend fun <T : Any> responseDecodable(klass: KClass<T>): T {
-        val response = response()
-
-        val body = response.body
-            ?: throw IllegalArgumentException("The response contains an empty body. Cannot parse into '${klass.simpleName}'.")
-
-        return withContext(Dispatchers.IO) {
-            try {
-                val adapter = moshi.adapter(klass.java)
-
-                @Suppress("BlockingMethodInNonBlockingContext")
-                adapter.fromJson(body.source())
-                    ?: throw NetworkException.ParsingException(message = "JSON parsing resulted in a null object.")
-            } catch (e: Exception) {
-                throw NetworkException.ParsingException(cause = e)
-            }
-        }
     }
 
     class Builder {
@@ -92,6 +98,7 @@ class NotificareRequest private constructor(
         private var baseUrl: String? = null
         private var url: String? = null
         private var queryItems = mutableMapOf<String, String?>()
+        private var headers = mutableMapOf<String, String>()
         private var method: String? = null
         private var body: RequestBody? = null
         private var validStatusCodes: IntRange = 200..299
@@ -116,6 +123,7 @@ class NotificareRequest private constructor(
             this.url = url
             this.body = when (body) {
                 null -> if (HTTP_METHODS_REQUIRE_BODY.contains(method)) EMPTY_REQUEST else null
+                is ByteArray -> body.toRequestBody()
                 else -> try {
                     val klass = body::class.java
                     val adapter = moshi.adapter<T>(klass)
@@ -144,6 +152,11 @@ class NotificareRequest private constructor(
             return this
         }
 
+        fun header(name: String, value: String): Builder {
+            headers[name] = value
+            return this
+        }
+
         fun validate(validStatusCodes: IntRange = 200..299): Builder {
             this.validStatusCodes = validStatusCodes
             return this
@@ -156,6 +169,11 @@ class NotificareRequest private constructor(
 
             val request = Request.Builder()
                 .url(computeCompleteUrl())
+                .apply {
+                    headers.forEach {
+                        header(it.key, it.value)
+                    }
+                }
                 .method(method, body)
                 .build()
 
