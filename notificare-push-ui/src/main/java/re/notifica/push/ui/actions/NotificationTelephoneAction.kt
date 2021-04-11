@@ -1,15 +1,17 @@
 package re.notifica.push.ui.actions
 
 import android.app.Activity
+import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import re.notifica.Notificare
 import re.notifica.models.NotificareNotification
+import re.notifica.push.ui.R
 import re.notifica.push.ui.actions.base.NotificationAction
 import re.notifica.push.ui.models.NotificarePendingResult
 
-class NotificationBrowserAction(
+class NotificationTelephoneAction(
     context: Context,
     notification: NotificareNotification,
     action: NotificareNotification.Action
@@ -18,14 +20,24 @@ class NotificationBrowserAction(
     override suspend fun execute(): NotificarePendingResult? {
         val uri = action.target?.let { Uri.parse(it) }
 
-        if (uri != null && uri.scheme != null && uri.host != null) {
+        if (uri != null) {
             val intent = Intent(Intent.ACTION_VIEW, uri)
 
             if (context !is Activity) {
                 intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
             }
 
-            context.startActivity(intent)
+            try {
+                context.startActivity(
+                    Intent.createChooser(
+                        intent,
+                        context.resources.getText(R.string.notificare_action_title_intent_telephone)
+                    )
+                )
+            } catch (e: ActivityNotFoundException) {
+                // callback.onError(NotificareError(R.string.notificare_action_error_no_dialer))
+                return null
+            }
 
             Notificare.createNotificationReply(notification, action)
 

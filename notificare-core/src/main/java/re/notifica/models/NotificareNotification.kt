@@ -82,6 +82,19 @@ data class NotificareNotification(
         val uri: String,
     ) : Parcelable
 
+    companion object {
+        const val TYPE_NONE = "re.notifica.notification.None"
+        const val TYPE_ALERT = "re.notifica.notification.Alert"
+        const val TYPE_WEB_VIEW = "re.notifica.notification.WebView"
+        const val TYPE_URL = "re.notifica.notification.URL"
+        const val TYPE_URL_SCHEME = "re.notifica.notification.URLScheme"
+        const val TYPE_IMAGE = "re.notifica.notification.Image"
+        const val TYPE_VIDEO = "re.notifica.notification.Video"
+        const val TYPE_MAP = "re.notifica.notification.Map"
+        const val TYPE_RATE = "re.notifica.notification.Rate"
+        const val TYPE_PASSBOOK = "re.notifica.notification.Passbook"
+        const val TYPE_STORE = "re.notifica.notification.Store"
+    }
 
     enum class NotificationType {
         NONE,
@@ -99,17 +112,17 @@ data class NotificareNotification(
         companion object {
             fun from(type: String): NotificationType? {
                 return when (type) {
-                    "re.notifica.notification.None" -> NONE
-                    "re.notifica.notification.Alert" -> ALERT
-                    "re.notifica.notification.WebView" -> WEB_VIEW
-                    "re.notifica.notification.URL" -> URL
-                    "re.notifica.notification.URLScheme" -> URL_SCHEME
-                    "re.notifica.notification.Image" -> IMAGE
-                    "re.notifica.notification.Video" -> VIDEO
-                    "re.notifica.notification.Map" -> MAP
-                    "re.notifica.notification.Rate" -> RATE
-                    "re.notifica.notification.Passbook" -> PASSBOOK
-                    "re.notifica.notification.Store" -> STORE
+                    TYPE_NONE -> NONE
+                    TYPE_ALERT -> ALERT
+                    TYPE_WEB_VIEW -> WEB_VIEW
+                    TYPE_URL -> URL
+                    TYPE_URL_SCHEME -> URL_SCHEME
+                    TYPE_IMAGE -> IMAGE
+                    TYPE_VIDEO -> VIDEO
+                    TYPE_MAP -> MAP
+                    TYPE_RATE -> RATE
+                    TYPE_PASSBOOK -> PASSBOOK
+                    TYPE_STORE -> STORE
                     else -> null
                 }
             }

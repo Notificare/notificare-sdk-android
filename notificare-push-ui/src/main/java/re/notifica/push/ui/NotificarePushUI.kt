@@ -3,17 +3,29 @@ package re.notifica.push.ui
 import android.app.Activity
 import android.content.Intent
 import android.net.Uri
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import re.notifica.Notificare
 import re.notifica.NotificareLogger
+import re.notifica.app.NotificareIntentReceiver
 import re.notifica.models.NotificareNotification
 import re.notifica.models.NotificareTransport
 import re.notifica.push.NotificarePush
+import re.notifica.push.ui.actions.*
+import re.notifica.push.ui.actions.base.NotificationAction
+import re.notifica.push.ui.app.NotificarePushUIIntentReceiver
 import re.notifica.push.ui.notifications.NotificationActivity
 import re.notifica.push.ui.notifications.fragments.*
 
 object NotificarePushUI {
 
-    internal const val CONTENT_FILE_PROVIDER_AUTHORITY_SUFFIX = ".notificare.fileprovider"
+    private const val CONTENT_FILE_PROVIDER_AUTHORITY_SUFFIX = ".notificare.fileprovider"
+
+    internal val contentFileProviderAuthority: String
+        get() = "${Notificare.requireContext().packageName}$CONTENT_FILE_PROVIDER_AUTHORITY_SUFFIX"
+
+    var intentReceiver: Class<out NotificarePushUIIntentReceiver> = NotificarePushUIIntentReceiver::class.java
 
     fun presentNotification(activity: Activity, notification: NotificareNotification) {
         val type = NotificareNotification.NotificationType.from(notification.type) ?: run {
@@ -31,11 +43,41 @@ object NotificarePushUI {
             else -> {
                 val intent = Intent(Notificare.requireContext(), NotificationActivity::class.java)
                     .putExtra(Notificare.INTENT_EXTRA_NOTIFICATION, notification)
-//                  .putExtra(Notificare.INTENT_EXTRA_ACTION, action)
 //                  .setPackage(Notificare.requireContext().packageName)
 
                 activity.startActivity(intent)
                 activity.overridePendingTransition(0, 0)
+            }
+        }
+    }
+
+    fun presentAction(activity: Activity, notification: NotificareNotification, action: NotificareNotification.Action) {
+        NotificareLogger.debug("Presenting notification action '${action.type}' for notification '${notification.id}'.")
+
+        GlobalScope.launch(Dispatchers.IO) {
+            try {
+                // NotificarePushUI.shared.delegate?.notificare(NotificarePushUI.shared, willExecuteAction: action, for: notification)
+
+                if (action.type == NotificareNotification.Action.TYPE_CALLBACK && (action.camera || action.keyboard)) {
+                    val intent = Intent(Notificare.requireContext(), NotificationActivity::class.java)
+                        .putExtra(Notificare.INTENT_EXTRA_NOTIFICATION, notification)
+                        .putExtra(Notificare.INTENT_EXTRA_ACTION, action)
+//                      .setPackage(Notificare.requireContext().packageName)
+
+                    activity.startActivity(intent)
+                    activity.overridePendingTransition(0, 0)
+
+                    return@launch
+                }
+
+                val handler = createActionHandler(activity, notification, action) ?: run {
+                    NotificareLogger.debug("Unable to create an action handler for '${action.type}'.")
+                    return@launch
+                }
+
+                handler.execute()
+            } catch (e: Exception) {
+                // TODO
             }
         }
     }
@@ -118,6 +160,27 @@ object NotificarePushUI {
             intent.setPackage(null)
             if (intent.resolveActivity(activity.applicationContext.packageManager) != null) {
                 activity.startActivity(intent)
+            }
+        }
+    }
+
+    internal fun createActionHandler(
+        activity: Activity,
+        notification: NotificareNotification,
+        action: NotificareNotification.Action
+    ): NotificationAction? {
+        return when (action.type) {
+            NotificareNotification.Action.TYPE_APP -> NotificationAppAction(activity, notification, action)
+            NotificareNotification.Action.TYPE_BROWSER -> NotificationBrowserAction(activity, notification, action)
+            NotificareNotification.Action.TYPE_CALLBACK -> NotificationCallbackAction(activity, notification, action)
+            NotificareNotification.Action.TYPE_CUSTOM -> NotificationCustomAction(activity, notification, action)
+            NotificareNotification.Action.TYPE_MAIL -> NotificationMailAction(activity, notification, action)
+            NotificareNotification.Action.TYPE_SMS -> NotificationSmsAction(activity, notification, action)
+            NotificareNotification.Action.TYPE_TELEPHONE -> NotificationTelephoneAction(activity, notification, action)
+            NotificareNotification.Action.TYPE_WEB_VIEW -> TODO()
+            else -> {
+                NotificareLogger.warning("Unhandled action type '${action.type}'.")
+                null
             }
         }
     }

@@ -2,6 +2,7 @@ package re.notifica.push.ui.actions.base
 
 import android.content.Context
 import re.notifica.models.NotificareNotification
+import re.notifica.push.ui.models.NotificarePendingResult
 
 abstract class NotificationAction(
     protected val context: Context,
@@ -9,5 +10,5 @@ abstract class NotificationAction(
     protected val action: NotificareNotification.Action,
 ) {
 
-    abstract suspend fun execute()
+    abstract suspend fun execute(): NotificarePendingResult?
 }

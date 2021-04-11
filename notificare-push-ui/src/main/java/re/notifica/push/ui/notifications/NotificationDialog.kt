@@ -55,8 +55,7 @@ class NotificationDialog : DialogFragment() {
                 requireContext(),
                 android.R.layout.simple_list_item_1,
                 notification.actions.map {
-                    // TODO get localised text
-                    it.label
+                    it.getLocalizedLabel(requireContext())
                 }
             )
 

@@ -53,6 +53,17 @@ class MainActivity : AppCompatActivity() {
                     NotificarePushUI.presentNotification(this, notification)
                 }
             }
+            NotificarePush.INTENT_ACTION_ACTION_OPENED -> {
+                val notification: NotificareNotification = requireNotNull(
+                    intent.getParcelableExtra(Notificare.INTENT_EXTRA_NOTIFICATION)
+                )
+
+                val action: NotificareNotification.Action = requireNotNull(
+                    intent.getParcelableExtra(Notificare.INTENT_EXTRA_ACTION)
+                )
+
+                NotificarePushUI.presentAction(this, notification, action)
+            }
         }
 
         val uri = intent.data ?: return

@@ -1,21 +1,29 @@
 package re.notifica.push.ui.notifications
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import re.notifica.Notificare
 import re.notifica.models.NotificareNotification
+import re.notifica.push.ui.R
 import re.notifica.push.ui.databinding.NotificareNotificationActivityBinding
+import re.notifica.push.ui.showNotificationProgress
+import re.notifica.push.ui.showNotificationToasts
 
 class NotificationActivity : AppCompatActivity(), NotificationContainerFragment.Callback {
 
     private lateinit var binding: NotificareNotificationActivityBinding
     private lateinit var notification: NotificareNotification
+    private var action: NotificareNotification.Action? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         notification = savedInstanceState?.getParcelable(Notificare.INTENT_EXTRA_NOTIFICATION)
             ?: intent.getParcelableExtra(Notificare.INTENT_EXTRA_NOTIFICATION)
-                    ?: throw IllegalArgumentException("Missing required notification parameter.")
+                ?: throw IllegalArgumentException("Missing required notification parameter.")
+
+        action = savedInstanceState?.getParcelable(Notificare.INTENT_EXTRA_ACTION)
+            ?: intent.getParcelableExtra(Notificare.INTENT_EXTRA_ACTION)
 
         super.onCreate(savedInstanceState)
         binding = NotificareNotificationActivityBinding.inflate(layoutInflater).also {
@@ -24,7 +32,7 @@ class NotificationActivity : AppCompatActivity(), NotificationContainerFragment.
 
         supportActionBar?.hide()
 
-        val fragment = NotificationContainerFragment.newInstance(notification)
+        val fragment = NotificationContainerFragment.newInstance(notification, action)
         supportFragmentManager
             .beginTransaction()
             .add(binding.notificareNotificationContainer.id, fragment, "notification_container")
@@ -34,6 +42,7 @@ class NotificationActivity : AppCompatActivity(), NotificationContainerFragment.
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putParcelable(Notificare.INTENT_EXTRA_NOTIFICATION, notification)
+        outState.putParcelable(Notificare.INTENT_EXTRA_ACTION, action)
     }
 
     // region NotificationContainerFragment.Callback
@@ -58,8 +67,9 @@ class NotificationActivity : AppCompatActivity(), NotificationContainerFragment.
     }
 
     override fun onNotificationFragmentStartProgress(notification: NotificareNotification) {
-        // TODO if (Notificare.shared().getNotificationActivityShowProgress()) {
-        binding.notificareProgress.isVisible = true
+        if (checkNotNull(Notificare.options).showNotificationProgress) {
+            binding.notificareProgress.isVisible = true
+        }
     }
 
     override fun onNotificationFragmentEndProgress(notification: NotificareNotification) {
@@ -69,9 +79,9 @@ class NotificationActivity : AppCompatActivity(), NotificationContainerFragment.
     override fun onNotificationFragmentActionCanceled(notification: NotificareNotification) {
         binding.notificareProgress.isVisible = false
 
-//        if (Notificare.shared().getNotificationActivityShowToasts()) {
-//            Toast.makeText(this, R.string.notificare_action_canceled, Toast.LENGTH_LONG).show()
-//        }
+        if (checkNotNull(Notificare.options).showNotificationToasts) {
+            Toast.makeText(this, R.string.notificare_action_canceled, Toast.LENGTH_LONG).show()
+        }
     }
 
     override fun onNotificationFragmentActionFailed(

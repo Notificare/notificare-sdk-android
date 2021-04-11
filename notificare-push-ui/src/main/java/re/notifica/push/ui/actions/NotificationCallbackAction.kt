@@ -1,15 +1,20 @@
 package re.notifica.push.ui.actions
 
-import android.app.Activity
 import android.content.Context
 import android.net.Uri
 import android.os.Environment
 import androidx.core.content.FileProvider
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import re.notifica.Notificare
 import re.notifica.NotificareLogger
 import re.notifica.models.NotificareNotification
 import re.notifica.push.ui.NotificarePushUI
+import re.notifica.push.ui.R
 import re.notifica.push.ui.actions.base.NotificationAction
+import re.notifica.push.ui.models.NotificarePendingResult
 import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
@@ -21,14 +26,63 @@ class NotificationCallbackAction(
     action: NotificareNotification.Action
 ) : NotificationAction(context, notification, action) {
 
-    override suspend fun execute() {
-        if (action.camera) {
-            if (context is Activity) {
+//    override suspend fun execute() {
+//        if (action.camera && action.keyboard) {
+//            // First get the camera going, then get the message.
+//            return
+//        }
+//
+//        if (action.camera) {
+//            return
+//        }
+//
+//        if (action.keyboard) {
+//            // open keyboard
+//            return
+//        }
+//
+////        if (context is Activity) {
+////
+////        } else {
+////            // TODO cannot launch camera activity from non-activity context
+////            // cannot launch camera activity from non-activity context
+////            // callback.onError(NotificareError(R.string.notificare_action_camera_failed))
+////        }
+//    }
 
-            } else {
-                // TODO cannot launch camera activity from non-activity context
-                // cannot launch camera activity from non-activity context
-                // callback.onError(NotificareError(R.string.notificare_action_camera_failed))
+    override suspend fun execute(): NotificarePendingResult? = withContext(Dispatchers.IO) {
+        when {
+            action.camera -> {
+                // TODO check image vs video
+
+                val imageUri = getOutputMediaFileUri(MediaType.IMAGE)
+                    ?: throw IllegalStateException(context.getString(R.string.notificare_action_camera_failed)) // Cannot save file.
+
+                val requestCode =
+                    if (action.keyboard) NotificarePendingResult.CAPTURE_IMAGE_AND_KEYBOARD_REQUEST_CODE
+                    else NotificarePendingResult.CAPTURE_IMAGE_REQUEST_CODE
+
+                NotificarePendingResult(
+                    notification = notification,
+                    action = action,
+                    requestCode = requestCode,
+                    imageUri = imageUri,
+                )
+            }
+            action.keyboard -> {
+                // Just Keyboard, return the result to the caller.
+                NotificarePendingResult(
+                    notification = notification,
+                    action = action,
+                    requestCode = NotificarePendingResult.KEYBOARD_REQUEST_CODE,
+                    imageUri = null,
+                )
+            }
+            else -> {
+                // Just do the call.
+                send(notification, action, null, null, null)
+
+                null
             }
         }
     }
@@ -43,7 +97,7 @@ class NotificationCallbackAction(
             val file = getOutputMediaFile(type) ?: return null
             return FileProvider.getUriForFile(
                 Notificare.requireContext(),
-                NotificarePushUI.CONTENT_FILE_PROVIDER_AUTHORITY_SUFFIX,
+                NotificarePushUI.contentFileProviderAuthority,
                 file
             )
         } catch (e: Exception) {
@@ -75,6 +129,56 @@ class NotificationCallbackAction(
             MediaType.VIDEO -> File.createTempFile("VID_$timeStamp", ".mp4", mediaStorageDir)
         }.also {
             NotificareLogger.debug("Saving file to '${it.absolutePath}'.")
+        }
+    }
+
+    companion object {
+        suspend fun send(
+            notification: NotificareNotification,
+            action: NotificareNotification.Action,
+            message: String?,
+            mediaUrl: String?,
+            mimeType: String?
+        ) {
+            val targetUri = action.target?.let { Uri.parse(it) }
+            if (targetUri == null || targetUri.scheme == null || targetUri.host == null) {
+                // NotificarePushUI.shared.delegate?.notificare(NotificarePushUI.shared, didExecuteAction: action, for: notification)
+
+                Notificare.createNotificationReply(
+                    notification = notification,
+                    action = action,
+                    message = message,
+                    media = mediaUrl,
+                    mimeType = mimeType
+                )
+
+                return
+            }
+
+            val params = mutableMapOf<String, String>()
+            params["notificationID"] = notification.id
+            params["label"] = action.label
+            message?.let { params["message"] = it }
+            mediaUrl?.let { params["media"] = it }
+            mimeType?.let { params["mimeType"] = it }
+
+            GlobalScope.launch(Dispatchers.IO) {
+                try {
+                    Notificare.callNotificationReplyWebhook(targetUri, params)
+
+                    // NotificarePushUI.shared.delegate?.notificare(NotificarePushUI.shared, didExecuteAction: self.action, for: self.notification)
+                } catch (e: Exception) {
+                    // NotificarePushUI.shared.delegate?.notificare(NotificarePushUI.shared, didFailToExecuteAction: self.action, for: self.notification, error: error)
+                }
+            }
+
+            Notificare.createNotificationReply(
+                notification = notification,
+                action = action,
+                message = message,
+                media = mediaUrl,
+                mimeType = mimeType
+            )
         }
     }
 

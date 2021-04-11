@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white">
+
+    <ImageView
+        android:id="@+id/notificare_callback_image"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:adjustViewBounds="true"
+        tools:ignore="ContentDescription" />
+
+    <ImageButton
+        android:id="@+id/notificare_send_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="16dp"
+        android:background="@drawable/ic_notificare_circle_black"
+        android:backgroundTint="#F0F0F0"
+        android:elevation="6dp"
+        android:padding="16dp"
+        android:src="@drawable/ic_notificare_send_black_24dp"
+        android:tint="#757575"
+        tools:ignore="ContentDescription" />
+
+</FrameLayout>

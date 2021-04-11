@@ -43,3 +43,19 @@ val NotificareOptions.urlSchemes: List<String>
 
         return emptyList()
     }
+
+val NotificareOptions.showNotificationProgress: Boolean
+    get() {
+        return info.metaData.getBoolean(
+            "re.notifica.push.ui.show_notification_progress",
+            true,
+        )
+    }
+
+val NotificareOptions.showNotificationToasts: Boolean
+    get() {
+        return info.metaData.getBoolean(
+            "re.notifica.push.ui.show_notification_toasts",
+            true,
+        )
+    }
