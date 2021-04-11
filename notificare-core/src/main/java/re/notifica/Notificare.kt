@@ -15,6 +15,7 @@ import re.notifica.app.NotificareIntentReceiver
 import re.notifica.internal.*
 import re.notifica.internal.network.push.ApplicationResponse
 import re.notifica.internal.network.push.CreateNotificationReplyPayload
+import re.notifica.internal.network.push.NotificareUploadResponse
 import re.notifica.internal.network.push.NotificationResponse
 import re.notifica.internal.network.request.NotificareRequest
 import re.notifica.internal.storage.database.NotificareDatabase
@@ -242,6 +243,18 @@ object Notificare {
             .post(uri.toString(), params)
             .response()
     }
+
+    suspend fun uploadNotificationReplyAsset(payload: ByteArray, contentType: String): String =
+        withContext(Dispatchers.IO) {
+            if (!isConfigured) throw NotificareException.NotReady()
+
+            val response = NotificareRequest.Builder()
+                .header("Content-Type", contentType)
+                .post("/upload/reply", payload)
+                .responseDecodable(NotificareUploadResponse::class)
+
+            "https://push.notifica.re/upload${response.filename}"
+        }
 
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     fun removeNotificationFromNotificationCenter(notification: NotificareNotification) {

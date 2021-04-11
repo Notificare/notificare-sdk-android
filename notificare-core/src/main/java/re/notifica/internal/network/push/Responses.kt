@@ -27,6 +27,11 @@ internal data class DeviceUserDataResponse(
 )
 
 @JsonClass(generateAdapter = true)
-data class NotificationResponse(
+internal data class NotificationResponse(
     val notification: NotificareNotification,
+)
+
+@JsonClass(generateAdapter = true)
+internal data class NotificareUploadResponse(
+    val filename: String,
 )
