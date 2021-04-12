@@ -3,6 +3,7 @@ plugins {
     id 'kotlin-android'
     id 'kotlin-kapt'
     id 'kotlin-parcelize'
+    id 'maven-publish'
 }
 
 apply from: '../dependencies.gradle'
@@ -65,4 +66,28 @@ dependencies {
     api "com.squareup.moshi:moshi-kotlin:$moshi_version"
     kapt "com.squareup.moshi:moshi-kotlin-codegen:$moshi_version"
     implementation "com.squareup.moshi:moshi-adapters:$moshi_version"
+}
+
+afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                from components.release
+
+                groupId = rootProject.ext.maven_artifact_group
+                artifactId = 'inbox'
+                version = '3.0.0-alpha.1'
+            }
+        }
+        repositories {
+            maven {
+                name 'S3'
+                url "s3://maven.notifica.re/${rootProject.ext.maven_artifact_channel}"
+                credentials(AwsCredentials) {
+                    accessKey rootProject.ext.aws_s3_access_key_id
+                    secretKey rootProject.ext.aws_s3_secret_access_key
+                }
+            }
+        }
+    }
 }

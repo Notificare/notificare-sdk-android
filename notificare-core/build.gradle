@@ -3,6 +3,7 @@ plugins {
     id 'kotlin-android'
     id 'kotlin-kapt'
     id 'kotlin-parcelize'
+    id 'maven-publish'
 }
 
 apply from: '../dependencies.gradle'
@@ -18,7 +19,7 @@ android {
         javaCompileOptions {
             annotationProcessorOptions {
                 arguments = [
-                    "room.schemaLocation": "$projectDir/schemas".toString()
+                        "room.schemaLocation": "$projectDir/schemas".toString()
                 ]
             }
         }
@@ -71,15 +72,22 @@ dependencies {
 afterEvaluate {
     publishing {
         publications {
-            // Creates a Maven publication called "release".
             release(MavenPublication) {
-                // Applies the component for the release build variant.
                 from components.release
 
-                // You can then customize attributes of the publication as shown below.
-                groupId = 're.notifica'
-                artifactId = 'notificare-core'
-                version = '3.0.0'
+                groupId = rootProject.ext.maven_artifact_group
+                artifactId = 'core'
+                version = '3.0.0-alpha.1'
+            }
+        }
+        repositories {
+            maven {
+                name 'S3'
+                url "s3://maven.notifica.re/${rootProject.ext.maven_artifact_channel}"
+                credentials(AwsCredentials) {
+                    accessKey rootProject.ext.aws_s3_access_key_id
+                    secretKey rootProject.ext.aws_s3_secret_access_key
+                }
             }
         }
     }
