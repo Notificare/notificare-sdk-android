@@ -193,6 +193,22 @@ object Notificare {
 
     fun removeOnReadyListener(listener: OnReadyListener) {
         readyListeners.remove(listener)
+        NotificareLogger.debug("Removed an OnReadyListener (${readyListeners.size} in total).")
+    }
+
+    fun onReady(fn: ((application: NotificareApplication) -> Unit)) {
+        // Add an anonymous listener.
+        addOnReadyListener(
+            object : OnReadyListener {
+                override fun onReady(application: NotificareApplication) {
+                    // Remove the anonymous listener.
+                    removeOnReadyListener(this)
+
+                    // Run the lambda function provided by the consumer.
+                    fn(application)
+                }
+            }
+        )
     }
 
     suspend fun fetchApplication(): NotificareApplication = withContext(Dispatchers.IO) {
