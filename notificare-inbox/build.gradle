@@ -16,13 +16,13 @@ android {
         minSdkVersion min_sdk_version
         targetSdkVersion target_sdk_version
 
-//        javaCompileOptions {
-//            annotationProcessorOptions {
-//                arguments = [
-//                    "room.schemaLocation": "$projectDir/schemas".toString()
-//                ]
-//            }
-//        }
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments = [
+                        "room.schemaLocation": "$projectDir/schemas".toString()
+                ]
+            }
+        }
     }
 
     buildTypes {
