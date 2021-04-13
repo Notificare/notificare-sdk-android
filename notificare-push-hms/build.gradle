@@ -14,6 +14,8 @@ android {
     defaultConfig {
         minSdkVersion min_sdk_version
         targetSdkVersion target_sdk_version
+
+        buildConfigField "String", "SDK_VERSION", "\"${notificare_push_hms_version_name.tokenize("-").first()}\""
     }
 
     buildTypes {
@@ -56,7 +58,7 @@ afterEvaluate {
 
                 groupId = rootProject.ext.maven_artifact_group
                 artifactId = 'push-hms'
-                version = '3.0.0-alpha.1'
+                version = rootProject.ext.notificare_push_hms_version_name
             }
         }
         repositories {

@@ -31,6 +31,8 @@ import java.util.*
 
 object Notificare {
 
+    const val SDK_VERSION = BuildConfig.SDK_VERSION
+
     const val INTENT_EXTRA_NOTIFICATION = "re.notifica.intent.extra.Notification"
     const val INTENT_EXTRA_ACTION = "re.notifica.intent.extra.Action"
 

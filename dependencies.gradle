@@ -5,6 +5,16 @@ buildscript {
         min_sdk_version = 22
         target_sdk_version = 30
 
+        // Module versions
+        notificare_core_version_name = '3.0.0-beta.1'
+        notificare_inbox_version_name = '3.0.0-beta.1'
+        notificare_push_version_name = '3.0.0-beta.1'
+        notificare_push_fcm_version_name = '3.0.0-beta.1'
+        notificare_push_hms_version_name = '3.0.0-beta.1'
+        notificare_push_ui_version_name = '3.0.0-beta.1'
+        notificare_push_ui_fcm_version_name = '3.0.0-beta.1'
+        notificare_push_ui_hms_version_name = '3.0.0-beta.1'
+
         // Maven
         maven_artifact_group = 're.notifica'
         maven_artifact_channel = 'prereleases' // releases

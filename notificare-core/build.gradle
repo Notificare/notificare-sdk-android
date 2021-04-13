@@ -16,6 +16,8 @@ android {
         minSdkVersion min_sdk_version
         targetSdkVersion target_sdk_version
 
+        buildConfigField "String", "SDK_VERSION", "\"${notificare_core_version_name.tokenize("-").first()}\""
+
         javaCompileOptions {
             annotationProcessorOptions {
                 arguments = [
@@ -78,7 +80,7 @@ afterEvaluate {
 
                 groupId = rootProject.ext.maven_artifact_group
                 artifactId = 'core'
-                version = '3.0.0-alpha.1'
+                version = rootProject.ext.notificare_core_version_name
             }
         }
         repositories {

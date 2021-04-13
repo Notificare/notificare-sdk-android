@@ -8,7 +8,6 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import re.notifica.Notificare
 import re.notifica.NotificareLogger
-import re.notifica.app.NotificareIntentReceiver
 import re.notifica.models.NotificareNotification
 import re.notifica.models.NotificareTransport
 import re.notifica.push.NotificarePush
@@ -19,6 +18,8 @@ import re.notifica.push.ui.notifications.NotificationActivity
 import re.notifica.push.ui.notifications.fragments.*
 
 object NotificarePushUI {
+
+    const val SDK_VERSION = BuildConfig.SDK_VERSION
 
     private const val CONTENT_FILE_PROVIDER_AUTHORITY_SUFFIX = ".notificare.fileprovider"
 

@@ -37,6 +37,8 @@ import java.util.concurrent.atomic.AtomicInteger
 
 object NotificarePush : NotificareModule() {
 
+    const val SDK_VERSION = BuildConfig.SDK_VERSION
+
     const val DEFAULT_NOTIFICATION_CHANNEL_ID = "notificare_channel_default"
     internal const val INBOX_RECEIVER_CLASS_NAME = "re.notifica.inbox.internal.NotificareInboxSystemReceiver"
 

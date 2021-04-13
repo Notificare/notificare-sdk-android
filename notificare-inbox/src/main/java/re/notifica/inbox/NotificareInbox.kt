@@ -25,6 +25,8 @@ import java.util.concurrent.TimeUnit
 
 object NotificareInbox : NotificareModule() {
 
+    const val SDK_VERSION = BuildConfig.SDK_VERSION
+
     internal lateinit var database: InboxDatabase
 
     private var liveItems: LiveData<List<InboxItemEntity>>? = null
