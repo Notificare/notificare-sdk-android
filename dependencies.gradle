@@ -14,11 +14,26 @@ buildscript {
         // Kotlin
         kotlin_version = '1.4.30'
         coroutines_version = '1.4.1'
+
+        // Android
+        core_version = '1.3.2'
+        lifecycle_version = '2.3.0'
+        exit_interface_version = '1.3.2'
         room_version = '2.2.5'
         work_manager_version = '2.4.0'
+        material_components_version = '1.3.0'
 
-        // Networking
+        // External dependencies
         moshi_version = '1.11.0'
         okhttp_version = '4.9.0'
+        glide_version = '4.12.0'
+
+        // Firebase & Google Services
+        firebase_bom_version = '26.4.0'
+        google_play_services_maps_version = '17.0.0'
+
+        // Huawei
+        huawei_push_version = '5.0.2.300'
+        huawei_maps_version = '5.0.3.301'
     }
 }
