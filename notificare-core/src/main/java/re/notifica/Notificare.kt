@@ -33,6 +33,7 @@ object Notificare {
 
     const val SDK_VERSION = BuildConfig.SDK_VERSION
 
+    const val INTENT_EXTRA_APPLICATION = "re.notifica.intent.extra.Application"
     const val INTENT_EXTRA_NOTIFICATION = "re.notifica.intent.extra.Notification"
     const val INTENT_EXTRA_ACTION = "re.notifica.intent.extra.Action"
 
@@ -67,6 +68,9 @@ object Notificare {
     private var state: NotificareLaunchState = NotificareLaunchState.NONE
     var application: NotificareApplication? = null
         private set
+
+    // Listeners
+    private val readyListeners = hashSetOf<OnReadyListener>()
 
     // region Public API
 
@@ -165,7 +169,8 @@ object Notificare {
                 NotificareLogger.debug("/==================================================================================/")
 
                 // We're done launching. Send a broadcast.
-                NotificareIntentEmitter.onReady()
+                NotificareIntentEmitter.onReady(application)
+                readyListeners.forEach { it.onReady(application) }
             } catch (e: Exception) {
                 NotificareLogger.error("Failed to launch Notificare.", e)
                 state = NotificareLaunchState.CONFIGURED
@@ -175,6 +180,19 @@ object Notificare {
 
     fun unlaunch() {
 
+    }
+
+    fun addOnReadyListener(listener: OnReadyListener) {
+        readyListeners.add(listener)
+        NotificareLogger.debug("Added a new OnReadyListener (${readyListeners.size} in total).")
+
+        if (isReady) {
+            listener.onReady(checkNotNull(application))
+        }
+    }
+
+    fun removeOnReadyListener(listener: OnReadyListener) {
+        readyListeners.remove(listener)
     }
 
     suspend fun fetchApplication(): NotificareApplication = withContext(Dispatchers.IO) {
@@ -339,5 +357,9 @@ object Notificare {
 
         NotificareLogger.debug("Notificare configured all services.")
         state = NotificareLaunchState.CONFIGURED
+    }
+
+    interface OnReadyListener {
+        fun onReady(application: NotificareApplication)
     }
 }
