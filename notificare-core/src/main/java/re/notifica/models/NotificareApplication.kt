@@ -1,7 +1,6 @@
 package re.notifica.models
 
 import android.os.Parcelable
-import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 import kotlinx.parcelize.Parcelize
 import org.json.JSONObject
@@ -10,7 +9,7 @@ import re.notifica.Notificare
 @Parcelize
 @JsonClass(generateAdapter = true)
 data class NotificareApplication(
-    @Json(name = "_id") val id: String,
+    val id: String,
     val name: String,
     val category: String,
     val services: Map<String, Boolean>,

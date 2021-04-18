@@ -216,6 +216,7 @@ object Notificare {
             .get("/application/info")
             .responseDecodable(ApplicationResponse::class)
             .application
+            .toModel()
     }
 
     suspend fun fetchNotification(id: String): NotificareNotification = withContext(Dispatchers.IO) {
@@ -227,6 +228,7 @@ object Notificare {
             .get("/notification/$id")
             .responseDecodable(NotificationResponse::class)
             .notification
+            .toModel()
     }
 
     suspend fun createNotificationReply(

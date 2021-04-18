@@ -2,7 +2,6 @@ package re.notifica.models
 
 import android.content.Context
 import android.os.Parcelable
-import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 import kotlinx.parcelize.Parcelize
 import kotlinx.parcelize.WriteWith
@@ -15,7 +14,7 @@ import java.util.*
 @Parcelize
 @JsonClass(generateAdapter = true)
 data class NotificareNotification(
-    @Json(name = "_id") val id: String,
+    val id: String,
     val partial: Boolean = false,
     val type: String,
     val time: Date,
