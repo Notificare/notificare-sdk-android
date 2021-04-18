@@ -1,15 +1,43 @@
 package re.notifica.internal.network.push
 
+import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 import re.notifica.models.NotificareApplication
 import re.notifica.models.NotificareDoNotDisturb
 import re.notifica.models.NotificareNotification
 import re.notifica.models.NotificareUserData
+import java.util.*
 
 @JsonClass(generateAdapter = true)
 internal data class ApplicationResponse(
-    val application: NotificareApplication
-)
+    val application: Application
+) {
+
+    @JsonClass(generateAdapter = true)
+    internal data class Application(
+        @Json(name = "_id") val id: String,
+        val name: String,
+        val category: String,
+        val services: Map<String, Boolean>,
+        val inboxConfig: NotificareApplication.InboxConfig?,
+        val regionConfig: NotificareApplication.RegionConfig?,
+        val userDataFields: List<NotificareApplication.UserDataField>,
+        val actionCategories: List<NotificareApplication.ActionCategory>
+    ) {
+        fun toModel(): NotificareApplication {
+            return NotificareApplication(
+                id,
+                name,
+                category,
+                services,
+                inboxConfig,
+                regionConfig,
+                userDataFields,
+                actionCategories
+            )
+        }
+    }
+}
 
 @JsonClass(generateAdapter = true)
 internal data class DeviceDoNotDisturbResponse(
@@ -28,8 +56,40 @@ internal data class DeviceUserDataResponse(
 
 @JsonClass(generateAdapter = true)
 internal data class NotificationResponse(
-    val notification: NotificareNotification,
-)
+    val notification: Notification,
+) {
+
+    @JsonClass(generateAdapter = true)
+    internal data class Notification(
+        @Json(name = "_id") val id: String,
+        val partial: Boolean = false,
+        val type: String,
+        val time: Date,
+        val title: String?,
+        val subtitle: String?,
+        val message: String,
+        val content: List<NotificareNotification.Content> = listOf(),
+        val actions: List<NotificareNotification.Action> = listOf(),
+        val attachments: List<NotificareNotification.Attachment> = listOf(),
+        val extra: Map<String, Any> = mapOf(),
+    ) {
+        fun toModel(): NotificareNotification {
+            return NotificareNotification(
+                id,
+                partial,
+                type,
+                time,
+                title,
+                subtitle,
+                message,
+                content,
+                actions,
+                attachments,
+                extra
+            )
+        }
+    }
+}
 
 @JsonClass(generateAdapter = true)
 internal data class NotificareUploadResponse(

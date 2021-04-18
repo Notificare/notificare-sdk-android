@@ -1,8 +1,12 @@
 package re.notifica.inbox.models
 
+import com.squareup.moshi.JsonClass
+import org.json.JSONObject
+import re.notifica.Notificare
 import re.notifica.models.NotificareNotification
 import java.util.*
 
+@JsonClass(generateAdapter = true)
 data class NotificareInboxItem internal constructor(
     val id: String,
     internal var _notification: NotificareNotification,
@@ -23,4 +27,18 @@ data class NotificareInboxItem internal constructor(
             val expiresAt = expires ?: return false
             return expiresAt.before(Date())
         }
+
+    fun toJson(): JSONObject {
+        val jsonStr = adapter.toJson(this)
+        return JSONObject(jsonStr)
+    }
+
+    companion object {
+        private val adapter = Notificare.moshi.adapter(NotificareInboxItem::class.java)
+
+        fun fromJson(json: JSONObject): NotificareInboxItem {
+            val jsonStr = json.toString()
+            return requireNotNull(adapter.fromJson(jsonStr))
+        }
+    }
 }

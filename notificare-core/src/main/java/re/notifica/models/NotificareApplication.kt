@@ -4,6 +4,8 @@ import android.os.Parcelable
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 import kotlinx.parcelize.Parcelize
+import org.json.JSONObject
+import re.notifica.Notificare
 
 @Parcelize
 @JsonClass(generateAdapter = true)
@@ -18,18 +20,62 @@ data class NotificareApplication(
     val actionCategories: List<ActionCategory>
 ) : Parcelable {
 
+    fun toJson(): JSONObject {
+        val jsonStr = adapter.toJson(this)
+        return JSONObject(jsonStr)
+    }
+
+    companion object {
+        private val adapter = Notificare.moshi.adapter(NotificareApplication::class.java)
+
+        fun fromJson(json: JSONObject): NotificareApplication {
+            val jsonStr = json.toString()
+            return requireNotNull(adapter.fromJson(jsonStr))
+        }
+    }
+
     @Parcelize
     @JsonClass(generateAdapter = true)
     data class InboxConfig(
         val useInbox: Boolean = false,
         val autoBadge: Boolean = false
-    ) : Parcelable
+    ) : Parcelable {
+
+        fun toJson(): JSONObject {
+            val jsonStr = adapter.toJson(this)
+            return JSONObject(jsonStr)
+        }
+
+        companion object {
+            private val adapter = Notificare.moshi.adapter(InboxConfig::class.java)
+
+            fun fromJson(json: JSONObject): InboxConfig {
+                val jsonStr = json.toString()
+                return requireNotNull(adapter.fromJson(jsonStr))
+            }
+        }
+    }
 
     @Parcelize
     @JsonClass(generateAdapter = true)
     data class RegionConfig(
         val proximityUUID: String?
-    ) : Parcelable
+    ) : Parcelable {
+
+        fun toJson(): JSONObject {
+            val jsonStr = adapter.toJson(this)
+            return JSONObject(jsonStr)
+        }
+
+        companion object {
+            private val adapter = Notificare.moshi.adapter(RegionConfig::class.java)
+
+            fun fromJson(json: JSONObject): RegionConfig {
+                val jsonStr = json.toString()
+                return requireNotNull(adapter.fromJson(jsonStr))
+            }
+        }
+    }
 
     @Parcelize
     @JsonClass(generateAdapter = true)
@@ -37,7 +83,22 @@ data class NotificareApplication(
         val type: String,
         val key: String,
         val label: String
-    ) : Parcelable
+    ) : Parcelable {
+
+        fun toJson(): JSONObject {
+            val jsonStr = adapter.toJson(this)
+            return JSONObject(jsonStr)
+        }
+
+        companion object {
+            private val adapter = Notificare.moshi.adapter(UserDataField::class.java)
+
+            fun fromJson(json: JSONObject): UserDataField {
+                val jsonStr = json.toString()
+                return requireNotNull(adapter.fromJson(jsonStr))
+            }
+        }
+    }
 
     @Parcelize
     @JsonClass(generateAdapter = true)
@@ -45,8 +106,24 @@ data class NotificareApplication(
         val type: String,
         val name: String,
         val actions: List<NotificareNotification.Action>
-    ) : Parcelable
+    ) : Parcelable {
 
+        fun toJson(): JSONObject {
+            val jsonStr = adapter.toJson(this)
+            return JSONObject(jsonStr)
+        }
+
+        companion object {
+            private val adapter = Notificare.moshi.adapter(ActionCategory::class.java)
+
+            fun fromJson(json: JSONObject): ActionCategory {
+                val jsonStr = json.toString()
+                return requireNotNull(adapter.fromJson(jsonStr))
+            }
+        }
+    }
+
+    @Suppress("unused")
     object ServiceKeys {
         const val OAUTH2 = "oauth2"
         const val RICH_PUSH = "richPush"

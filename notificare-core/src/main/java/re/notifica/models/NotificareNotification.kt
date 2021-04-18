@@ -6,6 +6,7 @@ import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 import kotlinx.parcelize.Parcelize
 import kotlinx.parcelize.WriteWith
+import org.json.JSONObject
 import re.notifica.Notificare
 import re.notifica.internal.parcelize.NotificationContentDataParceler
 import re.notifica.internal.parcelize.NotificationExtraParceler
@@ -27,12 +28,43 @@ data class NotificareNotification(
     val extra: @WriteWith<NotificationExtraParceler> Map<String, Any> = mapOf(),
 ) : Parcelable {
 
+    fun toJson(): JSONObject {
+        val jsonStr = adapter.toJson(this)
+        return JSONObject(jsonStr)
+    }
+
+    companion object {
+        const val TYPE_NONE = "re.notifica.notification.None"
+        const val TYPE_ALERT = "re.notifica.notification.Alert"
+        const val TYPE_WEB_VIEW = "re.notifica.notification.WebView"
+        const val TYPE_URL = "re.notifica.notification.URL"
+        const val TYPE_URL_SCHEME = "re.notifica.notification.URLScheme"
+        const val TYPE_IMAGE = "re.notifica.notification.Image"
+        const val TYPE_VIDEO = "re.notifica.notification.Video"
+        const val TYPE_MAP = "re.notifica.notification.Map"
+        const val TYPE_RATE = "re.notifica.notification.Rate"
+        const val TYPE_PASSBOOK = "re.notifica.notification.Passbook"
+        const val TYPE_STORE = "re.notifica.notification.Store"
+
+        private val adapter = Notificare.moshi.adapter(NotificareNotification::class.java)
+
+        fun fromJson(json: JSONObject): NotificareNotification {
+            val jsonStr = json.toString()
+            return requireNotNull(adapter.fromJson(jsonStr))
+        }
+    }
+
     @Parcelize
     @JsonClass(generateAdapter = true)
     data class Content(
         val type: String,
         val data: @WriteWith<NotificationContentDataParceler> Any,
     ) : Parcelable {
+
+        fun toJson(): JSONObject {
+            val jsonStr = adapter.toJson(this)
+            return JSONObject(jsonStr)
+        }
 
         companion object {
             const val TYPE_HTML = "re.notifica.content.HTML"
@@ -42,6 +74,13 @@ data class NotificareNotification(
             const val TYPE_GOOGLE_PLAY_COLLECTION = "re.notifica.content.GooglePlayCollection"
             const val TYPE_APP_GALLERY_DETAILS = "re.notifica.content.AppGalleryDetails"
             const val TYPE_APP_GALLERY_SEARCH = "re.notifica.content.AppGallerySearch"
+
+            private val adapter = Notificare.moshi.adapter(Content::class.java)
+
+            fun fromJson(json: JSONObject): Content {
+                val jsonStr = json.toString()
+                return requireNotNull(adapter.fromJson(jsonStr))
+            }
         }
     }
 
@@ -63,6 +102,11 @@ data class NotificareNotification(
             return if (resource == 0) label else context.getString(resource)
         }
 
+        fun toJson(): JSONObject {
+            val jsonStr = adapter.toJson(this)
+            return JSONObject(jsonStr)
+        }
+
         companion object {
             const val TYPE_APP = "re.notifica.action.App"
             const val TYPE_BROWSER = "re.notifica.action.Browser"
@@ -72,6 +116,13 @@ data class NotificareNotification(
             const val TYPE_SMS = "re.notifica.action.SMS"
             const val TYPE_TELEPHONE = "re.notifica.action.Telephone"
             const val TYPE_WEB_VIEW = "re.notifica.action.WebView"
+
+            private val adapter = Notificare.moshi.adapter(Action::class.java)
+
+            fun fromJson(json: JSONObject): Action {
+                val jsonStr = json.toString()
+                return requireNotNull(adapter.fromJson(jsonStr))
+            }
         }
     }
 
@@ -80,20 +131,21 @@ data class NotificareNotification(
     data class Attachment(
         val mimeType: String,
         val uri: String,
-    ) : Parcelable
+    ) : Parcelable {
 
-    companion object {
-        const val TYPE_NONE = "re.notifica.notification.None"
-        const val TYPE_ALERT = "re.notifica.notification.Alert"
-        const val TYPE_WEB_VIEW = "re.notifica.notification.WebView"
-        const val TYPE_URL = "re.notifica.notification.URL"
-        const val TYPE_URL_SCHEME = "re.notifica.notification.URLScheme"
-        const val TYPE_IMAGE = "re.notifica.notification.Image"
-        const val TYPE_VIDEO = "re.notifica.notification.Video"
-        const val TYPE_MAP = "re.notifica.notification.Map"
-        const val TYPE_RATE = "re.notifica.notification.Rate"
-        const val TYPE_PASSBOOK = "re.notifica.notification.Passbook"
-        const val TYPE_STORE = "re.notifica.notification.Store"
+        fun toJson(): JSONObject {
+            val jsonStr = adapter.toJson(this)
+            return JSONObject(jsonStr)
+        }
+
+        companion object {
+            private val adapter = Notificare.moshi.adapter(Attachment::class.java)
+
+            fun fromJson(json: JSONObject): Attachment {
+                val jsonStr = json.toString()
+                return requireNotNull(adapter.fromJson(jsonStr))
+            }
+        }
     }
 
     enum class NotificationType {
