@@ -24,7 +24,7 @@ android {
 
     defaultConfig {
         applicationId "re.notifica.demo"
-        minSdkVersion 22
+        minSdkVersion 23
         targetSdkVersion 30
         versionCode 1
         versionName "1.0.0"
