@@ -12,7 +12,9 @@
             android:exported="false" />
 
         <!-- Receiver for locale and timezone changes -->
-        <receiver android:name="re.notifica.internal.receivers.NotificareSystemIntentReceiver">
+        <receiver
+            android:name="re.notifica.internal.receivers.NotificareSystemIntentReceiver"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.TIMEZONE_CHANGED" />
                 <action android:name="android.intent.action.LOCALE_CHANGED" />

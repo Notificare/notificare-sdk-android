@@ -14,6 +14,7 @@
         android:theme="@style/Theme.Notificare">
         <activity
             android:name=".MainActivity"
+            android:exported="true"
             android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -39,15 +40,23 @@
                 <data android:scheme="re.notifica" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.inbox.InboxActivity" />
+        <activity
+            android:name=".ui.inbox.InboxActivity"
+            android:exported="false" />
         <activity
             android:name="re.notifica.push.ui.notifications.NotificationActivity"
+            android:exported="false"
             android:hardwareAccelerated="true"
             android:parentActivityName=".MainActivity"
             android:theme="@style/Theme.Notificare.Translucent" />
 
-        <receiver android:name="re.notifica.app.NotificareIntentReceiver" />
-        <receiver android:name="re.notifica.push.app.NotificarePushIntentReceiver" />
+        <receiver
+            android:name="re.notifica.app.NotificareIntentReceiver"
+            android:exported="false" />
+
+        <receiver
+            android:name="re.notifica.push.app.NotificarePushIntentReceiver"
+            android:exported="false" />
 
         <!--        <meta-data-->
         <!--            android:name="re.notifica.push.automatic_default_channel_enabled"-->

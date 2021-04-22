@@ -4,7 +4,9 @@
 
     <application>
 
-        <receiver android:name="re.notifica.push.internal.NotificarePushSystemIntentReceiver" />
+        <receiver
+            android:name="re.notifica.push.internal.NotificarePushSystemIntentReceiver"
+            android:exported="false" />
 
     </application>
 

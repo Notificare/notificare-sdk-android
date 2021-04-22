@@ -4,7 +4,9 @@
 
     <application>
 
-        <receiver android:name=".internal.NotificareInboxSystemReceiver" />
+        <receiver
+            android:name=".internal.NotificareInboxSystemReceiver"
+            android:exported="false" />
 
     </application>
 

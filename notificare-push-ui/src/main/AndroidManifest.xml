@@ -6,6 +6,7 @@
 
         <activity
             android:name=".notifications.NotificationActivity"
+            android:exported="false"
             android:hardwareAccelerated="true" />
 
         <!-- Provider for camera replies -->
