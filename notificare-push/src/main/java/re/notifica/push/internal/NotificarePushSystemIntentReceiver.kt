@@ -16,9 +16,13 @@ import re.notifica.push.models.NotificareNotificationRemoteMessage
 
 internal class NotificarePushSystemIntentReceiver : BroadcastReceiver() {
 
+    companion object {
+        const val INTENT_ACTION_QUICK_RESPONSE = "re.notifica.intent.action.NotificationQuickResponse"
+    }
+
     override fun onReceive(context: Context, intent: Intent) {
         when (intent.action) {
-            NotificarePush.INTENT_ACTION_REMOTE_MESSAGE_OPENED -> {
+            INTENT_ACTION_QUICK_RESPONSE -> {
                 val message: NotificareNotificationRemoteMessage = requireNotNull(
                     intent.getParcelableExtra(NotificarePush.INTENT_EXTRA_REMOTE_MESSAGE)
                 )
@@ -27,75 +31,49 @@ internal class NotificarePushSystemIntentReceiver : BroadcastReceiver() {
                     intent.getParcelableExtra(Notificare.INTENT_EXTRA_NOTIFICATION)
                 )
 
-                val action: NotificareNotification.Action? = intent.getParcelableExtra(Notificare.INTENT_EXTRA_ACTION)
+                val action: NotificareNotification.Action = requireNotNull(
+                    intent.getParcelableExtra(Notificare.INTENT_EXTRA_ACTION)
+                )
+
                 val responseText = RemoteInput.getResultsFromIntent(intent)
                     ?.getCharSequence(NotificarePush.INTENT_EXTRA_TEXT_RESPONSE)
                     ?.toString()
 
-                onRemoteMessageOpened(message, notification, action, responseText)
+                onQuickResponse(message, notification, action, responseText)
             }
         }
     }
 
-    private fun onRemoteMessageOpened(
+    private fun onQuickResponse(
         message: NotificareNotificationRemoteMessage,
         notification: NotificareNotification,
-        action: NotificareNotification.Action?,
+        action: NotificareNotification.Action,
         responseText: String?
     ) {
-        GlobalScope.launch(Dispatchers.IO) {
-            try {
-                // Log the notification open event.
-                Notificare.eventsManager.logNotificationOpened(notification.id)
+        // Log the notification open event.
+        Notificare.eventsManager.logNotificationOpened(notification.id)
 
-                @Suppress("NAME_SHADOWING") val notification = if (notification.partial) {
+        GlobalScope.launch(Dispatchers.IO) {
+            @Suppress("NAME_SHADOWING")
+            val notification = try {
+                if (notification.partial) {
                     Notificare.fetchNotification(message.id)
                 } else {
                     notification
                 }
-
-                if (action != null && action.type == NotificareNotification.Action.TYPE_CALLBACK && !action.camera && (!action.keyboard || responseText != null)) {
-                    NotificareLogger.debug("Handling a notification action without UI.")
-                    sendQuickResponse(notification, action, responseText)
-
-                    // Remove the notification from the notification center.
-                    Notificare.removeNotificationFromNotificationCenter(notification)
-
-                    // Notify the inbox to mark the item as read.
-                    markItemAsRead(message)
-
-                    return@launch
-                }
-
-                // TODO notify listeners
-
-//                // Notify the consumer's intent receiver.
-//                Notificare.requireContext().sendBroadcast(
-//                    Intent(Notificare.requireContext(), NotificarePush.intentReceiver)
-//                        .setAction(NotificarePush.INTENT_ACTION_NOTIFICATION_OPENED)
-//                        .putExtra(Notificare.INTENT_EXTRA_NOTIFICATION, notification)
-//                )
-
-                // Notify the consumer's custom activity about the notification open event.
-                val notificationIntent = Intent()
-                    .setAction(
-                        if (action == null) NotificarePush.INTENT_ACTION_NOTIFICATION_OPENED
-                        else NotificarePush.INTENT_ACTION_ACTION_OPENED
-                    )
-                    .putExtra(Notificare.INTENT_EXTRA_NOTIFICATION, notification)
-                    .putExtra(Notificare.INTENT_EXTRA_ACTION, action)
-                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                    .setPackage(Notificare.requireContext().packageName)
-
-                if (notificationIntent.resolveActivity(Notificare.requireContext().packageManager) != null) {
-                    // Notification handled by custom activity in package
-                    Notificare.requireContext().startActivity(notificationIntent)
-                } else {
-                    NotificareLogger.warning("Could not find an activity with the '${notificationIntent.action}' action.")
-                }
             } catch (e: Exception) {
                 NotificareLogger.error("Failed to fetch notification.", e)
+                return@launch
             }
+
+            NotificareLogger.debug("Handling a notification action without UI.")
+            sendQuickResponse(notification, action, responseText)
+
+            // Remove the notification from the notification center.
+            Notificare.removeNotificationFromNotificationCenter(notification)
+
+            // Notify the inbox to mark the item as read.
+            markItemAsRead(message)
         }
     }
 

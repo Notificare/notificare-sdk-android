@@ -469,33 +469,54 @@ object NotificarePush : NotificareModule() {
         if (message.actionCategory != null && application != null) {
             val category = application.actionCategories.firstOrNull { it.name == message.actionCategory }
             category?.actions?.forEach { action ->
-                val actionIntent =
+                val useQuickResponse = action.type == NotificareNotification.Action.TYPE_CALLBACK &&
+                    !action.camera && (!action.keyboard || Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
+
+                val useRemoteInput = useQuickResponse && action.keyboard && !action.camera
+
+                val actionIntent = if (useQuickResponse) {
                     Intent(Notificare.requireContext(), NotificarePushSystemIntentReceiver::class.java).apply {
+                        setAction(NotificarePushSystemIntentReceiver.INTENT_ACTION_QUICK_RESPONSE)
+
+                        putExtras(extras)
+                        putExtra(Notificare.INTENT_EXTRA_ACTION, action)
+                    }
+                } else {
+                    Intent().apply {
                         setAction(INTENT_ACTION_REMOTE_MESSAGE_OPENED)
 
                         putExtras(extras)
                         putExtra(Notificare.INTENT_EXTRA_ACTION, action)
                     }
+                }
 
-                val useRemoteInput = action.keyboard && !action.camera
                 builder.addAction(
                     NotificationCompat.Action.Builder(
                         0,
                         action.getLocalizedLabel(Notificare.requireContext()),
-                        PendingIntent.getBroadcast(
-                            Notificare.requireContext(),
-                            createUniqueNotificationId(),
-                            actionIntent,
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S || Build.VERSION.CODENAME == "S") {
-                                if (useRemoteInput) {
-                                    PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_MUTABLE
+                        if (useQuickResponse) {
+                            PendingIntent.getBroadcast(
+                                Notificare.requireContext(),
+                                createUniqueNotificationId(),
+                                actionIntent,
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S || Build.VERSION.CODENAME == "S") {
+                                    if (useRemoteInput) {
+                                        PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_MUTABLE
+                                    } else {
+                                        PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                                    }
                                 } else {
-                                    PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                                    PendingIntent.FLAG_CANCEL_CURRENT
                                 }
-                            } else {
-                                PendingIntent.FLAG_CANCEL_CURRENT
-                            }
-                        )
+                            )
+                        } else {
+                            PendingIntent.getActivity(
+                                Notificare.requireContext(),
+                                createUniqueNotificationId(),
+                                actionIntent,
+                                PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                            )
+                        }
                     ).apply {
                         if (useRemoteInput) {
                             addRemoteInput(
