@@ -44,7 +44,7 @@ object NotificarePushUI {
             else -> {
                 val intent = Intent(Notificare.requireContext(), NotificationActivity::class.java)
                     .putExtra(Notificare.INTENT_EXTRA_NOTIFICATION, notification)
-//                  .setPackage(Notificare.requireContext().packageName)
+                    .setPackage(Notificare.requireContext().packageName)
 
                 activity.startActivity(intent)
                 activity.overridePendingTransition(0, 0)
@@ -63,7 +63,7 @@ object NotificarePushUI {
                     val intent = Intent(Notificare.requireContext(), NotificationActivity::class.java)
                         .putExtra(Notificare.INTENT_EXTRA_NOTIFICATION, notification)
                         .putExtra(Notificare.INTENT_EXTRA_ACTION, action)
-//                      .setPackage(Notificare.requireContext().packageName)
+                        .setPackage(Notificare.requireContext().packageName)
 
                     activity.startActivity(intent)
                     activity.overridePendingTransition(0, 0)
