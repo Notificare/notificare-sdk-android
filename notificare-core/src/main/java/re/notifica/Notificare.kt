@@ -219,6 +219,17 @@ object Notificare {
             .toModel()
     }
 
+    fun fetchApplication(callback: NotificareCallback<NotificareApplication>) {
+        GlobalScope.launch {
+            try {
+                val application = fetchApplication()
+                callback.onSuccess(application)
+            } catch (e: Exception) {
+                callback.onFailure(e)
+            }
+        }
+    }
+
     suspend fun fetchNotification(id: String): NotificareNotification = withContext(Dispatchers.IO) {
         if (!isConfigured) {
             throw NotificareException.NotReady()
@@ -229,6 +240,17 @@ object Notificare {
             .responseDecodable(NotificationResponse::class)
             .notification
             .toModel()
+    }
+
+    fun fetchNotification(id: String, callback: NotificareCallback<NotificareNotification>) {
+        GlobalScope.launch {
+            try {
+                val notification = fetchNotification(id)
+                callback.onSuccess(notification)
+            } catch (e: Exception) {
+                callback.onFailure(e)
+            }
+        }
     }
 
     suspend fun createNotificationReply(
