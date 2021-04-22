@@ -322,7 +322,8 @@ object NotificarePush : NotificareModule() {
 
                 putExtras(extras)
             },
-            PendingIntent.FLAG_CANCEL_CURRENT
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S || Build.VERSION.CODENAME == "S") PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_MUTABLE
+            else PendingIntent.FLAG_CANCEL_CURRENT
         )
 
 //        val deleteIntent = PendingIntent.getBroadcast(
@@ -336,7 +337,7 @@ object NotificarePush : NotificareModule() {
 //
 //                putExtras(extras)
 //            },
-//            PendingIntent.FLAG_CANCEL_CURRENT
+//            PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE
 //        )
 
         val notificationManager = NotificationManagerCompat.from(Notificare.requireContext())
@@ -426,6 +427,7 @@ object NotificarePush : NotificareModule() {
                         putExtra(Notificare.INTENT_EXTRA_ACTION, action)
                     }
 
+                val useRemoteInput = action.keyboard && !action.camera
                 builder.addAction(
                     NotificationCompat.Action.Builder(
                         0,
@@ -434,10 +436,18 @@ object NotificarePush : NotificareModule() {
                             Notificare.requireContext(),
                             createUniqueNotificationId(),
                             actionIntent,
-                            PendingIntent.FLAG_CANCEL_CURRENT
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S || Build.VERSION.CODENAME == "S") {
+                                if (useRemoteInput) {
+                                    PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_MUTABLE
+                                } else {
+                                    PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                                }
+                            } else {
+                                PendingIntent.FLAG_CANCEL_CURRENT
+                            }
                         )
                     ).apply {
-                        if (action.keyboard && !action.camera) {
+                        if (useRemoteInput) {
                             addRemoteInput(
                                 RemoteInput.Builder(INTENT_EXTRA_TEXT_RESPONSE)
                                     .setLabel(action.getLocalizedLabel(Notificare.requireContext()))
@@ -455,7 +465,7 @@ object NotificarePush : NotificareModule() {
                             Notificare.requireContext(),
                             createUniqueNotificationId(),
                             actionIntent,
-                            PendingIntent.FLAG_CANCEL_CURRENT
+                            PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE
                         )
                     ).build()
                 )
