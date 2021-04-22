@@ -17,6 +17,7 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.RemoteInput
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -137,6 +138,56 @@ object NotificarePush : NotificareModule() {
                         .setAction(INTENT_ACTION_UNKNOWN_NOTIFICATION_RECEIVED)
                         .putExtra(Notificare.INTENT_EXTRA_NOTIFICATION, notification)
                 )
+            }
+        }
+    }
+
+    fun handleTrampolineMessage(
+        message: NotificareNotificationRemoteMessage,
+        notification: NotificareNotification,
+        action: NotificareNotification.Action?
+    ) {
+        // Log the notification open event.
+        Notificare.eventsManager.logNotificationOpened(notification.id)
+
+        GlobalScope.launch(Dispatchers.IO) {
+            @Suppress("NAME_SHADOWING")
+            val notification: NotificareNotification = try {
+                if (notification.partial) {
+                    Notificare.fetchNotification(message.id)
+                } else {
+                    notification
+                }
+            } catch (e: Exception) {
+                NotificareLogger.error("Failed to fetch notification.", e)
+                return@launch
+            }
+
+            // TODO notify listeners
+
+//                // Notify the consumer's intent receiver.
+//                Notificare.requireContext().sendBroadcast(
+//                    Intent(Notificare.requireContext(), NotificarePush.intentReceiver)
+//                        .setAction(NotificarePush.INTENT_ACTION_NOTIFICATION_OPENED)
+//                        .putExtra(Notificare.INTENT_EXTRA_NOTIFICATION, notification)
+//                )
+
+            // Notify the consumer's custom activity about the notification open event.
+            val notificationIntent = Intent()
+                .setAction(
+                    if (action == null) INTENT_ACTION_NOTIFICATION_OPENED
+                    else INTENT_ACTION_ACTION_OPENED
+                )
+                .putExtra(Notificare.INTENT_EXTRA_NOTIFICATION, notification)
+                .putExtra(Notificare.INTENT_EXTRA_ACTION, action)
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                .setPackage(Notificare.requireContext().packageName)
+
+            if (notificationIntent.resolveActivity(Notificare.requireContext().packageManager) != null) {
+                // Notification handled by custom activity in package
+                Notificare.requireContext().startActivity(notificationIntent)
+            } else {
+                NotificareLogger.warning("Could not find an activity with the '${notificationIntent.action}' action.")
             }
         }
     }
@@ -314,16 +365,15 @@ object NotificarePush : NotificareModule() {
             Notificare.INTENT_EXTRA_NOTIFICATION to notification,
         )
 
-        val openIntent = PendingIntent.getBroadcast(
+        val openIntent = PendingIntent.getActivity(
             Notificare.requireContext(),
             createUniqueNotificationId(),
-            Intent(Notificare.requireContext(), NotificarePushSystemIntentReceiver::class.java).apply {
+            Intent().apply {
                 action = INTENT_ACTION_REMOTE_MESSAGE_OPENED
 
                 putExtras(extras)
             },
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S || Build.VERSION.CODENAME == "S") PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_MUTABLE
-            else PendingIntent.FLAG_CANCEL_CURRENT
+            PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
 //        val deleteIntent = PendingIntent.getBroadcast(

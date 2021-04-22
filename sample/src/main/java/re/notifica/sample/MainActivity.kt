@@ -15,6 +15,7 @@ import re.notifica.models.NotificareNotification
 import re.notifica.models.NotificareTime
 import re.notifica.models.NotificareUserData
 import re.notifica.push.NotificarePush
+import re.notifica.push.models.NotificareNotificationRemoteMessage
 import re.notifica.push.ui.NotificarePushUI
 import re.notifica.sample.databinding.ActivityMainBinding
 import re.notifica.sample.ui.inbox.InboxActivity
@@ -41,6 +42,19 @@ class MainActivity : AppCompatActivity() {
 
     private fun handleNotificareIntent(intent: Intent) {
         when (intent.action) {
+            NotificarePush.INTENT_ACTION_REMOTE_MESSAGE_OPENED -> {
+                val remoteMessage: NotificareNotificationRemoteMessage = requireNotNull(
+                    intent.getParcelableExtra(NotificarePush.INTENT_EXTRA_REMOTE_MESSAGE)
+                )
+
+                val notification: NotificareNotification = requireNotNull(
+                    intent.getParcelableExtra(Notificare.INTENT_EXTRA_NOTIFICATION)
+                )
+
+                val action: NotificareNotification.Action? = intent.getParcelableExtra(Notificare.INTENT_EXTRA_ACTION)
+
+                NotificarePush.handleTrampolineMessage(remoteMessage, notification, action)
+            }
             NotificarePush.INTENT_ACTION_NOTIFICATION_OPENED -> {
                 val notification: NotificareNotification = requireNotNull(
                     intent.getParcelableExtra(Notificare.INTENT_EXTRA_NOTIFICATION)
