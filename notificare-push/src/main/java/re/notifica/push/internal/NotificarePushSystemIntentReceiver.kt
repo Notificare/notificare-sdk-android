@@ -67,9 +67,6 @@ internal class NotificarePushSystemIntentReceiver : BroadcastReceiver() {
                     return@launch
                 }
 
-                // Close the notification drawer
-                Notificare.requireContext().sendBroadcast(Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS))
-
                 // TODO notify listeners
 
 //                // Notify the consumer's intent receiver.
