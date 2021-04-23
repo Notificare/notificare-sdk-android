@@ -396,11 +396,14 @@ object NotificarePush : NotificareModule() {
             ?: Notificare.options?.defaultChannelId
             ?: DEFAULT_NOTIFICATION_CHANNEL_ID
 
+        val smallIcon = checkNotNull(Notificare.options).notificationSmallIcon
+            ?: Notificare.requireContext().applicationInfo.icon
+
         NotificareLogger.debug("Sending notification to channel '$channel'.")
 
         val builder = NotificationCompat.Builder(Notificare.requireContext(), channel)
             .setAutoCancel(checkNotNull(Notificare.options).notificationAutoCancel)
-            .setSmallIcon(checkNotNull(Notificare.options).notificationSmallIcon)
+            .setSmallIcon(smallIcon)
             .setContentTitle(message.alertTitle)
             .setContentText(message.alert)
             .setTicker(message.alert)
@@ -418,7 +421,7 @@ object NotificarePush : NotificareModule() {
                 if (!hasGroupSummary) {
                     val summary = NotificationCompat.Builder(Notificare.requireContext(), channel)
                         .setAutoCancel(checkNotNull(Notificare.options).notificationAutoCancel)
-                        .setSmallIcon(checkNotNull(Notificare.options).notificationSmallIcon)
+                        .setSmallIcon(smallIcon)
                         .setContentText(
                             Notificare.requireContext().getString(R.string.notificare_notification_group_summary)
                         )

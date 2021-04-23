@@ -26,12 +26,14 @@ val NotificareOptions.notificationAutoCancel: Boolean
         )
     }
 
-val NotificareOptions.notificationSmallIcon: Int
+val NotificareOptions.notificationSmallIcon: Int?
     get() {
-        return info.metaData.getInt(
+        val icon = info.metaData.getInt(
             "re.notifica.push.notification_small_icon",
             0,
         )
+
+        return if (icon == 0) null else icon
     }
 
 val NotificareOptions.notificationAccentColor: Int?
