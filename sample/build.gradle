@@ -19,13 +19,13 @@ if (startParameter.contains("google")) {
 }
 
 android {
-    compileSdkVersion 'android-S'
-    buildToolsVersion "30.0.3"
+    compileSdkVersion compile_sdk_version
+    buildToolsVersion build_tools_version
 
     defaultConfig {
         applicationId "re.notifica.demo"
-        minSdkVersion 23
-        targetSdkVersion 'S'
+        minSdkVersion min_sdk_version
+        targetSdkVersion target_sdk_version
         versionCode 1
         versionName "1.0.0"
 
