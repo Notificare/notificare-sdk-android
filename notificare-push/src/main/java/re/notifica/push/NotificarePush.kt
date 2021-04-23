@@ -30,10 +30,7 @@ import re.notifica.models.NotificareTransport
 import re.notifica.modules.NotificareModule
 import re.notifica.push.app.NotificarePushIntentReceiver
 import re.notifica.push.internal.NotificarePushSystemIntentReceiver
-import re.notifica.push.models.NotificareNotificationRemoteMessage
-import re.notifica.push.models.NotificareRemoteMessage
-import re.notifica.push.models.NotificareSystemRemoteMessage
-import re.notifica.push.models.NotificareUnknownRemoteMessage
+import re.notifica.push.models.*
 import java.util.concurrent.atomic.AtomicInteger
 
 object NotificarePush : NotificareModule() {
@@ -249,9 +246,9 @@ object NotificarePush : NotificareModule() {
     }
 
     private fun handleSystemNotification(message: NotificareSystemRemoteMessage) {
-        if (message.systemType.startsWith("re.notifica.")) {
-            NotificareLogger.info("Processing system notification: ${message.systemType}")
-            when (message.systemType) {
+        if (message.type.startsWith("re.notifica.")) {
+            NotificareLogger.info("Processing system notification: ${message.type}")
+            when (message.type) {
                 "re.notifica.notification.system.Application" -> {
                     // TODO: handle Application system notifications
 //        Notificare.shared.fetchApplication { result in
@@ -276,32 +273,21 @@ object NotificarePush : NotificareModule() {
                     // Notify the inbox to reload itself.
                     // NotificationCenter.default.post(name: NotificareDefinitions.InternalNotification.reloadInbox, object: nil, userInfo: nil)
                 }
-                else -> NotificareLogger.warning("Unhandled system notification: ${message.systemType}")
+                else -> NotificareLogger.warning("Unhandled system notification: ${message.type}")
             }
         } else {
             NotificareLogger.info("Processing custom system notification.")
+            val notification = NotificareSystemNotification(
+                id = message.id,
+                type = message.type,
+                extra = message.extra,
+            )
 
-//                val ignoreKeys = listOf(
-//                    "system",
-//                    "systemType",
-//                    "id",
-//                    "notification_id",
-//                    "notification_type",
-//                    "attachment",
-//                    "x-sender"
-//                )
-//
-//                val notification = NotificareSystemNotification(
-//                    id = remoteMessage.data["id"],
-//                    type = remoteMessage.systemType,
-//                    extra = remoteMessage.data.filterKeys { !ignoreKeys.contains(it) }
-//                )
-//
-//                Notificare.requireContext().sendBroadcast(
-//                    Intent(Notificare.requireContext(), intentReceiver)
-//                        .setAction(NotificarePushIntentReceiver.Actions.SYSTEM_NOTIFICATION_RECEIVED)
-//                        .putExtra(NotificarePushIntentReceiver.Extras.NOTIFICATION, notification)
-//                )
+            Notificare.requireContext().sendBroadcast(
+                Intent(Notificare.requireContext(), intentReceiver)
+                    .setAction(INTENT_ACTION_SYSTEM_NOTIFICATION_RECEIVED)
+                    .putExtra(Notificare.INTENT_EXTRA_NOTIFICATION, notification)
+            )
         }
     }
 

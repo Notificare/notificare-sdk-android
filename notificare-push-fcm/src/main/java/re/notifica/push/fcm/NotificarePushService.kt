@@ -41,7 +41,7 @@ class NotificarePushService : FirebaseMessagingService() {
 
         if (NotificareServiceManager.isNotificareNotification(message)) {
             val isSystemNotification = message.data["system"] == "1" ||
-                    message.data["system"]?.toBoolean() ?: false
+                message.data["system"]?.toBoolean() ?: false
 
             if (isSystemNotification) {
                 NotificarePush.handleRemoteMessage(
@@ -78,12 +78,19 @@ private fun NotificareUnknownRemoteMessage(message: RemoteMessage): NotificareUn
 }
 
 private fun NotificareSystemRemoteMessage(message: RemoteMessage): NotificareSystemRemoteMessage {
+    val ignoreKeys = listOf(
+        "id", "notification_id", "notification_type",
+        "system", "systemType", "x-sender", "attachment"
+    )
+
     return NotificareSystemRemoteMessage(
         messageId = message.messageId,
         sentTime = message.sentTime,
         collapseKey = message.collapseKey,
         ttl = message.ttl.toLong(),
-        systemType = requireNotNull(message.data["systemType"])
+        id = requireNotNull(message.data["id"]),
+        type = requireNotNull(message.data["systemType"]),
+        extra = message.data.filterKeys { !ignoreKeys.contains(it) },
     )
 }
 

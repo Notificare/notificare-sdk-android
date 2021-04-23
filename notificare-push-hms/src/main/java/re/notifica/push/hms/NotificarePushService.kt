@@ -78,12 +78,19 @@ private fun NotificareUnknownRemoteMessage(message: RemoteMessage): NotificareUn
 }
 
 private fun NotificareSystemRemoteMessage(message: RemoteMessage): NotificareSystemRemoteMessage {
+    val ignoreKeys = listOf(
+        "id", "notification_id", "notification_type",
+        "system", "systemType", "x-sender", "attachment"
+    )
+
     return NotificareSystemRemoteMessage(
         messageId = message.messageId,
         sentTime = message.sentTime,
         collapseKey = message.collapseKey,
         ttl = message.ttl.toLong(),
-        systemType = requireNotNull(message.dataOfMap["systemType"])
+        id = requireNotNull(message.dataOfMap["id"]),
+        type = requireNotNull(message.dataOfMap["systemType"]),
+        extra = message.dataOfMap.filterKeys { !ignoreKeys.contains(it) },
     )
 }
 

@@ -51,7 +51,9 @@ data class NotificareSystemRemoteMessage(
     override val ttl: Long,
 
     // Specific properties
-    val systemType: String,
+    val id: String,
+    val type: String,
+    val extra: Map<String, String>,
 ) : NotificareRemoteMessage
 
 @Parcelize
