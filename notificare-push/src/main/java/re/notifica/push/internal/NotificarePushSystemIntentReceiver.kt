@@ -143,6 +143,12 @@ internal class NotificarePushSystemIntentReceiver : BroadcastReceiver() {
 
             Notificare.requireContext().sendBroadcast(intent)
         } catch (e: Exception) {
+            if (e is ClassNotFoundException) {
+                // Silently ignore the error.
+                // This occurs when the inbox module is not included.
+                return
+            }
+
             NotificareLogger.debug("Failed to send an inbox broadcast.", e)
         }
     }
