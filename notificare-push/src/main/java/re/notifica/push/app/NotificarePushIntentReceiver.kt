@@ -34,6 +34,24 @@ open class NotificarePushIntentReceiver : BroadcastReceiver() {
 
                 onUnknownNotificationReceived(notification)
             }
+            NotificarePush.INTENT_ACTION_NOTIFICATION_OPENED -> {
+                val notification: NotificareNotification = requireNotNull(
+                    intent.getParcelableExtra(Notificare.INTENT_EXTRA_NOTIFICATION)
+                )
+
+                onNotificationOpened(notification)
+            }
+            NotificarePush.INTENT_ACTION_ACTION_OPENED -> {
+                val notification: NotificareNotification = requireNotNull(
+                    intent.getParcelableExtra(Notificare.INTENT_EXTRA_NOTIFICATION)
+                )
+
+                val action: NotificareNotification.Action = requireNotNull(
+                    intent.getParcelableExtra(Notificare.INTENT_EXTRA_ACTION)
+                )
+
+                onActionOpened(notification, action)
+            }
         }
     }
 
@@ -47,5 +65,13 @@ open class NotificarePushIntentReceiver : BroadcastReceiver() {
 
     protected open fun onUnknownNotificationReceived(notification: NotificareUnknownNotification) {
         NotificareLogger.info("Received an unknown notification, please override onUnknownNotificationReceived if you want to receive these intents.")
+    }
+
+    protected open fun onNotificationOpened(notification: NotificareNotification) {
+        NotificareLogger.info("Opened a notification, please override onNotificationOpened if you want to receive these intents.")
+    }
+
+    protected open fun onActionOpened(notification: NotificareNotification, action: NotificareNotification.Action) {
+        NotificareLogger.info("Opened a notification action, please override onActionOpened if you want to receive these intents.")
     }
 }

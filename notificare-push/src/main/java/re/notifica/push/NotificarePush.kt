@@ -162,12 +162,21 @@ object NotificarePush : NotificareModule() {
 
             // TODO notify listeners
 
-//                // Notify the consumer's intent receiver.
-//                Notificare.requireContext().sendBroadcast(
-//                    Intent(Notificare.requireContext(), NotificarePush.intentReceiver)
-//                        .setAction(NotificarePush.INTENT_ACTION_NOTIFICATION_OPENED)
-//                        .putExtra(Notificare.INTENT_EXTRA_NOTIFICATION, notification)
-//                )
+            // Notify the consumer's intent receiver.
+            if (action == null) {
+                Notificare.requireContext().sendBroadcast(
+                    Intent(Notificare.requireContext(), intentReceiver)
+                        .setAction(INTENT_ACTION_NOTIFICATION_OPENED)
+                        .putExtra(Notificare.INTENT_EXTRA_NOTIFICATION, notification)
+                )
+            } else {
+                Notificare.requireContext().sendBroadcast(
+                    Intent(Notificare.requireContext(), intentReceiver)
+                        .setAction(INTENT_ACTION_ACTION_OPENED)
+                        .putExtra(Notificare.INTENT_EXTRA_NOTIFICATION, notification)
+                        .putExtra(Notificare.INTENT_EXTRA_ACTION, action)
+                )
+            }
 
             // Notify the consumer's custom activity about the notification open event.
             val notificationIntent = Intent()
