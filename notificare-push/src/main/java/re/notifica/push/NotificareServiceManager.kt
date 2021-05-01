@@ -1,12 +1,16 @@
 package re.notifica.push
 
 import android.content.Context
+import re.notifica.Notificare
 import re.notifica.NotificareLogger
 import re.notifica.models.NotificareTransport
+import java.util.*
 
 interface NotificareServiceManager {
 
     val transport: NotificareTransport
+
+    val hasMobileServicesAvailable: Boolean
 
     fun registerDeviceToken()
 
@@ -16,18 +20,38 @@ interface NotificareServiceManager {
         private const val HMS_FQN = "re.notifica.push.hms.NotificareServiceManager"
 
         fun create(context: Context): NotificareServiceManager? {
-            val fcm: NotificareServiceManager? = create(context, FCM_FQN)
-            val hms: NotificareServiceManager? = create(context, HMS_FQN)
+            val preferredMobileServices = checkNotNull(Notificare.options)
+                .preferredMobileServices
+                ?.toLowerCase(Locale.ROOT)
 
-            if (fcm != null && hms != null) {
-                NotificareLogger.warning("We've detected multiple push platforms implemented. Please consider only including the most appropriate for your target platform.")
+            when (preferredMobileServices) {
+                "google" -> {
+                    val fcm: NotificareServiceManager? = create(context, FCM_FQN)
+                    if (fcm != null) {
+                        NotificareLogger.info("Detected preferred FCM peer dependency. Setting it as the target platform.")
+                        return fcm
+                    } else {
+                        NotificareLogger.warning("Preferred Google Play Services not available.")
+                    }
+                }
+                "huawei" -> {
+                    val hms: NotificareServiceManager? = create(context, HMS_FQN)
+                    if (hms != null) {
+                        NotificareLogger.info("Detected preferred HMS peer dependency. Setting it as the target platform.")
+                        return hms
+                    } else {
+                        NotificareLogger.warning("Preferred Huawei Mobile Services not available.")
+                    }
+                }
             }
 
+            val fcm: NotificareServiceManager? = create(context, FCM_FQN)
             if (fcm != null) {
                 NotificareLogger.info("Detected FCM peer dependency. Setting it as the target platform.")
                 return fcm
             }
 
+            val hms: NotificareServiceManager? = create(context, HMS_FQN)
             if (hms != null) {
                 NotificareLogger.info("Detected HMS peer dependency. Setting it as the target platform.")
                 return hms

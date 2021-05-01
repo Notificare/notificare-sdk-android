@@ -1,6 +1,8 @@
 package re.notifica.push.fcm
 
 import android.content.Context
+import com.google.android.gms.common.ConnectionResult
+import com.google.android.gms.common.GoogleApiAvailability
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.RemoteMessage
 import com.google.firebase.messaging.ktx.messaging
@@ -14,8 +16,18 @@ import re.notifica.push.NotificareServiceManager
 class NotificareServiceManager(
     private val context: Context,
 ) : NotificareServiceManager {
+
     override val transport: NotificareTransport
         get() = NotificareTransport.GCM
+
+    override val hasMobileServicesAvailable: Boolean
+        get() = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(context) == ConnectionResult.SUCCESS
+
+    init {
+        if (!hasMobileServicesAvailable) {
+            throw IllegalStateException("Google Play Services are not available.")
+        }
+    }
 
     override fun registerDeviceToken() {
         Firebase.messaging.token.addOnCompleteListener { task ->

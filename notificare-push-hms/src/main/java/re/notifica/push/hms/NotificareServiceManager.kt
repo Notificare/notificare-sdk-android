@@ -3,6 +3,8 @@ package re.notifica.push.hms
 import android.content.Context
 import com.huawei.agconnect.config.AGConnectServicesConfig
 import com.huawei.hms.aaid.HmsInstanceId
+import com.huawei.hms.api.ConnectionResult
+import com.huawei.hms.api.HuaweiApiAvailability
 import com.huawei.hms.common.ApiException
 import com.huawei.hms.push.HmsMessaging
 import com.huawei.hms.push.RemoteMessage
@@ -19,6 +21,15 @@ class NotificareServiceManager(
 
     override val transport: NotificareTransport
         get() = NotificareTransport.HMS
+
+    override val hasMobileServicesAvailable: Boolean
+        get() = HuaweiApiAvailability.getInstance().isHuaweiMobileServicesAvailable(context) == ConnectionResult.SUCCESS
+
+    init {
+        if (!hasMobileServicesAvailable) {
+            throw IllegalStateException("Huawei Mobile Services are not available.")
+        }
+    }
 
     override fun registerDeviceToken() {
         Thread {
