@@ -68,10 +68,10 @@ open class NotificarePushIntentReceiver : BroadcastReceiver() {
     }
 
     protected open fun onNotificationOpened(notification: NotificareNotification) {
-        NotificareLogger.info("Opened a notification, please override onNotificationOpened if you want to receive these intents.")
+        NotificareLogger.debug("Opened a notification, please override onNotificationOpened if you want to receive these intents.")
     }
 
     protected open fun onActionOpened(notification: NotificareNotification, action: NotificareNotification.Action) {
-        NotificareLogger.info("Opened a notification action, please override onActionOpened if you want to receive these intents.")
+        NotificareLogger.debug("Opened a notification action, please override onActionOpened if you want to receive these intents.")
     }
 }
