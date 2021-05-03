@@ -1,4 +1,4 @@
-package re.notifica.push.ui.notifications
+package re.notifica.push.ui
 
 import android.os.Bundle
 import android.widget.Toast
@@ -6,10 +6,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import re.notifica.Notificare
 import re.notifica.models.NotificareNotification
-import re.notifica.push.ui.R
 import re.notifica.push.ui.databinding.NotificareNotificationActivityBinding
-import re.notifica.push.ui.showNotificationProgress
-import re.notifica.push.ui.showNotificationToasts
+import re.notifica.push.ui.notifications.NotificationContainerFragment
 
 class NotificationActivity : AppCompatActivity(), NotificationContainerFragment.Callback {
 

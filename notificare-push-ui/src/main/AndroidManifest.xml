@@ -5,7 +5,7 @@
     <application>
 
         <activity
-            android:name=".notifications.NotificationActivity"
+            android:name=".NotificationActivity"
             android:exported="false"
             android:hardwareAccelerated="true" />
 

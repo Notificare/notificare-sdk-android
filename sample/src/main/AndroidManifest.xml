@@ -49,7 +49,7 @@
             android:name=".ui.inbox.InboxActivity"
             android:exported="false" />
         <activity
-            android:name="re.notifica.push.ui.notifications.NotificationActivity"
+            android:name="re.notifica.push.ui.NotificationActivity"
             android:exported="false"
             android:hardwareAccelerated="true"
             android:parentActivityName=".MainActivity"

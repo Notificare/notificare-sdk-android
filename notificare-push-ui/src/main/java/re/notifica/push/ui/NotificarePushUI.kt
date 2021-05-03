@@ -14,7 +14,6 @@ import re.notifica.push.NotificarePush
 import re.notifica.push.ui.actions.*
 import re.notifica.push.ui.actions.base.NotificationAction
 import re.notifica.push.ui.app.NotificarePushUIIntentReceiver
-import re.notifica.push.ui.notifications.NotificationActivity
 import re.notifica.push.ui.notifications.fragments.*
 
 object NotificarePushUI {
