@@ -26,30 +26,6 @@ class NotificationCallbackAction(
     action: NotificareNotification.Action
 ) : NotificationAction(context, notification, action) {
 
-//    override suspend fun execute() {
-//        if (action.camera && action.keyboard) {
-//            // First get the camera going, then get the message.
-//            return
-//        }
-//
-//        if (action.camera) {
-//            return
-//        }
-//
-//        if (action.keyboard) {
-//            // open keyboard
-//            return
-//        }
-//
-////        if (context is Activity) {
-////
-////        } else {
-////            // TODO cannot launch camera activity from non-activity context
-////            // cannot launch camera activity from non-activity context
-////            // callback.onError(NotificareError(R.string.notificare_action_camera_failed))
-////        }
-//    }
-
     override suspend fun execute(): NotificarePendingResult? = withContext(Dispatchers.IO) {
         when {
             action.camera -> {
@@ -139,7 +115,7 @@ class NotificationCallbackAction(
             message: String?,
             mediaUrl: String?,
             mimeType: String?
-        ) {
+        ): Unit = withContext(Dispatchers.IO) {
             val targetUri = action.target?.let { Uri.parse(it) }
             if (targetUri == null || targetUri.scheme == null || targetUri.host == null) {
                 // NotificarePushUI.shared.delegate?.notificare(NotificarePushUI.shared, didExecuteAction: action, for: notification)
@@ -152,7 +128,7 @@ class NotificationCallbackAction(
                     mimeType = mimeType
                 )
 
-                return
+                return@withContext
             }
 
             val params = mutableMapOf<String, String>()

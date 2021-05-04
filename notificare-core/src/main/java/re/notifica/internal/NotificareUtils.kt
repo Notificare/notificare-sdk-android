@@ -83,17 +83,15 @@ object NotificareUtils {
             .build()
     }
 
-    suspend fun loadBitmap(url: String): Bitmap {
-        return withContext(Dispatchers.IO) {
-            @Suppress("BlockingMethodInNonBlockingContext")
-            val bitmap = Glide.with(Notificare.requireContext())
-                .asBitmap()
-                .load(url)
-                .submit()
-                .get()
+    suspend fun loadBitmap(url: String): Bitmap = withContext(Dispatchers.IO) {
+        @Suppress("BlockingMethodInNonBlockingContext")
+        val bitmap = Glide.with(Notificare.requireContext())
+            .asBitmap()
+            .load(url)
+            .submit()
+            .get()
 
-            withContext(Dispatchers.Main) { bitmap }
-        }
+        withContext(Dispatchers.Main) { bitmap }
     }
 
     fun loadImage(url: String, view: ImageView) {

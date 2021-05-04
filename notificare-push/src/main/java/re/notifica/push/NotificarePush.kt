@@ -17,10 +17,7 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.RemoteInput
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.*
 import re.notifica.Notificare
 import re.notifica.NotificareLogger
 import re.notifica.internal.NotificareUtils
@@ -110,7 +107,7 @@ object NotificarePush : NotificareModule() {
     }
 
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    suspend fun registerPushToken(transport: NotificareTransport, token: String) {
+    suspend fun registerPushToken(transport: NotificareTransport, token: String) : Unit = withContext(Dispatchers.IO) {
         Notificare.deviceManager.registerPushToken(transport, token)
 
         try {

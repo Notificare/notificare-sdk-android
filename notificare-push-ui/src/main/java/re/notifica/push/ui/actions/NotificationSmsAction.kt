@@ -5,6 +5,8 @@ import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import re.notifica.Notificare
 import re.notifica.models.NotificareNotification
 import re.notifica.push.ui.R
@@ -17,7 +19,7 @@ class NotificationSmsAction(
     action: NotificareNotification.Action
 ) : NotificationAction(context, notification, action) {
 
-    override suspend fun execute(): NotificarePendingResult? {
+    override suspend fun execute(): NotificarePendingResult? = withContext(Dispatchers.IO) {
         val target = action.target
 
         if (target != null) {
@@ -36,7 +38,7 @@ class NotificationSmsAction(
                 )
             } catch (e: ActivityNotFoundException) {
                 // callback.onError(NotificareError(R.string.notificare_action_error_no_sms_clients))
-                return null
+                return@withContext null
             }
 
             Notificare.createNotificationReply(notification, action)
@@ -48,6 +50,6 @@ class NotificationSmsAction(
             // callback.onError(new NotificareError(R.string.notificare_action_failed));
         }
 
-        return null
+        return@withContext null
     }
 }

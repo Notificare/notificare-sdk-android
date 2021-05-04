@@ -1,10 +1,11 @@
 package re.notifica.modules
 
 import androidx.annotation.RestrictTo
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import re.notifica.*
-import re.notifica.NotificareDefinitions
 import re.notifica.internal.NotificareIntentEmitter
 import re.notifica.internal.NotificareUtils
 import re.notifica.internal.common.toByteArray
@@ -70,7 +71,7 @@ class NotificareDeviceManager {
         }
     }
 
-    suspend fun register(userId: String?, userName: String?) {
+    suspend fun register(userId: String?, userName: String?): Unit = withContext(Dispatchers.IO) {
         val currentDevice = checkNotificareReady()
         register(currentDevice.transport, currentDevice.id, userId, userName)
     }
@@ -87,7 +88,7 @@ class NotificareDeviceManager {
     }
 
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    suspend fun registerTemporary() {
+    suspend fun registerTemporary(): Unit = withContext(Dispatchers.IO) {
         val device = currentDevice
 
         // NOTE: keep the same token if available and only when not changing transport providers.
@@ -105,7 +106,7 @@ class NotificareDeviceManager {
     }
 
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    suspend fun registerPushToken(transport: NotificareTransport, token: String) {
+    suspend fun registerPushToken(transport: NotificareTransport, token: String): Unit = withContext(Dispatchers.IO) {
         if (transport == NotificareTransport.NOTIFICARE) {
             throw IllegalArgumentException("Invalid transport '$transport'.")
         }
@@ -118,7 +119,7 @@ class NotificareDeviceManager {
         )
     }
 
-    suspend fun updatePreferredLanguage(preferredLanguage: String?) {
+    suspend fun updatePreferredLanguage(preferredLanguage: String?): Unit = withContext(Dispatchers.IO) {
         checkNotificareReady()
 
         if (preferredLanguage != null) {
@@ -154,10 +155,10 @@ class NotificareDeviceManager {
         }
     }
 
-    suspend fun fetchTags(): List<String> {
+    suspend fun fetchTags(): List<String> = withContext(Dispatchers.IO) {
         val device = checkNotificareReady()
 
-        return NotificareRequest.Builder()
+        NotificareRequest.Builder()
             .get("/device/${device.id}/tags")
             .responseDecodable(DeviceTagsResponse::class)
             .tags
@@ -174,7 +175,9 @@ class NotificareDeviceManager {
         }
     }
 
-    suspend fun addTag(tag: String) = addTags(listOf(tag))
+    suspend fun addTag(tag: String): Unit = withContext(Dispatchers.IO) {
+        addTags(listOf(tag))
+    }
 
     fun addTag(tag: String, callback: NotificareCallback<Unit>) {
         GlobalScope.launch {
@@ -187,7 +190,7 @@ class NotificareDeviceManager {
         }
     }
 
-    suspend fun addTags(tags: List<String>) {
+    suspend fun addTags(tags: List<String>): Unit = withContext(Dispatchers.IO) {
         val device = checkNotificareReady()
         NotificareRequest.Builder()
             .put("/device/${device.id}/addtags", DeviceTagsPayload(tags))
@@ -205,7 +208,9 @@ class NotificareDeviceManager {
         }
     }
 
-    suspend fun removeTag(tag: String) = removeTags(listOf(tag))
+    suspend fun removeTag(tag: String): Unit = withContext(Dispatchers.IO) {
+        removeTags(listOf(tag))
+    }
 
     fun removeTag(tag: String, callback: NotificareCallback<Unit>) {
         GlobalScope.launch {
@@ -218,7 +223,7 @@ class NotificareDeviceManager {
         }
     }
 
-    suspend fun removeTags(tags: List<String>) {
+    suspend fun removeTags(tags: List<String>): Unit = withContext(Dispatchers.IO) {
         val device = checkNotificareReady()
         NotificareRequest.Builder()
             .put("/device/${device.id}/removetags", DeviceTagsPayload(tags))
@@ -236,7 +241,7 @@ class NotificareDeviceManager {
         }
     }
 
-    suspend fun clearTags() {
+    suspend fun clearTags(): Unit = withContext(Dispatchers.IO) {
         val device = checkNotificareReady()
         NotificareRequest.Builder()
             .put("/device/${device.id}/cleartags", null)
@@ -254,7 +259,7 @@ class NotificareDeviceManager {
         }
     }
 
-    suspend fun fetchDoNotDisturb(): NotificareDoNotDisturb? {
+    suspend fun fetchDoNotDisturb(): NotificareDoNotDisturb? = withContext(Dispatchers.IO) {
         val device = checkNotificareReady()
         val dnd = NotificareRequest.Builder()
             .get("/device/${device.id}/dnd")
@@ -264,7 +269,7 @@ class NotificareDeviceManager {
         // Update current device properties.
         currentDevice?.dnd = dnd
 
-        return dnd
+        return@withContext dnd
     }
 
     fun fetchDoNotDisturb(callback: NotificareCallback<NotificareDoNotDisturb?>) {
@@ -278,7 +283,7 @@ class NotificareDeviceManager {
         }
     }
 
-    suspend fun updateDoNotDisturb(dnd: NotificareDoNotDisturb) {
+    suspend fun updateDoNotDisturb(dnd: NotificareDoNotDisturb): Unit = withContext(Dispatchers.IO) {
         val device = checkNotificareReady()
         NotificareRequest.Builder()
             .put("/device/${device.id}/dnd", dnd)
@@ -299,7 +304,7 @@ class NotificareDeviceManager {
         }
     }
 
-    suspend fun clearDoNotDisturb() {
+    suspend fun clearDoNotDisturb(): Unit = withContext(Dispatchers.IO) {
         val device = checkNotificareReady()
         NotificareRequest.Builder()
             .put("/device/${device.id}/cleardnd", null)
@@ -320,7 +325,7 @@ class NotificareDeviceManager {
         }
     }
 
-    suspend fun fetchUserData(): NotificareUserData? {
+    suspend fun fetchUserData(): NotificareUserData? = withContext(Dispatchers.IO) {
         val device = checkNotificareReady()
         val userData = NotificareRequest.Builder()
             .get("/device/${device.id}/userdata")
@@ -330,7 +335,7 @@ class NotificareDeviceManager {
         // Update current device properties.
         currentDevice?.userData = userData
 
-        return userData
+        return@withContext userData
     }
 
     fun fetchUserData(callback: NotificareCallback<NotificareUserData?>) {
@@ -344,7 +349,7 @@ class NotificareDeviceManager {
         }
     }
 
-    suspend fun updateUserData(userData: NotificareUserData) {
+    suspend fun updateUserData(userData: NotificareUserData): Unit = withContext(Dispatchers.IO) {
         val device = checkNotificareReady()
         NotificareRequest.Builder()
             .put("/device/${device.id}/userdata", userData)
@@ -365,7 +370,7 @@ class NotificareDeviceManager {
         }
     }
 
-    suspend fun updateNotificationSettings(allowedUI: Boolean) {
+    suspend fun updateNotificationSettings(allowedUI: Boolean): Unit = withContext(Dispatchers.IO) {
         val device = checkNotificareReady()
 
         NotificareRequest.Builder()

@@ -4,6 +4,8 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import re.notifica.Notificare
 import re.notifica.models.NotificareNotification
 import re.notifica.push.ui.actions.base.NotificationAction
@@ -15,7 +17,7 @@ class NotificationBrowserAction(
     action: NotificareNotification.Action
 ) : NotificationAction(context, notification, action) {
 
-    override suspend fun execute(): NotificarePendingResult? {
+    override suspend fun execute(): NotificarePendingResult? = withContext(Dispatchers.IO) {
         val uri = action.target?.let { Uri.parse(it) }
 
         if (uri != null && uri.scheme != null && uri.host != null) {
@@ -36,6 +38,6 @@ class NotificationBrowserAction(
             // callback.onError(new NotificareError(R.string.notificare_action_failed));
         }
 
-        return null
+        return@withContext null
     }
 }

@@ -4,6 +4,8 @@ import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import re.notifica.Notificare
 import re.notifica.models.NotificareNotification
 import re.notifica.push.ui.R
@@ -16,7 +18,7 @@ class NotificationMailAction(
     action: NotificareNotification.Action
 ) : NotificationAction(context, notification, action) {
 
-    override suspend fun execute(): NotificarePendingResult? {
+    override suspend fun execute(): NotificarePendingResult? = withContext(Dispatchers.IO) {
         val target = action.target
 
         if (target != null) {
@@ -37,7 +39,7 @@ class NotificationMailAction(
                 )
             } catch (e: ActivityNotFoundException) {
                 // callback.onError(NotificareError(R.string.notificare_action_error_no_email_clients))
-                return null
+                return@withContext null
             }
 
             Notificare.createNotificationReply(notification, action)
@@ -49,6 +51,6 @@ class NotificationMailAction(
             // callback.onError(new NotificareError(R.string.notificare_action_failed));
         }
 
-        return null
+        return@withContext null
     }
 }
