@@ -9,6 +9,13 @@ import re.notifica.models.NotificareEvent
 
 internal class NotificareSharedPreferences(context: Context) {
 
+    companion object {
+        private const val PREFERENCE_DEVICE = "re.notifica.preferences.device"
+        private const val PREFERENCE_PREFERRED_LANGUAGE = "re.notifica.preferences.preferred_language"
+        private const val PREFERENCE_PREFERRED_REGION = "re.notifica.preferences.preferred_region"
+        private const val PREFERENCE_CRASH_REPORT = "re.notifica.preferences.crash_report"
+    }
+
     private val sharedPreferences = context.getSharedPreferences(
         NotificareDefinitions.SHARED_PREFERENCES_NAME,
         Context.MODE_PRIVATE
@@ -16,14 +23,14 @@ internal class NotificareSharedPreferences(context: Context) {
 
     var device: NotificareDevice?
         get() {
-            return sharedPreferences.getString(NotificareDefinitions.Preferences.DEVICE, null)
+            return sharedPreferences.getString(PREFERENCE_DEVICE, null)
                 ?.let { Notificare.moshi.adapter(NotificareDevice::class.java).fromJson(it) }
         }
         set(value) {
             sharedPreferences.edit().also {
-                if (value == null) it.remove(NotificareDefinitions.Preferences.DEVICE)
+                if (value == null) it.remove(PREFERENCE_DEVICE)
                 else it.putString(
-                    NotificareDefinitions.Preferences.DEVICE,
+                    PREFERENCE_DEVICE,
                     Notificare.moshi.adapter(NotificareDevice::class.java).toJson(value)
                 )
             }.apply()
@@ -32,7 +39,7 @@ internal class NotificareSharedPreferences(context: Context) {
     var preferredLanguage: String?
         get() {
             return sharedPreferences.getString(
-                NotificareDefinitions.Preferences.PREFERRED_LANGUAGE,
+                PREFERENCE_PREFERRED_LANGUAGE,
                 null
             )
         }
@@ -40,9 +47,9 @@ internal class NotificareSharedPreferences(context: Context) {
             sharedPreferences.edit()
                 .apply {
                     if (value == null) {
-                        remove(NotificareDefinitions.Preferences.PREFERRED_LANGUAGE)
+                        remove(PREFERENCE_PREFERRED_LANGUAGE)
                     } else {
-                        putString(NotificareDefinitions.Preferences.PREFERRED_LANGUAGE, value)
+                        putString(PREFERENCE_PREFERRED_LANGUAGE, value)
                     }
                 }
                 .apply()
@@ -51,7 +58,7 @@ internal class NotificareSharedPreferences(context: Context) {
     var preferredRegion: String?
         get() {
             return sharedPreferences.getString(
-                NotificareDefinitions.Preferences.PREFERRED_REGION,
+                PREFERENCE_PREFERRED_REGION,
                 null
             )
         }
@@ -59,9 +66,9 @@ internal class NotificareSharedPreferences(context: Context) {
             sharedPreferences.edit()
                 .apply {
                     if (value == null) {
-                        remove(NotificareDefinitions.Preferences.PREFERRED_REGION)
+                        remove(PREFERENCE_PREFERRED_REGION)
                     } else {
-                        putString(NotificareDefinitions.Preferences.PREFERRED_REGION, value)
+                        putString(PREFERENCE_PREFERRED_REGION, value)
                     }
                 }
                 .apply()
@@ -69,15 +76,15 @@ internal class NotificareSharedPreferences(context: Context) {
 
     var crashReport: NotificareEvent?
         get() {
-            return sharedPreferences.getString(NotificareDefinitions.Preferences.CRASH_REPORT, null)
+            return sharedPreferences.getString(PREFERENCE_CRASH_REPORT, null)
                 ?.let { Notificare.moshi.adapter(NotificareEvent::class.java).fromJson(it) }
         }
         @SuppressLint("ApplySharedPref")
         set(value) {
             sharedPreferences.edit().also {
-                if (value == null) it.remove(NotificareDefinitions.Preferences.CRASH_REPORT)
+                if (value == null) it.remove(PREFERENCE_CRASH_REPORT)
                 else it.putString(
-                    NotificareDefinitions.Preferences.CRASH_REPORT,
+                    PREFERENCE_CRASH_REPORT,
                     Notificare.moshi.adapter(NotificareEvent::class.java).toJson(value)
                 )
             }.commit()

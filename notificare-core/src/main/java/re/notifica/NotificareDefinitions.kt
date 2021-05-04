@@ -27,13 +27,6 @@ internal object NotificareDefinitions {
         const val APPLICATION_EXCEPTION = "re.notifica.event.application.Exception"
     }
 
-    object Preferences {
-        const val DEVICE = "re.notifica.preferences.device"
-        const val PREFERRED_LANGUAGE = "re.notifica.preferences.preferred_language"
-        const val PREFERRED_REGION = "re.notifica.preferences.preferred_region"
-        const val CRASH_REPORT = "re.notifica.preferences.crash_report"
-    }
-
     object Tasks {
         const val PROCESS_EVENTS = "re.notifica.tasks.process_events"
     }
