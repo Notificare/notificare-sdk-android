@@ -266,17 +266,15 @@ object NotificarePush : NotificareModule() {
             NotificareLogger.info("Processing system notification: ${message.type}")
             when (message.type) {
                 "re.notifica.notification.system.Application" -> {
-                    // TODO: handle Application system notifications
-//        Notificare.shared.fetchApplication { result in
-//            switch result {
-//            case .success:
-//                self.reloadActionCategories()
-//                completion(.success(()))
-//
-//            case .failure:
-//                completion(.success(()))
-//            }
-//        }
+                    Notificare.fetchApplication(object : NotificareCallback<NotificareApplication> {
+                        override fun onSuccess(result: NotificareApplication) {
+                            NotificareLogger.debug("Updated cached application info.")
+                        }
+
+                        override fun onFailure(e: Exception) {
+                            NotificareLogger.error("Failed to update cached application info.", e)
+                        }
+                    })
                 }
                 "re.notifica.notification.system.Wallet" -> {
                     // TODO: handle Wallet system notifications
@@ -284,11 +282,7 @@ object NotificarePush : NotificareModule() {
                 "re.notifica.notification.system.Products" -> {
                     // TODO: handle Products system notifications
                 }
-                "re.notifica.notification.system.Inbox" -> {
-                    // TODO: handle Inbox system notifications
-                    // Notify the inbox to reload itself.
-                    // NotificationCenter.default.post(name: NotificareDefinitions.InternalNotification.reloadInbox, object: nil, userInfo: nil)
-                }
+                "re.notifica.notification.system.Inbox" -> InboxIntegration.reloadInbox()
                 else -> NotificareLogger.warning("Unhandled system notification: ${message.type}")
             }
         } else {
