@@ -66,8 +66,6 @@ object Notificare {
 
     // Launch / application state
     private var state: NotificareLaunchState = NotificareLaunchState.NONE
-    var application: NotificareApplication? = null
-        private set
 
     // Listeners
     private val readyListeners = hashSetOf<OnReadyListener>()
@@ -86,6 +84,23 @@ object Notificare {
         get() = NotificareLogger.useAdvancedLogging
         set(value) {
             NotificareLogger.useAdvancedLogging = value
+        }
+
+    var application: NotificareApplication?
+        get() {
+            return if (::sharedPreferences.isInitialized) {
+                sharedPreferences.application
+            } else {
+                NotificareLogger.warning("Calling this method requires Notificare to have been configured.")
+                null
+            }
+        }
+        private set(value) {
+            if (::sharedPreferences.isInitialized) {
+                sharedPreferences.application = value
+            } else {
+                NotificareLogger.warning("Calling this method requires Notificare to have been configured.")
+            }
         }
 
     fun configure(context: Context) {
@@ -151,8 +166,6 @@ object Notificare {
                     }
                 }
 
-
-                Notificare.application = application
                 state = NotificareLaunchState.READY
 
                 val enabledServices = application.services.filter { it.value }.map { it.key }
@@ -217,6 +230,10 @@ object Notificare {
             .responseDecodable(ApplicationResponse::class)
             .application
             .toModel()
+            .also {
+                // Update the cached copy.
+                application = it
+            }
     }
 
     fun fetchApplication(callback: NotificareCallback<NotificareApplication>) {

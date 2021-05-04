@@ -5,12 +5,14 @@ import android.content.Context
 import re.notifica.Notificare
 import re.notifica.NotificareDefinitions
 import re.notifica.NotificareLogger
+import re.notifica.models.NotificareApplication
 import re.notifica.models.NotificareDevice
 import re.notifica.models.NotificareEvent
 
 internal class NotificareSharedPreferences(context: Context) {
 
     companion object {
+        private const val PREFERENCE_APPLICATION = "re.notifica.preferences.application"
         private const val PREFERENCE_DEVICE = "re.notifica.preferences.device"
         private const val PREFERENCE_PREFERRED_LANGUAGE = "re.notifica.preferences.preferred_language"
         private const val PREFERENCE_PREFERRED_REGION = "re.notifica.preferences.preferred_region"
@@ -21,6 +23,32 @@ internal class NotificareSharedPreferences(context: Context) {
         NotificareDefinitions.SHARED_PREFERENCES_NAME,
         Context.MODE_PRIVATE
     )
+
+    var application: NotificareApplication?
+        get() {
+            return sharedPreferences.getString(PREFERENCE_APPLICATION, null)
+                ?.let {
+                    try {
+                        Notificare.moshi.adapter(NotificareApplication::class.java).fromJson(it)
+                    } catch (e: Exception) {
+                        NotificareLogger.warning("Failed to decode the stored application.", e)
+
+                        // Remove the corrupted device from local storage.
+                        application = null
+
+                        null
+                    }
+                }
+        }
+        set(value) {
+            sharedPreferences.edit().also {
+                if (value == null) it.remove(PREFERENCE_APPLICATION)
+                else it.putString(
+                    PREFERENCE_APPLICATION,
+                    Notificare.moshi.adapter(NotificareApplication::class.java).toJson(value)
+                )
+            }.apply()
+        }
 
     var device: NotificareDevice?
         get() {
