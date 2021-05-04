@@ -125,9 +125,17 @@ class NotificareRequest private constructor(
                 null -> if (HTTP_METHODS_REQUIRE_BODY.contains(method)) EMPTY_REQUEST else null
                 is ByteArray -> body.toRequestBody()
                 else -> try {
-                    val klass = body::class.java
-                    val adapter = moshi.adapter<T>(klass)
+                    val klass = when (body) {
+                        // Moshi only supports the default collection types therefore we need to cast them down.
+                        //
+                        // Concrete example: passing a mapOf() internally uses a LinkedHashMap which would cause
+                        // Moshi to throw an IllegalArgumentException since there is no specific adapter registered
+                        // for that given type.
+                        is Map<*, *> -> Map::class.java
+                        else -> body::class.java
+                    }
 
+                    val adapter = moshi.adapter<T>(klass)
                     adapter.toJson(body).toRequestBody(MEDIA_TYPE_JSON)
                 } catch (e: Exception) {
                     throw NetworkException.ParsingException(message = "Unable to encode body into JSON.", cause = e)
