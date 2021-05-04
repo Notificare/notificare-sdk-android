@@ -6,7 +6,8 @@ import com.google.android.gms.common.GoogleApiAvailability
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.RemoteMessage
 import com.google.firebase.messaging.ktx.messaging
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import re.notifica.NotificareLogger
 import re.notifica.models.NotificareTransport
 import re.notifica.push.NotificarePush
@@ -34,7 +35,7 @@ class NotificareServiceManager(
             if (task.isSuccessful && task.result != null) {
                 NotificareLogger.info("Retrieved FCM token.")
 
-                runBlocking {
+                GlobalScope.launch {
                     try {
                         NotificarePush.registerPushToken(transport, token = requireNotNull(task.result))
                         NotificareLogger.debug("Registered the device with a FCM token.")

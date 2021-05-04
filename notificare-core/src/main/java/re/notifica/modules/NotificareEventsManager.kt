@@ -2,8 +2,7 @@ package re.notifica.modules
 
 import androidx.annotation.RestrictTo
 import androidx.work.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.*
 import re.notifica.Notificare
 import re.notifica.NotificareDefinitions
 import re.notifica.NotificareLogger
@@ -65,7 +64,7 @@ class NotificareEventsManager {
 
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     fun log(event: String, data: NotificareEventData? = null, notificationId: String? = null) {
-        runBlocking(Dispatchers.IO) {
+        GlobalScope.launch {
             val device = Notificare.deviceManager.currentDevice
 
             try {
@@ -86,10 +85,10 @@ class NotificareEventsManager {
         }
     }
 
-    private suspend fun log(event: NotificareEvent) {
+    private suspend fun log(event: NotificareEvent): Unit = withContext(Dispatchers.IO) {
         if (!Notificare.isConfigured) {
             NotificareLogger.debug("Notificare is not configured. Skipping event log...")
-            return
+            return@withContext
         }
 
         try {

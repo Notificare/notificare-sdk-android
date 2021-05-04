@@ -8,7 +8,8 @@ import com.huawei.hms.api.HuaweiApiAvailability
 import com.huawei.hms.common.ApiException
 import com.huawei.hms.push.HmsMessaging
 import com.huawei.hms.push.RemoteMessage
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import re.notifica.NotificareLogger
 import re.notifica.models.NotificareTransport
 import re.notifica.push.NotificarePush
@@ -39,7 +40,7 @@ class NotificareServiceManager(
                 val token = HmsInstanceId.getInstance(context).getToken(appId, HmsMessaging.DEFAULT_TOKEN_SCOPE)
 
                 if (token != null && token.isNotEmpty()) {
-                    runBlocking {
+                    GlobalScope.launch {
                         try {
                             NotificarePush.registerPushToken(transport, token = token)
                             NotificareLogger.debug("Registered the device with a HMS token.")

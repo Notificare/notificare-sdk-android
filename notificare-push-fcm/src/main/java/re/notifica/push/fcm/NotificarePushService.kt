@@ -2,7 +2,8 @@ package re.notifica.push.fcm
 
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import re.notifica.Notificare
 import re.notifica.NotificareLogger
 import re.notifica.models.NotificareNotification
@@ -23,7 +24,7 @@ class NotificarePushService : FirebaseMessagingService() {
         }
 
         if (Notificare.isReady) {
-            runBlocking {
+            GlobalScope.launch {
                 try {
                     Notificare.deviceManager.registerPushToken(NotificareTransport.GCM, token)
                     NotificareLogger.debug("Registered the device with a FCM token.")

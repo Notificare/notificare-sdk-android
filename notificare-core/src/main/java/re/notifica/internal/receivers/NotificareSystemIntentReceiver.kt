@@ -3,7 +3,8 @@ package re.notifica.internal.receivers
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import re.notifica.Notificare
 import re.notifica.NotificareLogger
 import java.util.*
@@ -21,7 +22,7 @@ internal class NotificareSystemIntentReceiver : BroadcastReceiver() {
     private fun onTimeZoneChanged() {
         NotificareLogger.info("Received a time zone change: ${Locale.getDefault().language}-${Locale.getDefault().country}")
 
-        runBlocking {
+        GlobalScope.launch {
             try {
                 Notificare.deviceManager.updateTimeZone()
                 NotificareLogger.debug("Successfully updated device time zone.")
@@ -34,7 +35,7 @@ internal class NotificareSystemIntentReceiver : BroadcastReceiver() {
     private fun onLocaleChanged() {
         NotificareLogger.info("Received a locale change: ${Locale.getDefault().language}-${Locale.getDefault().country}")
 
-        runBlocking {
+        GlobalScope.launch {
             try {
                 Notificare.deviceManager.updateLanguage()
                 NotificareLogger.debug("Successfully updated device locale.")

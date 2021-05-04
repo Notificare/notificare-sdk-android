@@ -2,7 +2,8 @@ package re.notifica.push.hms
 
 import com.huawei.hms.push.HmsMessageService
 import com.huawei.hms.push.RemoteMessage
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import re.notifica.Notificare
 import re.notifica.NotificareLogger
 import re.notifica.models.NotificareNotification
@@ -23,7 +24,7 @@ class NotificarePushService : HmsMessageService() {
         }
 
         if (Notificare.isReady) {
-            runBlocking {
+            GlobalScope.launch {
                 try {
                     Notificare.deviceManager.registerPushToken(NotificareTransport.HMS, token)
                     NotificareLogger.debug("Registered the device with a HMS token.")
