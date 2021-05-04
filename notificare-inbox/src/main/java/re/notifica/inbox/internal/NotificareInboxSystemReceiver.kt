@@ -18,6 +18,9 @@ import java.util.*
 internal class NotificareInboxSystemReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         when (intent.action) {
+            INTENT_ACTION_INBOX_RELOAD -> {
+                onReload()
+            }
             INTENT_ACTION_INBOX_NOTIFICATION_RECEIVED -> {
                 val notification: NotificareNotification = checkNotNull(
                     intent.getParcelableExtra(Notificare.INTENT_EXTRA_NOTIFICATION)
@@ -37,6 +40,10 @@ internal class NotificareInboxSystemReceiver : BroadcastReceiver() {
                 onMarkItemAsRead(inboxItemId)
             }
         }
+    }
+
+    private fun onReload() {
+        NotificareInbox.refresh()
     }
 
     private fun onNotificationReceived(notification: NotificareNotification, bundle: Bundle) {
@@ -94,6 +101,7 @@ internal class NotificareInboxSystemReceiver : BroadcastReceiver() {
 
     companion object {
         // Intent actions
+        private const val INTENT_ACTION_INBOX_RELOAD = "re.notifica.inbox.intent.action.Reload"
         private const val INTENT_ACTION_INBOX_NOTIFICATION_RECEIVED =
             "re.notifica.inbox.intent.action.NotificationReceived"
         private const val INTENT_ACTION_INBOX_MARK_ITEM_AS_READ = "re.notifica.inbox.intent.action.MarkItemAsRead"
