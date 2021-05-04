@@ -177,7 +177,7 @@ object Notificare {
                 NotificareLogger.debug("App ID: ${application.id}")
                 NotificareLogger.debug("App services: ${enabledServices.joinToString(", ")}")
                 NotificareLogger.debug("/==================================================================================/")
-                NotificareLogger.debug("SDK version: ${NotificareDefinitions.SDK_VERSION}")
+                NotificareLogger.debug("SDK version: $SDK_VERSION")
                 NotificareLogger.debug("SDK modules: ${enabledModules.joinToString(", ")}")
                 NotificareLogger.debug("/==================================================================================/")
 

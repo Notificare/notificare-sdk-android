@@ -3,10 +3,6 @@ package re.notifica
 import re.notifica.modules.NotificareModule
 
 internal object NotificareDefinitions {
-    const val SDK_VERSION = "3.0.0"
-
-    const val SHARED_PREFERENCES_NAME = "re.notifica.preferences.Settings"
-
     object Events {
         const val APPLICATION_INSTALL = "re.notifica.event.application.Install"
         const val APPLICATION_REGISTRATION = "re.notifica.event.application.Registration"

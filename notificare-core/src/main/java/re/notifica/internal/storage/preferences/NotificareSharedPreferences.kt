@@ -3,7 +3,6 @@ package re.notifica.internal.storage.preferences
 import android.annotation.SuppressLint
 import android.content.Context
 import re.notifica.Notificare
-import re.notifica.NotificareDefinitions
 import re.notifica.NotificareLogger
 import re.notifica.models.NotificareApplication
 import re.notifica.models.NotificareDevice
@@ -12,6 +11,8 @@ import re.notifica.models.NotificareEvent
 internal class NotificareSharedPreferences(context: Context) {
 
     companion object {
+        private const val PREFERENCES_FILE_NAME = "re.notifica.preferences"
+
         private const val PREFERENCE_APPLICATION = "re.notifica.preferences.application"
         private const val PREFERENCE_DEVICE = "re.notifica.preferences.device"
         private const val PREFERENCE_PREFERRED_LANGUAGE = "re.notifica.preferences.preferred_language"
@@ -20,7 +21,7 @@ internal class NotificareSharedPreferences(context: Context) {
     }
 
     private val sharedPreferences = context.getSharedPreferences(
-        NotificareDefinitions.SHARED_PREFERENCES_NAME,
+        PREFERENCES_FILE_NAME,
         Context.MODE_PRIVATE
     )
 

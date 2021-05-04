@@ -80,7 +80,7 @@ class NotificareCrashReporter {
                 "platform" to "Android",
                 "osVersion" to NotificareUtils.osVersion,
                 "deviceString" to NotificareUtils.deviceString,
-                "sdkVersion" to NotificareDefinitions.SDK_VERSION,
+                "sdkVersion" to Notificare.SDK_VERSION,
                 "appVersion" to NotificareUtils.applicationVersion,
                 "timestamp" to timestamp.toString(),
                 "name" to throwable.message,

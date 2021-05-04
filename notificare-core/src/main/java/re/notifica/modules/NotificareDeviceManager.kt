@@ -430,7 +430,7 @@ class NotificareDeviceManager {
                 platform = "Android",
                 transport = transport,
                 osVersion = NotificareUtils.osVersion,
-                sdkVersion = NotificareDefinitions.SDK_VERSION,
+                sdkVersion = Notificare.SDK_VERSION,
                 appVersion = NotificareUtils.applicationVersion,
                 deviceString = NotificareUtils.deviceString,
                 timeZoneOffset = NotificareUtils.timeZoneOffset,
@@ -498,7 +498,7 @@ class NotificareDeviceManager {
             changed = true
         }
 
-        if (device.sdkVersion != NotificareDefinitions.SDK_VERSION) {
+        if (device.sdkVersion != Notificare.SDK_VERSION) {
             NotificareLogger.debug("Registration check: sdk version changed")
             changed = true
         }
