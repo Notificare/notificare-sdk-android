@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import re.notifica.Notificare
 import re.notifica.NotificareDefinitions
+import re.notifica.NotificareLogger
 import re.notifica.models.NotificareDevice
 import re.notifica.models.NotificareEvent
 
@@ -24,7 +25,18 @@ internal class NotificareSharedPreferences(context: Context) {
     var device: NotificareDevice?
         get() {
             return sharedPreferences.getString(PREFERENCE_DEVICE, null)
-                ?.let { Notificare.moshi.adapter(NotificareDevice::class.java).fromJson(it) }
+                ?.let {
+                    try {
+                        Notificare.moshi.adapter(NotificareDevice::class.java).fromJson(it)
+                    } catch (e: Exception) {
+                        NotificareLogger.warning("Failed to decode the stored device.", e)
+
+                        // Remove the corrupted device from local storage.
+                        device = null
+
+                        null
+                    }
+                }
         }
         set(value) {
             sharedPreferences.edit().also {
@@ -77,7 +89,18 @@ internal class NotificareSharedPreferences(context: Context) {
     var crashReport: NotificareEvent?
         get() {
             return sharedPreferences.getString(PREFERENCE_CRASH_REPORT, null)
-                ?.let { Notificare.moshi.adapter(NotificareEvent::class.java).fromJson(it) }
+                ?.let {
+                    try {
+                        Notificare.moshi.adapter(NotificareEvent::class.java).fromJson(it)
+                    } catch (e: Exception) {
+                        NotificareLogger.warning("Failed to decode the stored crash report.", e)
+
+                        // Remove the corrupted crash report from local storage.
+                        crashReport = null
+
+                        null
+                    }
+                }
         }
         @SuppressLint("ApplySharedPref")
         set(value) {
