@@ -2,21 +2,14 @@ plugins {
     id 'com.android.application'
     id 'kotlin-android'
     id 're.notifica.gradle.notificare-services'
+    id 'com.google.gms.google-services'
+    id 'com.huawei.agconnect'
 }
 
 apply from: '../dependencies.gradle'
 
 def properties = new Properties()
 properties.load(project.rootProject.file('local.properties').newDataInputStream())
-
-def startParameter = getGradle().getStartParameter().getTaskRequests().toString().toLowerCase()
-if (startParameter.contains("google")) {
-    println("Building flavor with Google GMS - applying plugin")
-    apply plugin: 'com.google.gms.google-services'
-} else if (startParameter.contains("huawei")) {
-    println("Building flavor with Huawei HMS - applying plugin")
-    apply plugin: 'com.huawei.agconnect'
-}
 
 android {
     compileSdkVersion compile_sdk_version
@@ -53,17 +46,6 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
-
-    flavorDimensions "provider"
-    productFlavors {
-        google {
-            dimension "provider"
-        }
-
-        huawei {
-            dimension "provider"
-        }
-    }
 }
 
 dependencies {
@@ -79,10 +61,10 @@ dependencies {
     implementation project(':notificare-inbox')
 
     implementation project(':notificare-push')
-    googleImplementation project(':notificare-push-fcm')
-    huaweiImplementation project(':notificare-push-hms')
+    implementation project(':notificare-push-fcm')
+    implementation project(':notificare-push-hms')
 
     implementation project(':notificare-push-ui')
-    googleImplementation project(':notificare-push-ui-fcm')
-    huaweiImplementation project(':notificare-push-ui-hms')
+    implementation project(':notificare-push-ui-fcm')
+    implementation project(':notificare-push-ui-hms')
 }
