@@ -73,7 +73,7 @@ internal class NotificarePushSystemIntentReceiver : BroadcastReceiver() {
             Notificare.removeNotificationFromNotificationCenter(notification)
 
             // Notify the inbox to mark the item as read.
-            markItemAsRead(message)
+            InboxIntegration.markItemAsRead(message)
         }
     }
 
@@ -126,30 +126,6 @@ internal class NotificarePushSystemIntentReceiver : BroadcastReceiver() {
             } catch (e: Exception) {
                 NotificareLogger.debug("Failed to create a notification reply.", e)
             }
-        }
-    }
-
-    private fun markItemAsRead(message: NotificareNotificationRemoteMessage) {
-        if (message.inboxItemId == null) {
-            return
-        }
-
-        try {
-            val klass = Class.forName(NotificarePush.INBOX_RECEIVER_CLASS_NAME)
-            val intent = Intent(Notificare.requireContext(), klass).apply {
-                action = NotificarePush.INTENT_ACTION_INBOX_MARK_ITEM_AS_READ
-                putExtra(NotificarePush.INTENT_EXTRA_INBOX_ITEM_ID, message.inboxItemId)
-            }
-
-            Notificare.requireContext().sendBroadcast(intent)
-        } catch (e: Exception) {
-            if (e is ClassNotFoundException) {
-                // Silently ignore the error.
-                // This occurs when the inbox module is not included.
-                return
-            }
-
-            NotificareLogger.debug("Failed to send an inbox broadcast.", e)
         }
     }
 }

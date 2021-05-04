@@ -19,6 +19,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import kotlinx.coroutines.*
 import re.notifica.Notificare
+import re.notifica.NotificareCallback
 import re.notifica.NotificareLogger
 import re.notifica.internal.NotificareUtils
 import re.notifica.models.NotificareApplication
@@ -26,6 +27,7 @@ import re.notifica.models.NotificareNotification
 import re.notifica.models.NotificareTransport
 import re.notifica.modules.NotificareModule
 import re.notifica.push.app.NotificarePushIntentReceiver
+import re.notifica.push.internal.InboxIntegration
 import re.notifica.push.internal.NotificarePushSystemIntentReceiver
 import re.notifica.push.models.*
 import java.util.concurrent.atomic.AtomicInteger
@@ -35,7 +37,6 @@ object NotificarePush : NotificareModule() {
     const val SDK_VERSION = BuildConfig.SDK_VERSION
 
     const val DEFAULT_NOTIFICATION_CHANNEL_ID = "notificare_channel_default"
-    internal const val INBOX_RECEIVER_CLASS_NAME = "re.notifica.inbox.internal.NotificareInboxSystemReceiver"
 
     // Intent actions
     const val INTENT_ACTION_REMOTE_MESSAGE_OPENED = "re.notifica.intent.action.RemoteMessageOpened"
@@ -44,14 +45,10 @@ object NotificarePush : NotificareModule() {
     const val INTENT_ACTION_UNKNOWN_NOTIFICATION_RECEIVED = "re.notifica.intent.action.UnknownNotificationReceived"
     const val INTENT_ACTION_NOTIFICATION_OPENED = "re.notifica.intent.action.NotificationOpened"
     const val INTENT_ACTION_ACTION_OPENED = "re.notifica.intent.action.ActionOpened"
-    private const val INTENT_ACTION_INBOX_NOTIFICATION_RECEIVED = "re.notifica.inbox.intent.action.NotificationReceived"
-    internal const val INTENT_ACTION_INBOX_MARK_ITEM_AS_READ = "re.notifica.inbox.intent.action.MarkItemAsRead"
 
     // Intent extras
     const val INTENT_EXTRA_REMOTE_MESSAGE = "re.notifica.intent.extra.RemoteMessage"
     const val INTENT_EXTRA_TEXT_RESPONSE = "re.notifica.intent.extra.TextResponse"
-    private const val INTENT_EXTRA_INBOX_NOTIFICATION_RECEIVED_BUNDLE = "re.notifica.inbox.intent.extra.InboxBundle"
-    internal const val INTENT_EXTRA_INBOX_ITEM_ID = "re.notifica.inbox.intent.extra.InboxItemId"
 
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     var serviceManager: NotificareServiceManager? = null
@@ -107,7 +104,7 @@ object NotificarePush : NotificareModule() {
     }
 
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    suspend fun registerPushToken(transport: NotificareTransport, token: String) : Unit = withContext(Dispatchers.IO) {
+    suspend fun registerPushToken(transport: NotificareTransport, token: String): Unit = withContext(Dispatchers.IO) {
         Notificare.deviceManager.registerPushToken(transport, token)
 
         try {
@@ -328,28 +325,8 @@ object NotificarePush : NotificareModule() {
                 )
             }
 
-            if (message.inboxItemId != null) {
-                try {
-                    val klass = Class.forName("re.notifica.inbox.internal.NotificareInboxSystemReceiver")
-                    val intent = Intent(Notificare.requireContext(), klass).apply {
-                        action = INTENT_ACTION_INBOX_NOTIFICATION_RECEIVED
-
-                        putExtra(Notificare.INTENT_EXTRA_NOTIFICATION, notification)
-                        putExtra(
-                            INTENT_EXTRA_INBOX_NOTIFICATION_RECEIVED_BUNDLE,
-                            bundleOf(
-                                "inboxItemId" to message.inboxItemId,
-                                "inboxItemVisible" to message.inboxItemVisible,
-                                "inboxItemExpires" to message.inboxItemExpires
-                            )
-                        )
-                    }
-
-                    Notificare.requireContext().sendBroadcast(intent)
-                } catch (e: Exception) {
-                    NotificareLogger.debug("Failed to send an inbox broadcast.", e)
-                }
-            }
+            // Attempt to place the item in the inbox.
+            InboxIntegration.addItemToInbox(message, notification)
 
             // TODO notify listeners
 
