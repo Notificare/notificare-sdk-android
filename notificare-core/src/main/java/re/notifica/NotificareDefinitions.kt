@@ -7,17 +7,6 @@ internal object NotificareDefinitions {
 
     const val SHARED_PREFERENCES_NAME = "re.notifica.preferences.Settings"
 
-    object Intent {
-        object Actions {
-            const val READY = "re.notifica.intent.action.Ready"
-            const val DEVICE_REGISTERED = "re.notifica.intent.action.DeviceRegistered"
-        }
-
-        object Extras {
-            const val DEVICE = "re.notifica.intent.extra.Device"
-        }
-    }
-
     object Events {
         const val APPLICATION_INSTALL = "re.notifica.event.application.Install"
         const val APPLICATION_REGISTRATION = "re.notifica.event.application.Registration"

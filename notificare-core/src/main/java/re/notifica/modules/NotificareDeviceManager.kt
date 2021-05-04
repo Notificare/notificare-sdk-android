@@ -1,12 +1,13 @@
 package re.notifica.modules
 
+import android.content.Intent
 import androidx.annotation.RestrictTo
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import re.notifica.*
-import re.notifica.internal.NotificareIntentEmitter
+import re.notifica.app.NotificareIntentReceiver
 import re.notifica.internal.NotificareUtils
 import re.notifica.internal.common.toByteArray
 import re.notifica.internal.common.toHex
@@ -452,7 +453,11 @@ class NotificareDeviceManager {
         }
 
         // Send a device registered broadcast.
-        NotificareIntentEmitter.onDeviceRegistered(checkNotNull(currentDevice))
+        Notificare.requireContext().sendBroadcast(
+            Intent(Notificare.requireContext(), Notificare.intentReceiver)
+                .setAction(NotificareIntentReceiver.INTENT_ACTION_DEVICE_REGISTERED)
+                .putExtra(NotificareIntentReceiver.INTENT_EXTRA_DEVICE, checkNotNull(currentDevice))
+        )
     }
 
     private fun registrationChanged(token: String?, userId: String?, userName: String?): Boolean {

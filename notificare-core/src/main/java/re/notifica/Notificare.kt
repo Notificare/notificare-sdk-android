@@ -2,6 +2,7 @@ package re.notifica
 
 import android.app.NotificationManager
 import android.content.Context
+import android.content.Intent
 import android.content.res.Resources
 import android.net.Uri
 import android.os.Build
@@ -33,7 +34,6 @@ object Notificare {
 
     const val SDK_VERSION = BuildConfig.SDK_VERSION
 
-    const val INTENT_EXTRA_APPLICATION = "re.notifica.intent.extra.Application"
     const val INTENT_EXTRA_NOTIFICATION = "re.notifica.intent.extra.Notification"
     const val INTENT_EXTRA_ACTION = "re.notifica.intent.extra.Action"
 
@@ -182,7 +182,13 @@ object Notificare {
                 NotificareLogger.debug("/==================================================================================/")
 
                 // We're done launching. Send a broadcast.
-                NotificareIntentEmitter.onReady(application)
+                requireContext().sendBroadcast(
+                    Intent(requireContext(), intentReceiver)
+                        .setAction(NotificareIntentReceiver.INTENT_ACTION_READY)
+                        .putExtra(NotificareIntentReceiver.INTENT_EXTRA_APPLICATION, application)
+                )
+
+                // Notify the listeners.
                 readyListeners.forEach { it.onReady(application) }
             } catch (e: Exception) {
                 NotificareLogger.error("Failed to launch Notificare.", e)
