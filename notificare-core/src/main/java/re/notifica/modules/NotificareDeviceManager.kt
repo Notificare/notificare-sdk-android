@@ -1,9 +1,10 @@
 package re.notifica.modules
 
-import re.notifica.Notificare
+import androidx.annotation.RestrictTo
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import re.notifica.*
 import re.notifica.NotificareDefinitions
-import re.notifica.NotificareException
-import re.notifica.NotificareLogger
 import re.notifica.internal.NotificareIntentEmitter
 import re.notifica.internal.NotificareUtils
 import re.notifica.internal.common.toByteArray
@@ -74,6 +75,18 @@ class NotificareDeviceManager {
         register(currentDevice.transport, currentDevice.id, userId, userName)
     }
 
+    fun register(userId: String?, userName: String?, callback: NotificareCallback<Unit>) {
+        GlobalScope.launch {
+            try {
+                register(userId, userName)
+                callback.onSuccess(Unit)
+            } catch (e: Exception) {
+                callback.onFailure(e)
+            }
+        }
+    }
+
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     suspend fun registerTemporary() {
         val device = currentDevice
 
@@ -91,6 +104,7 @@ class NotificareDeviceManager {
         )
     }
 
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     suspend fun registerPushToken(transport: NotificareTransport, token: String) {
         if (transport == NotificareTransport.NOTIFICARE) {
             throw IllegalArgumentException("Invalid transport '$transport'.")
@@ -129,6 +143,17 @@ class NotificareDeviceManager {
         }
     }
 
+    fun updatePreferredLanguage(preferredLanguage: String?, callback: NotificareCallback<Unit>) {
+        GlobalScope.launch {
+            try {
+                updatePreferredLanguage(preferredLanguage)
+                callback.onSuccess(Unit)
+            } catch (e: Exception) {
+                callback.onFailure(e)
+            }
+        }
+    }
+
     suspend fun fetchTags(): List<String> {
         val device = checkNotificareReady()
 
@@ -138,7 +163,29 @@ class NotificareDeviceManager {
             .tags
     }
 
+    fun fetchTags(callback: NotificareCallback<List<String>>) {
+        GlobalScope.launch {
+            try {
+                val tags = fetchTags()
+                callback.onSuccess(tags)
+            } catch (e: Exception) {
+                callback.onFailure(e)
+            }
+        }
+    }
+
     suspend fun addTag(tag: String) = addTags(listOf(tag))
+
+    fun addTag(tag: String, callback: NotificareCallback<Unit>) {
+        GlobalScope.launch {
+            try {
+                addTag(tag)
+                callback.onSuccess(Unit)
+            } catch (e: Exception) {
+                callback.onFailure(e)
+            }
+        }
+    }
 
     suspend fun addTags(tags: List<String>) {
         val device = checkNotificareReady()
@@ -147,7 +194,29 @@ class NotificareDeviceManager {
             .response()
     }
 
+    fun addTags(tags: List<String>, callback: NotificareCallback<Unit>) {
+        GlobalScope.launch {
+            try {
+                addTags(tags)
+                callback.onSuccess(Unit)
+            } catch (e: Exception) {
+                callback.onFailure(e)
+            }
+        }
+    }
+
     suspend fun removeTag(tag: String) = removeTags(listOf(tag))
+
+    fun removeTag(tag: String, callback: NotificareCallback<Unit>) {
+        GlobalScope.launch {
+            try {
+                removeTag(tag)
+                callback.onSuccess(Unit)
+            } catch (e: Exception) {
+                callback.onFailure(e)
+            }
+        }
+    }
 
     suspend fun removeTags(tags: List<String>) {
         val device = checkNotificareReady()
@@ -156,11 +225,33 @@ class NotificareDeviceManager {
             .response()
     }
 
+    fun removeTags(tags: List<String>, callback: NotificareCallback<Unit>) {
+        GlobalScope.launch {
+            try {
+                removeTags(tags)
+                callback.onSuccess(Unit)
+            } catch (e: Exception) {
+                callback.onFailure(e)
+            }
+        }
+    }
+
     suspend fun clearTags() {
         val device = checkNotificareReady()
         NotificareRequest.Builder()
             .put("/device/${device.id}/cleartags", null)
             .response()
+    }
+
+    fun clearTags(callback: NotificareCallback<Unit>) {
+        GlobalScope.launch {
+            try {
+                clearTags()
+                callback.onSuccess(Unit)
+            } catch (e: Exception) {
+                callback.onFailure(e)
+            }
+        }
     }
 
     suspend fun fetchDoNotDisturb(): NotificareDoNotDisturb? {
@@ -176,6 +267,17 @@ class NotificareDeviceManager {
         return dnd
     }
 
+    fun fetchDoNotDisturb(callback: NotificareCallback<NotificareDoNotDisturb?>) {
+        GlobalScope.launch {
+            try {
+                val dnd = fetchDoNotDisturb()
+                callback.onSuccess(dnd)
+            } catch (e: Exception) {
+                callback.onFailure(e)
+            }
+        }
+    }
+
     suspend fun updateDoNotDisturb(dnd: NotificareDoNotDisturb) {
         val device = checkNotificareReady()
         NotificareRequest.Builder()
@@ -186,6 +288,17 @@ class NotificareDeviceManager {
         currentDevice?.dnd = dnd
     }
 
+    fun updateDoNotDisturb(dnd: NotificareDoNotDisturb, callback: NotificareCallback<Unit>) {
+        GlobalScope.launch {
+            try {
+                updateDoNotDisturb(dnd)
+                callback.onSuccess(Unit)
+            } catch (e: Exception) {
+                callback.onFailure(e)
+            }
+        }
+    }
+
     suspend fun clearDoNotDisturb() {
         val device = checkNotificareReady()
         NotificareRequest.Builder()
@@ -194,6 +307,17 @@ class NotificareDeviceManager {
 
         // Update current device properties.
         currentDevice?.dnd = null
+    }
+
+    fun clearDoNotDisturb(callback: NotificareCallback<Unit>) {
+        GlobalScope.launch {
+            try {
+                clearDoNotDisturb()
+                callback.onSuccess(Unit)
+            } catch (e: Exception) {
+                callback.onFailure(e)
+            }
+        }
     }
 
     suspend fun fetchUserData(): NotificareUserData? {
@@ -209,6 +333,17 @@ class NotificareDeviceManager {
         return userData
     }
 
+    fun fetchUserData(callback: NotificareCallback<NotificareUserData?>) {
+        GlobalScope.launch {
+            try {
+                val userData = fetchUserData()
+                callback.onSuccess(userData)
+            } catch (e: Exception) {
+                callback.onFailure(e)
+            }
+        }
+    }
+
     suspend fun updateUserData(userData: NotificareUserData) {
         val device = checkNotificareReady()
         NotificareRequest.Builder()
@@ -217,6 +352,17 @@ class NotificareDeviceManager {
 
         // Update current device properties.
         currentDevice?.userData = userData
+    }
+
+    fun updateUserData(userData: NotificareUserData, callback: NotificareCallback<Unit>) {
+        GlobalScope.launch {
+            try {
+                updateUserData(userData)
+                callback.onSuccess(Unit)
+            } catch (e: Exception) {
+                callback.onFailure(e)
+            }
+        }
     }
 
     suspend fun updateNotificationSettings(allowedUI: Boolean) {
@@ -235,6 +381,17 @@ class NotificareDeviceManager {
 
         // Update current device properties.
         currentDevice?.allowedUI = allowedUI
+    }
+
+    fun updateNotificationSettings(allowedUI: Boolean, callback: NotificareCallback<Unit>) {
+        GlobalScope.launch {
+            try {
+                updateNotificationSettings(allowedUI)
+                callback.onSuccess(Unit)
+            } catch (e: Exception) {
+                callback.onFailure(e)
+            }
+        }
     }
 
     // region Private API
