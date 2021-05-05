@@ -88,6 +88,11 @@ object NotificarePush : NotificareModule() {
         }
 
     fun enableRemoteNotifications() {
+        if (!Notificare.isReady) {
+            NotificareLogger.warning("Notificare is not ready yet.")
+            return
+        }
+
         val application = Notificare.application ?: run {
             NotificareLogger.warning("Notificare is not ready yet.")
             return
