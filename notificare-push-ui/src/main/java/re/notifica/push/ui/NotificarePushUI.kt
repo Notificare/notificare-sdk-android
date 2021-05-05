@@ -25,6 +25,7 @@ object NotificarePushUI {
     internal val contentFileProviderAuthority: String
         get() = "${Notificare.requireContext().packageName}$CONTENT_FILE_PROVIDER_AUTHORITY_SUFFIX"
 
+    var notificationActivity: Class<out NotificationActivity> = NotificationActivity::class.java
     var intentReceiver: Class<out NotificarePushUIIntentReceiver> = NotificarePushUIIntentReceiver::class.java
 
     fun presentNotification(activity: Activity, notification: NotificareNotification) {
@@ -41,7 +42,7 @@ object NotificarePushUI {
             }
             NotificareNotification.NotificationType.URL_SCHEME -> presentUrlScheme(activity, notification)
             else -> {
-                val intent = Intent(Notificare.requireContext(), NotificationActivity::class.java)
+                val intent = Intent(Notificare.requireContext(), notificationActivity)
                     .putExtra(Notificare.INTENT_EXTRA_NOTIFICATION, notification)
                     .setPackage(Notificare.requireContext().packageName)
 
@@ -59,7 +60,7 @@ object NotificarePushUI {
                 // NotificarePushUI.shared.delegate?.notificare(NotificarePushUI.shared, willExecuteAction: action, for: notification)
 
                 if (action.type == NotificareNotification.Action.TYPE_CALLBACK && (action.camera || action.keyboard)) {
-                    val intent = Intent(Notificare.requireContext(), NotificationActivity::class.java)
+                    val intent = Intent(Notificare.requireContext(), notificationActivity)
                         .putExtra(Notificare.INTENT_EXTRA_NOTIFICATION, notification)
                         .putExtra(Notificare.INTENT_EXTRA_ACTION, action)
                         .setPackage(Notificare.requireContext().packageName)
