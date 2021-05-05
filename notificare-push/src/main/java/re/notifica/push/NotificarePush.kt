@@ -28,6 +28,7 @@ import re.notifica.models.NotificareTransport
 import re.notifica.modules.NotificareModule
 import re.notifica.push.internal.InboxIntegration
 import re.notifica.push.internal.NotificarePushSystemIntentReceiver
+import re.notifica.push.internal.NotificareSharedPreferences
 import re.notifica.push.models.*
 import java.util.concurrent.atomic.AtomicInteger
 
@@ -49,28 +50,40 @@ object NotificarePush : NotificareModule() {
     const val INTENT_EXTRA_REMOTE_MESSAGE = "re.notifica.intent.extra.RemoteMessage"
     const val INTENT_EXTRA_TEXT_RESPONSE = "re.notifica.intent.extra.TextResponse"
 
+    private val notificationSequence = AtomicInteger()
+
+    internal lateinit var sharedPreferences: NotificareSharedPreferences
+        private set
+
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     var serviceManager: NotificareServiceManager? = null
         private set
-    private val notificationSequence = AtomicInteger()
 
     var intentReceiver: Class<out NotificarePushIntentReceiver> = NotificarePushIntentReceiver::class.java
 
     override fun configure() {
+        sharedPreferences = NotificareSharedPreferences(Notificare.requireContext())
+        serviceManager = NotificareServiceManager.Factory.create(Notificare.requireContext())
+
         checkPushPermissions()
 
         if (checkNotNull(Notificare.options).automaticDefaultChannelEnabled) {
             NotificareLogger.debug("Creating the default notifications channel.")
             createDefaultChannel()
         }
-
-        serviceManager = NotificareServiceManager.Factory.create(
-            Notificare.requireContext()
-        )
     }
 
     override suspend fun launch() {}
 
+    val isRemoteNotificationsEnabled: Boolean
+        get() {
+            if (::sharedPreferences.isInitialized) {
+                return sharedPreferences.remoteNotificationsEnabled
+            }
+
+            NotificareLogger.warning("Calling this method requires Notificare to have been configured.")
+            return false
+        }
 
     fun enableRemoteNotifications() {
         val application = Notificare.application ?: run {
@@ -88,12 +101,19 @@ object NotificarePush : NotificareModule() {
             return
         }
 
+        // Keep track of the status in local storage.
+        sharedPreferences.remoteNotificationsEnabled = true
+
+        // Request a push provider token.
         manager.registerDeviceToken()
     }
 
     fun disableRemoteNotifications() {
         GlobalScope.launch {
             try {
+                // Keep track of the status in local storage.
+                sharedPreferences.remoteNotificationsEnabled = false
+
                 Notificare.deviceManager.registerTemporary()
                 NotificareLogger.info("Unregistered from push provider.")
             } catch (e: Exception) {
