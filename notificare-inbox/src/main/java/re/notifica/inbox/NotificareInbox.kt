@@ -120,6 +120,10 @@ object NotificareInbox : NotificareModule() {
         sync()
     }
 
+    override suspend fun unlaunch() {
+        clearLocalInbox()
+    }
+
     private fun reloadLiveItems() {
         Handler(Looper.getMainLooper()).post {
             // Cancel previous observer if applicable.

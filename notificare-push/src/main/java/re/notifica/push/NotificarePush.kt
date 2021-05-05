@@ -75,6 +75,8 @@ object NotificarePush : NotificareModule() {
 
     override suspend fun launch() {}
 
+    override suspend fun unlaunch() {}
+
     val isRemoteNotificationsEnabled: Boolean
         get() {
             if (::sharedPreferences.isInitialized) {

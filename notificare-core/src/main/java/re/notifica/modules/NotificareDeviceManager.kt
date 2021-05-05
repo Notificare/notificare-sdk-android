@@ -400,6 +400,20 @@ class NotificareDeviceManager {
         }
     }
 
+    internal suspend fun delete(): Unit = withContext(Dispatchers.IO) {
+        val device = checkNotificareReady()
+
+        NotificareRequest.Builder()
+            .delete(
+                url = "/device/${device.id}",
+                body = null,
+            )
+            .response()
+
+        // Remove current device.
+        currentDevice = null
+    }
+
     // region Private API
 
     private fun checkNotificareReady(): NotificareDevice {

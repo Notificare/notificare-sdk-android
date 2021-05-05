@@ -197,7 +197,44 @@ object Notificare {
     }
 
     fun unlaunch() {
+        if (!isReady) {
+            NotificareLogger.warning("Cannot un-launch Notificare before it has been launched.")
+            return
+        }
 
+        NotificareLogger.info("Un-launching Notificare.")
+        GlobalScope.launch {
+            try {
+                NotificareLogger.debug("Registering a temporary device.")
+                deviceManager.registerTemporary()
+
+                // Loop all possible modules and un-launch the available ones.
+                NotificareDefinitions.Module.values().reversed().forEach { module ->
+                    module.instance?.run {
+                        NotificareLogger.debug("Un-launching '${module.name.toLowerCase(Locale.ROOT)}' plugin.")
+
+                        try {
+                            this.unlaunch()
+                            NotificareLogger.debug("Un-launched '${module.name.toLowerCase(Locale.ROOT)}' plugin.")
+                        } catch (e: Exception) {
+                            NotificareLogger.debug("Failed to un-launch ${module.name.toLowerCase(Locale.ROOT)}': $e")
+                            throw e
+                        }
+                    }
+                }
+
+                NotificareLogger.debug("Clearing device tags.")
+                deviceManager.clearTags()
+
+                NotificareLogger.debug("Removing device.")
+                deviceManager.delete()
+
+                NotificareLogger.info("Un-launched Notificare.")
+                state = NotificareLaunchState.CONFIGURED
+            } catch (e: Exception) {
+                NotificareLogger.error("Failed to un-launch Notificare.", e)
+            }
+        }
     }
 
     fun addOnReadyListener(listener: OnReadyListener) {
