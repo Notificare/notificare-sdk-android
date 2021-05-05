@@ -9,10 +9,7 @@ import com.google.android.material.snackbar.Snackbar
 import re.notifica.Notificare
 import re.notifica.NotificareCallback
 import re.notifica.NotificareLogger
-import re.notifica.models.NotificareDoNotDisturb
-import re.notifica.models.NotificareNotification
-import re.notifica.models.NotificareTime
-import re.notifica.models.NotificareUserData
+import re.notifica.models.*
 import re.notifica.push.NotificarePush
 import re.notifica.push.models.NotificareNotificationRemoteMessage
 import re.notifica.push.ui.NotificarePushUI
@@ -20,7 +17,7 @@ import re.notifica.sample.databinding.ActivityMainBinding
 import re.notifica.sample.ui.inbox.InboxActivity
 import java.util.*
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), Notificare.OnReadyListener {
 
     private lateinit var binding: ActivityMainBinding
 
@@ -31,6 +28,14 @@ class MainActivity : AppCompatActivity() {
         }
 
         if (intent != null) handleNotificareIntent(intent)
+
+        Notificare.addOnReadyListener(this)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+
+        Notificare.addOnReadyListener(this)
     }
 
     override fun onNewIntent(intent: Intent?) {
@@ -83,11 +88,27 @@ class MainActivity : AppCompatActivity() {
         NotificareLogger.info("Received deep link with uri = $uri")
     }
 
-    fun onOpenInboxClick(@Suppress("UNUSED_PARAMETER") view: View) {
+    fun onLaunchClicked(@Suppress("UNUSED_PARAMETER") view: View) {
+        Notificare.launch()
+    }
+
+    fun onUnlaunchClicked(@Suppress("UNUSED_PARAMETER") view: View) {
+        Notificare.unlaunch()
+    }
+
+    fun onEnableRemoteNotificationsClicked(@Suppress("UNUSED_PARAMETER") view: View) {
+        NotificarePush.enableRemoteNotifications()
+    }
+
+    fun onDisableRemoteNotificationsClicked(@Suppress("UNUSED_PARAMETER") view: View) {
+        NotificarePush.disableRemoteNotifications()
+    }
+
+    fun onOpenInboxClicked(@Suppress("UNUSED_PARAMETER") view: View) {
         startActivity(Intent(this, InboxActivity::class.java))
     }
 
-    fun onFetchTagsClick(@Suppress("UNUSED_PARAMETER") view: View) {
+    fun onFetchTagsClicked(@Suppress("UNUSED_PARAMETER") view: View) {
         Notificare.deviceManager.fetchTags(object : NotificareCallback<List<String>> {
             override fun onSuccess(result: List<String>) {
                 Snackbar.make(binding.root, "$result", Snackbar.LENGTH_LONG).show()
@@ -100,7 +121,7 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
-    fun onAddTagsClick(@Suppress("UNUSED_PARAMETER") view: View) {
+    fun onAddTagsClicked(@Suppress("UNUSED_PARAMETER") view: View) {
         val tags = listOf(
             "hpinhal",
             "android",
@@ -118,7 +139,7 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
-    fun onRemoveTagsClick(@Suppress("UNUSED_PARAMETER") view: View) {
+    fun onRemoveTagsClicked(@Suppress("UNUSED_PARAMETER") view: View) {
         Notificare.deviceManager.removeTag("remove-me", object : NotificareCallback<Unit> {
             override fun onSuccess(result: Unit) {
                 Snackbar.make(binding.root, "Done.", Snackbar.LENGTH_SHORT).show()
@@ -130,7 +151,7 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
-    fun onClearTagsClick(@Suppress("UNUSED_PARAMETER") view: View) {
+    fun onClearTagsClicked(@Suppress("UNUSED_PARAMETER") view: View) {
         Notificare.deviceManager.clearTags(object : NotificareCallback<Unit> {
             override fun onSuccess(result: Unit) {
                 Snackbar.make(binding.root, "Done.", Snackbar.LENGTH_SHORT).show()
@@ -142,7 +163,7 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
-    fun onFetchDndClick(@Suppress("UNUSED_PARAMETER") view: View) {
+    fun onFetchDndClicked(@Suppress("UNUSED_PARAMETER") view: View) {
         Notificare.deviceManager.fetchDoNotDisturb(object :
             NotificareCallback<NotificareDoNotDisturb?> {
             override fun onSuccess(result: NotificareDoNotDisturb?) {
@@ -156,7 +177,7 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
-    fun onUpdateDndClick(@Suppress("UNUSED_PARAMETER") view: View) {
+    fun onUpdateDndClicked(@Suppress("UNUSED_PARAMETER") view: View) {
         val dnd = NotificareDoNotDisturb(
             start = NotificareTime("00:00"),
             end = NotificareTime(8, Calendar.getInstance().get(Calendar.MINUTE))
@@ -173,7 +194,7 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
-    fun onClearDndClick(@Suppress("UNUSED_PARAMETER") view: View) {
+    fun onClearDndClicked(@Suppress("UNUSED_PARAMETER") view: View) {
         Notificare.deviceManager.clearDoNotDisturb(object : NotificareCallback<Unit> {
             override fun onSuccess(result: Unit) {
                 Snackbar.make(binding.root, "Done.", Snackbar.LENGTH_SHORT).show()
@@ -185,7 +206,7 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
-    fun onFetchUserDataClick(@Suppress("UNUSED_PARAMETER") view: View) {
+    fun onFetchUserDataClicked(@Suppress("UNUSED_PARAMETER") view: View) {
         Notificare.deviceManager.fetchUserData(object : NotificareCallback<NotificareUserData?> {
             override fun onSuccess(result: NotificareUserData?) {
                 Log.i(TAG, "User data: $result")
@@ -198,7 +219,7 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
-    fun onUpdateUserDataClick(@Suppress("UNUSED_PARAMETER") view: View) {
+    fun onUpdateUserDataClicked(@Suppress("UNUSED_PARAMETER") view: View) {
         val userData = mapOf(
             Pair("firstName", "Helder"),
             Pair("lastName", "Pinhal"),
@@ -215,7 +236,7 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
-    fun onGetPreferredLanguage(@Suppress("UNUSED_PARAMETER") view: View) {
+    fun onGetPreferredLanguageClicked(@Suppress("UNUSED_PARAMETER") view: View) {
         Snackbar.make(
             binding.root,
             "${Notificare.deviceManager.preferredLanguage}",
@@ -223,7 +244,7 @@ class MainActivity : AppCompatActivity() {
         ).show()
     }
 
-    fun onUpdatePreferredLanguage(@Suppress("UNUSED_PARAMETER") view: View) {
+    fun onUpdatePreferredLanguageClicked(@Suppress("UNUSED_PARAMETER") view: View) {
         Notificare.deviceManager.updatePreferredLanguage(
             "en-NL",
             object : NotificareCallback<Unit> {
@@ -237,7 +258,7 @@ class MainActivity : AppCompatActivity() {
             })
     }
 
-    fun onClearPreferredLanguage(@Suppress("UNUSED_PARAMETER") view: View) {
+    fun onClearPreferredLanguageClicked(@Suppress("UNUSED_PARAMETER") view: View) {
         Notificare.deviceManager.updatePreferredLanguage(null, object : NotificareCallback<Unit> {
             override fun onSuccess(result: Unit) {
                 Snackbar.make(binding.root, "Done.", Snackbar.LENGTH_SHORT).show()
@@ -249,9 +270,15 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
-    fun onEnableRemoteNotifications(@Suppress("UNUSED_PARAMETER") view: View) {
-        NotificarePush.enableRemoteNotifications()
+    // region Notificare.OnReadyListener
+
+    override fun onReady(application: NotificareApplication) {
+        if (NotificarePush.isRemoteNotificationsEnabled) {
+            NotificarePush.enableRemoteNotifications()
+        }
     }
+
+    // endregion
 
     companion object {
         private val TAG = MainActivity::class.java.simpleName

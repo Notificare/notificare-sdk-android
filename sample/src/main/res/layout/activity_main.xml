@@ -2,7 +2,8 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -13,119 +14,127 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
+            android:paddingHorizontal="16dp"
             android:paddingVertical="8dp">
 
-            <Button
+            <com.google.android.material.button.MaterialButton
+                style="@style/Widget.MaterialComponents.Button.TextButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="16dp"
-                android:layout_marginVertical="8dp"
-                android:onClick="onOpenInboxClick"
+                android:onClick="onLaunchClicked"
+                android:text="Launch Notificare" />
+
+            <Button
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="onUnlaunchClicked"
+                android:text="Unlaunch Notificare" />
+
+            <Button
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="onEnableRemoteNotificationsClicked"
+                android:text="Enable remote notifications" />
+
+            <Button
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="onDisableRemoteNotificationsClicked"
+                android:text="Disable remote notifications" />
+
+            <Button
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="onOpenInboxClicked"
                 android:text="Open inbox" />
 
             <Button
+                style="@style/Widget.MaterialComponents.Button.TextButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="16dp"
-                android:layout_marginVertical="8dp"
-                android:onClick="onFetchTagsClick"
+                android:onClick="onFetchTagsClicked"
                 android:text="Fetch tags" />
 
             <Button
+                style="@style/Widget.MaterialComponents.Button.TextButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="16dp"
-                android:layout_marginVertical="8dp"
-                android:onClick="onAddTagsClick"
+                android:onClick="onAddTagsClicked"
                 android:text="Add tags" />
 
             <Button
+                style="@style/Widget.MaterialComponents.Button.TextButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="16dp"
-                android:layout_marginVertical="8dp"
-                android:onClick="onRemoveTagsClick"
+                android:onClick="onRemoveTagsClicked"
                 android:text="Remove tags" />
 
             <Button
+                style="@style/Widget.MaterialComponents.Button.TextButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="16dp"
-                android:layout_marginVertical="8dp"
-                android:onClick="onClearTagsClick"
+                android:onClick="onClearTagsClicked"
                 android:text="Clear tags" />
 
             <Button
+                style="@style/Widget.MaterialComponents.Button.TextButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="16dp"
-                android:layout_marginVertical="8dp"
-                android:onClick="onFetchDndClick"
+                android:onClick="onFetchDndClicked"
                 android:text="Fetch dnd" />
 
             <Button
+                style="@style/Widget.MaterialComponents.Button.TextButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="16dp"
-                android:layout_marginVertical="8dp"
-                android:onClick="onUpdateDndClick"
+                android:onClick="onUpdateDndClicked"
                 android:text="Update dnd" />
 
             <Button
+                style="@style/Widget.MaterialComponents.Button.TextButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="16dp"
-                android:layout_marginVertical="8dp"
-                android:onClick="onClearDndClick"
+                android:onClick="onClearDndClicked"
                 android:text="Clear dnd" />
 
             <Button
+                style="@style/Widget.MaterialComponents.Button.TextButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="16dp"
-                android:layout_marginVertical="8dp"
-                android:onClick="onFetchUserDataClick"
+                android:onClick="onFetchUserDataClicked"
                 android:text="Fetch user data" />
 
             <Button
+                style="@style/Widget.MaterialComponents.Button.TextButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="16dp"
-                android:layout_marginVertical="8dp"
-                android:onClick="onUpdateUserDataClick"
+                android:onClick="onUpdateUserDataClicked"
                 android:text="Update user data" />
 
             <Button
+                style="@style/Widget.MaterialComponents.Button.TextButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="16dp"
-                android:layout_marginVertical="8dp"
-                android:onClick="onGetPreferredLanguage"
+                android:onClick="onGetPreferredLanguageClicked"
                 android:text="Get preferred language" />
 
             <Button
+                style="@style/Widget.MaterialComponents.Button.TextButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="16dp"
-                android:layout_marginVertical="8dp"
-                android:onClick="onUpdatePreferredLanguage"
+                android:onClick="onUpdatePreferredLanguageClicked"
                 android:text="Update preferred language 'en-NL'" />
 
             <Button
+                style="@style/Widget.MaterialComponents.Button.TextButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="16dp"
-                android:layout_marginVertical="8dp"
-                android:onClick="onClearPreferredLanguage"
+                android:onClick="onClearPreferredLanguageClicked"
                 android:text="Clear preferred language" />
-
-            <Button
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="16dp"
-                android:layout_marginVertical="8dp"
-                android:onClick="onEnableRemoteNotifications"
-                android:text="Enable remote notifications" />
 
         </LinearLayout>
 
