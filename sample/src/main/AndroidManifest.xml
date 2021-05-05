@@ -56,11 +56,11 @@
             android:theme="@style/Theme.Notificare.Translucent" />
 
         <receiver
-            android:name="re.notifica.app.NotificareIntentReceiver"
+            android:name="re.notifica.NotificareIntentReceiver"
             android:exported="false" />
 
         <receiver
-            android:name="re.notifica.push.app.NotificarePushIntentReceiver"
+            android:name="re.notifica.push.NotificarePushIntentReceiver"
             android:exported="false" />
 
         <!--        <meta-data-->

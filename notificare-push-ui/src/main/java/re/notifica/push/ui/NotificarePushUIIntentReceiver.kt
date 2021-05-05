@@ -1,4 +1,4 @@
-package re.notifica.push.ui.app
+package re.notifica.push.ui
 
 import android.content.BroadcastReceiver
 import android.content.Context

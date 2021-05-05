@@ -1,4 +1,4 @@
-package re.notifica.inbox.internal
+package re.notifica.inbox
 
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -9,7 +9,6 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import re.notifica.Notificare
 import re.notifica.NotificareLogger
-import re.notifica.inbox.NotificareInbox
 import re.notifica.inbox.internal.database.entities.InboxItemEntity
 import re.notifica.inbox.models.NotificareInboxItem
 import re.notifica.models.NotificareNotification

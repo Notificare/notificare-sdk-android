@@ -9,7 +9,7 @@ import re.notifica.Notificare
 import re.notifica.models.NotificareNotification
 import re.notifica.push.ui.NotificarePushUI
 import re.notifica.push.ui.actions.base.NotificationAction
-import re.notifica.push.ui.app.NotificarePushUIIntentReceiver
+import re.notifica.push.ui.NotificarePushUIIntentReceiver
 import re.notifica.push.ui.models.NotificarePendingResult
 
 class NotificationCustomAction(

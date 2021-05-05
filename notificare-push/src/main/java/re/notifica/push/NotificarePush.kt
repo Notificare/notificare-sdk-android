@@ -26,7 +26,6 @@ import re.notifica.models.NotificareApplication
 import re.notifica.models.NotificareNotification
 import re.notifica.models.NotificareTransport
 import re.notifica.modules.NotificareModule
-import re.notifica.push.app.NotificarePushIntentReceiver
 import re.notifica.push.internal.InboxIntegration
 import re.notifica.push.internal.NotificarePushSystemIntentReceiver
 import re.notifica.push.models.*
