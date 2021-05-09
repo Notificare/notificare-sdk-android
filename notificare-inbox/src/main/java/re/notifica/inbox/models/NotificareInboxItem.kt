@@ -1,5 +1,6 @@
 package re.notifica.inbox.models
 
+import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 import org.json.JSONObject
 import re.notifica.Notificare
@@ -9,9 +10,9 @@ import java.util.*
 @JsonClass(generateAdapter = true)
 data class NotificareInboxItem internal constructor(
     val id: String,
-    internal var _notification: NotificareNotification,
+    @Json(name = "notification") internal var _notification: NotificareNotification,
     val time: Date,
-    internal var _opened: Boolean,
+    @Json(name = "opened") internal var _opened: Boolean,
     internal val visible: Boolean,
     val expires: Date?,
 ) {
