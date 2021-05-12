@@ -7,33 +7,33 @@ import re.notifica.internal.NotificareOptions
 
 val NotificareOptions.closeWindowQueryParameter: String
     get() {
-        return info.metaData.getString(
+        return info.metaData?.getString(
             "re.notifica.push.ui.close_window_query_parameter",
-            "notificareCloseWindow",
-        )
+            null,
+        ) ?: "notificareCloseWindow"
     }
 
 val NotificareOptions.openActionsQueryParameter: String
     get() {
         return info.metaData.getString(
             "re.notifica.push.ui.open_actions_query_parameter",
-            "notificareOpenActions",
-        )
+            null,
+        ) ?: "notificareOpenActions"
     }
 
 val NotificareOptions.openActionQueryParameter: String
     get() {
         return info.metaData.getString(
             "re.notifica.push.ui.open_action_query_parameter",
-            "notificareOpenAction",
-        )
+            null,
+        ) ?: "notificareOpenAction"
     }
 
 val NotificareOptions.urlSchemes: List<String>
     get() {
-        val resource = info.metaData.getInt("re.notifica.metadata.UrlSchemes")
+        val resource = info.metaData?.getInt("re.notifica.metadata.UrlSchemes")
 
-        if (resource != 0) {
+        if (resource != null && resource != 0) {
             try {
                 return Notificare.requireContext().resources.getStringArray(resource).asList()
             } catch (e: NotFoundException) {
@@ -46,16 +46,16 @@ val NotificareOptions.urlSchemes: List<String>
 
 val NotificareOptions.showNotificationProgress: Boolean
     get() {
-        return info.metaData.getBoolean(
+        return info.metaData?.getBoolean(
             "re.notifica.push.ui.show_notification_progress",
             true,
-        )
+        ) ?: true
     }
 
 val NotificareOptions.showNotificationToasts: Boolean
     get() {
-        return info.metaData.getBoolean(
+        return info.metaData?.getBoolean(
             "re.notifica.push.ui.show_notification_toasts",
             true,
-        )
+        ) ?: true
     }

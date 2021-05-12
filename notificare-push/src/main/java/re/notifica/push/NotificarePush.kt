@@ -396,7 +396,6 @@ object NotificarePush : NotificareModule() {
 
         val channel = message.notificationChannel
             ?: Notificare.options?.defaultChannelId
-            ?: DEFAULT_NOTIFICATION_CHANNEL_ID
 
         val smallIcon = checkNotNull(Notificare.options).notificationSmallIcon
             ?: Notificare.requireContext().applicationInfo.icon

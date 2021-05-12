@@ -11,11 +11,11 @@ class NotificareOptions(context: Context) {
 
     val crashReportsEnabled: Boolean
         get() {
-            return info.metaData.getBoolean("re.notifica.crash_reports_enabled", true)
+            return info.metaData?.getBoolean("re.notifica.crash_reports_enabled", true) ?: true
         }
 
     val notificationActionLabelPrefix: String?
         get() {
-            return info.metaData.getString("re.notifica.action_label_prefix", null)
+            return info.metaData?.getString("re.notifica.action_label_prefix", null)
         }
 }
