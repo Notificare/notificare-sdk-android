@@ -9,7 +9,7 @@ import re.notifica.push.models.NotificareNotificationRemoteMessage
 
 internal object InboxIntegration {
 
-    private const val INBOX_RECEIVER_FQN = "re.notifica.inbox.internal.NotificareInboxSystemReceiver"
+    private const val INBOX_RECEIVER_FQN = "re.notifica.inbox.NotificareInboxSystemReceiver"
 
     private const val INTENT_ACTION_INBOX_RELOAD = "re.notifica.inbox.intent.action.Reload"
     private const val INTENT_ACTION_INBOX_NOTIFICATION_RECEIVED = "re.notifica.inbox.intent.action.NotificationReceived"
