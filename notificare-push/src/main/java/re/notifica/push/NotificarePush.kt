@@ -55,8 +55,7 @@ object NotificarePush : NotificareModule() {
     internal lateinit var sharedPreferences: NotificareSharedPreferences
         private set
 
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    var serviceManager: NotificareServiceManager? = null
+    internal var serviceManager: NotificareServiceManager? = null
         private set
 
     var intentReceiver: Class<out NotificarePushIntentReceiver> = NotificarePushIntentReceiver::class.java

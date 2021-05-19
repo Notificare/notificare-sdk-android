@@ -9,13 +9,12 @@ import kotlinx.coroutines.launch
 import re.notifica.Notificare
 import re.notifica.NotificareLogger
 import re.notifica.models.NotificareNotification
-import re.notifica.models.NotificareTransport
-import re.notifica.push.NotificarePush
+import re.notifica.modules.NotificareModule
 import re.notifica.push.ui.actions.*
 import re.notifica.push.ui.actions.base.NotificationAction
 import re.notifica.push.ui.notifications.fragments.*
 
-object NotificarePushUI {
+object NotificarePushUI : NotificareModule() {
 
     const val SDK_VERSION = BuildConfig.SDK_VERSION
 
@@ -24,8 +23,22 @@ object NotificarePushUI {
     internal val contentFileProviderAuthority: String
         get() = "${Notificare.requireContext().packageName}$CONTENT_FILE_PROVIDER_AUTHORITY_SUFFIX"
 
+    private var serviceManager: NotificareServiceManager? = null
+
     var notificationActivity: Class<out NotificationActivity> = NotificationActivity::class.java
     var intentReceiver: Class<out NotificarePushUIIntentReceiver> = NotificarePushUIIntentReceiver::class.java
+
+    // region Notificare Module
+
+    override fun configure() {
+        serviceManager = NotificareServiceManager.Factory.create(Notificare.requireContext())
+    }
+
+    override suspend fun launch() {}
+
+    override suspend fun unlaunch() {}
+
+    // endregion
 
     fun presentNotification(activity: Activity, notification: NotificareNotification) {
         val type = NotificareNotification.NotificationType.from(notification.type) ?: run {
@@ -100,48 +113,22 @@ object NotificarePushUI {
                 NotificareLogger.debug("Attempting to create a fragment for a notification of type 'urlScheme'. This type contains to visual interface.")
                 return null
             }
-            NotificareNotification.NotificationType.RATE -> {
-                val serviceManager = NotificarePush.serviceManager ?: run {
-                    NotificareLogger.warning("No push dependencies have been detected. Please include one of the platform-specific push packages.")
-                    return null
-                }
-
-                when (serviceManager.transport) {
-                    NotificareTransport.NOTIFICARE -> null
-                    NotificareTransport.GCM -> "re.notifica.push.ui.fcm.NotificareRateFragment"
-                    NotificareTransport.HMS -> "re.notifica.push.ui.hms.NotificareRateFragment"
-                }
-            }
             NotificareNotification.NotificationType.IMAGE -> NotificareImageFragment::class.java.canonicalName
-            NotificareNotification.NotificationType.MAP -> {
-                val serviceManager = NotificarePush.serviceManager ?: run {
-                    NotificareLogger.warning("No push dependencies have been detected. Please include one of the platform-specific push packages.")
-                    return null
-                }
-
-                when (serviceManager.transport) {
-                    NotificareTransport.NOTIFICARE -> null
-                    NotificareTransport.GCM -> "re.notifica.push.ui.fcm.NotificareMapFragment"
-                    NotificareTransport.HMS -> "re.notifica.push.ui.hms.NotificareMapFragment"
-                }
-            }
             NotificareNotification.NotificationType.PASSBOOK -> {
                 // TODO: handle passbook notification
                 return null
             }
+            NotificareNotification.NotificationType.VIDEO -> NotificareVideoFragment::class.java.canonicalName
+            NotificareNotification.NotificationType.MAP,
+            NotificareNotification.NotificationType.RATE,
             NotificareNotification.NotificationType.STORE -> {
-                val serviceManager = NotificarePush.serviceManager ?: run {
-                    NotificareLogger.warning("No push dependencies have been detected. Please include one of the platform-specific push packages.")
+                val manager = serviceManager ?: run {
+                    NotificareLogger.warning("No push-ui dependencies have been detected. Please include one of the platform-specific push-ui packages.")
                     return null
                 }
 
-                when (serviceManager.transport) {
-                    NotificareTransport.NOTIFICARE -> null
-                    NotificareTransport.GCM -> "re.notifica.push.ui.fcm.NotificareStoreFragment"
-                    NotificareTransport.HMS -> "re.notifica.push.ui.hms.NotificareStoreFragment"
-                }
+                return manager.getFragmentCanonicalClassName(notification)
             }
-            NotificareNotification.NotificationType.VIDEO -> NotificareVideoFragment::class.java.canonicalName
         }
     }
 
