@@ -33,7 +33,8 @@ class NotificarePushService : HmsMessageService() {
                 }
             }
         } else {
-            NotificareLogger.warning("Notificare is not ready. Skipping token registration.")
+            NotificareLogger.warning("Notificare is not ready. Postponing token registration...")
+            NotificarePush.postponedDeviceToken = token
         }
     }
 

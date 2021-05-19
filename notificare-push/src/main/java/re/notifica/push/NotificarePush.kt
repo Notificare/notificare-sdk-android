@@ -60,6 +60,9 @@ object NotificarePush : NotificareModule() {
 
     var intentReceiver: Class<out NotificarePushIntentReceiver> = NotificarePushIntentReceiver::class.java
 
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    var postponedDeviceToken: String? = null
+
     override fun configure() {
         sharedPreferences = NotificareSharedPreferences(Notificare.requireContext())
         serviceManager = NotificareServiceManager.Factory.create(Notificare.requireContext())
@@ -72,7 +75,16 @@ object NotificarePush : NotificareModule() {
         }
     }
 
-    override suspend fun launch() {}
+    override suspend fun launch() {
+        val token = postponedDeviceToken ?: return
+        val manager = serviceManager ?: run {
+            NotificareLogger.debug("Found a postponed registration token but no service manager.")
+            return
+        }
+
+        NotificareLogger.info("Found a postponed registration token. Performing a device registration.")
+        registerPushToken(manager.transport, token)
+    }
 
     override suspend fun unlaunch() {}
 
