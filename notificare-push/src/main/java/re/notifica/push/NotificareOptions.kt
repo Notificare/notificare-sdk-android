@@ -2,14 +2,6 @@ package re.notifica.push
 
 import re.notifica.internal.NotificareOptions
 
-val NotificareOptions.preferredMobileServices: String?
-    get() {
-        return info.metaData?.getString(
-            "re.notifica.push.preferred_mobile_services",
-            null,
-        )
-    }
-
 val NotificareOptions.defaultChannelId: String
     get() {
         return info.metaData?.getString(

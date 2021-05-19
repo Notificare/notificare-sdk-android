@@ -18,4 +18,12 @@ class NotificareOptions(context: Context) {
         get() {
             return info.metaData?.getString("re.notifica.action_label_prefix", null)
         }
+
+    val preferredMobileServices: String?
+        get() {
+            return info.metaData?.getString(
+                "re.notifica.preferred_mobile_services",
+                null,
+            )
+        }
 }
