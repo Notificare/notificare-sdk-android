@@ -23,7 +23,8 @@ android {
         versionName "1.0.0"
 
         manifestPlaceholders = [
-                googleMapsApiKey: properties.getProperty('google.maps.key')
+                notificareApplicationId: properties.getProperty('notificare.development.application.id'),
+                googleMapsApiKey: properties.getProperty('google.maps.key'),
         ]
     }
 
@@ -31,6 +32,10 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+
+            manifestPlaceholders = [
+                    notificareApplicationId: properties.getProperty('notificare.production.application.id'),
+            ]
         }
     }
 

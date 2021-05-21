@@ -84,6 +84,13 @@ class MainActivity : AppCompatActivity(), Notificare.OnReadyListener {
             }
         }
 
+        when {
+            Notificare.handleTestDeviceIntent(intent) -> {
+                NotificareLogger.info("Handled the test device registration intent.")
+                return
+            }
+        }
+
         val uri = intent.data ?: return
         NotificareLogger.info("Received deep link with uri = $uri")
     }
