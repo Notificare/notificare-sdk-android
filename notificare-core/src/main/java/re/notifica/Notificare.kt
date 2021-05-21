@@ -418,6 +418,22 @@ object Notificare {
         }
     }
 
+    fun handleTestDeviceIntent(intent: Intent): Boolean {
+        val nonce = parseTestDeviceNonce(intent) ?: return false
+
+        deviceManager.registerTestDevice(nonce, object : NotificareCallback<Unit> {
+            override fun onSuccess(result: Unit) {
+                NotificareLogger.info("Device registered for testing.")
+            }
+
+            override fun onFailure(e: Exception) {
+                NotificareLogger.error("Failed to register the device for testing.", e)
+            }
+        })
+
+        return true
+    }
+
     // endregion
 
     private fun configure(
@@ -456,6 +472,19 @@ object Notificare {
 
         NotificareLogger.debug("Notificare configured all services.")
         state = NotificareLaunchState.CONFIGURED
+    }
+
+    private fun parseTestDeviceNonce(intent: Intent): String? {
+        val application = application ?: return null
+        val scheme = intent.data?.scheme ?: return null
+        val pathSegments = intent.data?.pathSegments ?: return null
+
+        // deep link: test.nc{applicationId}/host/testdevice/{nonce}
+        if (scheme != "test.nc${application.id}") return null
+
+        if (pathSegments.size != 2 || pathSegments[0] != "testdevice") return null
+
+        return pathSegments[1]
     }
 
     interface OnReadyListener {

@@ -553,6 +553,27 @@ class NotificareDeviceManager {
         return Notificare.sharedPreferences.preferredRegion ?: NotificareUtils.deviceRegion
     }
 
+    internal fun registerTestDevice(nonce: String, callback: NotificareCallback<Unit>) {
+        GlobalScope.launch {
+            withContext(Dispatchers.IO) {
+                try {
+                    NotificareRequest.Builder()
+                        .put(
+                            url = "/support/testdevice/$nonce",
+                            body = TestDeviceRegistrationPayload(
+                                deviceId = checkNotNull(currentDevice).id,
+                            ),
+                        )
+                        .response()
+
+                    callback.onSuccess(Unit)
+                } catch (e: Exception) {
+                    callback.onFailure(e)
+                }
+            }
+        }
+    }
+
     internal suspend fun updateLanguage() {
         val device = checkNotificareReady()
 

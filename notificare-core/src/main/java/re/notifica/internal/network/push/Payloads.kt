@@ -67,3 +67,8 @@ internal data class CreateNotificationReplyPayload(
         val mimeType: String?,
     )
 }
+
+@JsonClass(generateAdapter = true)
+internal data class TestDeviceRegistrationPayload(
+    @Json(name = "deviceID") val deviceId: String,
+)
