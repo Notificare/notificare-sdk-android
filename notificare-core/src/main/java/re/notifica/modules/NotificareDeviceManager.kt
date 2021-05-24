@@ -326,12 +326,13 @@ class NotificareDeviceManager {
         }
     }
 
-    suspend fun fetchUserData(): NotificareUserData? = withContext(Dispatchers.IO) {
+    suspend fun fetchUserData(): NotificareUserData = withContext(Dispatchers.IO) {
         val device = checkNotificareReady()
         val userData = NotificareRequest.Builder()
             .get("/device/${device.id}/userdata")
             .responseDecodable(DeviceUserDataResponse::class)
             .userData
+            ?: mapOf()
 
         // Update current device properties.
         currentDevice?.userData = userData
@@ -339,7 +340,7 @@ class NotificareDeviceManager {
         return@withContext userData
     }
 
-    fun fetchUserData(callback: NotificareCallback<NotificareUserData?>) {
+    fun fetchUserData(callback: NotificareCallback<NotificareUserData>) {
         GlobalScope.launch {
             try {
                 val userData = fetchUserData()
@@ -620,7 +621,7 @@ private fun DeviceRegistrationPayload.toStoredDevice(previous: NotificareDevice?
         region = this.region,
         transport = this.transport,
         dnd = previous?.dnd,
-        userData = previous?.userData,
+        userData = previous?.userData ?: mapOf(),
 //        location = previous?.location,
         lastRegistered = Date(),
         allowedUI = this.allowedUI,

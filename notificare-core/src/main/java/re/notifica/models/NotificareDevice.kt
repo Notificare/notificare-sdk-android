@@ -24,7 +24,7 @@ data class NotificareDevice internal constructor(
     val region: String,
     val transport: NotificareTransport,
     var dnd: NotificareDoNotDisturb?,
-    var userData: NotificareUserData?,
+    var userData: NotificareUserData,
     val lastRegistered: Date,
     var allowedUI: Boolean,
     val bluetoothEnabled: Boolean
