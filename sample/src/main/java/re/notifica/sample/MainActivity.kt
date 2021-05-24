@@ -214,8 +214,8 @@ class MainActivity : AppCompatActivity(), Notificare.OnReadyListener {
     }
 
     fun onFetchUserDataClicked(@Suppress("UNUSED_PARAMETER") view: View) {
-        Notificare.deviceManager.fetchUserData(object : NotificareCallback<NotificareUserData?> {
-            override fun onSuccess(result: NotificareUserData?) {
+        Notificare.deviceManager.fetchUserData(object : NotificareCallback<NotificareUserData> {
+            override fun onSuccess(result: NotificareUserData) {
                 Log.i(TAG, "User data: $result")
                 Snackbar.make(binding.root, "$result", Snackbar.LENGTH_SHORT).show()
             }
