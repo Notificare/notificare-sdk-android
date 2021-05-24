@@ -5,7 +5,6 @@ import com.squareup.moshi.JsonClass
 import re.notifica.models.NotificareApplication
 import re.notifica.models.NotificareDoNotDisturb
 import re.notifica.models.NotificareNotification
-import re.notifica.models.NotificareUserData
 import java.util.*
 
 @JsonClass(generateAdapter = true)
@@ -51,7 +50,7 @@ internal data class DeviceTagsResponse(
 
 @JsonClass(generateAdapter = true)
 internal data class DeviceUserDataResponse(
-    val userData: NotificareUserData?,
+    val userData: Map<String, String?>?,
 )
 
 @JsonClass(generateAdapter = true)

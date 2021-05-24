@@ -7,7 +7,7 @@ import org.json.JSONObject
 import re.notifica.Notificare
 import java.util.*
 
-typealias NotificareUserData = Map<String, String?>
+typealias NotificareUserData = Map<String, String>
 
 @Parcelize
 @JsonClass(generateAdapter = true)

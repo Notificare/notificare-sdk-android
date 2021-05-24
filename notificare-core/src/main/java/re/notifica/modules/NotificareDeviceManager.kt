@@ -9,6 +9,7 @@ import kotlinx.coroutines.withContext
 import re.notifica.*
 import re.notifica.NotificareIntentReceiver
 import re.notifica.internal.NotificareUtils
+import re.notifica.internal.common.filterNotNull
 import re.notifica.internal.common.toByteArray
 import re.notifica.internal.common.toHex
 import re.notifica.internal.network.push.*
@@ -331,7 +332,7 @@ class NotificareDeviceManager {
         val userData = NotificareRequest.Builder()
             .get("/device/${device.id}/userdata")
             .responseDecodable(DeviceUserDataResponse::class)
-            .userData
+            .userData?.filterNotNull { it.value }
             ?: mapOf()
 
         // Update current device properties.
