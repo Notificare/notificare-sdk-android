@@ -6,6 +6,9 @@ plugins {
 
 apply from: '../dependencies.gradle'
 
+group = rootProject.ext.maven_artifact_group
+version = rootProject.ext.notificare_push_ui_fcm_version_name
+
 android {
     compileSdkVersion compile_sdk_version
     buildToolsVersion build_tools_version
@@ -42,7 +45,7 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines_version"
 
-    implementation project(':notificare-core')
+    implementation project(':notificare')
     implementation project(':notificare-push-ui')
 
     implementation "androidx.core:core-ktx:$core_version"
@@ -56,10 +59,6 @@ afterEvaluate {
         publications {
             release(MavenPublication) {
                 from components.release
-
-                groupId = rootProject.ext.maven_artifact_group
-                artifactId = 'push-ui-fcm'
-                version = rootProject.ext.notificare_push_ui_fcm_version_name
             }
         }
         repositories {

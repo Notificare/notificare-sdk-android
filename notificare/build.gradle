@@ -8,6 +8,9 @@ plugins {
 
 apply from: '../dependencies.gradle'
 
+group = rootProject.ext.maven_artifact_group
+version = rootProject.ext.notificare_core_version_name
+
 android {
     compileSdkVersion compile_sdk_version
     buildToolsVersion build_tools_version
@@ -77,10 +80,6 @@ afterEvaluate {
         publications {
             release(MavenPublication) {
                 from components.release
-
-                groupId = rootProject.ext.maven_artifact_group
-                artifactId = 'core'
-                version = rootProject.ext.notificare_core_version_name
             }
         }
         repositories {

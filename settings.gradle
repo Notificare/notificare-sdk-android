@@ -1,4 +1,4 @@
-include ':notificare-core'
+include ':notificare'
 include ':notificare-inbox'
 include ':notificare-push'
 include ':notificare-push-fcm'
