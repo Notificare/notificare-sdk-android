@@ -118,8 +118,6 @@ class NotificationCallbackAction(
         ): Unit = withContext(Dispatchers.IO) {
             val targetUri = action.target?.let { Uri.parse(it) }
             if (targetUri == null || targetUri.scheme == null || targetUri.host == null) {
-                // NotificarePushUI.shared.delegate?.notificare(NotificarePushUI.shared, didExecuteAction: action, for: notification)
-
                 Notificare.createNotificationReply(
                     notification = notification,
                     action = action,
@@ -127,6 +125,8 @@ class NotificationCallbackAction(
                     media = mediaUrl,
                     mimeType = mimeType
                 )
+
+                NotificarePushUI.lifecycleListeners.forEach { it.onActionExecuted(notification, action) }
 
                 return@withContext
             }
@@ -141,10 +141,9 @@ class NotificationCallbackAction(
             GlobalScope.launch(Dispatchers.IO) {
                 try {
                     Notificare.callNotificationReplyWebhook(targetUri, params)
-
-                    // NotificarePushUI.shared.delegate?.notificare(NotificarePushUI.shared, didExecuteAction: self.action, for: self.notification)
+                    NotificarePushUI.lifecycleListeners.forEach { it.onActionExecuted(notification, action) }
                 } catch (e: Exception) {
-                    // NotificarePushUI.shared.delegate?.notificare(NotificarePushUI.shared, didFailToExecuteAction: self.action, for: self.notification, error: error)
+                    NotificarePushUI.lifecycleListeners.forEach { it.onActionFailedToExecute(notification, action, e) }
                 }
             }
 

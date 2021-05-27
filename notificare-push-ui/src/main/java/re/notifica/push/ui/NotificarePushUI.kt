@@ -27,7 +27,6 @@ object NotificarePushUI : NotificareModule() {
     private var serviceManager: NotificareServiceManager? = null
 
     var notificationActivity: Class<out NotificationActivity> = NotificationActivity::class.java
-    var intentReceiver: Class<out NotificarePushUIIntentReceiver> = NotificarePushUIIntentReceiver::class.java
 
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     val lifecycleListeners = mutableListOf<NotificationLifecycleListener>()
@@ -102,6 +101,10 @@ object NotificarePushUI : NotificareModule() {
 
                 val handler = createActionHandler(activity, notification, action) ?: run {
                     NotificareLogger.debug("Unable to create an action handler for '${action.type}'.")
+
+                    val error = Exception("Unable to create an action handler for '${action.type}'.")
+                    lifecycleListeners.forEach { it.onActionFailedToExecute(notification, action, error) }
+
                     return@launch
                 }
 

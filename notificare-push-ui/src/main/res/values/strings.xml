@@ -12,5 +12,8 @@
     <string name="notificare_action_callback_message_hint">type something</string>
     <string name="notificare_action_failed">Could not perform the action</string>
     <string name="notificare_action_canceled">Action was canceled</string>
+    <string name="notificare_action_error_no_email_clients">No email client installed.</string>
+    <string name="notificare_action_error_no_sms_clients">Can not send SMS.</string>
+    <string name="notificare_action_error_no_dialer">Can not make a phone call.</string>
 
 </resources>

@@ -9,6 +9,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import re.notifica.Notificare
 import re.notifica.models.NotificareNotification
+import re.notifica.push.ui.NotificarePushUI
 import re.notifica.push.ui.R
 import re.notifica.push.ui.actions.base.NotificationAction
 import re.notifica.push.ui.models.NotificarePendingResult
@@ -37,17 +38,13 @@ class NotificationTelephoneAction(
                     )
                 )
             } catch (e: ActivityNotFoundException) {
-                // callback.onError(NotificareError(R.string.notificare_action_error_no_dialer))
-                return@withContext null
+                throw Exception(context.getString(R.string.notificare_action_error_no_dialer))
             }
 
             Notificare.createNotificationReply(notification, action)
-
-            // NotificarePushUI.shared.delegate?.notificare(NotificarePushUI.shared, didExecuteAction: self.action, for: self.notification)
-            // Notificare.shared.sendNotificationReply(self.action, for: self.notification) { _ in }
+            NotificarePushUI.lifecycleListeners.forEach { it.onActionExecuted(notification, action) }
         } else {
-            // NotificarePushUI.shared.delegate?.notificare(NotificarePushUI.shared, didFailToExecuteAction: action, for: notification, error: ActionError.invalidUrl)
-            // callback.onError(new NotificareError(R.string.notificare_action_failed));
+            throw Exception(context.getString(R.string.notificare_action_failed))
         }
 
         return@withContext null
