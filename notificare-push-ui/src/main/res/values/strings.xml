@@ -1,19 +1,20 @@
 <resources>
-    <string name="notificare_dialog_cancel_button">Cancel</string>
     <string name="notificare_dialog_ok_button">OK</string>
+    <string name="notificare_dialog_close_button">Close</string>
+    <string name="notificare_dialog_cancel_button">Cancel</string>
     <string name="notificare_dialog_open_pass_button">Open pass&#8230;</string>
 
     <string name="notificare_action_camera_failed">Camera can not be used</string>
-
     <string name="notificare_action_title_intent_email">Send mail&#8230;</string>
     <string name="notificare_action_title_intent_sms">Send SMS&#8230;</string>
     <string name="notificare_action_title_intent_telephone">Call number&#8230;</string>
-
     <string name="notificare_action_callback_message_hint">type something</string>
+    <string name="notificare_action_success">Action successful</string>
     <string name="notificare_action_failed">Could not perform the action</string>
     <string name="notificare_action_canceled">Action was canceled</string>
+    <string name="notificare_action_dialog_title">Actions</string>
     <string name="notificare_action_error_no_email_clients">No email client installed.</string>
     <string name="notificare_action_error_no_sms_clients">Can not send SMS.</string>
     <string name="notificare_action_error_no_dialer">Can not make a phone call.</string>
-
+    <string name="notificare_action_error_no_actions">No actions</string>
 </resources>

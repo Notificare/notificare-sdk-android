@@ -102,10 +102,18 @@ open class NotificationActivity : AppCompatActivity(), NotificationContainerFrag
         reason: String?
     ) {
         binding.notificareProgress.isVisible = false
+
+        if (checkNotNull(Notificare.options).showNotificationToasts) {
+            Toast.makeText(this, reason, Toast.LENGTH_LONG).show()
+        }
     }
 
     override fun onNotificationFragmentActionSucceeded(notification: NotificareNotification) {
         binding.notificareProgress.isVisible = false
+
+        if (checkNotNull(Notificare.options).showNotificationToasts) {
+            Toast.makeText(this, R.string.notificare_action_success, Toast.LENGTH_SHORT).show()
+        }
     }
 
     // endregion

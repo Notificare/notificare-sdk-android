@@ -56,6 +56,6 @@ val NotificareOptions.showNotificationToasts: Boolean
     get() {
         return info.metaData?.getBoolean(
             "re.notifica.push.ui.show_notification_toasts",
-            true,
-        ) ?: true
+            false,
+        ) ?: false
     }

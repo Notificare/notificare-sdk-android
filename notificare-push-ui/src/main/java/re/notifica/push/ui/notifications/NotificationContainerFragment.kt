@@ -7,9 +7,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.provider.MediaStore
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import kotlinx.coroutines.Dispatchers
@@ -26,7 +24,7 @@ import re.notifica.push.ui.notifications.fragments.NotificareCallbackActionFragm
 import re.notifica.push.ui.notifications.fragments.base.NotificationFragment
 
 class NotificationContainerFragment
-    : Fragment(), NotificationFragment.Callback, NotificationDialog.Callback {
+    : Fragment(), NotificationFragment.Callback, NotificationDialog.Callback, NotificationActionsDialog.Callback {
 
     private lateinit var binding: NotificareNotificationContainerFragmentBinding
     private lateinit var notification: NotificareNotification
@@ -37,7 +35,7 @@ class NotificationContainerFragment
     private var pendingResult: NotificarePendingResult? = null
 
     private var notificationDialog: NotificationDialog? = null
-    private var actionsDialog: NotificationDialog? = null
+    private var actionsDialog: NotificationActionsDialog? = null
 
     private var showActionsMenuItem = true
 
@@ -55,6 +53,10 @@ class NotificationContainerFragment
             callback = activity as Callback
         } catch (e: ClassCastException) {
             throw ClassCastException("Parent activity must implement NotificationContainerFragment.Callback.")
+        }
+
+        if (notification.type != NotificareNotification.TYPE_ALERT && notification.actions.isNotEmpty()) {
+            setHasOptionsMenu(true)
         }
     }
 
@@ -174,6 +176,33 @@ class NotificationContainerFragment
         }
     }
 
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.notificare_menu_notification_fragment, menu)
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu) {
+        super.onPrepareOptionsMenu(menu)
+        menu.findItem(R.id.notificare_action_show_actions).isVisible = showActionsMenuItem
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.notificare_action_show_actions -> {
+                showActionsDialog()
+                return true
+            }
+        }
+
+        return super.onOptionsItemSelected(item)
+    }
+
+    private fun showActionsDialog() {
+        NotificationActionsDialog.newInstance(notification)
+            .also { actionsDialog = it }
+            .show(childFragmentManager, "actionDialog")
+    }
+
     private fun handleAction(action: NotificareNotification.Action) {
         if (action.camera && isCameraPermissionNeeded && !isCameraPermissionGranted) {
             pendingAction = action
@@ -190,6 +219,8 @@ class NotificationContainerFragment
         GlobalScope.launch(Dispatchers.Main) {
             try {
                 callback.onNotificationFragmentStartProgress(notification)
+
+                NotificarePushUI.lifecycleListeners.forEach { it.onActionWillExecute(notification, action) }
 
                 val result = actionHandler.execute()
                 pendingResult = result
@@ -231,8 +262,6 @@ class NotificationContainerFragment
 
                     callback.onNotificationFragmentActionSucceeded(notification)
                     callback.onNotificationFragmentFinished()
-
-                    NotificarePushUI.lifecycleListeners.forEach { it.onActionExecuted(notification, action) }
                 }
             } catch (e: Exception) {
                 callback.onNotificationFragmentEndProgress(notification)
@@ -300,6 +329,7 @@ class NotificationContainerFragment
 
     override fun onNotificationFragmentCanHideActionsMenu() {
         showActionsMenuItem = false
+        activity?.invalidateOptionsMenu()
     }
 
     override fun onNotificationFragmentStartProgress() {
@@ -323,11 +353,11 @@ class NotificationContainerFragment
     }
 
     override fun onNotificationFragmentShowActions() {
-        // TODO show alert dialog
+        showActionsDialog()
     }
 
     override fun onNotificationFragmentHandleAction(action: NotificareNotification.Action) {
-        // TODO handle action
+        handleAction(action)
     }
 
     override fun onNotificationFragmentStartActivity(intent: Intent) {
@@ -372,6 +402,22 @@ class NotificationContainerFragment
 
     override fun onNotificationDialogOpenPassbookClick() {
         // TODO
+    }
+
+    // endregion
+
+    // region NotificationActionsDialog.Callback
+
+    override fun onActionDialogActionClick(which: Int) {
+        handleAction(notification.actions[which])
+    }
+
+    override fun onActionDialogCancelClick() {
+        NotificareLogger.debug("Action dialog canceled.")
+    }
+
+    override fun onActionDialogCloseClick() {
+        callback.onNotificationFragmentFinished()
     }
 
     // endregion

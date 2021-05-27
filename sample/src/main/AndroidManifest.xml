@@ -80,6 +80,10 @@
             android:resource="@drawable/ic_rocket_black_24dp" />
 
         <meta-data
+            android:name="re.notifica.push.ui.show_notification_toasts"
+            android:value="true" />
+
+        <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="${googleMapsApiKey}" />
     </application>

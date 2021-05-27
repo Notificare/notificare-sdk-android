@@ -3,8 +3,11 @@ package re.notifica.sample
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.snackbar.Snackbar
 import re.notifica.Notificare
@@ -294,22 +297,78 @@ class MainActivity : AppCompatActivity(), Notificare.OnReadyListener, Notificare
 
     override fun onNotificationWillPresent(notification: NotificareNotification) {
         NotificareLogger.info("---> notification will present '${notification.id}'")
+
+        Handler(Looper.getMainLooper()).post {
+            Toast.makeText(this, "Notification will present", Toast.LENGTH_SHORT).show()
+        }
     }
 
     override fun onNotificationPresented(notification: NotificareNotification) {
         NotificareLogger.info("---> notification presented '${notification.id}'")
+
+        Handler(Looper.getMainLooper()).post {
+            Toast.makeText(this, "Notification presented", Toast.LENGTH_SHORT).show()
+        }
     }
 
     override fun onNotificationFinishedPresenting(notification: NotificareNotification) {
         NotificareLogger.info("---> notification finished presenting '${notification.id}'")
+
+        Handler(Looper.getMainLooper()).post {
+            Toast.makeText(this, "Notification finished presenting", Toast.LENGTH_SHORT).show()
+        }
     }
 
     override fun onNotificationFailedToPresent(notification: NotificareNotification) {
         NotificareLogger.info("---> notification failed to present '${notification.id}'")
+
+        Handler(Looper.getMainLooper()).post {
+            Toast.makeText(this, "Notification failed to present", Toast.LENGTH_SHORT).show()
+        }
     }
 
     override fun onNotificationUrlClicked(notification: NotificareNotification, uri: Uri) {
         NotificareLogger.info("---> notification url clicked '${notification.id}'")
+
+        Handler(Looper.getMainLooper()).post {
+            Toast.makeText(this, "Notification URL clicked", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    override fun onActionWillExecute(notification: NotificareNotification, action: NotificareNotification.Action) {
+        NotificareLogger.info("---> action will execute '${action.label}'")
+
+        Handler(Looper.getMainLooper()).post {
+            Toast.makeText(this, "Action will execute", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    override fun onActionExecuted(notification: NotificareNotification, action: NotificareNotification.Action) {
+        NotificareLogger.info("---> action executed '${action.label}'")
+
+        Handler(Looper.getMainLooper()).post {
+            Toast.makeText(this, "Action executed", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    override fun onActionFailedToExecute(
+        notification: NotificareNotification,
+        action: NotificareNotification.Action,
+        error: Exception?
+    ) {
+        NotificareLogger.info("---> action failed to execute '${action.label}'")
+
+        Handler(Looper.getMainLooper()).post {
+            Toast.makeText(this, "Action failed to execute", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    override fun onCustomActionReceived(uri: Uri) {
+        NotificareLogger.info("---> custom action received '$uri'")
+
+        Handler(Looper.getMainLooper()).post {
+            Toast.makeText(this, "Custom action received", Toast.LENGTH_SHORT).show()
+        }
     }
 
     // endregion
