@@ -3,6 +3,7 @@ package re.notifica.push.ui
 import android.app.Activity
 import android.content.Intent
 import android.net.Uri
+import androidx.annotation.RestrictTo
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -28,6 +29,9 @@ object NotificarePushUI : NotificareModule() {
     var notificationActivity: Class<out NotificationActivity> = NotificationActivity::class.java
     var intentReceiver: Class<out NotificarePushUIIntentReceiver> = NotificarePushUIIntentReceiver::class.java
 
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    val lifecycleListeners = mutableListOf<NotificationLifecycleListener>()
+
     // region Notificare Module
 
     override fun configure() {
@@ -39,6 +43,14 @@ object NotificarePushUI : NotificareModule() {
     override suspend fun unlaunch() {}
 
     // endregion
+
+    fun addLifecycleListener(listener: NotificationLifecycleListener) {
+        lifecycleListeners.add(listener)
+    }
+
+    fun removeLifecycleListener(listener: NotificationLifecycleListener) {
+        lifecycleListeners.remove(listener)
+    }
 
     fun presentNotification(activity: Activity, notification: NotificareNotification) {
         val type = NotificareNotification.NotificationType.from(notification.type) ?: run {
@@ -52,8 +64,13 @@ object NotificarePushUI : NotificareModule() {
             NotificareNotification.NotificationType.NONE -> {
                 NotificareLogger.debug("Attempting to present a notification of type 'none'. These should be handled by the application instead.")
             }
-            NotificareNotification.NotificationType.URL_SCHEME -> presentUrlScheme(activity, notification)
+            NotificareNotification.NotificationType.URL_SCHEME -> {
+                lifecycleListeners.forEach { it.onNotificationWillPresent(notification) }
+                presentUrlScheme(activity, notification)
+            }
             else -> {
+                lifecycleListeners.forEach { it.onNotificationWillPresent(notification) }
+
                 val intent = Intent(Notificare.requireContext(), notificationActivity)
                     .putExtra(Notificare.INTENT_EXTRA_NOTIFICATION, notification)
                     .setPackage(Notificare.requireContext().packageName)
@@ -69,7 +86,7 @@ object NotificarePushUI : NotificareModule() {
 
         GlobalScope.launch(Dispatchers.IO) {
             try {
-                // NotificarePushUI.shared.delegate?.notificare(NotificarePushUI.shared, willExecuteAction: action, for: notification)
+                lifecycleListeners.forEach { it.onActionWillExecute(notification, action) }
 
                 if (action.type == NotificareNotification.Action.TYPE_CALLBACK && (action.camera || action.keyboard)) {
                     val intent = Intent(Notificare.requireContext(), notificationActivity)
@@ -90,7 +107,7 @@ object NotificarePushUI : NotificareModule() {
 
                 handler.execute()
             } catch (e: Exception) {
-                // TODO
+                lifecycleListeners.forEach { it.onActionFailedToExecute(notification, action, e) }
             }
         }
     }
@@ -133,7 +150,10 @@ object NotificarePushUI : NotificareModule() {
     }
 
     private fun presentUrlScheme(activity: Activity, notification: NotificareNotification) {
-        val content = notification.content.firstOrNull { it.type == "re.notifica.content.URL" } ?: return
+        val content = notification.content.firstOrNull { it.type == "re.notifica.content.URL" } ?: run {
+            lifecycleListeners.forEach { it.onNotificationFailedToPresent(notification) }
+            return
+        }
 
         val intent = Intent(Intent.ACTION_VIEW, Uri.parse(content.data as String)).apply {
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS)
@@ -143,10 +163,14 @@ object NotificarePushUI : NotificareModule() {
         // Check if the application can handle the intent itself.
         if (intent.resolveActivity(activity.applicationContext.packageManager) != null) {
             activity.startActivity(intent)
+            lifecycleListeners.forEach { it.onNotificationPresented(notification) }
         } else {
             intent.setPackage(null)
             if (intent.resolveActivity(activity.applicationContext.packageManager) != null) {
                 activity.startActivity(intent)
+                lifecycleListeners.forEach { it.onNotificationPresented(notification) }
+            } else {
+                lifecycleListeners.forEach { it.onNotificationFailedToPresent(notification) }
             }
         }
     }
@@ -169,6 +193,55 @@ object NotificarePushUI : NotificareModule() {
                 NotificareLogger.warning("Unhandled action type '${action.type}'.")
                 null
             }
+        }
+    }
+
+    interface NotificationLifecycleListener {
+        fun onNotificationWillPresent(notification: NotificareNotification) {
+            NotificareLogger.debug("Notification will present, please override onNotificationPresented if you want to receive these events.")
+        }
+
+        fun onNotificationPresented(notification: NotificareNotification) {
+            NotificareLogger.debug("Notification presented, please override onNotificationPresented if you want to receive these events.")
+        }
+
+        fun onNotificationFinishedPresenting(notification: NotificareNotification) {
+            NotificareLogger.debug("Notification finished presenting, please override onNotificationFinishedPresenting if you want to receive these events.")
+        }
+
+        fun onNotificationFailedToPresent(notification: NotificareNotification) {
+            NotificareLogger.debug("Notification failed to present, please override onNotificationFailedToPresent if you want to receive these events.")
+        }
+
+        fun onNotificationUrlClicked(notification: NotificareNotification, uri: Uri) {
+            NotificareLogger.debug("Notification url clicked, please override onNotificationUrlClicked if you want to receive these events.")
+        }
+
+        fun onActionWillExecute(notification: NotificareNotification, action: NotificareNotification.Action) {
+            NotificareLogger.debug("Action will execute, please override onActionWillExecute if you want to receive these events.")
+        }
+
+        fun onActionExecuted(notification: NotificareNotification, action: NotificareNotification.Action) {
+            NotificareLogger.debug("Action executed, please override onActionExecuted if you want to receive these events.")
+        }
+
+        fun onActionNotExecuted(notification: NotificareNotification, action: NotificareNotification.Action) {
+            NotificareLogger.debug("Action did not execute, please override onActionNotExecuted if you want to receive these events.")
+        }
+
+        fun onActionFailedToExecute(
+            notification: NotificareNotification,
+            action: NotificareNotification.Action,
+            error: Exception?
+        ) {
+            NotificareLogger.debug(
+                "Action failed to execute, please override onActionFailedToExecute if you want to receive these events.",
+                error
+            )
+        }
+
+        fun onCustomActionReceived(uri: Uri) {
+            NotificareLogger.info("Action received, please override onCustomActionReceived if you want to receive these events.")
         }
     }
 }

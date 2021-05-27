@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.WebChromeClient
+import re.notifica.push.ui.NotificarePushUI
 import re.notifica.push.ui.databinding.NotificareNotificationUrlFragmentBinding
 import re.notifica.push.ui.notifications.fragments.base.NotificationFragment
 import re.notifica.push.ui.utils.NotificationWebViewClient
@@ -39,13 +40,11 @@ class NotificareUrlFragment : NotificationFragment() {
 
     private fun setupContent() {
         val content = notification.content.firstOrNull()
-        val url = content?.data as? String
-
-        if (url != null) {
-            binding.webView.loadUrl(url)
+        val url = content?.data as? String ?: run {
+            NotificarePushUI.lifecycleListeners.forEach { it.onNotificationFailedToPresent(notification) }
+            return
         }
-        // else {
-        // TODO NotificarePushUI.shared.delegate?.notificare(NotificarePushUI.shared, didFailToPresentNotification: notification)
-        // }
+
+        binding.webView.loadUrl(url)
     }
 }

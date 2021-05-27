@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import re.notifica.internal.NotificareUtils
 import re.notifica.models.NotificareNotification
+import re.notifica.push.ui.NotificarePushUI
 import re.notifica.push.ui.databinding.NotificareNotificationImageFragmentBinding
 import re.notifica.push.ui.notifications.fragments.base.NotificationFragment
 
@@ -30,6 +31,16 @@ class NotificareImageFragment : NotificationFragment() {
 
         if (isAdded) {
             binding.pager.adapter = ImageAdapter(notification, this)
+        }
+    }
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+
+        if (notification.content.isEmpty()) {
+            NotificarePushUI.lifecycleListeners.forEach { it.onNotificationFailedToPresent(notification) }
+        } else {
+            NotificarePushUI.lifecycleListeners.forEach { it.onNotificationPresented(notification) }
         }
     }
 
@@ -59,7 +70,7 @@ class NotificareImageFragment : NotificationFragment() {
 
             content = savedInstanceState?.getParcelable(SAVED_STATE_CONTENT)
                 ?: arguments?.getParcelable(SAVED_STATE_CONTENT)
-                        ?: throw IllegalArgumentException("Missing required notification content parameter.")
+                    ?: throw IllegalArgumentException("Missing required notification content parameter.")
         }
 
         override fun onCreateView(

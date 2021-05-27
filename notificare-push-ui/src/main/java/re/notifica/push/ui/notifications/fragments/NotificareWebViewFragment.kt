@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.webkit.WebChromeClient
 import re.notifica.models.NotificareNotification
+import re.notifica.push.ui.NotificarePushUI
 import re.notifica.push.ui.databinding.NotificareNotificationWebViewFragmentBinding
 import re.notifica.push.ui.notifications.fragments.base.NotificationFragment
 import re.notifica.push.ui.utils.NotificationWebViewClient
@@ -40,17 +41,15 @@ class NotificareWebViewFragment : NotificationFragment() {
 
     private fun setupContent() {
         val content = notification.content.firstOrNull { it.type == NotificareNotification.Content.TYPE_HTML }
-        val html = content?.data as? String
-
-        if (html != null) {
-            binding.webView.loadDataWithBaseURL("x-data:/base", html, "text/html", "utf-8", null)
-
-            if (html.contains("getOpenActionQueryParameter") || html.contains("getOpenActionsQueryParameter")) {
-                callback.onNotificationFragmentCanHideActionsMenu()
-            }
+        val html = content?.data as? String ?: run {
+            NotificarePushUI.lifecycleListeners.forEach { it.onNotificationFailedToPresent(notification) }
+            return
         }
-        // else {
-        // TODO NotificarePushUI.shared.delegate?.notificare(NotificarePushUI.shared, didFailToPresentNotification: notification)
-        // }
+
+        binding.webView.loadDataWithBaseURL("x-data:/base", html, "text/html", "utf-8", null)
+
+        if (html.contains("getOpenActionQueryParameter") || html.contains("getOpenActionsQueryParameter")) {
+            callback.onNotificationFragmentCanHideActionsMenu()
+        }
     }
 }

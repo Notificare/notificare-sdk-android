@@ -6,11 +6,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.WebChromeClient
-import android.webkit.WebViewClient
 import android.widget.FrameLayout
 import androidx.core.view.isVisible
+import re.notifica.push.ui.NotificarePushUI
 import re.notifica.push.ui.databinding.NotificareNotificationVideoFragmentBinding
 import re.notifica.push.ui.notifications.fragments.base.NotificationFragment
+import re.notifica.push.ui.utils.NotificationWebViewClient
 
 class NotificareVideoFragment : NotificationFragment() {
 
@@ -37,19 +38,20 @@ class NotificareVideoFragment : NotificationFragment() {
         binding.webView.settings.useWideViewPort = true
         binding.webView.settings.builtInZoomControls = true
         binding.webView.webChromeClient = VideoChromeClient()
-        binding.webView.webViewClient = WebViewClient()
+        binding.webView.webViewClient = NotificationWebViewClient(notification, callback)
 
         val content = notification.content.firstOrNull()
         val html = when (content?.type) {
             "re.notifica.content.YouTube" -> String.format(youTubeVideoHTML, content.data)
             "re.notifica.content.Vimeo" -> String.format(vimeoVideoHTML, content.data)
             "re.notifica.content.HTML5Video" -> String.format(html5Video, content.data)
-            else -> null
+            else -> {
+                NotificarePushUI.lifecycleListeners.forEach { it.onNotificationFailedToPresent(notification) }
+                return
+            }
         }
 
-        if (html != null) {
-            binding.webView.loadDataWithBaseURL(null, html, "text/html", "utf-8", null)
-        }
+        binding.webView.loadDataWithBaseURL(null, html, "text/html", "utf-8", null)
     }
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {

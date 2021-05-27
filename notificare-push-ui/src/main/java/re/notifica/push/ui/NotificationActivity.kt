@@ -1,6 +1,7 @@
 package re.notifica.push.ui
 
 import android.os.Bundle
+import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
@@ -41,6 +42,20 @@ open class NotificationActivity : AppCompatActivity(), NotificationContainerFrag
         super.onSaveInstanceState(outState)
         outState.putParcelable(Notificare.INTENT_EXTRA_NOTIFICATION, notification)
         outState.putParcelable(Notificare.INTENT_EXTRA_ACTION, action)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == android.R.id.home) {
+            NotificarePushUI.lifecycleListeners.forEach { it.onNotificationFinishedPresenting(notification) }
+        }
+
+        return super.onOptionsItemSelected(item)
+    }
+
+    override fun finish() {
+        super.finish()
+
+        NotificarePushUI.lifecycleListeners.forEach { it.onNotificationFinishedPresenting(notification) }
     }
 
     // region NotificationContainerFragment.Callback
