@@ -195,8 +195,6 @@ class NotificationContainerFragment
                 pendingResult = result
                 callback.onNotificationFragmentEndProgress(notification)
 
-                val context = context ?: return@launch
-
                 if (result?.requestCode == NotificarePendingResult.CAPTURE_IMAGE_REQUEST_CODE || result?.requestCode == NotificarePendingResult.CAPTURE_IMAGE_AND_KEYBOARD_REQUEST_CODE) {
                     if (result.imageUri != null) {
                         // We need to wait for the image coming back from the camera activity.
@@ -208,8 +206,17 @@ class NotificationContainerFragment
                     } else {
                         callback.onNotificationFragmentActionFailed(
                             notification,
-                            context.getString(R.string.notificare_action_camera_failed)
+                            requireContext().getString(R.string.notificare_action_camera_failed)
                         )
+
+                        val error = Exception(requireContext().getString(R.string.notificare_action_camera_failed))
+                        NotificarePushUI.lifecycleListeners.forEach {
+                            it.onActionFailedToExecute(
+                                notification,
+                                action,
+                                error
+                            )
+                        }
                     }
                 } else if (result?.requestCode == NotificarePendingResult.KEYBOARD_REQUEST_CODE) {
                     // We can show the keyboard right away.
@@ -224,12 +231,14 @@ class NotificationContainerFragment
 
                     callback.onNotificationFragmentActionSucceeded(notification)
                     callback.onNotificationFragmentFinished()
+
+                    NotificarePushUI.lifecycleListeners.forEach { it.onActionExecuted(notification, action) }
                 }
             } catch (e: Exception) {
-                if (context != null) {
-                    callback.onNotificationFragmentEndProgress(notification)
-                    callback.onNotificationFragmentActionFailed(notification, e.localizedMessage)
-                }
+                callback.onNotificationFragmentEndProgress(notification)
+                callback.onNotificationFragmentActionFailed(notification, e.localizedMessage)
+
+                NotificarePushUI.lifecycleListeners.forEach { it.onActionFailedToExecute(notification, action, e) }
             }
         }
     }

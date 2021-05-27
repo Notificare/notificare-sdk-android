@@ -228,9 +228,9 @@ object NotificarePushUI : NotificareModule() {
             NotificareLogger.debug("Action executed, please override onActionExecuted if you want to receive these events.")
         }
 
-        fun onActionNotExecuted(notification: NotificareNotification, action: NotificareNotification.Action) {
-            NotificareLogger.debug("Action did not execute, please override onActionNotExecuted if you want to receive these events.")
-        }
+//        fun onActionNotExecuted(notification: NotificareNotification, action: NotificareNotification.Action) {
+//            NotificareLogger.debug("Action did not execute, please override onActionNotExecuted if you want to receive these events.")
+//        }
 
         fun onActionFailedToExecute(
             notification: NotificareNotification,
