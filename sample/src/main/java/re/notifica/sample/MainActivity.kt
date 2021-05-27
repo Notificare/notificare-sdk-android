@@ -1,6 +1,7 @@
 package re.notifica.sample
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -17,7 +18,7 @@ import re.notifica.sample.databinding.ActivityMainBinding
 import re.notifica.sample.ui.inbox.InboxActivity
 import java.util.*
 
-class MainActivity : AppCompatActivity(), Notificare.OnReadyListener {
+class MainActivity : AppCompatActivity(), Notificare.OnReadyListener, NotificarePushUI.NotificationLifecycleListener {
 
     private lateinit var binding: ActivityMainBinding
 
@@ -30,12 +31,14 @@ class MainActivity : AppCompatActivity(), Notificare.OnReadyListener {
         if (intent != null) handleNotificareIntent(intent)
 
         Notificare.addOnReadyListener(this)
+        NotificarePushUI.addLifecycleListener(this)
     }
 
     override fun onDestroy() {
         super.onDestroy()
 
         Notificare.addOnReadyListener(this)
+        NotificarePushUI.removeLifecycleListener(this)
     }
 
     override fun onNewIntent(intent: Intent?) {
@@ -283,6 +286,30 @@ class MainActivity : AppCompatActivity(), Notificare.OnReadyListener {
         if (NotificarePush.isRemoteNotificationsEnabled) {
             NotificarePush.enableRemoteNotifications()
         }
+    }
+
+    // endregion
+
+    // region NotificarePushUI.LifecycleListener
+
+    override fun onNotificationWillPresent(notification: NotificareNotification) {
+        NotificareLogger.info("---> notification will present '${notification.id}'")
+    }
+
+    override fun onNotificationPresented(notification: NotificareNotification) {
+        NotificareLogger.info("---> notification presented '${notification.id}'")
+    }
+
+    override fun onNotificationFinishedPresenting(notification: NotificareNotification) {
+        NotificareLogger.info("---> notification finished presenting '${notification.id}'")
+    }
+
+    override fun onNotificationFailedToPresent(notification: NotificareNotification) {
+        NotificareLogger.info("---> notification failed to present '${notification.id}'")
+    }
+
+    override fun onNotificationUrlClicked(notification: NotificareNotification, uri: Uri) {
+        NotificareLogger.info("---> notification url clicked '${notification.id}'")
     }
 
     // endregion
