@@ -13,6 +13,7 @@ import com.huawei.hms.maps.model.MarkerOptions
 import re.notifica.Notificare
 import re.notifica.internal.common.waitForLayout
 import re.notifica.models.NotificareNotification
+import re.notifica.push.ui.NotificarePushUI
 
 @Keep
 class NotificareMapFragment : SupportMapFragment(), OnMapReadyCallback {
@@ -79,6 +80,8 @@ class NotificareMapFragment : SupportMapFragment(), OnMapReadyCallback {
                 map.moveCamera(CameraUpdateFactory.newLatLngBounds(zoomBounds.build(), 50))
             }
         }
+
+        NotificarePushUI.lifecycleListeners.forEach { it.onNotificationPresented(notification) }
     }
 
     // endregion

@@ -6,6 +6,7 @@ import android.net.Uri
 import android.os.Bundle
 import androidx.annotation.Keep
 import re.notifica.models.NotificareNotification
+import re.notifica.push.ui.NotificarePushUI
 import re.notifica.push.ui.notifications.fragments.base.NotificationFragment
 
 @Keep
@@ -57,13 +58,19 @@ class NotificareStoreFragment : NotificationFragment() {
 
                 callback.onNotificationFragmentStartActivity(rateIntent)
                 callback.onNotificationFragmentFinished()
+
+                NotificarePushUI.lifecycleListeners.forEach { it.onNotificationPresented(notification) }
             } catch (e: ActivityNotFoundException) {
                 callback.onNotificationFragmentActionFailed(resources.getString(R.string.notificare_app_gallery_intent_failed))
                 callback.onNotificationFragmentFinished()
+
+                NotificarePushUI.lifecycleListeners.forEach { it.onNotificationFailedToPresent(notification) }
             }
         } else {
             callback.onNotificationFragmentActionFailed(resources.getString(R.string.notificare_app_gallery_intent_failed))
             callback.onNotificationFragmentFinished()
+
+            NotificarePushUI.lifecycleListeners.forEach { it.onNotificationFailedToPresent(notification) }
         }
     }
 
