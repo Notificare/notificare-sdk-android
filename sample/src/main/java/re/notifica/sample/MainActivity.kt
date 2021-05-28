@@ -15,7 +15,6 @@ import re.notifica.NotificareCallback
 import re.notifica.NotificareLogger
 import re.notifica.models.*
 import re.notifica.push.NotificarePush
-import re.notifica.push.models.NotificareNotificationRemoteMessage
 import re.notifica.push.ui.NotificarePushUI
 import re.notifica.sample.databinding.ActivityMainBinding
 import re.notifica.sample.ui.inbox.InboxActivity
@@ -31,7 +30,7 @@ class MainActivity : AppCompatActivity(), Notificare.OnReadyListener, Notificare
             setContentView(it.root)
         }
 
-        if (intent != null) handleNotificareIntent(intent)
+        if (intent != null) handleIntent(intent)
 
         Notificare.addOnReadyListener(this)
         NotificarePushUI.addLifecycleListener(this)
@@ -47,24 +46,15 @@ class MainActivity : AppCompatActivity(), Notificare.OnReadyListener, Notificare
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
 
-        if (intent != null) handleNotificareIntent(intent)
+        if (intent != null) handleIntent(intent)
     }
 
-    private fun handleNotificareIntent(intent: Intent) {
+    private fun handleIntent(intent: Intent) {
+        if (NotificarePush.handleTrampolineIntent(intent)) return
+        if (Notificare.handleTestDeviceIntent(intent)) return
+        if (Notificare.handleDynamicLinkIntent(this, intent)) return
+
         when (intent.action) {
-            NotificarePush.INTENT_ACTION_REMOTE_MESSAGE_OPENED -> {
-                val remoteMessage: NotificareNotificationRemoteMessage = requireNotNull(
-                    intent.getParcelableExtra(NotificarePush.INTENT_EXTRA_REMOTE_MESSAGE)
-                )
-
-                val notification: NotificareNotification = requireNotNull(
-                    intent.getParcelableExtra(Notificare.INTENT_EXTRA_NOTIFICATION)
-                )
-
-                val action: NotificareNotification.Action? = intent.getParcelableExtra(Notificare.INTENT_EXTRA_ACTION)
-
-                NotificarePush.handleTrampolineMessage(remoteMessage, notification, action)
-            }
             NotificarePush.INTENT_ACTION_NOTIFICATION_OPENED -> {
                 val notification: NotificareNotification = requireNotNull(
                     intent.getParcelableExtra(Notificare.INTENT_EXTRA_NOTIFICATION)
@@ -76,6 +66,8 @@ class MainActivity : AppCompatActivity(), Notificare.OnReadyListener, Notificare
                 } else {
                     NotificarePushUI.presentNotification(this, notification)
                 }
+
+                return
             }
             NotificarePush.INTENT_ACTION_ACTION_OPENED -> {
                 val notification: NotificareNotification = requireNotNull(
@@ -87,12 +79,6 @@ class MainActivity : AppCompatActivity(), Notificare.OnReadyListener, Notificare
                 )
 
                 NotificarePushUI.presentAction(this, notification, action)
-            }
-        }
-
-        when {
-            Notificare.handleTestDeviceIntent(intent) -> {
-                NotificareLogger.info("Handled the test device registration intent.")
                 return
             }
         }
