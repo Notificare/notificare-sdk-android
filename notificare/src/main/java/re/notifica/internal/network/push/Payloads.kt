@@ -18,7 +18,7 @@ internal data class DeviceRegistrationPayload(
     val sdkVersion: String,
     val appVersion: String,
     val deviceString: String,
-    val timeZoneOffset: Float,
+    val timeZoneOffset: Double,
     val backgroundAppRefresh: Boolean,
     val allowedUI: Boolean,
     val locationServicesAuthStatus: String,
@@ -42,7 +42,7 @@ internal data class DeviceUpdateLanguagePayload(
 internal data class DeviceUpdateTimeZonePayload(
     val language: String,
     val region: String,
-    val timeZoneOffset: Float,
+    val timeZoneOffset: Double,
 )
 
 @JsonClass(generateAdapter = true)

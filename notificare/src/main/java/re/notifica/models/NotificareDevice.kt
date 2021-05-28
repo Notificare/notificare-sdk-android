@@ -15,7 +15,7 @@ data class NotificareDevice internal constructor(
     val id: String,
     val userId: String?,
     val userName: String?,
-    val timeZoneOffset: Float,
+    val timeZoneOffset: Double,
     val osVersion: String,
     val sdkVersion: String,
     val appVersion: String,

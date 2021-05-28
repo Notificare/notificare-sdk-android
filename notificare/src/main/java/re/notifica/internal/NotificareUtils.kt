@@ -54,12 +54,12 @@ object NotificareUtils {
     val osVersion: String
         get() = Build.VERSION.RELEASE
 
-    val timeZoneOffset: Float
+    val timeZoneOffset: Double
         get() {
             val timeZone = TimeZone.getDefault()
             val calendar = GregorianCalendar.getInstance(timeZone)
 
-            return timeZone.getOffset(calendar.timeInMillis) / 3600000f
+            return timeZone.getOffset(calendar.timeInMillis) / 3600000.toDouble()
         }
 
     fun getLoadedModules(): List<String> {
