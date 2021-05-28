@@ -32,6 +32,7 @@ buildscript {
         room_version = '2.3.0'
         work_manager_version = '2.7.0-alpha03'
         material_components_version = '1.3.0'
+        browser_version = '1.3.0'
 
         // External dependencies
         moshi_version = '1.12.0'
