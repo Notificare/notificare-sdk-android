@@ -1,11 +1,8 @@
-package re.notifica.modules
+package re.notifica
 
 import androidx.annotation.RestrictTo
 import androidx.work.*
 import kotlinx.coroutines.*
-import re.notifica.Notificare
-import re.notifica.NotificareDefinitions
-import re.notifica.NotificareLogger
 import re.notifica.internal.common.recoverable
 import re.notifica.internal.network.request.NotificareRequest
 import re.notifica.internal.storage.database.ktx.toEntity

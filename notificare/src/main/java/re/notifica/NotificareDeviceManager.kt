@@ -1,4 +1,4 @@
-package re.notifica.modules
+package re.notifica
 
 import android.content.Intent
 import androidx.annotation.RestrictTo

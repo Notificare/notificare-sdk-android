@@ -1,12 +1,10 @@
-package re.notifica.modules
+package re.notifica
 
 import android.app.Activity
 import android.app.Application
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import re.notifica.Notificare
-import re.notifica.NotificareLogger
 import java.text.SimpleDateFormat
 import java.util.*
 

@@ -24,10 +24,6 @@ import re.notifica.internal.storage.preferences.NotificareSharedPreferences
 import re.notifica.models.NotificareApplication
 import re.notifica.models.NotificareDynamicLink
 import re.notifica.models.NotificareNotification
-import re.notifica.modules.NotificareCrashReporter
-import re.notifica.modules.NotificareDeviceManager
-import re.notifica.modules.NotificareEventsManager
-import re.notifica.modules.NotificareSessionManager
 import java.lang.ref.WeakReference
 import java.net.URLEncoder
 import java.util.*

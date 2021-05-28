@@ -1,6 +1,6 @@
 package re.notifica.push
 
-import re.notifica.modules.NotificareEventsManager
+import re.notifica.NotificareEventsManager
 
 fun NotificareEventsManager.logNotificationReceived(id: String) {
     log(
