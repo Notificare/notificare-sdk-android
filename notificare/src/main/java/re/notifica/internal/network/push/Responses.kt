@@ -4,6 +4,7 @@ import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 import re.notifica.models.NotificareApplication
 import re.notifica.models.NotificareDoNotDisturb
+import re.notifica.models.NotificareDynamicLink
 import re.notifica.models.NotificareNotification
 import java.util.*
 
@@ -93,4 +94,9 @@ internal data class NotificationResponse(
 @JsonClass(generateAdapter = true)
 internal data class NotificareUploadResponse(
     val filename: String,
+)
+
+@JsonClass(generateAdapter = true)
+internal data class DynamicLinkResponse(
+    val link: NotificareDynamicLink,
 )

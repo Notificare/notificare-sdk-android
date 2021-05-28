@@ -21,4 +21,10 @@ internal enum class NotificareServices {
             TEST -> "https://pass-test.notifica.re"
             PRODUCTION -> "https://pass.notifica.re"
         }
+
+    internal val dynamicLinkDomain: String
+        get() = when (this) {
+            TEST -> "test.ntc.re"
+            PRODUCTION -> "ntc.re"
+        }
 }

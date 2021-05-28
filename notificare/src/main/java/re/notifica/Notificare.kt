@@ -1,5 +1,6 @@
 package re.notifica
 
+import android.app.Activity
 import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
@@ -12,22 +13,25 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import re.notifica.internal.*
-import re.notifica.internal.network.push.ApplicationResponse
-import re.notifica.internal.network.push.CreateNotificationReplyPayload
-import re.notifica.internal.network.push.NotificareUploadResponse
-import re.notifica.internal.network.push.NotificationResponse
+import re.notifica.internal.NotificareLaunchState
+import re.notifica.internal.NotificareOptions
+import re.notifica.internal.NotificareServices
+import re.notifica.internal.NotificareUtils
+import re.notifica.internal.network.push.*
 import re.notifica.internal.network.request.NotificareRequest
 import re.notifica.internal.storage.database.NotificareDatabase
 import re.notifica.internal.storage.preferences.NotificareSharedPreferences
 import re.notifica.models.NotificareApplication
+import re.notifica.models.NotificareDynamicLink
 import re.notifica.models.NotificareNotification
 import re.notifica.modules.NotificareCrashReporter
 import re.notifica.modules.NotificareDeviceManager
 import re.notifica.modules.NotificareEventsManager
 import re.notifica.modules.NotificareSessionManager
 import java.lang.ref.WeakReference
+import java.net.URLEncoder
 import java.util.*
+import java.util.regex.Pattern
 
 object Notificare {
 
@@ -312,6 +316,34 @@ object Notificare {
         }
     }
 
+    suspend fun fetchDynamicLink(uri: Uri): NotificareDynamicLink = withContext(Dispatchers.IO) {
+        if (!isConfigured) {
+            throw NotificareException.NotReady()
+        }
+
+        @Suppress("BlockingMethodInNonBlockingContext")
+        val uriEncodedLink = URLEncoder.encode(uri.toString(), "UTF-8")
+
+        NotificareRequest.Builder()
+            .get("/link/dynamic/${uriEncodedLink}")
+            .query("platform", "Android")
+            .query("deviceID", deviceManager.currentDevice?.id)
+            .query("userID", deviceManager.currentDevice?.userId)
+            .responseDecodable(DynamicLinkResponse::class)
+            .link
+    }
+
+    fun fetchDynamicLink(uri: Uri, callback: NotificareCallback<NotificareDynamicLink>) {
+        GlobalScope.launch {
+            try {
+                val link = fetchDynamicLink(uri)
+                callback.onSuccess(link)
+            } catch (e: Exception) {
+                callback.onFailure(e)
+            }
+        }
+    }
+
     suspend fun createNotificationReply(
         notification: NotificareNotification,
         action: NotificareNotification.Action,
@@ -434,6 +466,27 @@ object Notificare {
         return true
     }
 
+    fun handleDynamicLinkIntent(activity: Activity, intent: Intent): Boolean {
+        val uri = parseDynamicLink(intent) ?: return false
+
+        NotificareLogger.debug("Handling a dynamic link.")
+        fetchDynamicLink(uri, object : NotificareCallback<NotificareDynamicLink> {
+            override fun onSuccess(result: NotificareDynamicLink) {
+                activity.startActivity(
+                    Intent()
+                        .setAction(Intent.ACTION_VIEW)
+                        .setData(Uri.parse(result.target))
+                )
+            }
+
+            override fun onFailure(e: Exception) {
+                NotificareLogger.warning("Failed to fetch the dynamic link.", e)
+            }
+        })
+
+        return true
+    }
+
     // endregion
 
     private fun configure(
@@ -485,6 +538,34 @@ object Notificare {
         if (pathSegments.size != 2 || pathSegments[0] != "testdevice") return null
 
         return pathSegments[1]
+    }
+
+    private fun parseDynamicLink(intent: Intent): Uri? {
+        val uri = intent.data ?: return null
+        val host = uri.host ?: return null
+
+        val services = servicesConfig ?: run {
+            NotificareLogger.warning("Unable to parse dynamic link. Notificare services have not been configured.")
+            return null
+        }
+
+        if (!Pattern.matches("^([a-z0-9-])+\\.${Pattern.quote(services.dynamicLinkDomain)}$", host)) {
+            NotificareLogger.debug("Domain pattern wasn't a match.")
+            return null
+        }
+
+        if (uri.pathSegments?.size != 1) {
+            NotificareLogger.debug("Path components length wasn't a match.")
+            return null
+        }
+
+        val code = uri.pathSegments.first()
+        if (!code.matches("^[a-zA-Z0-9_-]+$".toRegex())) {
+            NotificareLogger.debug("First path component value wasn't a match.")
+            return null
+        }
+
+        return uri
     }
 
     interface OnReadyListener {
