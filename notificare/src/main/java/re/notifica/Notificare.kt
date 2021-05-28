@@ -13,10 +13,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import re.notifica.internal.*
+import re.notifica.internal.MigrationUtils
 import re.notifica.internal.NotificareLaunchState
-import re.notifica.internal.NotificareOptions
 import re.notifica.internal.NotificareServices
-import re.notifica.internal.NotificareUtils
 import re.notifica.internal.network.push.*
 import re.notifica.internal.network.request.NotificareRequest
 import re.notifica.internal.storage.database.NotificareDatabase
@@ -505,6 +505,9 @@ object Notificare {
         this.database = NotificareDatabase.create(context.applicationContext)
         this.sharedPreferences = NotificareSharedPreferences(context.applicationContext)
 
+        NotificareLogger.debug("Migrating legacy data if applicable.")
+        MigrationUtils.migrate(context)
+
         NotificareLogger.debug("Configuring available modules.")
         sessionManager.configure()
         crashReporter.configure()
@@ -514,13 +517,16 @@ object Notificare {
 
         NotificareDefinitions.Module.values().forEach { module ->
             module.instance?.run {
-                NotificareLogger.debug("Configuring plugin: ${module.name.toLowerCase(Locale.ROOT)}")
+                NotificareLogger.debug("Configuring plugin: ${module.name.lowercase()}")
                 this.configure()
             }
         }
 
         NotificareLogger.debug("Notificare configured all services.")
         state = NotificareLaunchState.CONFIGURED
+
+        NotificareLogger.debug("Cleaning up legacy data if applicable.")
+        MigrationUtils.cleanUp(context)
     }
 
     private fun parseTestDeviceNonce(intent: Intent): String? {
