@@ -67,7 +67,7 @@ object NotificareUtils {
 
         NotificareDefinitions.Module.values().forEach { module ->
             if (module.isAvailable) {
-                modules.add(module.name.toLowerCase(Locale.ROOT))
+                modules.add(module.name.lowercase())
             }
         }
 
