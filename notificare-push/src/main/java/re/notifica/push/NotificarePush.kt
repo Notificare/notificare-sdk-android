@@ -170,10 +170,10 @@ object NotificarePush : NotificareModule() {
         }
     }
 
-    fun handleTrampolineIntent(intent: Intent) {
+    fun handleTrampolineIntent(intent: Intent): Boolean {
         if (intent.action != INTENT_ACTION_REMOTE_MESSAGE_OPENED) {
             NotificareLogger.debug("Received an un-processable intent. Ignoring...")
-            return
+            return false
         }
 
         handleTrampolineMessage(
@@ -181,6 +181,8 @@ object NotificarePush : NotificareModule() {
             notification = requireNotNull(intent.getParcelableExtra(Notificare.INTENT_EXTRA_NOTIFICATION)),
             action = intent.getParcelableExtra(Notificare.INTENT_EXTRA_ACTION)
         )
+
+        return true
     }
 
     fun handleTrampolineMessage(
