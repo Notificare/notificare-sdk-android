@@ -14,7 +14,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import re.notifica.internal.*
-import re.notifica.internal.MigrationUtils
+import re.notifica.internal.storage.SharedPreferencesMigration
 import re.notifica.internal.NotificareLaunchState
 import re.notifica.internal.NotificareServices
 import re.notifica.internal.network.push.*
@@ -506,8 +506,17 @@ object Notificare {
         this.database = NotificareDatabase.create(context.applicationContext)
         this.sharedPreferences = NotificareSharedPreferences(context.applicationContext)
 
-        NotificareLogger.debug("Migrating legacy data if applicable.")
-        MigrationUtils.migrate(context)
+        if (!sharedPreferences.migrated) {
+            NotificareLogger.debug("Checking if there is legacy data that needs to be migrated.")
+            val migration = SharedPreferencesMigration(context)
+
+            if (migration.hasLegacyData) {
+                migration.migrate()
+                NotificareLogger.info("Legacy data found and migrated to the new storage format.")
+            }
+
+            sharedPreferences.migrated = true
+        }
 
         NotificareLogger.debug("Configuring available modules.")
         sessionManager.configure()
@@ -525,9 +534,6 @@ object Notificare {
 
         NotificareLogger.debug("Notificare configured all services.")
         state = NotificareLaunchState.CONFIGURED
-
-        NotificareLogger.debug("Cleaning up legacy data if applicable.")
-        MigrationUtils.cleanUp(context)
     }
 
     private fun parseTestDeviceNonce(intent: Intent): String? {

@@ -2,6 +2,7 @@ package re.notifica.internal.storage.preferences
 
 import android.annotation.SuppressLint
 import android.content.Context
+import androidx.core.content.edit
 import re.notifica.Notificare
 import re.notifica.NotificareLogger
 import re.notifica.models.NotificareApplication
@@ -13,6 +14,7 @@ internal class NotificareSharedPreferences(context: Context) {
     companion object {
         private const val PREFERENCES_FILE_NAME = "re.notifica.preferences"
 
+        private const val PREFERENCE_MIGRATED = "re.notifica.preferences.migrated"
         private const val PREFERENCE_APPLICATION = "re.notifica.preferences.application"
         private const val PREFERENCE_DEVICE = "re.notifica.preferences.device"
         private const val PREFERENCE_PREFERRED_LANGUAGE = "re.notifica.preferences.preferred_language"
@@ -24,6 +26,16 @@ internal class NotificareSharedPreferences(context: Context) {
         PREFERENCES_FILE_NAME,
         Context.MODE_PRIVATE
     )
+
+    var migrated: Boolean
+        get() {
+            return sharedPreferences.getBoolean(PREFERENCE_MIGRATED, false)
+        }
+        set(value) {
+            sharedPreferences.edit {
+                putBoolean(PREFERENCE_MIGRATED, value)
+            }
+        }
 
     var application: NotificareApplication?
         get() {

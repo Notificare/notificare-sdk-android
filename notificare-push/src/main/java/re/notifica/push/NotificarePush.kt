@@ -7,6 +7,7 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.net.Uri
@@ -18,6 +19,7 @@ import androidx.core.app.RemoteInput
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import kotlinx.coroutines.*
+import org.json.JSONObject
 import re.notifica.Notificare
 import re.notifica.NotificareCallback
 import re.notifica.NotificareException
@@ -65,6 +67,27 @@ object NotificarePush : NotificareModule() {
 
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     var postponedDeviceToken: String? = null
+
+    override fun migrate(savedState: SharedPreferences, settings: SharedPreferences) {
+        val preferences = NotificareSharedPreferences(Notificare.requireContext())
+
+        if (savedState.contains("registeredDevice")) {
+            val jsonStr = savedState.getString("registeredDevice", null)
+            if (jsonStr != null) {
+                try {
+                    val json = JSONObject(jsonStr)
+
+                    preferences.allowedUI = if (!json.isNull("allowedUI")) json.getBoolean("allowedUI") else false
+                } catch (e: Exception) {
+                    NotificareLogger.error("Failed to migrate the 'allowedUI' property.", e)
+                }
+            }
+        }
+
+        if (settings.contains("notifications")) {
+            sharedPreferences.remoteNotificationsEnabled = settings.getBoolean("notifications", false)
+        }
+    }
 
     override fun configure() {
         sharedPreferences = NotificareSharedPreferences(Notificare.requireContext())

@@ -1,31 +1,44 @@
-package re.notifica.internal
+package re.notifica.internal.storage
 
 import android.content.Context
 import androidx.core.content.edit
 import org.json.JSONObject
 import re.notifica.Notificare
 import re.notifica.NotificareLogger
+import re.notifica.internal.NotificareUtils
 import re.notifica.internal.storage.preferences.NotificareSharedPreferences
 import re.notifica.models.NotificareDevice
 import re.notifica.models.NotificareTransport
+import re.notifica.modules.NotificareModule
 import java.util.*
 
-internal object MigrationUtils {
+internal class SharedPreferencesMigration(
+    private val context: Context,
+) {
 
-    private const val V2_SAVED_STATE_FILENAME = "re.notifica.preferences.SavedState"
-    private const val V2_DEVICE = "registeredDevice"
-    private const val V2_LANGUAGE = "overrideLanguage"
-    private const val V2_REGION = "overrideRegion"
+    companion object {
+        private const val V2_SAVED_STATE_FILENAME = "re.notifica.preferences.SavedState"
+        private const val V2_SETTINGS_FILENAME = "re.notifica.preferences.Settings"
+    }
 
-    fun migrate(context: Context) {
+    val hasLegacyData: Boolean
+        get() {
+            val savedState = context.getSharedPreferences(V2_SAVED_STATE_FILENAME, Context.MODE_PRIVATE)
+                ?: return false
+
+            return savedState.contains("registeredDevice")
+        }
+
+    fun migrate() {
         val preferences = NotificareSharedPreferences(context)
 
-        val v2Preferences = context.getSharedPreferences(V2_SAVED_STATE_FILENAME, Context.MODE_PRIVATE)
+        val v2SavedState = context.getSharedPreferences(V2_SAVED_STATE_FILENAME, Context.MODE_PRIVATE)
+        val v2Settings = context.getSharedPreferences(V2_SETTINGS_FILENAME, Context.MODE_PRIVATE)
 
-        if (v2Preferences.contains(V2_DEVICE)) {
+        if (v2SavedState.contains("registeredDevice")) {
             NotificareLogger.debug("Found v2 device stored.")
 
-            val jsonStr = v2Preferences.getString(V2_DEVICE, null)
+            val jsonStr = v2SavedState.getString("registeredDevice", null)
             if (jsonStr != null) {
                 try {
                     val json = JSONObject(jsonStr)
@@ -65,7 +78,6 @@ internal object MigrationUtils {
                         userData = mapOf(),
                         lastRegistered = lastRegistered,
 //                        allowedUI = if (!json.isNull("allowedUI")) json.getBoolean("allowedUI") else false,
-//                        bluetoothEnabled = if (!json.isNull("bluetoothEnabled")) json.getBoolean("bluetoothEnabled") else false,
                     )
 
                     preferences.device = device
@@ -75,28 +87,30 @@ internal object MigrationUtils {
             }
         }
 
-        if (v2Preferences.contains(V2_LANGUAGE)) {
+        if (v2Settings.contains("overrideLanguage")) {
             NotificareLogger.debug("Found v2 language override stored.")
 
-            val language = v2Preferences.getString(V2_LANGUAGE, null)
+            val language = v2Settings.getString("overrideLanguage", null)
             preferences.preferredLanguage = language
         }
 
-        if (v2Preferences.contains(V2_REGION)) {
+        if (v2Settings.contains("overrideRegion")) {
             NotificareLogger.debug("Found v2 region override stored.")
 
-            val region = v2Preferences.getString(V2_REGION, null)
+            val region = v2Settings.getString("overrideRegion", null)
             preferences.preferredRegion = region
         }
-    }
 
-    fun cleanUp(context: Context) {
-        val v2Preferences = context.getSharedPreferences(V2_SAVED_STATE_FILENAME, Context.MODE_PRIVATE)
-
-        v2Preferences.edit {
-            remove(V2_DEVICE)
-            remove(V2_LANGUAGE)
-            remove(V2_REGION)
+        // Signal each available module to migrate whatever data it needs.
+        NotificareModule.Module.values().forEach {
+            it.instance?.migrate(
+                savedState = v2SavedState,
+                settings = v2Settings,
+            )
         }
+
+        // Remove all data from the legacy files
+        v2SavedState.edit { clear() }
+        v2Settings.edit { clear() }
     }
 }
