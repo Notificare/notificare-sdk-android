@@ -65,7 +65,7 @@ internal object MigrationUtils {
                         userData = mapOf(),
                         lastRegistered = lastRegistered,
                         allowedUI = if (!json.isNull("allowedUI")) json.getBoolean("allowedUI") else false,
-                        bluetoothEnabled = if (!json.isNull("bluetoothEnabled")) json.getBoolean("bluetoothEnabled") else false,
+//                        bluetoothEnabled = if (!json.isNull("bluetoothEnabled")) json.getBoolean("bluetoothEnabled") else false,
                     )
 
                     preferences.device = device

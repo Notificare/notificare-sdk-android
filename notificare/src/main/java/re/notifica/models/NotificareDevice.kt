@@ -27,7 +27,6 @@ data class NotificareDevice internal constructor(
     var userData: NotificareUserData,
     val lastRegistered: Date,
     var allowedUI: Boolean,
-    val bluetoothEnabled: Boolean
 ) : Parcelable {
 
     fun toJson(): JSONObject {
