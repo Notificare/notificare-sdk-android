@@ -4,7 +4,6 @@ import android.content.Context
 import re.notifica.Notificare
 import re.notifica.NotificareLogger
 import re.notifica.models.NotificareTransport
-import java.util.*
 
 interface NotificareServiceManager {
 
@@ -22,7 +21,7 @@ interface NotificareServiceManager {
         fun create(context: Context): NotificareServiceManager? {
             val preferredMobileServices = checkNotNull(Notificare.options)
                 .preferredMobileServices
-                ?.toLowerCase(Locale.ROOT)
+                ?.lowercase()
 
             when (preferredMobileServices) {
                 "google" -> {

@@ -13,12 +13,13 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import re.notifica.internal.*
-import re.notifica.internal.storage.SharedPreferencesMigration
 import re.notifica.internal.NotificareLaunchState
+import re.notifica.internal.NotificareOptions
 import re.notifica.internal.NotificareServices
+import re.notifica.internal.NotificareUtils
 import re.notifica.internal.network.push.*
 import re.notifica.internal.network.request.NotificareRequest
+import re.notifica.internal.storage.SharedPreferencesMigration
 import re.notifica.internal.storage.database.NotificareDatabase
 import re.notifica.internal.storage.preferences.NotificareSharedPreferences
 import re.notifica.models.NotificareApplication
@@ -27,7 +28,6 @@ import re.notifica.models.NotificareNotification
 import re.notifica.modules.NotificareModule
 import java.lang.ref.WeakReference
 import java.net.URLEncoder
-import java.util.*
 import java.util.regex.Pattern
 
 object Notificare {
@@ -155,12 +155,12 @@ object Notificare {
                 // Loop all possible modules and launch the available ones.
                 NotificareModule.Module.values().forEach { module ->
                     module.instance?.run {
-                        NotificareLogger.debug("Launching '${module.name.toLowerCase(Locale.ROOT)}' plugin.")
+                        NotificareLogger.debug("Launching '${module.name.lowercase()}' plugin.")
                         try {
                             this.launch()
-                            NotificareLogger.debug("Launched '${module.name.toLowerCase(Locale.ROOT)}' plugin.")
+                            NotificareLogger.debug("Launched '${module.name.lowercase()}' plugin.")
                         } catch (e: Exception) {
-                            NotificareLogger.debug("Failed to launch ${module.name.toLowerCase(Locale.ROOT)}': $e")
+                            NotificareLogger.debug("Failed to launch ${module.name.lowercase()}': $e")
                             throw e
                         }
                     }
@@ -212,13 +212,13 @@ object Notificare {
                 // Loop all possible modules and un-launch the available ones.
                 NotificareModule.Module.values().reversed().forEach { module ->
                     module.instance?.run {
-                        NotificareLogger.debug("Un-launching '${module.name.toLowerCase(Locale.ROOT)}' plugin.")
+                        NotificareLogger.debug("Un-launching '${module.name.lowercase()}' plugin.")
 
                         try {
                             this.unlaunch()
-                            NotificareLogger.debug("Un-launched '${module.name.toLowerCase(Locale.ROOT)}' plugin.")
+                            NotificareLogger.debug("Un-launched '${module.name.lowercase()}' plugin.")
                         } catch (e: Exception) {
-                            NotificareLogger.debug("Failed to un-launch ${module.name.toLowerCase(Locale.ROOT)}': $e")
+                            NotificareLogger.debug("Failed to un-launch ${module.name.lowercase()}': $e")
                             throw e
                         }
                     }
