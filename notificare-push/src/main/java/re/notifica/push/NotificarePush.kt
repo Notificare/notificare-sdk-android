@@ -183,8 +183,6 @@ object NotificarePush : NotificareModule() {
             is NotificareUnknownRemoteMessage -> {
                 val notification = message.toNotification()
 
-                // TODO notify listeners
-
                 Notificare.requireContext().sendBroadcast(
                     Intent(Notificare.requireContext(), intentReceiver)
                         .setAction(INTENT_ACTION_UNKNOWN_NOTIFICATION_RECEIVED)
@@ -229,8 +227,6 @@ object NotificarePush : NotificareModule() {
                 NotificareLogger.error("Failed to fetch notification.", e)
                 return@launch
             }
-
-            // TODO notify listeners
 
             // Notify the consumer's intent receiver.
             if (action == null) {
@@ -385,8 +381,6 @@ object NotificarePush : NotificareModule() {
             // Attempt to place the item in the inbox.
             InboxIntegration.addItemToInbox(message, notification)
 
-            // TODO notify listeners
-
             Notificare.requireContext().sendBroadcast(
                 Intent(Notificare.requireContext(), intentReceiver)
                     .setAction(INTENT_ACTION_NOTIFICATION_RECEIVED)
@@ -414,20 +408,6 @@ object NotificarePush : NotificareModule() {
             },
             PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
-
-//        val deleteIntent = PendingIntent.getBroadcast(
-//            Notificare.requireContext(),
-//            createUniqueNotificationId(),
-//            Intent(Notificare.requireContext(), NotificarePushSystemIntentReceiver::class.java).apply {
-//                action = when (type) {
-//                    NotificationIntentType.NOTIFICATION -> NotificarePushSystemIntentReceiver.Actions.REMOTE_MESSAGE_DELETED
-//                    NotificationIntentType.RELEVANCE_NOTIFICATION -> NotificarePushSystemIntentReceiver.Actions.RELEVANCE_REMOTE_MESSAGE_DELETED
-//                }
-//
-//                putExtras(extras)
-//            },
-//            PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE
-//        )
 
         val notificationManager = NotificationManagerCompat.from(Notificare.requireContext())
 
