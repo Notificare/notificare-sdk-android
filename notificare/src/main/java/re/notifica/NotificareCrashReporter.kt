@@ -67,7 +67,7 @@ class NotificareCrashReporter {
         val timestamp = System.currentTimeMillis()
 
         Notificare.sharedPreferences.crashReport = NotificareEvent(
-            type = NotificareDefinitions.Events.APPLICATION_EXCEPTION,
+            type = NotificareEventsManager.EVENT_APPLICATION_EXCEPTION,
             timestamp = timestamp,
             deviceId = Notificare.deviceManager.currentDevice?.id,
             sessionId = Notificare.sessionManager.sessionId,

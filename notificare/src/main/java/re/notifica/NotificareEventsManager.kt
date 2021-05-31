@@ -12,6 +12,18 @@ import re.notifica.models.NotificareEventData
 
 class NotificareEventsManager {
 
+    companion object {
+        internal const val EVENT_APPLICATION_INSTALL = "re.notifica.event.application.Install"
+        internal const val EVENT_APPLICATION_REGISTRATION = "re.notifica.event.application.Registration"
+        internal const val EVENT_APPLICATION_UPGRADE = "re.notifica.event.application.Upgrade"
+        internal const val EVENT_APPLICATION_OPEN = "re.notifica.event.application.Open"
+        internal const val EVENT_APPLICATION_CLOSE = "re.notifica.event.application.Close"
+        internal const val EVENT_APPLICATION_EXCEPTION = "re.notifica.event.application.Exception"
+        internal const val EVENT_NOTIFICATION_OPEN = "re.notifica.event.notification.Open"
+
+        internal const val TASK_PROCESS_EVENTS = "re.notifica.tasks.process_events"
+    }
+
     private val discardableEvents = listOf<String>()
 
     fun configure() {
@@ -24,24 +36,24 @@ class NotificareEventsManager {
     }
 
     fun logApplicationInstall() {
-        log(NotificareDefinitions.Events.APPLICATION_INSTALL)
+        log(EVENT_APPLICATION_INSTALL)
     }
 
     fun logApplicationRegistration() {
-        log(NotificareDefinitions.Events.APPLICATION_REGISTRATION)
+        log(EVENT_APPLICATION_REGISTRATION)
     }
 
     fun logApplicationUpgrade() {
-        log(NotificareDefinitions.Events.APPLICATION_UPGRADE)
+        log(EVENT_APPLICATION_UPGRADE)
     }
 
     fun logApplicationOpen() {
-        log(NotificareDefinitions.Events.APPLICATION_OPEN)
+        log(EVENT_APPLICATION_OPEN)
     }
 
     fun logApplicationClose(sessionLength: Double) {
         log(
-            NotificareDefinitions.Events.APPLICATION_CLOSE, mapOf(
+            EVENT_APPLICATION_CLOSE, mapOf(
                 "length" to sessionLength.toString()
             )
         )
@@ -49,14 +61,14 @@ class NotificareEventsManager {
 
     fun logNotificationOpened(id: String) {
         log(
-            event = "re.notifica.event.notification.Open",
+            event = EVENT_NOTIFICATION_OPEN,
             data = null,
             notificationId = id
         )
     }
 
     fun logCustom(event: String, data: NotificareEventData? = null) {
-        log("re.notifica.event.custom.${event}", data)
+        log("re.notifica.event.custom.$event", data)
     }
 
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
@@ -111,7 +123,7 @@ class NotificareEventsManager {
         WorkManager
             .getInstance(Notificare.requireContext())
             .enqueueUniqueWork(
-                NotificareDefinitions.Tasks.PROCESS_EVENTS,
+                TASK_PROCESS_EVENTS,
                 ExistingWorkPolicy.KEEP,
                 OneTimeWorkRequestBuilder<ProcessEventsWorker>()
                     .setConstraints(

@@ -24,6 +24,7 @@ import re.notifica.internal.storage.preferences.NotificareSharedPreferences
 import re.notifica.models.NotificareApplication
 import re.notifica.models.NotificareDynamicLink
 import re.notifica.models.NotificareNotification
+import re.notifica.modules.NotificareModule
 import java.lang.ref.WeakReference
 import java.net.URLEncoder
 import java.util.*
@@ -152,7 +153,7 @@ object Notificare {
                 crashReporter.launch()
 
                 // Loop all possible modules and launch the available ones.
-                NotificareDefinitions.Module.values().forEach { module ->
+                NotificareModule.Module.values().forEach { module ->
                     module.instance?.run {
                         NotificareLogger.debug("Launching '${module.name.toLowerCase(Locale.ROOT)}' plugin.")
                         try {
@@ -209,7 +210,7 @@ object Notificare {
                 deviceManager.registerTemporary()
 
                 // Loop all possible modules and un-launch the available ones.
-                NotificareDefinitions.Module.values().reversed().forEach { module ->
+                NotificareModule.Module.values().reversed().forEach { module ->
                     module.instance?.run {
                         NotificareLogger.debug("Un-launching '${module.name.toLowerCase(Locale.ROOT)}' plugin.")
 
@@ -515,7 +516,7 @@ object Notificare {
         eventsManager.configure()
         deviceManager.configure()
 
-        NotificareDefinitions.Module.values().forEach { module ->
+        NotificareModule.Module.values().forEach { module ->
             module.instance?.run {
                 NotificareLogger.debug("Configuring plugin: ${module.name.lowercase()}")
                 this.configure()

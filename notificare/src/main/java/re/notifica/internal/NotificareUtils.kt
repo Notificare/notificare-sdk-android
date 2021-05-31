@@ -11,10 +11,10 @@ import com.squareup.moshi.adapters.Rfc3339DateJsonAdapter
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import re.notifica.Notificare
-import re.notifica.NotificareDefinitions
 import re.notifica.internal.moshi.NotificareTimeAdapter
 import re.notifica.internal.moshi.NotificareTransportAdapter
 import re.notifica.internal.moshi.UseDefaultsWhenNullFactory
+import re.notifica.modules.NotificareModule
 import java.util.*
 
 object NotificareUtils {
@@ -65,7 +65,7 @@ object NotificareUtils {
     fun getLoadedModules(): List<String> {
         val modules = mutableListOf<String>()
 
-        NotificareDefinitions.Module.values().forEach { module ->
+        NotificareModule.Module.values().forEach { module ->
             if (module.isAvailable) {
                 modules.add(module.name.lowercase())
             }
