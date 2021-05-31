@@ -47,6 +47,9 @@ dependencies {
 
     implementation "androidx.core:core-ktx:$core_version"
 
+    // OkHttp
+    implementation "com.squareup.okhttp3:okhttp:$okhttp_version"
+
     // Moshi
     implementation "com.squareup.moshi:moshi-kotlin:$moshi_version"
     kapt "com.squareup.moshi:moshi-kotlin-codegen:$moshi_version"

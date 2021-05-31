@@ -26,7 +26,6 @@ data class NotificareDevice internal constructor(
     var dnd: NotificareDoNotDisturb?,
     var userData: NotificareUserData,
     val lastRegistered: Date,
-    var allowedUI: Boolean,
 ) : Parcelable {
 
     fun toJson(): JSONObject {

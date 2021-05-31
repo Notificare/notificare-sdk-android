@@ -20,8 +20,10 @@ import androidx.core.os.bundleOf
 import kotlinx.coroutines.*
 import re.notifica.Notificare
 import re.notifica.NotificareCallback
+import re.notifica.NotificareException
 import re.notifica.NotificareLogger
 import re.notifica.internal.NotificareUtils
+import re.notifica.internal.network.request.NotificareRequest
 import re.notifica.models.NotificareApplication
 import re.notifica.models.NotificareNotification
 import re.notifica.models.NotificareTransport
@@ -29,6 +31,7 @@ import re.notifica.modules.NotificareModule
 import re.notifica.push.internal.InboxIntegration
 import re.notifica.push.internal.NotificarePushSystemIntentReceiver
 import re.notifica.push.internal.NotificareSharedPreferences
+import re.notifica.push.internal.network.push.DeviceUpdateNotificationSettingsPayload
 import re.notifica.push.models.*
 import java.util.concurrent.atomic.AtomicInteger
 
@@ -98,6 +101,23 @@ object NotificarePush : NotificareModule() {
             return false
         }
 
+    var allowedUI: Boolean
+        get() {
+            if (::sharedPreferences.isInitialized) {
+                return sharedPreferences.allowedUI
+            }
+
+            NotificareLogger.warning("Calling this method requires Notificare to have been configured.")
+            return false
+        }
+        private set(value) {
+            if (::sharedPreferences.isInitialized) {
+                sharedPreferences.allowedUI = value
+            }
+
+            NotificareLogger.warning("Calling this method requires Notificare to have been configured.")
+        }
+
     fun enableRemoteNotifications() {
         if (!Notificare.isReady) {
             NotificareLogger.warning("Notificare is not ready yet.")
@@ -133,6 +153,8 @@ object NotificarePush : NotificareModule() {
                 sharedPreferences.remoteNotificationsEnabled = false
 
                 Notificare.deviceManager.registerTemporary()
+                updateNotificationSettings(allowedUI = false)
+
                 NotificareLogger.info("Unregistered from push provider.")
             } catch (e: Exception) {
                 NotificareLogger.error("Failed to register a temporary device.", e)
@@ -145,7 +167,9 @@ object NotificarePush : NotificareModule() {
         Notificare.deviceManager.registerPushToken(transport, token)
 
         try {
-            Notificare.deviceManager.updateNotificationSettings(allowedUI = getAllowedUI())
+            updateNotificationSettings(
+                allowedUI = NotificationManagerCompat.from(Notificare.requireContext()).areNotificationsEnabled()
+            )
         } catch (e: Exception) {
             NotificareLogger.warning("Failed to update the device's notification settings.", e)
         }
@@ -606,7 +630,22 @@ object NotificarePush : NotificareModule() {
         notificationManager.notify(message.notificationId, 0, builder.build())
     }
 
-    private fun getAllowedUI(): Boolean {
-        return NotificationManagerCompat.from(Notificare.requireContext()).areNotificationsEnabled()
+    private suspend fun updateNotificationSettings(allowedUI: Boolean): Unit = withContext(Dispatchers.IO) {
+        val device = Notificare.deviceManager.currentDevice ?: run {
+            NotificareLogger.warning("No device registered yet.")
+            throw NotificareException.NotReady()
+        }
+
+        NotificareRequest.Builder()
+            .put(
+                url = "/device/${device.id}",
+                body = DeviceUpdateNotificationSettingsPayload(
+                    allowedUI = allowedUI,
+                ),
+            )
+            .response()
+
+        // Update current device properties.
+        this@NotificarePush.allowedUI = allowedUI
     }
 }

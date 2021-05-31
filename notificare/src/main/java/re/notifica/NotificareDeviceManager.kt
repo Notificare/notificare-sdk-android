@@ -372,35 +372,6 @@ class NotificareDeviceManager {
         }
     }
 
-    suspend fun updateNotificationSettings(allowedUI: Boolean): Unit = withContext(Dispatchers.IO) {
-        val device = checkNotificareReady()
-
-        NotificareRequest.Builder()
-            .put(
-                url = "/device/${device.id}",
-                body = DeviceUpdateNotificationSettingsPayload(
-                    language = getLanguage(),
-                    region = getRegion(),
-                    allowedUI = allowedUI,
-                ),
-            )
-            .response()
-
-        // Update current device properties.
-        currentDevice?.allowedUI = allowedUI
-    }
-
-    fun updateNotificationSettings(allowedUI: Boolean, callback: NotificareCallback<Unit>) {
-        GlobalScope.launch {
-            try {
-                updateNotificationSettings(allowedUI)
-                callback.onSuccess(Unit)
-            } catch (e: Exception) {
-                callback.onFailure(e)
-            }
-        }
-    }
-
     internal suspend fun delete(): Unit = withContext(Dispatchers.IO) {
         val device = checkNotificareReady()
 
@@ -449,8 +420,6 @@ class NotificareDeviceManager {
                 appVersion = NotificareUtils.applicationVersion,
                 deviceString = NotificareUtils.deviceString,
                 timeZoneOffset = NotificareUtils.timeZoneOffset,
-                allowedUI = if (transport == NotificareTransport.NOTIFICARE) false else currentDevice?.allowedUI
-                    ?: false,
                 backgroundAppRefresh = true,
                 locationServicesAuthStatus = "none", // TODO me
                 bluetoothEnabled = false, // TODO me
@@ -623,6 +592,5 @@ private fun DeviceRegistrationPayload.toStoredDevice(previous: NotificareDevice?
         dnd = previous?.dnd,
         userData = previous?.userData ?: mapOf(),
         lastRegistered = Date(),
-        allowedUI = this.allowedUI,
     )
 }

@@ -20,16 +20,8 @@ internal data class DeviceRegistrationPayload(
     val deviceString: String,
     val timeZoneOffset: Double,
     val backgroundAppRefresh: Boolean,
-    val allowedUI: Boolean,
     val locationServicesAuthStatus: String,
     val bluetoothEnabled: Boolean,
-)
-
-@JsonClass(generateAdapter = true)
-internal data class DeviceUpdateNotificationSettingsPayload(
-    val language: String,
-    val region: String,
-    val allowedUI: Boolean,
 )
 
 @JsonClass(generateAdapter = true)

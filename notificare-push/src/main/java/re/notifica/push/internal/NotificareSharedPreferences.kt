@@ -9,6 +9,7 @@ internal class NotificareSharedPreferences(context: Context) {
 
         private const val PREFERENCE_REMOTE_NOTIFICATIONS_ENABLED =
             "re.notifica.push.preferences.remote_notifications_enabled"
+        private const val PREFERENCE_ALLOWED_UI = "re.notifica.push.preferences.allowed_ui"
     }
 
     private val sharedPreferences = context.getSharedPreferences(
@@ -26,6 +27,19 @@ internal class NotificareSharedPreferences(context: Context) {
         set(value) {
             sharedPreferences.edit()
                 .putBoolean(PREFERENCE_REMOTE_NOTIFICATIONS_ENABLED, value)
+                .apply()
+        }
+
+    var allowedUI: Boolean
+        get() {
+            return sharedPreferences.getBoolean(
+                PREFERENCE_ALLOWED_UI,
+                false
+            )
+        }
+        set(value) {
+            sharedPreferences.edit()
+                .putBoolean(PREFERENCE_ALLOWED_UI, value)
                 .apply()
         }
 }
