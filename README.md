@@ -83,7 +83,7 @@ Add the following dependencies to your dependencies in `build.gradle`.
 def notificare_version = '3.0.0-alpha.1'
 implementation "re.notifica:notificare:$notificare_version"
 
-# Optional modules
+// Optional modules
 implementation "re.notifica:notificare-inbox:$notificare_version"
 
 implementation "re.notifica:notificare-push:$notificare_version"
