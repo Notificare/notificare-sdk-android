@@ -3,7 +3,7 @@
 # Notificare Android SDK
 
 [![GitHub release](https://img.shields.io/github/v/release/notificare/notificare-sdk-android?include_prereleases)](https://github.com/notificare/notificare-sdk-android/releases)
-[![License](https://img.shields.io/github/license/notificare/notificare-sdk-android)](https://github.com/notificare/notificare-sdk-android/blob/master/LICENSE)
+[![License](https://img.shields.io/github/license/notificare/notificare-sdk-android)](https://github.com/notificare/notificare-sdk-android/blob/main/LICENSE)
 
 The Notificare Android SDK makes it quick and easy to communicate efficiently with many of the Notificare API services and enables you to seamlessly integrate our various features, from Push Notifications to Contextualised Storage.
 
