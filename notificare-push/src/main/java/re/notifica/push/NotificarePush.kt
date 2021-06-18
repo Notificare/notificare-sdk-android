@@ -620,7 +620,7 @@ object NotificarePush : NotificareModule() {
         val lightsColor = message.lightsColor ?: checkNotNull(Notificare.options).notificationLightsColor
         if (lightsColor != null) {
             try {
-                val color = Color.parseColor(message.lightsColor)
+                val color = Color.parseColor(lightsColor)
                 val onMs = message.lightsOn ?: checkNotNull(Notificare.options).notificationLightsOn
                 val offMs = message.lightsOff ?: checkNotNull(Notificare.options).notificationLightsOff
 
