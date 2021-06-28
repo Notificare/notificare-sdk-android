@@ -160,7 +160,7 @@ object NotificarePushUI : NotificareModule() {
 
         val intent = Intent(Intent.ACTION_VIEW, Uri.parse(content.data as String)).apply {
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS)
-            setPackage(activity.applicationContext.applicationContext.packageName)
+            setPackage(activity.applicationContext.packageName)
         }
 
         // Check if the application can handle the intent itself.
