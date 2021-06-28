@@ -489,10 +489,15 @@ object NotificarePush : NotificareModule() {
         }
 
         if (attachmentImage != null) {
+            // Show the attachment image when the notification is collapse but make it null in the BigPictureStyle
+            // to hide it when the notification gets expanded.
+            builder.setLargeIcon(attachmentImage)
+
             builder.setStyle(
                 NotificationCompat.BigPictureStyle()
                     .setSummaryText(message.alert)
                     .bigPicture(attachmentImage)
+                    .bigLargeIcon(null)
             )
         } else {
             builder.setStyle(
