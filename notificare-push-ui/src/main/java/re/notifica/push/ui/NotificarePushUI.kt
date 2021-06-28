@@ -168,13 +168,8 @@ object NotificarePushUI : NotificareModule() {
             activity.startActivity(intent)
             lifecycleListeners.forEach { it.onNotificationPresented(notification) }
         } else {
-            intent.setPackage(null)
-            if (intent.resolveActivity(activity.applicationContext.packageManager) != null) {
-                activity.startActivity(intent)
-                lifecycleListeners.forEach { it.onNotificationPresented(notification) }
-            } else {
-                lifecycleListeners.forEach { it.onNotificationFailedToPresent(notification) }
-            }
+            NotificareLogger.warning("Cannot open a deep link that's not supported by the application.")
+            lifecycleListeners.forEach { it.onNotificationFailedToPresent(notification) }
         }
     }
 
