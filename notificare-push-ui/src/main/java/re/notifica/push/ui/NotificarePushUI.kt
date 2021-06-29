@@ -238,7 +238,11 @@ object NotificarePushUI : NotificareModule() {
             )
         }
 
-        fun onCustomActionReceived(uri: Uri) {
+        fun onCustomActionReceived(
+            notification: NotificareNotification,
+            action: NotificareNotification.Action,
+            uri: Uri
+        ) {
             NotificareLogger.info("Action received, please override onCustomActionReceived if you want to receive these events.")
         }
     }

@@ -349,7 +349,11 @@ class MainActivity : AppCompatActivity(), Notificare.OnReadyListener, Notificare
         }
     }
 
-    override fun onCustomActionReceived(uri: Uri) {
+    override fun onCustomActionReceived(
+        notification: NotificareNotification,
+        action: NotificareNotification.Action,
+        uri: Uri
+    ) {
         NotificareLogger.info("---> custom action received '$uri'")
 
         Handler(Looper.getMainLooper()).post {
