@@ -506,18 +506,6 @@ object Notificare {
         this.database = NotificareDatabase.create(context.applicationContext)
         this.sharedPreferences = NotificareSharedPreferences(context.applicationContext)
 
-        if (!sharedPreferences.migrated) {
-            NotificareLogger.debug("Checking if there is legacy data that needs to be migrated.")
-            val migration = SharedPreferencesMigration(context)
-
-            if (migration.hasLegacyData) {
-                migration.migrate()
-                NotificareLogger.info("Legacy data found and migrated to the new storage format.")
-            }
-
-            sharedPreferences.migrated = true
-        }
-
         NotificareLogger.debug("Configuring available modules.")
         sessionManager.configure()
         crashReporter.configure()
@@ -530,6 +518,18 @@ object Notificare {
                 NotificareLogger.debug("Configuring plugin: ${module.name.lowercase()}")
                 this.configure()
             }
+        }
+
+        if (!sharedPreferences.migrated) {
+            NotificareLogger.debug("Checking if there is legacy data that needs to be migrated.")
+            val migration = SharedPreferencesMigration(context)
+
+            if (migration.hasLegacyData) {
+                migration.migrate()
+                NotificareLogger.info("Legacy data found and migrated to the new storage format.")
+            }
+
+            sharedPreferences.migrated = true
         }
 
         NotificareLogger.debug("Notificare configured all services.")
