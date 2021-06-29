@@ -3,8 +3,7 @@ package re.notifica.models
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
-// todo consider additional types
-typealias NotificareEventData = Map<String, String?>
+typealias NotificareEventData = Map<String, Any?>
 
 @JsonClass(generateAdapter = true)
 data class NotificareEvent(

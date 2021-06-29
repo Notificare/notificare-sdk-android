@@ -10,7 +10,7 @@ private val eventDataAdapter = Notificare.moshi.adapter<NotificareEventData>(
     Types.newParameterizedType(
         Map::class.java,
         String::class.java,
-        String::class.java
+        Any::class.java
     )
 )
 
