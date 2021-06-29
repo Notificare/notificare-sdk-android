@@ -1,18 +1,7 @@
 package re.notifica.internal.storage.database.ktx
 
-import com.squareup.moshi.Types
-import re.notifica.Notificare
 import re.notifica.internal.storage.database.entities.NotificareEventEntity
 import re.notifica.models.NotificareEvent
-import re.notifica.models.NotificareEventData
-
-private val eventDataAdapter = Notificare.moshi.adapter<NotificareEventData>(
-    Types.newParameterizedType(
-        Map::class.java,
-        String::class.java,
-        Any::class.java
-    )
-)
 
 internal fun NotificareEvent.toEntity(): NotificareEventEntity {
     return NotificareEventEntity(
@@ -22,7 +11,7 @@ internal fun NotificareEvent.toEntity(): NotificareEventEntity {
         sessionId = this.sessionId,
         notificationId = this.notificationId,
         userId = this.userId,
-        data = eventDataAdapter.toJson(this.data),
+        data = NotificareEvent.dataAdapter.toJson(this.data),
         retries = 0,
         ttl = 86400, // 24 hours
     )
@@ -36,6 +25,6 @@ internal fun NotificareEventEntity.toModel(): NotificareEvent {
         sessionId = this.sessionId,
         notificationId = this.notificationId,
         userId = this.userId,
-        data = this.data?.let { eventDataAdapter.fromJson(it) }
+        data = this.data?.let { NotificareEvent.dataAdapter.fromJson(it) }
     )
 }

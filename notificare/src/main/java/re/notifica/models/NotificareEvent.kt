@@ -1,7 +1,10 @@
 package re.notifica.models
 
 import com.squareup.moshi.Json
+import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.JsonClass
+import com.squareup.moshi.Types
+import re.notifica.Notificare
 
 typealias NotificareEventData = Map<String, Any?>
 
@@ -14,4 +17,17 @@ data class NotificareEvent(
     @Json(name = "notification") val notificationId: String?,
     @Json(name = "userID") val userId: String?,
     val data: NotificareEventData?
-)
+) {
+
+    companion object {
+        val dataAdapter: JsonAdapter<NotificareEventData> by lazy {
+            Notificare.moshi.adapter(
+                Types.newParameterizedType(
+                    Map::class.java,
+                    String::class.java,
+                    Any::class.java
+                )
+            )
+        }
+    }
+}
