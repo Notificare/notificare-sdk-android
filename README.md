@@ -77,22 +77,26 @@ allprojects {
 }
 ```
 
-Add the following dependencies to your dependencies in `build.gradle`.
+Apply the plugin and add the following dependencies to your app's `build.gradle`.
 
 ```gradle
-def notificare_version = '3.0.0-alpha.1'
-implementation "re.notifica:notificare:$notificare_version"
+apply plugin: 're.notifica.gradle.notificare-services'
 
-// Optional modules
-implementation "re.notifica:notificare-inbox:$notificare_version"
+dependencies {
+    def notificare_version = '3.0.0-alpha.1'
+    implementation "re.notifica:notificare:$notificare_version"
 
-implementation "re.notifica:notificare-push:$notificare_version"
-implementation "re.notifica:notificare-push-fcm:$notificare_version"
-implementation "re.notifica:notificare-push-hms:$notificare_version"
+    // Optional modules
+    implementation "re.notifica:notificare-inbox:$notificare_version"
 
-implementation "re.notifica:notificare-push-ui:$notificare_version"
-implementation "re.notifica:notificare-push-ui-fcm:$notificare_version"
-implementation "re.notifica:notificare-push-ui-hms:$notificare_version"
+    implementation "re.notifica:notificare-push:$notificare_version"
+    implementation "re.notifica:notificare-push-fcm:$notificare_version"
+    implementation "re.notifica:notificare-push-hms:$notificare_version"
+
+    implementation "re.notifica:notificare-push-ui:$notificare_version"
+    implementation "re.notifica:notificare-push-ui-fcm:$notificare_version"
+    implementation "re.notifica:notificare-push-ui-hms:$notificare_version"
+}
 ```
 
 ## Getting Started
