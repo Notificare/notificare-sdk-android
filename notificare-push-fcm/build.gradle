@@ -49,7 +49,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-messaging-ktx'
 
     // Moshi
-    implementation "com.squareup.moshi:moshi-kotlin:$moshi_version"
+    implementation "com.squareup.moshi:moshi:$moshi_version"
 }
 
 afterEvaluate {

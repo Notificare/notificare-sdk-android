@@ -40,8 +40,6 @@ android {
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    // HMS Push depends on a previous version of kotlin-reflect.
-    implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines_version"
 
     implementation project(':notificare')
@@ -50,7 +48,7 @@ dependencies {
     implementation "com.huawei.hms:push:$huawei_push_version"
 
     // Moshi
-    implementation "com.squareup.moshi:moshi-kotlin:$moshi_version"
+    implementation "com.squareup.moshi:moshi:$moshi_version"
 }
 
 afterEvaluate {
