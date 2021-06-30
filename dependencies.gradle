@@ -25,7 +25,7 @@ buildscript {
         aws_s3_secret_access_key = System.env.AWS_SECRET_ACCESS_KEY ?: properties.getProperty('aws.s3.secret_access_key')
 
         // Kotlin
-        kotlin_version = '1.5.0'
+        kotlin_version = '1.5.10'
         coroutines_version = '1.4.1'
 
         // Android
@@ -33,7 +33,7 @@ buildscript {
         lifecycle_version = '2.3.1'
         exit_interface_version = '1.3.2'
         room_version = '2.3.0'
-        work_manager_version = '2.7.0-alpha03'
+        work_manager_version = '2.7.0-alpha04'
         material_components_version = '1.3.0'
         browser_version = '1.3.0'
 
