@@ -61,15 +61,16 @@ class NotificareMapFragment : SupportMapFragment(), OnMapReadyCallback {
 
                 if (latitude != null && longitude != null) {
                     val coordinates = LatLng(latitude, longitude)
-
-                    markers.add(
-                        map.addMarker(
-                            MarkerOptions()
-                                .position(coordinates)
-                                .title(data["title"] as? String)
-                                .snippet(data["description"] as? String)
-                        )
+                    val marker = map.addMarker(
+                        MarkerOptions()
+                            .position(coordinates)
+                            .title(data["title"] as? String)
+                            .snippet(data["description"] as? String)
                     )
+
+                    if (marker != null) {
+                        markers.add(marker)
+                    }
 
                     zoomBounds.include(coordinates)
                 }
