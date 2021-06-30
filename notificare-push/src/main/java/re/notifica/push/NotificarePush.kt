@@ -17,6 +17,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.RemoteInput
 import androidx.core.content.ContextCompat
+import androidx.core.os.BuildCompat
 import androidx.core.os.bundleOf
 import kotlinx.coroutines.*
 import org.json.JSONObject
@@ -549,7 +550,8 @@ object NotificarePush : NotificareModule() {
                                 Notificare.requireContext(),
                                 createUniqueNotificationId(),
                                 actionIntent,
-                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S || Build.VERSION.CODENAME == "S") {
+                                // Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+                                if (BuildCompat.isAtLeastS()) {
                                     if (useRemoteInput) {
                                         PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_MUTABLE
                                     } else {
