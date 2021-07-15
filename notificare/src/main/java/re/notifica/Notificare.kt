@@ -55,7 +55,7 @@ object Notificare {
 
     // Configurations
     private var context: WeakReference<Context>? = null
-    internal var servicesConfig: NotificareServices? = null
+    var servicesConfig: NotificareServices? = null
         private set
     internal var applicationKey: String? = null
         private set
