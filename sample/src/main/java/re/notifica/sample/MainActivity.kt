@@ -13,6 +13,8 @@ import com.google.android.material.snackbar.Snackbar
 import re.notifica.Notificare
 import re.notifica.NotificareCallback
 import re.notifica.NotificareLogger
+import re.notifica.assets.NotificareAssets
+import re.notifica.assets.models.NotificareAsset
 import re.notifica.models.*
 import re.notifica.push.NotificarePush
 import re.notifica.push.ui.NotificarePushUI
@@ -261,6 +263,32 @@ class MainActivity : AppCompatActivity(), Notificare.OnReadyListener, Notificare
         Notificare.deviceManager.updatePreferredLanguage(null, object : NotificareCallback<Unit> {
             override fun onSuccess(result: Unit) {
                 Snackbar.make(binding.root, "Done.", Snackbar.LENGTH_SHORT).show()
+            }
+
+            override fun onFailure(e: Exception) {
+                Snackbar.make(binding.root, "Error: ${e.message}", Snackbar.LENGTH_SHORT).show()
+            }
+        })
+    }
+
+    fun onFetchNotificationClicked(@Suppress("UNUSED_PARAMETER") view: View) {
+        Notificare.fetchNotification("60f01c9ef8ca33707ec4e8e1", object: NotificareCallback<NotificareNotification> {
+            override fun onSuccess(result: NotificareNotification) {
+                Log.i(TAG, "Notification: $result")
+                Snackbar.make(binding.root, "$result", Snackbar.LENGTH_SHORT).show()
+            }
+
+            override fun onFailure(e: Exception) {
+                Snackbar.make(binding.root, "Error: ${e.message}", Snackbar.LENGTH_SHORT).show()
+            }
+        })
+    }
+
+    fun onFetchAssetsClicked(@Suppress("UNUSED_PARAMETER") view: View) {
+        NotificareAssets.fetchAssets("test_helder", object: NotificareCallback<List<NotificareAsset>> {
+            override fun onSuccess(result: List<NotificareAsset>) {
+                Log.i(TAG, "Assets: $result")
+                Snackbar.make(binding.root, "$result", Snackbar.LENGTH_SHORT).show()
             }
 
             override fun onFailure(e: Exception) {

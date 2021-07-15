@@ -136,6 +136,20 @@
                 android:onClick="onClearPreferredLanguageClicked"
                 android:text="Clear preferred language" />
 
+            <Button
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="onFetchNotificationClicked"
+                android:text="Fetch notification" />
+
+            <Button
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="onFetchAssetsClicked"
+                android:text="Fetch assets" />
+
         </LinearLayout>
 
     </ScrollView>
