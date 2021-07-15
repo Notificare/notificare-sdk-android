@@ -8,7 +8,7 @@ import kotlinx.parcelize.WriteWith
 import org.json.JSONObject
 import re.notifica.Notificare
 import re.notifica.internal.parcelize.NotificationContentDataParceler
-import re.notifica.internal.parcelize.NotificationExtraParceler
+import re.notifica.internal.parcelize.NotificareExtraParceler
 import java.util.*
 
 @Parcelize
@@ -24,7 +24,7 @@ data class NotificareNotification(
     val content: List<Content> = listOf(),
     val actions: List<Action> = listOf(),
     val attachments: List<Attachment> = listOf(),
-    val extra: @WriteWith<NotificationExtraParceler> Map<String, Any> = mapOf(),
+    val extra: @WriteWith<NotificareExtraParceler> Map<String, Any> = mapOf(),
 ) : Parcelable {
 
     fun toJson(): JSONObject {
