@@ -18,6 +18,7 @@ buildscript {
         notificare_push_ui_version_name = '3.0.0-alpha.1'
         notificare_push_ui_fcm_version_name = '3.0.0-alpha.1'
         notificare_push_ui_hms_version_name = '3.0.0-alpha.1'
+        notificare_scannables_version_name = '3.0.0-alpha.1'
 
         // Maven
         maven_artifact_group = 're.notifica'
