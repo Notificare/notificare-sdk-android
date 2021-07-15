@@ -63,6 +63,7 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
 
     implementation project(':notificare')
+    implementation project(':notificare-assets')
     implementation project(':notificare-inbox')
 
     implementation project(':notificare-push')

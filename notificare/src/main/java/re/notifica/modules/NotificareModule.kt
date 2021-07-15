@@ -23,7 +23,8 @@ abstract class NotificareModule {
     internal enum class Module(val fqn: String) {
         PUSH(fqn = "re.notifica.push.NotificarePush"),
         PUSH_UI(fqn = "re.notifica.push.ui.NotificarePushUI"),
-        INBOX(fqn = "re.notifica.inbox.NotificareInbox");
+        INBOX(fqn = "re.notifica.inbox.NotificareInbox"),
+        ASSETS(fqn = "re.notifica.assets.NotificareAssets");
 
         val isAvailable: Boolean
             get() {

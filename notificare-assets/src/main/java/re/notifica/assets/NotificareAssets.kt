@@ -1,0 +1,58 @@
+package re.notifica.assets
+
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import re.notifica.Notificare
+import re.notifica.NotificareCallback
+import re.notifica.NotificareException
+import re.notifica.NotificareLogger
+import re.notifica.assets.internal.network.push.FetchAssetsResponse
+import re.notifica.assets.models.NotificareAsset
+import re.notifica.internal.network.request.NotificareRequest
+import re.notifica.modules.NotificareModule
+
+object NotificareAssets : NotificareModule() {
+
+    // region Notificare Module
+
+    override fun configure() {}
+
+    override suspend fun launch() {}
+
+    override suspend fun unlaunch() {}
+
+    // endregion
+
+    suspend fun fetchAssets(group: String): List<NotificareAsset> = withContext(Dispatchers.IO) {
+        val application = Notificare.application ?: run {
+            NotificareLogger.warning("Notificare application is not yet available.")
+            throw NotificareException.NotReady()
+        }
+
+        if (application.services["storage"] != true) {
+            NotificareLogger.warning("Notificare storage functionality is not enabled.")
+            throw NotificareException.NotReady()
+        }
+
+        NotificareRequest.Builder()
+            .get("/asset/forgroup/$group")
+            .query("deviceID", Notificare.deviceManager.currentDevice?.id)
+            .query("userID", Notificare.deviceManager.currentDevice?.userId)
+            .responseDecodable(FetchAssetsResponse::class)
+            .assets
+            .map { it.toModel() }
+    }
+
+    fun fetchAssets(group: String, callback: NotificareCallback<List<NotificareAsset>>) {
+        GlobalScope.launch {
+            try {
+                val assets = fetchAssets(group)
+                callback.onSuccess(assets)
+            } catch (e: Exception) {
+                callback.onFailure(e)
+            }
+        }
+    }
+}
