@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="notificare_scannable_title">Scan</string>
+    <string name="notificare_scannable_nfc_hint">tap to scan an NFC tag</string>
+    <string name="notificare_scannable_camera_hint">point your camera at the barcode to scan</string>
+</resources>

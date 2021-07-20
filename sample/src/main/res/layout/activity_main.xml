@@ -150,6 +150,13 @@
                 android:onClick="onFetchAssetsClicked"
                 android:text="Fetch assets" />
 
+            <Button
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="onStartScannableSessionClicked"
+                android:text="Start scannable session" />
+
         </LinearLayout>
 
     </ScrollView>

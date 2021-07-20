@@ -18,6 +18,9 @@ buildscript {
         notificare_push_ui_version_name = '3.0.0-alpha.1'
         notificare_push_ui_fcm_version_name = '3.0.0-alpha.1'
         notificare_push_ui_hms_version_name = '3.0.0-alpha.1'
+        notificare_scannables_version_name = '3.0.0-alpha.1'
+        notificare_scannables_fcm_version_name = '3.0.0-alpha.1'
+        notificare_scannables_hms_version_name = '3.0.0-alpha.1'
 
         // Maven
         maven_artifact_group = 're.notifica'
@@ -30,13 +33,17 @@ buildscript {
         coroutines_version = '1.4.1'
 
         // Android
+        app_compat_version = '1.3.0'
         core_version = '1.5.0'
+        activity_version = '1.2.3'
+        fragment_version = '1.3.5'
         lifecycle_version = '2.3.1'
         exit_interface_version = '1.3.2'
         room_version = '2.3.0'
         work_manager_version = '2.7.0-alpha04'
         material_components_version = '1.3.0'
         browser_version = '1.3.0'
+        constraint_layout_version = '2.0.4'
 
         // External dependencies
         moshi_version = '1.12.0'
@@ -46,9 +53,12 @@ buildscript {
         // Firebase & Google Services
         firebase_bom_version = '26.4.0'
         google_play_services_maps_version = '17.0.1'
+        google_play_services_vision_version = '20.1.3'
 
         // Huawei
+        huawei_base_version = '5.3.0.301'
         huawei_push_version = '5.0.2.300'
         huawei_maps_version = '5.0.3.301'
+        huawei_scan_version = '1.3.2.300'
     }
 }

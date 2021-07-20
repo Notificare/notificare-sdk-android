@@ -73,4 +73,8 @@ dependencies {
     implementation project(':notificare-push-ui')
     implementation project(':notificare-push-ui-fcm')
     implementation project(':notificare-push-ui-hms')
+
+    implementation project(':notificare-scannables')
+    implementation project(':notificare-scannables-fcm')
+    implementation project(':notificare-scannables-hms')
 }
