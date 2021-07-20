@@ -1,15 +1,13 @@
 plugins {
     id 'com.android.library'
     id 'kotlin-android'
-    id 'kotlin-kapt'
-    id 'kotlin-parcelize'
     id 'maven-publish'
 }
 
 apply from: '../dependencies.gradle'
 
 group = rootProject.ext.maven_artifact_group
-version = rootProject.ext.notificare_scannables_version_name
+version = rootProject.ext.notificare_scannables_fcm_version_name
 
 android {
     compileSdkVersion compile_sdk_version
@@ -19,7 +17,7 @@ android {
         minSdkVersion min_sdk_version
         targetSdkVersion target_sdk_version
 
-        buildConfigField "String", "SDK_VERSION", "\"${notificare_scannables_version_name.tokenize("-").first()}\""
+        buildConfigField "String", "SDK_VERSION", "\"${notificare_scannables_fcm_version_name.tokenize("-").first()}\""
     }
 
     buildTypes {
@@ -27,6 +25,10 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
+    }
+
+    buildFeatures {
+        viewBinding true
     }
 
     compileOptions {
@@ -44,19 +46,12 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines_version"
 
     implementation project(':notificare')
+    implementation project(':notificare-scannables')
 
-    implementation "androidx.appcompat:appcompat:$app_compat_version"
-    implementation "androidx.activity:activity-ktx:$activity_version"
-    implementation "androidx.fragment:fragment-ktx:$fragment_version"
-    implementation "androidx.constraintlayout:constraintlayout:$constraint_layout_version"
+    implementation "androidx.core:core-ktx:$core_version"
+    implementation "com.google.android.material:material:$material_components_version"
 
-    // OkHttp
-    implementation "com.squareup.okhttp3:okhttp:$okhttp_version"
-
-    // Moshi
-    implementation "com.squareup.moshi:moshi:$moshi_version"
-    kapt "com.squareup.moshi:moshi-kotlin-codegen:$moshi_version"
-    implementation "com.squareup.moshi:moshi-adapters:$moshi_version"
+    implementation "com.google.android.gms:play-services-vision:$google_play_services_vision_version"
 }
 
 afterEvaluate {

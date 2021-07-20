@@ -8,34 +8,77 @@ import android.nfc.NfcManager
 import android.os.Bundle
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.commit
 import re.notifica.NotificareCallback
 import re.notifica.NotificareLogger
+import re.notifica.internal.common.getEnum
+import re.notifica.internal.common.getEnumExtra
+import re.notifica.internal.common.putEnum
 import re.notifica.scannables.models.NotificareScannable
 
 class ScannableActivity : AppCompatActivity() {
 
+    companion object {
+        internal const val EXTRA_MODE = "re.notifica.scannables.extra.ScanMode"
+    }
+
     private var nfcAdapter: NfcAdapter? = null
+    private var mode: ScanMode = ScanMode.QR_CODE
+    private var handlingScannable = false
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.notificare_scannable_activity)
 
-        setTitle(R.string.notificare_scannable_title)
+        mode = savedInstanceState?.getEnum<ScanMode>(EXTRA_MODE)
+            ?: intent.getEnumExtra<ScanMode>(EXTRA_MODE)
+                ?: ScanMode.QR_CODE
+
+        when (mode) {
+            ScanMode.NFC -> setContentView(R.layout.notificare_scannable_nfc_activity)
+            ScanMode.QR_CODE -> setContentView(R.layout.notificare_scannable_qr_code_activity)
+        }
+
         supportActionBar?.show()
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        setupNfcAdapter()
+        when (mode) {
+            ScanMode.NFC -> setupNfcAdapter()
+            ScanMode.QR_CODE -> {
+                val manager = NotificareScannables.serviceManager ?: run {
+                    val error = IllegalStateException("No scannables dependencies have been detected.")
+                    NotificareScannables.notifyListeners(error)
+
+                    finish()
+                    return
+                }
+
+                supportFragmentManager.commit {
+                    replace(R.id.fragment_container, manager.getQrCodeScannerFragmentClass(), null)
+                }
+            }
+        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putEnum(EXTRA_MODE, mode)
     }
 
     override fun onResume() {
         super.onResume()
-        enableForegroundDispatch()
+
+        if (mode == ScanMode.NFC) {
+            enableForegroundDispatch()
+        }
     }
 
     override fun onPause() {
         super.onPause()
-        disableForegroundDispatch()
+
+        if (mode == ScanMode.NFC) {
+            disableForegroundDispatch()
+        }
     }
 
     override fun onNewIntent(intent: Intent) {
@@ -69,6 +112,8 @@ class ScannableActivity : AppCompatActivity() {
     }
 
 
+    // region NFC
+
     private fun setupNfcAdapter() {
         val manager = getSystemService(Context.NFC_SERVICE) as? NfcManager
         nfcAdapter = manager?.defaultAdapter
@@ -93,7 +138,13 @@ class ScannableActivity : AppCompatActivity() {
         }
     }
 
-    private fun handleScannableTag(tag: String) {
+    // endregion
+
+
+    fun handleScannableTag(tag: String) {
+        if (handlingScannable) return
+        handlingScannable = true
+
         NotificareScannables.fetchScannable(tag, object : NotificareCallback<NotificareScannable> {
             override fun onSuccess(result: NotificareScannable) {
                 NotificareScannables.notifyListeners(result)
@@ -105,5 +156,15 @@ class ScannableActivity : AppCompatActivity() {
                 finish()
             }
         })
+    }
+
+    fun handleScannableError(error: Exception) {
+        NotificareScannables.notifyListeners(error)
+    }
+
+
+    internal enum class ScanMode {
+        NFC,
+        QR_CODE
     }
 }

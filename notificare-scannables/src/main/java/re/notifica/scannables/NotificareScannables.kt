@@ -12,17 +12,23 @@ import kotlinx.coroutines.withContext
 import re.notifica.Notificare
 import re.notifica.NotificareCallback
 import re.notifica.NotificareLogger
+import re.notifica.internal.common.putEnumExtra
 import re.notifica.internal.network.request.NotificareRequest
 import re.notifica.modules.NotificareModule
 import re.notifica.scannables.internal.network.push.FetchScannableResponse
 import re.notifica.scannables.models.NotificareScannable
 
 object NotificareScannables : NotificareModule() {
+    internal var serviceManager: NotificareServiceManager? = null
+        private set
+
     private val listeners = mutableListOf<ScannableSessionListener>()
 
     // region Notificare Module
 
-    override fun configure() {}
+    override fun configure() {
+        serviceManager = NotificareServiceManager.Factory.create(Notificare.requireContext())
+    }
 
     override suspend fun launch() {}
 
@@ -48,14 +54,24 @@ object NotificareScannables : NotificareModule() {
     fun removeListener(listener: ScannableSessionListener) = listeners.remove(listener)
 
 
+    fun startScannableSession(activity: Activity) {
+        if (canStartNfcScannableSession) {
+            startNfcScannableSession(activity)
+        } else {
+            startQrCodeScannableSession(activity)
+        }
+    }
+
     fun startNfcScannableSession(activity: Activity) {
         val intent = Intent(activity, ScannableActivity::class.java)
+            .putEnumExtra(ScannableActivity.EXTRA_MODE, ScannableActivity.ScanMode.NFC)
 
         activity.startActivity(intent)
     }
 
     fun startQrCodeScannableSession(activity: Activity) {
         val intent = Intent(activity, ScannableActivity::class.java)
+            .putEnumExtra(ScannableActivity.EXTRA_MODE, ScannableActivity.ScanMode.QR_CODE)
 
         activity.startActivity(intent)
     }
