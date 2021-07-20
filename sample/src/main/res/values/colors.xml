@@ -9,4 +9,5 @@
     <color name="white">#FFFFFFFF</color>
 
     <color name="notificare_blue">#2b42f7</color>
+    <color name="notificare_error">#cc0000</color>
 </resources>

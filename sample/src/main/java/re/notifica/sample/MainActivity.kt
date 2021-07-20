@@ -9,6 +9,7 @@ import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import com.google.android.material.snackbar.Snackbar
 import re.notifica.Notificare
 import re.notifica.NotificareCallback
@@ -20,9 +21,13 @@ import re.notifica.push.NotificarePush
 import re.notifica.push.ui.NotificarePushUI
 import re.notifica.sample.databinding.ActivityMainBinding
 import re.notifica.sample.ui.inbox.InboxActivity
+import re.notifica.scannables.NotificareScannables
+import re.notifica.scannables.NotificareScannablesException
+import re.notifica.scannables.models.NotificareScannable
 import java.util.*
 
-class MainActivity : AppCompatActivity(), Notificare.OnReadyListener, NotificarePushUI.NotificationLifecycleListener {
+class MainActivity : AppCompatActivity(), Notificare.OnReadyListener, NotificarePushUI.NotificationLifecycleListener,
+    NotificareScannables.ScannableSessionListener {
 
     private lateinit var binding: ActivityMainBinding
 
@@ -36,6 +41,7 @@ class MainActivity : AppCompatActivity(), Notificare.OnReadyListener, Notificare
 
         Notificare.addOnReadyListener(this)
         NotificarePushUI.addLifecycleListener(this)
+        NotificareScannables.addListener(this)
     }
 
     override fun onDestroy() {
@@ -43,6 +49,7 @@ class MainActivity : AppCompatActivity(), Notificare.OnReadyListener, Notificare
 
         Notificare.addOnReadyListener(this)
         NotificarePushUI.removeLifecycleListener(this)
+        NotificareScannables.removeListener(this)
     }
 
     override fun onNewIntent(intent: Intent?) {
@@ -272,7 +279,7 @@ class MainActivity : AppCompatActivity(), Notificare.OnReadyListener, Notificare
     }
 
     fun onFetchNotificationClicked(@Suppress("UNUSED_PARAMETER") view: View) {
-        Notificare.fetchNotification("60f01c9ef8ca33707ec4e8e1", object: NotificareCallback<NotificareNotification> {
+        Notificare.fetchNotification("60f01c9ef8ca33707ec4e8e1", object : NotificareCallback<NotificareNotification> {
             override fun onSuccess(result: NotificareNotification) {
                 Log.i(TAG, "Notification: $result")
                 Snackbar.make(binding.root, "$result", Snackbar.LENGTH_SHORT).show()
@@ -285,7 +292,7 @@ class MainActivity : AppCompatActivity(), Notificare.OnReadyListener, Notificare
     }
 
     fun onFetchAssetsClicked(@Suppress("UNUSED_PARAMETER") view: View) {
-        NotificareAssets.fetchAssets("test_helder", object: NotificareCallback<List<NotificareAsset>> {
+        NotificareAssets.fetchAssets("test_helder", object : NotificareCallback<List<NotificareAsset>> {
             override fun onSuccess(result: List<NotificareAsset>) {
                 Log.i(TAG, "Assets: $result")
                 Snackbar.make(binding.root, "$result", Snackbar.LENGTH_SHORT).show()
@@ -295,6 +302,15 @@ class MainActivity : AppCompatActivity(), Notificare.OnReadyListener, Notificare
                 Snackbar.make(binding.root, "Error: ${e.message}", Snackbar.LENGTH_SHORT).show()
             }
         })
+    }
+
+    fun onStartScannableSessionClicked(@Suppress("UNUSED_PARAMETER") view: View) {
+        // NotificareScannables.startNfcScannableSession(this)
+        if (NotificareScannables.canStartNfcScannableSession) {
+            NotificareScannables.startNfcScannableSession(this)
+        } else {
+            NotificareScannables.startQrCodeScannableSession(this)
+        }
     }
 
     // region Notificare.OnReadyListener
@@ -387,6 +403,32 @@ class MainActivity : AppCompatActivity(), Notificare.OnReadyListener, Notificare
         Handler(Looper.getMainLooper()).post {
             Toast.makeText(this, "Custom action received", Toast.LENGTH_SHORT).show()
         }
+    }
+
+    // endregion
+
+    // region NotificareScannables.ScannableSessionListener
+
+    override fun onScannableDetected(scannable: NotificareScannable) {
+        Snackbar.make(binding.root, "$scannable", Snackbar.LENGTH_SHORT).apply {
+            addCallback(object : Snackbar.Callback() {
+                override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
+                    val notification = scannable.notification ?: return
+                    NotificarePushUI.presentNotification(this@MainActivity, notification)
+                }
+            })
+        }.show()
+    }
+
+    override fun onScannerSessionError(error: Exception) {
+        if (error is NotificareScannablesException.UserCancelledScannableSession) {
+            return
+        }
+
+        Snackbar.make(binding.root, "Failed to detect scannable: ${error.message}", Snackbar.LENGTH_SHORT).apply {
+            setBackgroundTint(ContextCompat.getColor(this@MainActivity, R.color.notificare_error))
+            setTextColor(ContextCompat.getColor(this@MainActivity, R.color.white))
+        }.show()
     }
 
     // endregion
