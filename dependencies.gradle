@@ -19,6 +19,8 @@ buildscript {
         notificare_push_ui_fcm_version_name = '3.0.0-alpha.1'
         notificare_push_ui_hms_version_name = '3.0.0-alpha.1'
         notificare_scannables_version_name = '3.0.0-alpha.1'
+        notificare_scannables_fcm_version_name = '3.0.0-alpha.1'
+        notificare_scannables_hms_version_name = '3.0.0-alpha.1'
 
         // Maven
         maven_artifact_group = 're.notifica'
@@ -54,7 +56,9 @@ buildscript {
         google_play_services_vision_version = '20.1.3'
 
         // Huawei
+        huawei_base_version = '5.3.0.301'
         huawei_push_version = '5.0.2.300'
         huawei_maps_version = '5.0.3.301'
+        huawei_scan_version = '1.3.2.300'
     }
 }

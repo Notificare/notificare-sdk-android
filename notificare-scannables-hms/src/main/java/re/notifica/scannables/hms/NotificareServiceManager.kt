@@ -1,12 +1,12 @@
-package re.notifica.scannables.fcm
+package re.notifica.scannables.hms
 
 import android.content.Context
 import androidx.annotation.RestrictTo
 import androidx.fragment.app.Fragment
-import com.google.android.gms.common.ConnectionResult
-import com.google.android.gms.common.GoogleApiAvailability
+import com.huawei.hms.api.ConnectionResult
+import com.huawei.hms.api.HuaweiApiAvailability
 import re.notifica.scannables.NotificareServiceManager
-import re.notifica.scannables.fcm.ui.QrCodeScannerFragment
+import re.notifica.scannables.hms.ui.QrCodeScannerFragment
 
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 class NotificareServiceManager(
@@ -14,11 +14,11 @@ class NotificareServiceManager(
 ) : NotificareServiceManager {
 
     override val hasMobileServicesAvailable: Boolean
-        get() = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(context) == ConnectionResult.SUCCESS
+        get() = HuaweiApiAvailability.getInstance().isHuaweiMobileServicesAvailable(context) == ConnectionResult.SUCCESS
 
     init {
         if (!hasMobileServicesAvailable) {
-            throw IllegalStateException("Google Play Services are not available.")
+            throw IllegalStateException("Huawei Mobile Services are not available.")
         }
     }
 
