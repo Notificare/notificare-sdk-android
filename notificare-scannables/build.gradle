@@ -45,6 +45,8 @@ dependencies {
 
     implementation project(':notificare')
 
+    implementation "androidx.appcompat:appcompat:$app_compat_version"
+
     // OkHttp
     implementation "com.squareup.okhttp3:okhttp:$okhttp_version"
 
