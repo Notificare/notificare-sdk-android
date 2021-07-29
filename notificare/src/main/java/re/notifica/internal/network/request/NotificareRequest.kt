@@ -10,9 +10,9 @@ import okhttp3.internal.EMPTY_REQUEST
 import okhttp3.logging.HttpLoggingInterceptor
 import re.notifica.BuildConfig
 import re.notifica.Notificare
+import re.notifica.NotificareLogger
 import re.notifica.internal.NotificareUtils
 import re.notifica.internal.network.NetworkException
-import re.notifica.internal.network.NotificareBasicAuthenticator
 import re.notifica.internal.network.NotificareHeadersInterceptor
 import java.io.IOException
 import kotlin.coroutines.resume
@@ -33,7 +33,7 @@ class NotificareRequest private constructor(
         private val moshi = NotificareUtils.createMoshi()
 
         private val client = OkHttpClient.Builder()
-            .authenticator(NotificareBasicAuthenticator())
+            // .authenticator(NotificareBasicAuthenticator())
             .addInterceptor(NotificareHeadersInterceptor())
             .addInterceptor(HttpLoggingInterceptor().apply {
                 level = if (BuildConfig.DEBUG) {
@@ -98,6 +98,7 @@ class NotificareRequest private constructor(
         private var baseUrl: String? = null
         private var url: String? = null
         private var queryItems = mutableMapOf<String, String?>()
+        private var authentication: Authentication? = createDefaultAuthentication()
         private var headers = mutableMapOf<String, String>()
         private var method: String? = null
         private var body: RequestBody? = null
@@ -165,6 +166,11 @@ class NotificareRequest private constructor(
             return this
         }
 
+        fun authentication(authentication: Authentication?): Builder {
+            this.authentication = authentication
+            return this
+        }
+
         fun validate(validStatusCodes: IntRange = 200..299): Builder {
             this.validStatusCodes = validStatusCodes
             return this
@@ -180,6 +186,10 @@ class NotificareRequest private constructor(
                 .apply {
                     headers.forEach {
                         header(it.key, it.value)
+                    }
+
+                    authentication?.run {
+                        header("Authorization", encode())
                     }
                 }
                 .method(method, body)
@@ -222,6 +232,41 @@ class NotificareRequest private constructor(
             }
 
             return url.toHttpUrl()
+        }
+
+        private fun createDefaultAuthentication(): Authentication? {
+            val key = Notificare.applicationKey
+            val secret = Notificare.applicationSecret
+
+            if (key == null || secret == null) {
+                NotificareLogger.warning("Notificare application authentication not configured.")
+                return null
+            }
+
+            return Authentication.Basic(key, secret)
+        }
+    }
+
+    sealed class Authentication {
+        abstract fun encode(): String
+
+        data class Basic(
+            val username: String,
+            val password: String,
+        ) : Authentication() {
+
+            override fun encode(): String {
+                return Credentials.basic(username, password)
+            }
+        }
+
+        data class Bearer(
+            val token: String,
+        ) : Authentication() {
+
+            override fun encode(): String {
+                return "Bearer $token"
+            }
         }
     }
 }
