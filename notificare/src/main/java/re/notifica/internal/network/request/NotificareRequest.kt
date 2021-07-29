@@ -10,11 +10,13 @@ import okhttp3.internal.EMPTY_REQUEST
 import okhttp3.logging.HttpLoggingInterceptor
 import re.notifica.BuildConfig
 import re.notifica.Notificare
+import re.notifica.NotificareCallback
 import re.notifica.NotificareLogger
 import re.notifica.internal.NotificareUtils
 import re.notifica.internal.network.NetworkException
 import re.notifica.internal.network.NotificareHeadersInterceptor
 import java.io.IOException
+import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
@@ -23,6 +25,7 @@ import kotlin.reflect.KClass
 class NotificareRequest private constructor(
     private val request: Request,
     private val validStatusCodes: IntRange,
+    private val refreshListener: AuthenticationRefreshListener?,
 ) {
 
     companion object {
@@ -75,22 +78,71 @@ class NotificareRequest private constructor(
             }
 
             override fun onResponse(call: Call, response: Response) {
-                if (response.code !in validStatusCodes) {
-                    continuation.resumeWithException(
-                        NetworkException.ValidationException(
-                            response = response,
-                            validStatusCodes = validStatusCodes,
-                        )
-                    )
-
-                    if (closeResponse) response.body?.close()
-                    return
-                }
-
-                if (closeResponse) response.body?.close()
-                continuation.resume(response)
+                handleResponse(
+                    response = response,
+                    closeResponse = closeResponse,
+                    refreshAuthentication = true,
+                    continuation = continuation
+                )
             }
         })
+    }
+
+    private fun handleResponse(
+        response: Response,
+        closeResponse: Boolean,
+        refreshAuthentication: Boolean,
+        continuation: Continuation<Response>
+    ) {
+        if (response.code == 401 && refreshAuthentication && refreshListener != null) {
+            if (closeResponse) response.body?.close()
+
+            NotificareLogger.debug("Authentication credentials have expired. Trying to refresh.")
+            refreshListener.onRefreshAuthentication(object : NotificareCallback<Authentication> {
+                override fun onSuccess(result: Authentication) {
+                    val newRequest = response.request.newBuilder()
+                        .header("Authorization", result.encode())
+                        .build()
+
+                    client.newCall(newRequest).enqueue(object : Callback {
+                        override fun onFailure(call: Call, e: IOException) {
+                            continuation.resumeWithException(e)
+                        }
+
+                        override fun onResponse(call: Call, response: Response) {
+                            handleResponse(
+                                response = response,
+                                closeResponse = closeResponse,
+                                refreshAuthentication = false,
+                                continuation = continuation
+                            )
+                        }
+                    })
+                }
+
+                override fun onFailure(e: Exception) {
+                    continuation.resumeWithException(NetworkException.AuthenticationRefreshException(e))
+                }
+            })
+
+            return
+        }
+
+        if (response.code !in validStatusCodes) {
+            if (closeResponse) response.body?.close()
+
+            continuation.resumeWithException(
+                NetworkException.ValidationException(
+                    response = response,
+                    validStatusCodes = validStatusCodes,
+                )
+            )
+
+            return
+        }
+
+        if (closeResponse) response.body?.close()
+        continuation.resume(response)
     }
 
     class Builder {
@@ -99,6 +151,7 @@ class NotificareRequest private constructor(
         private var url: String? = null
         private var queryItems = mutableMapOf<String, String?>()
         private var authentication: Authentication? = createDefaultAuthentication()
+        private var authenticationRefreshListener: AuthenticationRefreshListener? = null
         private var headers = mutableMapOf<String, String>()
         private var method: String? = null
         private var body: RequestBody? = null
@@ -172,6 +225,11 @@ class NotificareRequest private constructor(
             return this
         }
 
+        fun authenticationRefreshListener(refreshListener: AuthenticationRefreshListener?): Builder {
+            this.authenticationRefreshListener = refreshListener
+            return this
+        }
+
         fun validate(validStatusCodes: IntRange = 200..299): Builder {
             this.validStatusCodes = validStatusCodes
             return this
@@ -196,7 +254,11 @@ class NotificareRequest private constructor(
                 .method(method, body)
                 .build()
 
-            return NotificareRequest(request = request, validStatusCodes = validStatusCodes)
+            return NotificareRequest(
+                request = request,
+                validStatusCodes = validStatusCodes,
+                refreshListener = authenticationRefreshListener,
+            )
         }
 
         suspend fun response(): Response {
@@ -269,5 +331,9 @@ class NotificareRequest private constructor(
                 return "Bearer $token"
             }
         }
+    }
+
+    interface AuthenticationRefreshListener {
+        fun onRefreshAuthentication(callback: NotificareCallback<Authentication>)
     }
 }
