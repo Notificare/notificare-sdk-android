@@ -157,6 +157,119 @@
                 android:onClick="onStartScannableSessionClicked"
                 android:text="Start scannable session" />
 
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:gravity="center"
+                android:text="Authentication"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6" />
+
+            <Button
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="onCreateUserAccountClicked"
+                android:text="Create user account" />
+
+            <Button
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="onLoginClicked"
+                android:text="Login" />
+
+            <Button
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="onLogoutClicked"
+                android:text="Logout" />
+
+            <Button
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="onFetchUserDetailsClicked"
+                android:text="Fetch user details" />
+
+            <Button
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="onFetchUserPreferencesClicked"
+                android:text="Fetch user preferences" />
+
+            <Button
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="onFetchUserSegmentsClicked"
+                android:text="Fetch user segments" />
+
+            <Button
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="onSendPasswordResetClicked"
+                android:text="Send password reset" />
+
+            <Button
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="onResetPasswordClicked"
+                android:text="Reset password" />
+
+            <Button
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="onChangePasswordClicked"
+                android:text="Change password" />
+
+            <Button
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="onValidateUserClicked"
+                android:text="Validate user" />
+
+            <Button
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="onGeneratePushEmailClicked"
+                android:text="Generate push email" />
+
+            <Button
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="onAddUserSegmentClicked"
+                android:text="Add user segment" />
+
+            <Button
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="onRemoveUserSegmentClicked"
+                android:text="Remove user segment" />
+
+            <Button
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="onAddUserSegmentToPreferenceClicked"
+                android:text="Add user segment to preference" />
+
+            <Button
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="onRemoveUserSegmentFromPreferenceClicked"
+                android:text="Remove user segment from preference" />
+
         </LinearLayout>
 
     </ScrollView>
