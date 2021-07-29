@@ -7,6 +7,8 @@ import kotlinx.coroutines.withContext
 import okhttp3.FormBody
 import re.notifica.*
 import re.notifica.authentication.internal.network.push.*
+import re.notifica.authentication.internal.oauth.Credentials
+import re.notifica.authentication.internal.storage.preferences.NotificareSharedPreferences
 import re.notifica.authentication.models.NotificareUser
 import re.notifica.authentication.models.NotificareUserPreference
 import re.notifica.authentication.models.NotificareUserSegment
@@ -15,9 +17,57 @@ import re.notifica.modules.NotificareModule
 
 object NotificareAuthentication : NotificareModule() {
 
+    private lateinit var sharedPreferences: NotificareSharedPreferences
+
+    private val authenticationRefreshListener = object : NotificareRequest.AuthenticationRefreshListener {
+        override fun onRefreshAuthentication(callback: NotificareCallback<NotificareRequest.Authentication>) {
+            GlobalScope.launch(Dispatchers.IO) {
+                try {
+                    val credentials = sharedPreferences.credentials ?: run {
+                        withContext(Dispatchers.Main) {
+                            val error = IllegalStateException("Cannot refresh without a previous set of credentials.")
+                            callback.onFailure(error)
+                        }
+
+                        return@launch
+                    }
+
+                    val payload = FormBody.Builder()
+                        .add("grant_type", "refresh_token")
+                        .add("client_id", requireNotNull(Notificare.applicationKey))
+                        .add("client_secret", requireNotNull(Notificare.applicationSecret))
+                        .add("refresh_token", credentials.refreshToken)
+                        .build()
+
+                    NotificareLogger.debug("Refresh user credentials.")
+                    val response = NotificareRequest.Builder()
+                        .post("/oauth/token", payload)
+                        .responseDecodable(OAuthResponse::class)
+
+                    // Store the credentials.
+                    sharedPreferences.credentials = Credentials(
+                        accessToken = response.access_token,
+                        refreshToken = response.refresh_token,
+                        expiresIn = response.expires_in,
+                    )
+
+                    withContext(Dispatchers.Main) {
+                        callback.onSuccess(NotificareRequest.Authentication.Bearer(response.access_token))
+                    }
+                } catch (e: Exception) {
+                    withContext(Dispatchers.Main) {
+                        callback.onFailure(e)
+                    }
+                }
+            }
+        }
+    }
+
     // region Notificare Module
 
-    override fun configure() {}
+    override fun configure() {
+        sharedPreferences = NotificareSharedPreferences(Notificare.requireContext())
+    }
 
     override suspend fun launch() {}
 
@@ -25,8 +75,8 @@ object NotificareAuthentication : NotificareModule() {
 
     // endregion
 
-    private var credentials: OAuthResponse? = null
-
+    val isLoggedIn: Boolean
+        get() = sharedPreferences.credentials != null
 
     suspend fun login(email: String, password: String): Unit = withContext(Dispatchers.IO) {
         checkPrerequisites()
@@ -52,8 +102,12 @@ object NotificareAuthentication : NotificareModule() {
             userName = device.userName, // TODO consider fetching the profile and sync the user name in the cached device.
         )
 
-        // TODO store credentials
-        credentials = response
+        // Store the credentials.
+        sharedPreferences.credentials = Credentials(
+            accessToken = response.access_token,
+            refreshToken = response.refresh_token,
+            expiresIn = response.expires_in,
+        )
 
         Notificare.eventsManager.logUserLogin()
     }
@@ -75,6 +129,7 @@ object NotificareAuthentication : NotificareModule() {
 
     suspend fun logout(): Unit = withContext(Dispatchers.IO) {
         checkPrerequisites()
+        checkUserLoggedInPrerequisite()
 
         val device = checkNotNull(Notificare.deviceManager.currentDevice)
 
@@ -83,9 +138,8 @@ object NotificareAuthentication : NotificareModule() {
             .delete("/device/${device.id}/user", null)
             .response()
 
-        // TODO remove credentials
         NotificareLogger.debug("Removing stored credentials.")
-        credentials = null
+        sharedPreferences.credentials = null
 
         NotificareLogger.debug("Registering device as anonymous.")
         Notificare.deviceManager.register(null, null)
@@ -110,12 +164,14 @@ object NotificareAuthentication : NotificareModule() {
 
     suspend fun fetchUserDetails(): NotificareUser = withContext(Dispatchers.IO) {
         checkPrerequisites()
+        checkUserLoggedInPrerequisite()
 
-        val credentials = checkNotNull(credentials)
+        val credentials = checkNotNull(sharedPreferences.credentials)
 
         val user = NotificareRequest.Builder()
             .get("/user/me")
-            .authentication(NotificareRequest.Authentication.Bearer(credentials.access_token))
+            .authentication(NotificareRequest.Authentication.Bearer(credentials.accessToken))
+            .authenticationRefreshListener(authenticationRefreshListener)
             .responseDecodable(UserDetailsResponse::class)
             .user
             .toModel()
@@ -142,8 +198,9 @@ object NotificareAuthentication : NotificareModule() {
 
     suspend fun changePassword(password: String): Unit = withContext(Dispatchers.IO) {
         checkPrerequisites()
+        checkUserLoggedInPrerequisite()
 
-        val credentials = checkNotNull(credentials)
+        val credentials = checkNotNull(sharedPreferences.credentials)
 
         val payload = ChangePasswordPayload(
             password = password,
@@ -151,7 +208,8 @@ object NotificareAuthentication : NotificareModule() {
 
         NotificareRequest.Builder()
             .put("/user/changepassword", payload)
-            .authentication(NotificareRequest.Authentication.Bearer(credentials.access_token))
+            .authentication(NotificareRequest.Authentication.Bearer(credentials.accessToken))
+            .authenticationRefreshListener(authenticationRefreshListener)
             .response()
 
         Notificare.eventsManager.logChangePassword()
@@ -176,11 +234,12 @@ object NotificareAuthentication : NotificareModule() {
         checkPrerequisites()
         checkUserLoggedInPrerequisite()
 
-        val credentials = checkNotNull(credentials)
+        val credentials = checkNotNull(sharedPreferences.credentials)
 
         val user = NotificareRequest.Builder()
             .put("/user/generatetoken/me", null)
-            .authentication(NotificareRequest.Authentication.Bearer(credentials.access_token))
+            .authentication(NotificareRequest.Authentication.Bearer(credentials.accessToken))
+            .authenticationRefreshListener(authenticationRefreshListener)
             .responseDecodable(UserDetailsResponse::class)
             .user
             .toModel()
@@ -402,11 +461,12 @@ object NotificareAuthentication : NotificareModule() {
         checkPrerequisites()
         checkUserLoggedInPrerequisite()
 
-        val credentials = checkNotNull(credentials)
+        val credentials = checkNotNull(sharedPreferences.credentials)
 
         NotificareRequest.Builder()
             .put("/user/me/add/${segment.id}", null)
-            .authentication(NotificareRequest.Authentication.Bearer(credentials.access_token))
+            .authentication(NotificareRequest.Authentication.Bearer(credentials.accessToken))
+            .authenticationRefreshListener(authenticationRefreshListener)
             .response()
     }
 
@@ -429,11 +489,12 @@ object NotificareAuthentication : NotificareModule() {
         checkPrerequisites()
         checkUserLoggedInPrerequisite()
 
-        val credentials = checkNotNull(credentials)
+        val credentials = checkNotNull(sharedPreferences.credentials)
 
         NotificareRequest.Builder()
             .put("/user/me/remove/${segment.id}", null)
-            .authentication(NotificareRequest.Authentication.Bearer(credentials.access_token))
+            .authentication(NotificareRequest.Authentication.Bearer(credentials.accessToken))
+            .authenticationRefreshListener(authenticationRefreshListener)
             .response()
     }
 
@@ -577,7 +638,10 @@ object NotificareAuthentication : NotificareModule() {
 
     @Throws
     private fun checkUserLoggedInPrerequisite() {
-        // TODO me
+        if (!isLoggedIn) {
+            NotificareLogger.warning("The user is not logged in.")
+            throw IllegalStateException("User not logged in.")
+        }
     }
 
     private suspend fun addUserSegmentToPreference(
@@ -592,11 +656,12 @@ object NotificareAuthentication : NotificareModule() {
             throw IllegalArgumentException("The preference '${preference.label}' does not contain the segment '$segmentId'.")
         }
 
-        val credentials = checkNotNull(credentials)
+        val credentials = checkNotNull(sharedPreferences.credentials)
 
         NotificareRequest.Builder()
             .put("/user/me/add/$segmentId/preference/${preference.id}", null)
-            .authentication(NotificareRequest.Authentication.Bearer(credentials.access_token))
+            .authentication(NotificareRequest.Authentication.Bearer(credentials.accessToken))
+            .authenticationRefreshListener(authenticationRefreshListener)
             .response()
     }
 
@@ -612,11 +677,12 @@ object NotificareAuthentication : NotificareModule() {
             throw IllegalArgumentException("The preference '${preference.label}' does not contain the segment '$segmentId'.")
         }
 
-        val credentials = checkNotNull(credentials)
+        val credentials = checkNotNull(sharedPreferences.credentials)
 
         NotificareRequest.Builder()
             .put("/user/me/remove/$segmentId/preference/${preference.id}", null)
-            .authentication(NotificareRequest.Authentication.Bearer(credentials.access_token))
+            .authentication(NotificareRequest.Authentication.Bearer(credentials.accessToken))
+            .authenticationRefreshListener(authenticationRefreshListener)
             .response()
     }
 }
