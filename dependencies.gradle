@@ -11,6 +11,7 @@ buildscript {
         // Module versions
         notificare_core_version_name = '3.0.0-alpha.1'
         notificare_assets_version_name = '3.0.0-alpha.1'
+        notificare_authentication_version_name = '3.0.0-alpha.1'
         notificare_inbox_version_name = '3.0.0-alpha.1'
         notificare_push_version_name = '3.0.0-alpha.1'
         notificare_push_fcm_version_name = '3.0.0-alpha.1'
