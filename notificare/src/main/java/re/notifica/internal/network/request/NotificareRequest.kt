@@ -125,6 +125,7 @@ class NotificareRequest private constructor(
             this.body = when (body) {
                 null -> if (HTTP_METHODS_REQUIRE_BODY.contains(method)) EMPTY_REQUEST else null
                 is ByteArray -> body.toRequestBody()
+                is FormBody -> body
                 else -> try {
                     val klass = when (body) {
                         // Moshi only supports the default collection types therefore we need to cast them down.
