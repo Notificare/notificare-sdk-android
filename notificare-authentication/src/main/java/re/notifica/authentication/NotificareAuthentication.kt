@@ -7,6 +7,7 @@ import kotlinx.coroutines.withContext
 import okhttp3.FormBody
 import re.notifica.*
 import re.notifica.authentication.internal.network.push.*
+import re.notifica.authentication.internal.oauth.AuthenticationRenewal
 import re.notifica.authentication.internal.oauth.Credentials
 import re.notifica.authentication.internal.storage.preferences.NotificareSharedPreferences
 import re.notifica.authentication.models.NotificareUser
@@ -17,51 +18,8 @@ import re.notifica.modules.NotificareModule
 
 object NotificareAuthentication : NotificareModule() {
 
-    private lateinit var sharedPreferences: NotificareSharedPreferences
-
-    private val authenticationRefreshListener = object : NotificareRequest.AuthenticationRefreshListener {
-        override fun onRefreshAuthentication(callback: NotificareCallback<NotificareRequest.Authentication>) {
-            GlobalScope.launch(Dispatchers.IO) {
-                try {
-                    val credentials = sharedPreferences.credentials ?: run {
-                        withContext(Dispatchers.Main) {
-                            val error = IllegalStateException("Cannot refresh without a previous set of credentials.")
-                            callback.onFailure(error)
-                        }
-
-                        return@launch
-                    }
-
-                    val payload = FormBody.Builder()
-                        .add("grant_type", "refresh_token")
-                        .add("client_id", requireNotNull(Notificare.applicationKey))
-                        .add("client_secret", requireNotNull(Notificare.applicationSecret))
-                        .add("refresh_token", credentials.refreshToken)
-                        .build()
-
-                    NotificareLogger.debug("Refresh user credentials.")
-                    val response = NotificareRequest.Builder()
-                        .post("/oauth/token", payload)
-                        .responseDecodable(OAuthResponse::class)
-
-                    // Store the credentials.
-                    sharedPreferences.credentials = Credentials(
-                        accessToken = response.access_token,
-                        refreshToken = response.refresh_token,
-                        expiresIn = response.expires_in,
-                    )
-
-                    withContext(Dispatchers.Main) {
-                        callback.onSuccess(NotificareRequest.Authentication.Bearer(response.access_token))
-                    }
-                } catch (e: Exception) {
-                    withContext(Dispatchers.Main) {
-                        callback.onFailure(e)
-                    }
-                }
-            }
-        }
-    }
+    internal lateinit var sharedPreferences: NotificareSharedPreferences
+    private val authenticationRenewal = AuthenticationRenewal()
 
     // region Notificare Module
 
@@ -171,7 +129,7 @@ object NotificareAuthentication : NotificareModule() {
         val user = NotificareRequest.Builder()
             .get("/user/me")
             .authentication(NotificareRequest.Authentication.Bearer(credentials.accessToken))
-            .authenticationRefreshListener(authenticationRefreshListener)
+            .authenticationRefreshListener(authenticationRenewal)
             .responseDecodable(UserDetailsResponse::class)
             .user
             .toModel()
@@ -209,7 +167,7 @@ object NotificareAuthentication : NotificareModule() {
         NotificareRequest.Builder()
             .put("/user/changepassword", payload)
             .authentication(NotificareRequest.Authentication.Bearer(credentials.accessToken))
-            .authenticationRefreshListener(authenticationRefreshListener)
+            .authenticationRefreshListener(authenticationRenewal)
             .response()
 
         Notificare.eventsManager.logChangePassword()
@@ -239,7 +197,7 @@ object NotificareAuthentication : NotificareModule() {
         val user = NotificareRequest.Builder()
             .put("/user/generatetoken/me", null)
             .authentication(NotificareRequest.Authentication.Bearer(credentials.accessToken))
-            .authenticationRefreshListener(authenticationRefreshListener)
+            .authenticationRefreshListener(authenticationRenewal)
             .responseDecodable(UserDetailsResponse::class)
             .user
             .toModel()
@@ -466,7 +424,7 @@ object NotificareAuthentication : NotificareModule() {
         NotificareRequest.Builder()
             .put("/user/me/add/${segment.id}", null)
             .authentication(NotificareRequest.Authentication.Bearer(credentials.accessToken))
-            .authenticationRefreshListener(authenticationRefreshListener)
+            .authenticationRefreshListener(authenticationRenewal)
             .response()
     }
 
@@ -494,7 +452,7 @@ object NotificareAuthentication : NotificareModule() {
         NotificareRequest.Builder()
             .put("/user/me/remove/${segment.id}", null)
             .authentication(NotificareRequest.Authentication.Bearer(credentials.accessToken))
-            .authenticationRefreshListener(authenticationRefreshListener)
+            .authenticationRefreshListener(authenticationRenewal)
             .response()
     }
 
@@ -661,7 +619,7 @@ object NotificareAuthentication : NotificareModule() {
         NotificareRequest.Builder()
             .put("/user/me/add/$segmentId/preference/${preference.id}", null)
             .authentication(NotificareRequest.Authentication.Bearer(credentials.accessToken))
-            .authenticationRefreshListener(authenticationRefreshListener)
+            .authenticationRefreshListener(authenticationRenewal)
             .response()
     }
 
@@ -682,7 +640,7 @@ object NotificareAuthentication : NotificareModule() {
         NotificareRequest.Builder()
             .put("/user/me/remove/$segmentId/preference/${preference.id}", null)
             .authentication(NotificareRequest.Authentication.Bearer(credentials.accessToken))
-            .authenticationRefreshListener(authenticationRefreshListener)
+            .authenticationRefreshListener(authenticationRenewal)
             .response()
     }
 }
