@@ -70,15 +70,13 @@ object NotificarePush : NotificareModule() {
     var postponedDeviceToken: String? = null
 
     override fun migrate(savedState: SharedPreferences, settings: SharedPreferences) {
-        val preferences = NotificareSharedPreferences(Notificare.requireContext())
-
         if (savedState.contains("registeredDevice")) {
             val jsonStr = savedState.getString("registeredDevice", null)
             if (jsonStr != null) {
                 try {
                     val json = JSONObject(jsonStr)
 
-                    preferences.allowedUI = if (!json.isNull("allowedUI")) json.getBoolean("allowedUI") else false
+                    sharedPreferences.allowedUI = if (!json.isNull("allowedUI")) json.getBoolean("allowedUI") else false
                 } catch (e: Exception) {
                     NotificareLogger.error("Failed to migrate the 'allowedUI' property.", e)
                 }
