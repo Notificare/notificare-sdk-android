@@ -94,55 +94,60 @@ class NotificareRequest private constructor(
         refreshAuthentication: Boolean,
         continuation: Continuation<Response>
     ) {
-        if (response.code == 401 && refreshAuthentication && refreshListener != null) {
-            if (closeResponse) response.body?.close()
+        try {
+            if (response.code == 401 && refreshAuthentication && refreshListener != null) {
+                // Forcefully close the body. Decodable responses will not proceed.
+                response.body?.close()
 
-            NotificareLogger.debug("Authentication credentials have expired. Trying to refresh.")
-            refreshListener.onRefreshAuthentication(object : NotificareCallback<Authentication> {
-                override fun onSuccess(result: Authentication) {
-                    val newRequest = response.request.newBuilder()
-                        .header("Authorization", result.encode())
-                        .build()
+                NotificareLogger.debug("Authentication credentials have expired. Trying to refresh.")
+                refreshListener.onRefreshAuthentication(object : NotificareCallback<Authentication> {
+                    override fun onSuccess(result: Authentication) {
+                        val newRequest = response.request.newBuilder()
+                            .header("Authorization", result.encode())
+                            .build()
 
-                    client.newCall(newRequest).enqueue(object : Callback {
-                        override fun onFailure(call: Call, e: IOException) {
-                            continuation.resumeWithException(e)
-                        }
+                        client.newCall(newRequest).enqueue(object : Callback {
+                            override fun onFailure(call: Call, e: IOException) {
+                                continuation.resumeWithException(e)
+                            }
 
-                        override fun onResponse(call: Call, response: Response) {
-                            handleResponse(
-                                response = response,
-                                closeResponse = closeResponse,
-                                refreshAuthentication = false,
-                                continuation = continuation
-                            )
-                        }
-                    })
-                }
+                            override fun onResponse(call: Call, response: Response) {
+                                handleResponse(
+                                    response = response,
+                                    closeResponse = closeResponse,
+                                    refreshAuthentication = false,
+                                    continuation = continuation
+                                )
+                            }
+                        })
+                    }
 
-                override fun onFailure(e: Exception) {
-                    continuation.resumeWithException(NetworkException.AuthenticationRefreshException(e))
-                }
-            })
+                    override fun onFailure(e: Exception) {
+                        continuation.resumeWithException(NetworkException.AuthenticationRefreshException(e))
+                    }
+                })
 
-            return
-        }
+                return
+            }
 
-        if (response.code !in validStatusCodes) {
-            if (closeResponse) response.body?.close()
+            if (response.code !in validStatusCodes) {
+                // Forcefully close the body. Decodable responses will not proceed.
+                response.body?.close()
 
-            continuation.resumeWithException(
-                NetworkException.ValidationException(
-                    response = response,
-                    validStatusCodes = validStatusCodes,
+                continuation.resumeWithException(
+                    NetworkException.ValidationException(
+                        response = response,
+                        validStatusCodes = validStatusCodes,
+                    )
                 )
-            )
 
-            return
+                return
+            }
+
+            continuation.resume(response)
+        } finally {
+            if (closeResponse) response.body?.close()
         }
-
-        if (closeResponse) response.body?.close()
-        continuation.resume(response)
     }
 
     class Builder {
