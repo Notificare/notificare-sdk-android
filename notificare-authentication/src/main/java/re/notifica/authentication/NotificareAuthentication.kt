@@ -1,5 +1,7 @@
 package re.notifica.authentication
 
+import android.content.SharedPreferences
+import com.google.api.client.auth.oauth2.GoogleStorageUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -30,6 +32,19 @@ object NotificareAuthentication : NotificareModule() {
     override suspend fun launch() {}
 
     override suspend fun unlaunch() {}
+
+    override fun migrate(savedState: SharedPreferences, settings: SharedPreferences) {
+        val storage = GoogleStorageUtils(Notificare.requireContext())
+        val storedCredential = storage.loadStoredCredential() ?: return
+
+        sharedPreferences.credentials = Credentials(
+            accessToken = storedCredential.accessToken,
+            refreshToken = storedCredential.refreshToken,
+            expiresIn = storedCredential.expirationTimeMilliseconds,
+        )
+
+        storage.removeStoredCredential()
+    }
 
     // endregion
 

@@ -6,5 +6,5 @@ import com.squareup.moshi.JsonClass
 internal data class Credentials(
     val accessToken: String,
     val refreshToken: String,
-    val expiresIn: Int,
+    val expiresIn: Long,
 )

@@ -9,7 +9,7 @@ import java.util.*
 internal data class OAuthResponse(
     val access_token: String,
     val refresh_token: String,
-    val expires_in: Int,
+    val expires_in: Long,
 )
 
 @JsonClass(generateAdapter = true)
