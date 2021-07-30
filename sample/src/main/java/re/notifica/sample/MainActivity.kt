@@ -438,15 +438,18 @@ class MainActivity : AppCompatActivity(), Notificare.OnReadyListener, Notificare
     }
 
     fun onValidateUserClicked(@Suppress("UNUSED_PARAMETER") view: View) {
-        NotificareAuthentication.validateUser("46f9a90a64652bb986907fd4784457ab0b738b269abd1ac80359589398dd7801", object : NotificareCallback<Unit> {
-            override fun onSuccess(result: Unit) {
-                Snackbar.make(binding.root, "Done.", Snackbar.LENGTH_SHORT).show()
-            }
+        NotificareAuthentication.validateUser(
+            token = "46f9a90a64652bb986907fd4784457ab0b738b269abd1ac80359589398dd7801",
+            callback = object : NotificareCallback<Unit> {
+                override fun onSuccess(result: Unit) {
+                    Snackbar.make(binding.root, "Done.", Snackbar.LENGTH_SHORT).show()
+                }
 
-            override fun onFailure(e: Exception) {
-                Snackbar.make(binding.root, "Error: ${e.message}", Snackbar.LENGTH_SHORT).show()
+                override fun onFailure(e: Exception) {
+                    Snackbar.make(binding.root, "Error: ${e.message}", Snackbar.LENGTH_SHORT).show()
+                }
             }
-        })
+        )
     }
 
     fun onGeneratePushEmailClicked(@Suppress("UNUSED_PARAMETER") view: View) {
