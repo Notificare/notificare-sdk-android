@@ -96,6 +96,36 @@ class MainActivity : AppCompatActivity(), Notificare.OnReadyListener, Notificare
             }
         }
 
+        val validateUserToken = NotificareAuthentication.parseValidateUserToken(intent)
+        if (validateUserToken != null) {
+            NotificareAuthentication.validateUser(validateUserToken, object : NotificareCallback<Unit> {
+                override fun onSuccess(result: Unit) {
+                    Log.i(TAG, "User validated.")
+                }
+
+                override fun onFailure(e: Exception) {
+                    Log.e(TAG, "Failed to validate user.", e)
+                }
+            })
+
+            return
+        }
+
+        val passwordResetToken = NotificareAuthentication.parsePasswordResetToken(intent)
+        if (passwordResetToken != null) {
+            NotificareAuthentication.resetPassword("123456", passwordResetToken, object : NotificareCallback<Unit> {
+                override fun onSuccess(result: Unit) {
+                    Log.i(TAG, "User password reset.")
+                }
+
+                override fun onFailure(e: Exception) {
+                    Log.e(TAG, "Failed to reset user password.", e)
+                }
+            })
+
+            return
+        }
+
         val uri = intent.data ?: return
         NotificareLogger.info("Received deep link with uri = $uri")
     }
