@@ -1,5 +1,6 @@
 package re.notifica.authentication
 
+import android.content.Intent
 import android.content.SharedPreferences
 import com.google.api.client.auth.oauth2.GoogleStorageUtils
 import kotlinx.coroutines.Dispatchers
@@ -588,6 +589,24 @@ object NotificareAuthentication : NotificareModule() {
                 }
             }
         }
+    }
+
+    fun parsePasswordResetToken(intent: Intent): String? {
+        val uri = intent.data ?: return null
+        val pathSegments = uri.pathSegments ?: return null
+
+        if (pathSegments.size < 4 || pathSegments[0] != "oauth" || pathSegments[1] != "resetpassword") return null
+
+        return pathSegments[3]
+    }
+
+    fun parseValidateUserToken(intent: Intent): String? {
+        val uri = intent.data ?: return null
+        val pathSegments = uri.pathSegments ?: return null
+
+        if (pathSegments.size < 4 || pathSegments[0] != "oauth" || pathSegments[1] != "validate") return null
+
+        return pathSegments[3]
     }
 
 
