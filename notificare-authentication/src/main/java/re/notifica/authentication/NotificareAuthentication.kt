@@ -338,7 +338,7 @@ object NotificareAuthentication : NotificareModule() {
             .put("/user/resetpassword/$token", payload)
             .response()
 
-        Notificare.eventsManager.logSendPasswordReset()
+        Notificare.eventsManager.logResetPassword()
     }
 
     fun resetPassword(password: String, token: String, callback: NotificareCallback<Unit>) {
