@@ -1,6 +1,9 @@
 package re.notifica.authentication.internal.storage.preferences
 
 import android.content.Context
+import android.content.SharedPreferences
+import androidx.security.crypto.EncryptedSharedPreferences
+import androidx.security.crypto.MasterKeys
 import re.notifica.Notificare
 import re.notifica.NotificareLogger
 import re.notifica.authentication.internal.oauth.Credentials
@@ -13,9 +16,15 @@ internal class NotificareSharedPreferences(context: Context) {
         private const val PREFERENCE_CREDENTIALS = "re.notifica.authentication.preferences.credentials"
     }
 
-    private val sharedPreferences = context.getSharedPreferences(
+    private val keyGenParameterSpec = MasterKeys.AES256_GCM_SPEC
+    private val mainKeyAlias = MasterKeys.getOrCreate(keyGenParameterSpec)
+
+    private val sharedPreferences: SharedPreferences = EncryptedSharedPreferences.create(
         PREFERENCES_FILE_NAME,
-        Context.MODE_PRIVATE
+        mainKeyAlias,
+        context,
+        EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+        EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
     )
 
     var credentials: Credentials?

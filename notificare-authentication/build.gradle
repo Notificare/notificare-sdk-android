@@ -45,6 +45,9 @@ dependencies {
 
     implementation project(':notificare')
 
+    // Android
+    implementation "androidx.security:security-crypto:$androidx_security_crypto_version"
+
     // OkHttp
     implementation "com.squareup.okhttp3:okhttp:$okhttp_version"
 
