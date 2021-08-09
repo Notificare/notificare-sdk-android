@@ -592,21 +592,35 @@ object NotificareAuthentication : NotificareModule() {
     }
 
     fun parsePasswordResetToken(intent: Intent): String? {
+        val application = Notificare.application ?: return null
         val uri = intent.data ?: return null
+        val host = uri.host ?: return null
         val pathSegments = uri.pathSegments ?: return null
 
-        if (pathSegments.size < 4 || pathSegments[0] != "oauth" || pathSegments[1] != "resetpassword") return null
+        if (
+            !host.startsWith(application.id) ||
+            pathSegments.size < 3 ||
+            pathSegments[0] != "oauth" ||
+            pathSegments[1] != "resetpassword"
+        ) return null
 
-        return pathSegments[3]
+        return pathSegments[2]
     }
 
     fun parseValidateUserToken(intent: Intent): String? {
+        val application = Notificare.application ?: return null
         val uri = intent.data ?: return null
+        val host = uri.host ?: return null
         val pathSegments = uri.pathSegments ?: return null
 
-        if (pathSegments.size < 4 || pathSegments[0] != "oauth" || pathSegments[1] != "validate") return null
+        if (
+            !host.startsWith(application.id) ||
+            pathSegments.size < 3 ||
+            pathSegments[0] != "oauth" ||
+            pathSegments[1] != "validate"
+        ) return null
 
-        return pathSegments[3]
+        return pathSegments[2]
     }
 
 
