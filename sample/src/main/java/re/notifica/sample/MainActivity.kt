@@ -128,6 +128,7 @@ class MainActivity : AppCompatActivity(), Notificare.OnReadyListener, Notificare
 
         val uri = intent.data ?: return
         NotificareLogger.info("Received deep link with uri = $uri")
+        Toast.makeText(this, "Deep link = $uri", Toast.LENGTH_SHORT).show()
     }
 
     fun onLaunchClicked(@Suppress("UNUSED_PARAMETER") view: View) {
