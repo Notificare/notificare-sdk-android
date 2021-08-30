@@ -69,8 +69,8 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data
-                    android:host="push.notifica.re"
-                    android:pathPrefix="/oauth/validate/${notificareApplicationId}"
+                    android:host="${notificareApplicationId}.applinks.notifica.re"
+                    android:pathPrefix="/oauth/validate"
                     android:scheme="https" />
             </intent-filter>
             <intent-filter>
@@ -80,8 +80,8 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data
-                    android:host="push.notifica.re"
-                    android:pathPrefix="/oauth/resetpassword/${notificareApplicationId}"
+                    android:host="${notificareApplicationId}.applinks.notifica.re"
+                    android:pathPrefix="/oauth/resetpassword"
                     android:scheme="https" />
             </intent-filter>
         </activity>
