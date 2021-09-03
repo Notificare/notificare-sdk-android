@@ -1,7 +1,7 @@
 package re.notifica.push.hms
 
 import android.content.Context
-import com.huawei.agconnect.config.AGConnectServicesConfig
+import com.huawei.agconnect.AGConnectOptionsBuilder
 import com.huawei.hms.aaid.HmsInstanceId
 import com.huawei.hms.api.ConnectionResult
 import com.huawei.hms.api.HuaweiApiAvailability
@@ -36,7 +36,8 @@ class NotificareServiceManager(
         Thread {
             try {
                 // read from agconnect-services.json
-                val appId = AGConnectServicesConfig.fromContext(context).getString("client/app_id")
+                val options = AGConnectOptionsBuilder().build(context)
+                val appId = options.getString("client/app_id")
                 val token = HmsInstanceId.getInstance(context).getToken(appId, HmsMessaging.DEFAULT_TOKEN_SCOPE)
 
                 if (token != null && token.isNotEmpty()) {
