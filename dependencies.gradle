@@ -8,23 +8,10 @@ buildscript {
         min_sdk_version = 23
         target_sdk_version = 31
 
-        // Module versions
-        notificare_core_version_name = '3.0.0-alpha.1'
-        notificare_assets_version_name = '3.0.0-alpha.1'
-        notificare_inbox_version_name = '3.0.0-alpha.1'
-        notificare_push_version_name = '3.0.0-alpha.1'
-        notificare_push_fcm_version_name = '3.0.0-alpha.1'
-        notificare_push_hms_version_name = '3.0.0-alpha.1'
-        notificare_push_ui_version_name = '3.0.0-alpha.1'
-        notificare_push_ui_fcm_version_name = '3.0.0-alpha.1'
-        notificare_push_ui_hms_version_name = '3.0.0-alpha.1'
-        notificare_scannables_version_name = '3.0.0-alpha.1'
-        notificare_scannables_fcm_version_name = '3.0.0-alpha.1'
-        notificare_scannables_hms_version_name = '3.0.0-alpha.1'
-
         // Maven
         maven_artifact_group = 're.notifica'
         maven_artifact_channel = 'prereleases' // releases
+        maven_artifact_version = '3.0.0-alpha.1'
         aws_s3_access_key_id = System.env.AWS_ACCESS_KEY_ID ?: properties.getProperty('aws.s3.access_key_id')
         aws_s3_secret_access_key = System.env.AWS_SECRET_ACCESS_KEY ?: properties.getProperty('aws.s3.secret_access_key')
 

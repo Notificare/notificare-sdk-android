@@ -8,7 +8,7 @@ plugins {
 apply from: '../dependencies.gradle'
 
 group = rootProject.ext.maven_artifact_group
-version = rootProject.ext.notificare_push_hms_version_name
+version = rootProject.ext.maven_artifact_version
 
 android {
     compileSdkVersion compile_sdk_version
@@ -18,7 +18,7 @@ android {
         minSdkVersion min_sdk_version
         targetSdkVersion target_sdk_version
 
-        buildConfigField "String", "SDK_VERSION", "\"${notificare_push_hms_version_name.tokenize("-").first()}\""
+        buildConfigField "String", "SDK_VERSION", "\"${maven_artifact_version.tokenize("-").first()}\""
     }
 
     buildTypes {
