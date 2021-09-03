@@ -48,6 +48,9 @@ dependencies {
 
     implementation platform("com.google.firebase:firebase-bom:$firebase_bom_version")
     implementation 'com.google.firebase:firebase-messaging-ktx'
+
+    // Moshi
+    implementation "com.squareup.moshi:moshi:$moshi_version"
 }
 
 afterEvaluate {
