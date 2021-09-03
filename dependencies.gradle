@@ -33,17 +33,17 @@ buildscript {
         coroutines_version = '1.4.1'
 
         // Android
-        app_compat_version = '1.3.0'
-        core_version = '1.5.0'
-        activity_version = '1.2.3'
-        fragment_version = '1.3.5'
-        lifecycle_version = '2.3.1'
-        exit_interface_version = '1.3.2'
-        room_version = '2.3.0'
-        work_manager_version = '2.7.0-alpha04'
-        material_components_version = '1.3.0'
-        browser_version = '1.3.0'
-        constraint_layout_version = '2.0.4'
+        androidx_activity_version = '1.3.1'
+        androidx_app_compat_version = '1.3.1'
+        androidx_browser_version = '1.3.0'
+        androidx_constraint_layout_version = '2.1.0'
+        androidx_core_version = '1.6.0'
+        androidx_exit_interface_version = '1.3.3'
+        androidx_fragment_version = '1.3.6'
+        androidx_lifecycle_version = '2.3.1'
+        androidx_room_version = '2.3.0'
+        androidx_view_pager_version = '1.0.0'
+        androidx_work_version = '2.7.0-beta01'
 
         // External dependencies
         moshi_version = '1.12.0'

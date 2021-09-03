@@ -42,13 +42,11 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines_version"
 
+    // Notificare
     implementation project(':notificare')
     implementation project(':notificare-push')
 
     implementation "com.huawei.hms:push:$huawei_push_version"
-
-    // Moshi
-    implementation "com.squareup.moshi:moshi:$moshi_version"
 }
 
 afterEvaluate {

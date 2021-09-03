@@ -43,12 +43,14 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines_version"
 
+    // Notificare
     implementation project(':notificare')
 
-    implementation "androidx.appcompat:appcompat:$app_compat_version"
-    implementation "androidx.activity:activity-ktx:$activity_version"
-    implementation "androidx.fragment:fragment-ktx:$fragment_version"
-    implementation "androidx.constraintlayout:constraintlayout:$constraint_layout_version"
+    // Android
+    implementation "androidx.activity:activity-ktx:$androidx_activity_version"
+    implementation "androidx.appcompat:appcompat:$androidx_app_compat_version"
+    implementation "androidx.constraintlayout:constraintlayout:$androidx_constraint_layout_version"
+    implementation "androidx.fragment:fragment-ktx:$androidx_fragment_version"
 
     // OkHttp
     implementation "com.squareup.okhttp3:okhttp:$okhttp_version"
