@@ -13,6 +13,7 @@
 
         <activity
             android:name=".ScannableActivity"
+            android:exported="false"
             android:label="@string/notificare_scannable_title"
             android:screenOrientation="portrait" />
 
