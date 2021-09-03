@@ -3,10 +3,10 @@ buildscript {
     properties.load(project.rootProject.file('local.properties').newDataInputStream())
 
     ext {
-        compile_sdk_version = 'android-S'
-        build_tools_version = '30.0.2'
+        compile_sdk_version = 31
+        build_tools_version = '31.0.0'
         min_sdk_version = 23
-        target_sdk_version = 30
+        target_sdk_version = 31
 
         // Module versions
         notificare_core_version_name = '3.0.0-alpha.1'
