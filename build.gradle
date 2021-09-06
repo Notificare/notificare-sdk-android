@@ -39,11 +39,21 @@ subprojects { project ->
 
     def artifact_channel = version ==~ /^([0-9]+)\.([0-9]+)\.([0-9]+)$/ ? 'releases' : 'prereleases'
 
+    task androidSourcesJar(type: Jar) {
+        archiveClassifier.set('sources')
+        from android.sourceSets.main.java.srcDirs
+    }
+
+    artifacts {
+        archives androidSourcesJar
+    }
+
     afterEvaluate {
         publishing {
             publications {
                 release(MavenPublication) {
                     from components.release
+                    artifact androidSourcesJar
                 }
             }
             repositories {
