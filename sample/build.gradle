@@ -6,8 +6,6 @@ plugins {
     id 'com.huawei.agconnect'
 }
 
-apply from: '../dependencies.gradle'
-
 def properties = new Properties()
 properties.load(project.rootProject.file('local.properties').newDataInputStream())
 
