@@ -5,20 +5,20 @@ import re.notifica.Notificare
 import re.notifica.internal.NotificareLogger
 import re.notifica.models.NotificareTransport
 
-interface NotificareServiceManager {
+public interface NotificareServiceManager {
 
-    val transport: NotificareTransport
+    public val transport: NotificareTransport
 
-    val hasMobileServicesAvailable: Boolean
+    public val hasMobileServicesAvailable: Boolean
 
-    fun registerDeviceToken()
+    public fun registerDeviceToken()
 
-    object Factory {
+    public object Factory {
 
         private const val FCM_FQN = "re.notifica.push.fcm.NotificareServiceManager"
         private const val HMS_FQN = "re.notifica.push.hms.NotificareServiceManager"
 
-        fun create(context: Context): NotificareServiceManager? {
+        internal fun create(context: Context): NotificareServiceManager? {
             val preferredMobileServices = checkNotNull(Notificare.options)
                 .preferredMobileServices
                 ?.lowercase()

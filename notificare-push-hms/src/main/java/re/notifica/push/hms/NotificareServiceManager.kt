@@ -15,8 +15,7 @@ import re.notifica.models.NotificareTransport
 import re.notifica.push.NotificarePush
 import re.notifica.push.NotificareServiceManager
 
-@Suppress("unused")
-class NotificareServiceManager(
+public class NotificareServiceManager(
     private val context: Context,
 ) : NotificareServiceManager {
 
@@ -58,8 +57,8 @@ class NotificareServiceManager(
         }.start()
     }
 
-    companion object {
-        fun isNotificareNotification(remoteMessage: RemoteMessage): Boolean {
+    public companion object {
+        public fun isNotificareNotification(remoteMessage: RemoteMessage): Boolean {
             return remoteMessage.dataOfMap?.get("x-sender") == "notificare"
         }
     }

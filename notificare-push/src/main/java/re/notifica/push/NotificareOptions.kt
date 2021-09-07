@@ -2,7 +2,7 @@ package re.notifica.push
 
 import re.notifica.internal.NotificareOptions
 
-val NotificareOptions.defaultChannelId: String
+public val NotificareOptions.defaultChannelId: String
     get() {
         return info.metaData?.getString(
             "re.notifica.push.default_channel_id",
@@ -10,7 +10,7 @@ val NotificareOptions.defaultChannelId: String
         ) ?: NotificarePush.DEFAULT_NOTIFICATION_CHANNEL_ID
     }
 
-val NotificareOptions.automaticDefaultChannelEnabled: Boolean
+public val NotificareOptions.automaticDefaultChannelEnabled: Boolean
     get() {
         return info.metaData?.getBoolean(
             "re.notifica.push.automatic_default_channel_enabled",
@@ -18,7 +18,7 @@ val NotificareOptions.automaticDefaultChannelEnabled: Boolean
         ) ?: true
     }
 
-val NotificareOptions.notificationAutoCancel: Boolean
+public val NotificareOptions.notificationAutoCancel: Boolean
     get() {
         return info.metaData?.getBoolean(
             "re.notifica.push.notification_auto_cancel",
@@ -26,7 +26,7 @@ val NotificareOptions.notificationAutoCancel: Boolean
         ) ?: true
     }
 
-val NotificareOptions.notificationSmallIcon: Int?
+public val NotificareOptions.notificationSmallIcon: Int?
     get() {
         val icon = info.metaData?.getInt(
             "re.notifica.push.notification_small_icon",
@@ -36,7 +36,7 @@ val NotificareOptions.notificationSmallIcon: Int?
         return if (icon == 0) null else icon
     }
 
-val NotificareOptions.notificationAccentColor: Int?
+public val NotificareOptions.notificationAccentColor: Int?
     get() {
         return if (info.metaData != null && info.metaData.containsKey("re.notifica.push.notification_accent_color"))
             info.metaData.getInt("re.notifica.push.notification_accent_color", 0)
@@ -44,7 +44,7 @@ val NotificareOptions.notificationAccentColor: Int?
             null
     }
 
-val NotificareOptions.notificationLightsColor: String?
+public val NotificareOptions.notificationLightsColor: String?
     get() {
         return info.metaData?.getString(
             "re.notifica.push.notification_lights_color",
@@ -52,7 +52,7 @@ val NotificareOptions.notificationLightsColor: String?
         )
     }
 
-val NotificareOptions.notificationLightsOn: Int
+public val NotificareOptions.notificationLightsOn: Int
     get() {
         return info.metaData?.getInt(
             "re.notifica.push.notification_lights_on",
@@ -60,7 +60,7 @@ val NotificareOptions.notificationLightsOn: Int
         ) ?: 500
     }
 
-val NotificareOptions.notificationLightsOff: Int
+public val NotificareOptions.notificationLightsOff: Int
     get() {
         return info.metaData?.getInt(
             "re.notifica.push.notification_lights_off",

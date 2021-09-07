@@ -9,7 +9,7 @@ import re.notifica.models.NotificareNotification
 import re.notifica.push.models.NotificareSystemNotification
 import re.notifica.push.models.NotificareUnknownNotification
 
-open class NotificarePushIntentReceiver : BroadcastReceiver() {
+public open class NotificarePushIntentReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         when (intent.action) {
             NotificarePush.INTENT_ACTION_NOTIFICATION_RECEIVED -> {

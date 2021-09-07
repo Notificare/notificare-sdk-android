@@ -13,7 +13,7 @@ import re.notifica.push.models.NotificareNotificationRemoteMessage
 import re.notifica.push.models.NotificareSystemRemoteMessage
 import re.notifica.push.models.NotificareUnknownRemoteMessage
 
-class NotificarePushService : HmsMessageService() {
+public class NotificarePushService : HmsMessageService() {
 
     override fun onNewToken(token: String) {
         NotificareLogger.info("Received a new HMS token.")

@@ -13,7 +13,7 @@ import re.notifica.push.models.NotificareNotificationRemoteMessage
 import re.notifica.push.models.NotificareSystemRemoteMessage
 import re.notifica.push.models.NotificareUnknownRemoteMessage
 
-class NotificarePushService : FirebaseMessagingService() {
+public class NotificarePushService : FirebaseMessagingService() {
 
     override fun onNewToken(token: String) {
         NotificareLogger.info("Received a new FCM token.")

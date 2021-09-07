@@ -4,7 +4,7 @@ import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-data class NotificareUnknownNotification(
+public data class NotificareUnknownNotification(
     val messageId: String?,
     val messageType: String?,
     val senderId: String?,
