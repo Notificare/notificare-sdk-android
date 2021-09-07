@@ -13,6 +13,7 @@ import re.notifica.models.NotificareNotification
 import re.notifica.modules.NotificareModule
 import re.notifica.push.ui.actions.*
 import re.notifica.push.ui.actions.base.NotificationAction
+import re.notifica.push.ui.internal.ServiceManager
 import re.notifica.push.ui.notifications.fragments.*
 
 public object NotificarePushUI : NotificareModule() {
@@ -24,7 +25,7 @@ public object NotificarePushUI : NotificareModule() {
     internal val contentFileProviderAuthority: String
         get() = "${Notificare.requireContext().packageName}$CONTENT_FILE_PROVIDER_AUTHORITY_SUFFIX"
 
-    private var serviceManager: NotificareServiceManager? = null
+    private var serviceManager: ServiceManager? = null
 
     public var notificationActivity: Class<out NotificationActivity> = NotificationActivity::class.java
 
@@ -36,7 +37,7 @@ public object NotificarePushUI : NotificareModule() {
     // region Notificare Module
 
     override fun configure() {
-        serviceManager = NotificareServiceManager.Factory.create(Notificare.requireContext())
+        serviceManager = ServiceManager.create()
     }
 
     override suspend fun launch() {}
@@ -153,7 +154,7 @@ public object NotificarePushUI : NotificareModule() {
                     return null
                 }
 
-                return manager.getFragmentCanonicalClassName(notification)
+                return manager.getFragmentClass(notification).canonicalName
             }
         }
     }

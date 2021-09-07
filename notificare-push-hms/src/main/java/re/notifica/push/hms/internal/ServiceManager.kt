@@ -13,10 +13,10 @@ import re.notifica.Notificare
 import re.notifica.internal.NotificareLogger
 import re.notifica.models.NotificareTransport
 import re.notifica.push.NotificarePush
-import re.notifica.push.internal.PushServiceManager
+import re.notifica.push.internal.ServiceManager
 
 @InternalNotificareApi
-public class PushServiceManager : PushServiceManager() {
+public class ServiceManager : ServiceManager() {
 
     override val available: Boolean
         get() = HuaweiApiAvailability.getInstance()

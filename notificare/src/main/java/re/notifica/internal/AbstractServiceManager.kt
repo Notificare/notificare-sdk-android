@@ -4,7 +4,7 @@ import re.notifica.InternalNotificareApi
 import re.notifica.Notificare
 
 @InternalNotificareApi
-public abstract class ServiceManager {
+public abstract class AbstractServiceManager {
 
     public abstract val available: Boolean
 
@@ -16,7 +16,7 @@ public abstract class ServiceManager {
         @PublishedApi
         internal const val HUAWEI_MOBILE_SERVICES: String = "huawei"
 
-        public inline fun <reified T : ServiceManager> create(gms: String, hms: String): T {
+        public inline fun <reified T : AbstractServiceManager> create(gms: String, hms: String): T {
             val preferredMobileServices = checkNotNull(Notificare.options)
                 .preferredMobileServices
                 ?.lowercase()
