@@ -8,13 +8,13 @@ import android.net.Uri
 /**
  * Auto configuration during application startup.
  */
-class NotificareConfigurationProvider : ContentProvider() {
+internal class NotificareConfigurationProvider : ContentProvider() {
     /**
      * Called before [android.app.Application.onCreate].
      */
     override fun onCreate(): Boolean {
-        val context =
-            context ?: throw IllegalStateException("Cannot find context from the provider.")
+        val context = context
+            ?: throw IllegalStateException("Cannot find context from the provider.")
 
         Notificare.configure(context)
         NotificareLogger.info("Notificare configured automatically.")

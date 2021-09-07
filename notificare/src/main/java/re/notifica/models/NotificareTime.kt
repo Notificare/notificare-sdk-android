@@ -6,7 +6,7 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 @JsonClass(generateAdapter = true)
-data class NotificareTime(
+public data class NotificareTime(
     val hours: Int,
     val minutes: Int
 ) : Parcelable {
@@ -17,11 +17,11 @@ data class NotificareTime(
         }
     }
 
-    constructor(timeStr: String) : this(parse(timeStr).first, parse(timeStr).second)
+    public constructor(timeStr: String) : this(parse(timeStr).first, parse(timeStr).second)
 
-    fun format(): String = "%02d:%02d".format(hours, minutes)
+    public fun format(): String = "%02d:%02d".format(hours, minutes)
 
-    companion object {
+    private companion object {
         private fun parse(timeStr: String): Pair<Int, Int> {
             val parts = timeStr.split(":")
             if (parts.size != 2) throw IllegalArgumentException("Invalid time string.")

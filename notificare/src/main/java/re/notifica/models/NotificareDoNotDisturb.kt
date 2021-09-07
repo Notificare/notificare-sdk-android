@@ -8,20 +8,20 @@ import re.notifica.Notificare
 
 @Parcelize
 @JsonClass(generateAdapter = true)
-data class NotificareDoNotDisturb(
+public data class NotificareDoNotDisturb(
     val start: NotificareTime,
     val end: NotificareTime
-): Parcelable {
+) : Parcelable {
 
-    fun toJson(): JSONObject {
+    public fun toJson(): JSONObject {
         val jsonStr = adapter.toJson(this)
         return JSONObject(jsonStr)
     }
 
-    companion object {
+    public companion object {
         private val adapter = Notificare.moshi.adapter(NotificareDoNotDisturb::class.java)
 
-        fun fromJson(json: JSONObject): NotificareDoNotDisturb {
+        public fun fromJson(json: JSONObject): NotificareDoNotDisturb {
             val jsonStr = json.toString()
             return requireNotNull(adapter.fromJson(jsonStr))
         }

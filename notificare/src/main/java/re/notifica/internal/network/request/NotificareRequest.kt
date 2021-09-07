@@ -9,6 +9,7 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.internal.EMPTY_REQUEST
 import okhttp3.logging.HttpLoggingInterceptor
 import re.notifica.BuildConfig
+import re.notifica.InternalNotificareApi
 import re.notifica.Notificare
 import re.notifica.internal.NotificareUtils
 import re.notifica.internal.network.NetworkException
@@ -20,12 +21,13 @@ import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 import kotlin.reflect.KClass
 
-class NotificareRequest private constructor(
+@InternalNotificareApi
+public class NotificareRequest private constructor(
     private val request: Request,
     private val validStatusCodes: IntRange,
 ) {
 
-    companion object {
+    private companion object {
 
         private val HTTP_METHODS_REQUIRE_BODY = arrayOf("PATCH", "POST", "PUT")
         private val MEDIA_TYPE_JSON = "application/json; charset=utf-8".toMediaType()
@@ -45,9 +47,9 @@ class NotificareRequest private constructor(
             .build()
     }
 
-    suspend fun response(): Response = response(true)
+    public suspend fun response(): Response = response(true)
 
-    suspend fun <T : Any> responseDecodable(klass: KClass<T>): T {
+    public suspend fun <T : Any> responseDecodable(klass: KClass<T>): T {
         val response = response(closeResponse = false)
 
         val body = response.body
@@ -93,7 +95,7 @@ class NotificareRequest private constructor(
         })
     }
 
-    class Builder {
+    public class Builder {
 
         private var baseUrl: String? = null
         private var url: String? = null
@@ -103,20 +105,20 @@ class NotificareRequest private constructor(
         private var body: RequestBody? = null
         private var validStatusCodes: IntRange = 200..299
 
-        fun baseUrl(url: String): Builder {
+        public fun baseUrl(url: String): Builder {
             this.baseUrl = url
             return this
         }
 
-        fun get(url: String): Builder = method("GET", url, null)
+        public fun get(url: String): Builder = method("GET", url, null)
 
-        fun <T : Any> patch(url: String, body: T? = null): Builder = method("PATCH", url, body)
+        public fun <T : Any> patch(url: String, body: T? = null): Builder = method("PATCH", url, body)
 
-        fun <T : Any> post(url: String, body: T? = null): Builder = method("POST", url, body)
+        public fun <T : Any> post(url: String, body: T? = null): Builder = method("POST", url, body)
 
-        fun <T : Any> put(url: String, body: T? = null): Builder = method("PUT", url, body)
+        public fun <T : Any> put(url: String, body: T? = null): Builder = method("PUT", url, body)
 
-        fun <T : Any> delete(url: String, body: T? = null): Builder = method("DELETE", url, body)
+        public fun <T : Any> delete(url: String, body: T? = null): Builder = method("DELETE", url, body)
 
         private fun <T : Any> method(method: String, url: String, body: T?): Builder {
             this.method = method
@@ -145,34 +147,34 @@ class NotificareRequest private constructor(
             return this
         }
 
-        fun query(items: Map<String, String?>): Builder {
+        public fun query(items: Map<String, String?>): Builder {
             queryItems.putAll(items)
             return this
         }
 
-        fun query(item: Pair<String, String?>): Builder {
+        public fun query(item: Pair<String, String?>): Builder {
             queryItems[item.first] = item.second
             return this
         }
 
-        fun query(name: String, value: String?): Builder {
+        public fun query(name: String, value: String?): Builder {
             queryItems[name] = value
             return this
         }
 
-        fun header(name: String, value: String): Builder {
+        public fun header(name: String, value: String): Builder {
             headers[name] = value
             return this
         }
 
-        fun validate(validStatusCodes: IntRange = 200..299): Builder {
+        public fun validate(validStatusCodes: IntRange = 200..299): Builder {
             this.validStatusCodes = validStatusCodes
             return this
         }
 
 
         @Throws(IllegalArgumentException::class)
-        fun build(): NotificareRequest {
+        public fun build(): NotificareRequest {
             val method = requireNotNull(method) { "Please provide the HTTP method for the request." }
 
             val request = Request.Builder()
@@ -188,11 +190,11 @@ class NotificareRequest private constructor(
             return NotificareRequest(request = request, validStatusCodes = validStatusCodes)
         }
 
-        suspend fun response(): Response {
+        public suspend fun response(): Response {
             return build().response()
         }
 
-        suspend fun <T : Any> responseDecodable(klass: KClass<T>): T {
+        public suspend fun <T : Any> responseDecodable(klass: KClass<T>): T {
             return build().responseDecodable(klass)
         }
 

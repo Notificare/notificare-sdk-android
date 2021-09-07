@@ -7,8 +7,8 @@ import android.content.Intent
 import android.content.res.Resources
 import android.net.Uri
 import android.os.Build
-import androidx.annotation.RestrictTo
 import androidx.core.app.NotificationManagerCompat
+import com.squareup.moshi.Moshi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -30,15 +30,16 @@ import java.lang.ref.WeakReference
 import java.net.URLEncoder
 import java.util.regex.Pattern
 
-object Notificare {
+public object Notificare {
 
-    const val SDK_VERSION = BuildConfig.SDK_VERSION
+    public const val SDK_VERSION: String = BuildConfig.SDK_VERSION
 
-    const val INTENT_EXTRA_NOTIFICATION = "re.notifica.intent.extra.Notification"
-    const val INTENT_EXTRA_ACTION = "re.notifica.intent.extra.Action"
+    public const val INTENT_EXTRA_NOTIFICATION: String = "re.notifica.intent.extra.Notification"
+    public const val INTENT_EXTRA_ACTION: String = "re.notifica.intent.extra.Action"
 
     // Internal modules
-    val moshi = NotificareUtils.createMoshi()
+    @InternalNotificareApi
+    public val moshi: Moshi = NotificareUtils.createMoshi()
     internal lateinit var database: NotificareDatabase
         private set
     internal lateinit var sharedPreferences: NotificareSharedPreferences
@@ -49,19 +50,19 @@ object Notificare {
     //     private set
 
     // Consumer modules
-    val eventsManager = NotificareEventsManager()
-    val deviceManager = NotificareDeviceManager()
-    val crashReporter = NotificareCrashReporter()
+    public val eventsManager: NotificareEventsManager = NotificareEventsManager()
+    public val deviceManager: NotificareDeviceManager = NotificareDeviceManager()
+    public val crashReporter: NotificareCrashReporter = NotificareCrashReporter()
 
     // Configurations
     private var context: WeakReference<Context>? = null
-    var servicesConfig: NotificareServices? = null
+    public var servicesConfig: NotificareServices? = null
         private set
     internal var applicationKey: String? = null
         private set
     internal var applicationSecret: String? = null
         private set
-    var options: NotificareOptions? = null
+    public var options: NotificareOptions? = null
         private set
 
     // Launch / application state
@@ -72,21 +73,21 @@ object Notificare {
 
     // region Public API
 
-    var intentReceiver: Class<out NotificareIntentReceiver> = NotificareIntentReceiver::class.java
+    public var intentReceiver: Class<out NotificareIntentReceiver> = NotificareIntentReceiver::class.java
 
-    val isConfigured: Boolean
+    public val isConfigured: Boolean
         get() = state >= NotificareLaunchState.CONFIGURED
 
-    val isReady: Boolean
+    public val isReady: Boolean
         get() = state == NotificareLaunchState.READY
 
-    var useAdvancedLogging: Boolean
+    public var useAdvancedLogging: Boolean
         get() = NotificareLogger.useAdvancedLogging
         set(value) {
             NotificareLogger.useAdvancedLogging = value
         }
 
-    var application: NotificareApplication?
+    public var application: NotificareApplication?
         get() {
             return if (::sharedPreferences.isInitialized) {
                 sharedPreferences.application
@@ -103,14 +104,14 @@ object Notificare {
             }
         }
 
-    fun configure(context: Context) {
+    public fun configure(context: Context) {
         val applicationKey = context.getString(R.string.notificare_services_application_key)
         val applicationSecret = context.getString(R.string.notificare_services_application_secret)
 
         configure(context, applicationKey, applicationSecret)
     }
 
-    fun configure(context: Context, applicationKey: String, applicationSecret: String) {
+    public fun configure(context: Context, applicationKey: String, applicationSecret: String) {
         val services = try {
             val useTestApi = context.resources.getBoolean(R.bool.notificare_services_use_test_api)
             if (useTestApi) {
@@ -125,11 +126,11 @@ object Notificare {
         configure(context, applicationKey, applicationSecret, services)
     }
 
-    fun requireContext(): Context {
+    public fun requireContext(): Context {
         return context?.get() ?: throw IllegalStateException("Cannot find context for Notificare.")
     }
 
-    fun launch() {
+    public fun launch() {
         if (state == NotificareLaunchState.NONE) {
             NotificareLogger.warning("Notificare.configure() has never been called. Cannot launch.")
             return
@@ -197,7 +198,7 @@ object Notificare {
         }
     }
 
-    fun unlaunch() {
+    public fun unlaunch() {
         if (!isReady) {
             NotificareLogger.warning("Cannot un-launch Notificare before it has been launched.")
             return
@@ -238,7 +239,7 @@ object Notificare {
         }
     }
 
-    fun addOnReadyListener(listener: OnReadyListener) {
+    public fun addOnReadyListener(listener: OnReadyListener) {
         readyListeners.add(listener)
         NotificareLogger.debug("Added a new OnReadyListener (${readyListeners.size} in total).")
 
@@ -247,12 +248,12 @@ object Notificare {
         }
     }
 
-    fun removeOnReadyListener(listener: OnReadyListener) {
+    public fun removeOnReadyListener(listener: OnReadyListener) {
         readyListeners.remove(listener)
         NotificareLogger.debug("Removed an OnReadyListener (${readyListeners.size} in total).")
     }
 
-    fun onReady(fn: ((application: NotificareApplication) -> Unit)) {
+    public fun onReady(fn: ((application: NotificareApplication) -> Unit)) {
         // Add an anonymous listener.
         addOnReadyListener(
             object : OnReadyListener {
@@ -267,7 +268,7 @@ object Notificare {
         )
     }
 
-    suspend fun fetchApplication(): NotificareApplication = withContext(Dispatchers.IO) {
+    public suspend fun fetchApplication(): NotificareApplication = withContext(Dispatchers.IO) {
         NotificareRequest.Builder()
             .get("/application/info")
             .responseDecodable(ApplicationResponse::class)
@@ -279,7 +280,7 @@ object Notificare {
             }
     }
 
-    fun fetchApplication(callback: NotificareCallback<NotificareApplication>) {
+    public fun fetchApplication(callback: NotificareCallback<NotificareApplication>) {
         GlobalScope.launch {
             try {
                 val application = fetchApplication()
@@ -290,7 +291,7 @@ object Notificare {
         }
     }
 
-    suspend fun fetchNotification(id: String): NotificareNotification = withContext(Dispatchers.IO) {
+    public suspend fun fetchNotification(id: String): NotificareNotification = withContext(Dispatchers.IO) {
         if (!isConfigured) {
             throw NotificareException.NotReady()
         }
@@ -302,7 +303,7 @@ object Notificare {
             .toModel()
     }
 
-    fun fetchNotification(id: String, callback: NotificareCallback<NotificareNotification>) {
+    public fun fetchNotification(id: String, callback: NotificareCallback<NotificareNotification>) {
         GlobalScope.launch {
             try {
                 val notification = fetchNotification(id)
@@ -313,7 +314,7 @@ object Notificare {
         }
     }
 
-    suspend fun fetchDynamicLink(uri: Uri): NotificareDynamicLink = withContext(Dispatchers.IO) {
+    public suspend fun fetchDynamicLink(uri: Uri): NotificareDynamicLink = withContext(Dispatchers.IO) {
         if (!isConfigured) {
             throw NotificareException.NotReady()
         }
@@ -330,7 +331,7 @@ object Notificare {
             .link
     }
 
-    fun fetchDynamicLink(uri: Uri, callback: NotificareCallback<NotificareDynamicLink>) {
+    public fun fetchDynamicLink(uri: Uri, callback: NotificareCallback<NotificareDynamicLink>) {
         GlobalScope.launch {
             try {
                 val link = fetchDynamicLink(uri)
@@ -341,7 +342,7 @@ object Notificare {
         }
     }
 
-    suspend fun createNotificationReply(
+    public suspend fun createNotificationReply(
         notification: NotificareNotification,
         action: NotificareNotification.Action,
         message: String? = null,
@@ -372,7 +373,10 @@ object Notificare {
             .response()
     }
 
-    suspend fun callNotificationReplyWebhook(uri: Uri, data: Map<String, String>): Unit = withContext(Dispatchers.IO) {
+    public suspend fun callNotificationReplyWebhook(
+        uri: Uri,
+        data: Map<String, String>
+    ): Unit = withContext(Dispatchers.IO) {
         val params = mutableMapOf<String, String?>()
 
         // Add all query parameters to the POST body.
@@ -392,20 +396,22 @@ object Notificare {
             .response()
     }
 
-    suspend fun uploadNotificationReplyAsset(payload: ByteArray, contentType: String): String =
-        withContext(Dispatchers.IO) {
-            if (!isConfigured) throw NotificareException.NotReady()
+    public suspend fun uploadNotificationReplyAsset(
+        payload: ByteArray,
+        contentType: String
+    ): String = withContext(Dispatchers.IO) {
+        if (!isConfigured) throw NotificareException.NotReady()
 
-            val response = NotificareRequest.Builder()
-                .header("Content-Type", contentType)
-                .post("/upload/reply", payload)
-                .responseDecodable(NotificareUploadResponse::class)
+        val response = NotificareRequest.Builder()
+            .header("Content-Type", contentType)
+            .post("/upload/reply", payload)
+            .responseDecodable(NotificareUploadResponse::class)
 
-            "https://push.notifica.re/upload${response.filename}"
-        }
+        "https://push.notifica.re/upload${response.filename}"
+    }
 
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    fun removeNotificationFromNotificationCenter(notification: NotificareNotification) {
+    @InternalNotificareApi
+    public fun removeNotificationFromNotificationCenter(notification: NotificareNotification) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             val notificationManager =
                 requireContext().getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager
@@ -447,7 +453,7 @@ object Notificare {
         }
     }
 
-    fun handleTestDeviceIntent(intent: Intent): Boolean {
+    public fun handleTestDeviceIntent(intent: Intent): Boolean {
         val nonce = parseTestDeviceNonce(intent) ?: return false
 
         deviceManager.registerTestDevice(nonce, object : NotificareCallback<Unit> {
@@ -463,7 +469,7 @@ object Notificare {
         return true
     }
 
-    fun handleDynamicLinkIntent(activity: Activity, intent: Intent): Boolean {
+    public fun handleDynamicLinkIntent(activity: Activity, intent: Intent): Boolean {
         val uri = parseDynamicLink(intent) ?: return false
 
         NotificareLogger.debug("Handling a dynamic link.")
@@ -577,7 +583,7 @@ object Notificare {
         return uri
     }
 
-    interface OnReadyListener {
-        fun onReady(application: NotificareApplication)
+    public interface OnReadyListener {
+        public fun onReady(application: NotificareApplication)
     }
 }

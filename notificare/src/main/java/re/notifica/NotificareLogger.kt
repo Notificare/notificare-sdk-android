@@ -6,7 +6,8 @@ import java.io.PrintWriter
 import java.io.StringWriter
 import java.util.regex.Pattern
 
-object NotificareLogger {
+@InternalNotificareApi
+public object NotificareLogger {
 
     private const val TAG = "Notificare"
     private const val MAX_TAG_LENGTH = 23
@@ -17,15 +18,15 @@ object NotificareLogger {
         NotificareConfigurationProvider::class.java.name
     )
 
-    var useAdvancedLogging = false
+    internal var useAdvancedLogging = false
 
-    fun debug(message: String, t: Throwable? = null) = log(Log.DEBUG, message, t)
+    public fun debug(message: String, t: Throwable? = null): Unit = log(Log.DEBUG, message, t)
 
-    fun info(message: String, t: Throwable? = null) = log(Log.INFO, message, t)
+    public fun info(message: String, t: Throwable? = null): Unit = log(Log.INFO, message, t)
 
-    fun warning(message: String, t: Throwable? = null) = log(Log.WARN, message, t)
+    public fun warning(message: String, t: Throwable? = null): Unit = log(Log.WARN, message, t)
 
-    fun error(message: String, t: Throwable? = null) = log(Log.ERROR, message, t)
+    public fun error(message: String, t: Throwable? = null): Unit = log(Log.ERROR, message, t)
 
     private fun log(priority: Int, message: String, t: Throwable?) {
         val canLog = useAdvancedLogging || priority >= Log.INFO
@@ -50,12 +51,12 @@ object NotificareLogger {
         Log.println(priority, TAG, message)
     }
 
-    private val internalTag: String?
+    private val internalTag: String
         get() = Throwable().stackTrace
             .first { it.className !in IGNORE_FQDN }
             .let(::createStackElementTag)
 
-    private fun createStackElementTag(element: StackTraceElement): String? {
+    private fun createStackElementTag(element: StackTraceElement): String {
         var tag = element.className.substringAfterLast('.')
         val m = ANONYMOUS_CLASS.matcher(tag)
         if (m.find()) {

@@ -10,9 +10,9 @@ import re.notifica.internal.workers.ProcessEventsWorker
 import re.notifica.models.NotificareEvent
 import re.notifica.models.NotificareEventData
 
-class NotificareEventsManager {
+public class NotificareEventsManager {
 
-    companion object {
+    public companion object {
         internal const val EVENT_APPLICATION_INSTALL = "re.notifica.event.application.Install"
         internal const val EVENT_APPLICATION_REGISTRATION = "re.notifica.event.application.Registration"
         internal const val EVENT_APPLICATION_UPGRADE = "re.notifica.event.application.Upgrade"
@@ -26,32 +26,32 @@ class NotificareEventsManager {
 
     private val discardableEvents = listOf<String>()
 
-    fun configure() {
+    internal fun configure() {
         // TODO listen to connectivity changes
         // TODO listen to lifecycle changes (app open)
     }
 
-    suspend fun launch() {
+    internal fun launch() {
         scheduleUploadWorker()
     }
 
-    fun logApplicationInstall() {
+    public fun logApplicationInstall() {
         log(EVENT_APPLICATION_INSTALL)
     }
 
-    fun logApplicationRegistration() {
+    public fun logApplicationRegistration() {
         log(EVENT_APPLICATION_REGISTRATION)
     }
 
-    fun logApplicationUpgrade() {
+    public fun logApplicationUpgrade() {
         log(EVENT_APPLICATION_UPGRADE)
     }
 
-    fun logApplicationOpen() {
+    public fun logApplicationOpen() {
         log(EVENT_APPLICATION_OPEN)
     }
 
-    fun logApplicationClose(sessionLength: Double) {
+    public fun logApplicationClose(sessionLength: Double) {
         log(
             EVENT_APPLICATION_CLOSE, mapOf(
                 "length" to sessionLength.toString()
@@ -59,7 +59,7 @@ class NotificareEventsManager {
         )
     }
 
-    fun logNotificationOpened(id: String) {
+    public fun logNotificationOpened(id: String) {
         log(
             event = EVENT_NOTIFICATION_OPEN,
             data = null,
@@ -67,12 +67,12 @@ class NotificareEventsManager {
         )
     }
 
-    fun logCustom(event: String, data: NotificareEventData? = null) {
+    public fun logCustom(event: String, data: NotificareEventData? = null) {
         log("re.notifica.event.custom.$event", data)
     }
 
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    fun log(event: String, data: NotificareEventData? = null, notificationId: String? = null) {
+    public fun log(event: String, data: NotificareEventData? = null, notificationId: String? = null) {
         GlobalScope.launch {
             val device = Notificare.deviceManager.currentDevice
 

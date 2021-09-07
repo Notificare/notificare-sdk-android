@@ -7,7 +7,7 @@ import kotlinx.parcelize.Parceler
 import re.notifica.Notificare
 
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-object NotificareExtraParceler : Parceler<Map<String, Any>> {
+public object NotificareExtraParceler : Parceler<Map<String, Any>> {
     override fun create(parcel: Parcel): Map<String, Any> {
         val str = parcel.readString() ?: return mapOf()
 

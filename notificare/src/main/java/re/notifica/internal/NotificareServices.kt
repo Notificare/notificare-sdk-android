@@ -1,28 +1,28 @@
 package re.notifica.internal
 
-enum class NotificareServices {
+public enum class NotificareServices {
     TEST,
     PRODUCTION;
 
-    val pushHost: String
+    public val pushHost: String
         get() = when (this) {
             TEST -> "https://push-test.notifica.re"
             PRODUCTION -> "https://push.notifica.re"
         }
 
-    val cloudHost: String
+    public val cloudHost: String
         get() = when (this) {
             TEST -> "https://cloud-test.notifica.re"
             PRODUCTION -> "https://cloud.notifica.re"
         }
 
-    val webPassHost: String
+    public val webPassHost: String
         get() = when (this) {
             TEST -> "https://pass-test.notifica.re"
             PRODUCTION -> "https://pass.notifica.re"
         }
 
-    val dynamicLinkDomain: String
+    public val dynamicLinkDomain: String
         get() = when (this) {
             TEST -> "test.ntc.re"
             PRODUCTION -> "ntc.re"

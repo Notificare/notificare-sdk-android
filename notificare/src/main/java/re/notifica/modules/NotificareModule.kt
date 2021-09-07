@@ -4,20 +4,20 @@ import android.content.SharedPreferences
 import androidx.annotation.RestrictTo
 
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-abstract class NotificareModule {
+public abstract class NotificareModule {
 
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    open fun migrate(savedState: SharedPreferences, settings: SharedPreferences) {
+    public open fun migrate(savedState: SharedPreferences, settings: SharedPreferences) {
     }
 
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    abstract fun configure()
+    public abstract fun configure()
 
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    abstract suspend fun launch()
+    public abstract suspend fun launch()
 
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    abstract suspend fun unlaunch()
+    public abstract suspend fun unlaunch()
 
 
     internal enum class Module(val fqn: String) {

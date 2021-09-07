@@ -6,7 +6,7 @@ import android.content.Intent
 import re.notifica.models.NotificareApplication
 import re.notifica.models.NotificareDevice
 
-open class NotificareIntentReceiver : BroadcastReceiver() {
+public open class NotificareIntentReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         when (intent.action) {
             INTENT_ACTION_READY -> {
@@ -34,11 +34,11 @@ open class NotificareIntentReceiver : BroadcastReceiver() {
         NotificareLogger.info("Device registered to Notificare, please override onDeviceRegistered if you want to receive these intents.")
     }
 
-    companion object {
-        const val INTENT_ACTION_READY = "re.notifica.intent.action.Ready"
-        const val INTENT_ACTION_DEVICE_REGISTERED = "re.notifica.intent.action.DeviceRegistered"
+    public companion object {
+        internal const val INTENT_ACTION_READY = "re.notifica.intent.action.Ready"
+        internal const val INTENT_ACTION_DEVICE_REGISTERED = "re.notifica.intent.action.DeviceRegistered"
 
-        const val INTENT_EXTRA_APPLICATION = "re.notifica.intent.extra.Application"
-        const val INTENT_EXTRA_DEVICE = "re.notifica.intent.extra.Device"
+        internal const val INTENT_EXTRA_APPLICATION = "re.notifica.intent.extra.Application"
+        internal const val INTENT_EXTRA_DEVICE = "re.notifica.intent.extra.Device"
     }
 }

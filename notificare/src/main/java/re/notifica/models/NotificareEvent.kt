@@ -6,10 +6,10 @@ import com.squareup.moshi.JsonClass
 import com.squareup.moshi.Types
 import re.notifica.Notificare
 
-typealias NotificareEventData = Map<String, Any?>
+public typealias NotificareEventData = Map<String, Any?>
 
 @JsonClass(generateAdapter = true)
-data class NotificareEvent(
+public data class NotificareEvent(
     val type: String,
     val timestamp: Long,
     @Json(name = "deviceID") val deviceId: String?,
@@ -19,8 +19,8 @@ data class NotificareEvent(
     val data: NotificareEventData?
 ) {
 
-    companion object {
-        val dataAdapter: JsonAdapter<NotificareEventData> by lazy {
+    internal companion object {
+        internal val dataAdapter: JsonAdapter<NotificareEventData> by lazy {
             Notificare.moshi.adapter(
                 Types.newParameterizedType(
                     Map::class.java,

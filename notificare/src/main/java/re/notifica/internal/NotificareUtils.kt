@@ -10,6 +10,7 @@ import com.squareup.moshi.Moshi
 import com.squareup.moshi.adapters.Rfc3339DateJsonAdapter
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import re.notifica.InternalNotificareApi
 import re.notifica.Notificare
 import re.notifica.internal.moshi.NotificareTimeAdapter
 import re.notifica.internal.moshi.NotificareTransportAdapter
@@ -17,8 +18,9 @@ import re.notifica.internal.moshi.UseDefaultsWhenNullFactory
 import re.notifica.modules.NotificareModule
 import java.util.*
 
-object NotificareUtils {
-    val applicationName: String
+@InternalNotificareApi
+public object NotificareUtils {
+    public val applicationName: String
         get() {
             return try {
                 val context = Notificare.requireContext().applicationContext
@@ -31,7 +33,7 @@ object NotificareUtils {
             }
         }
 
-    val applicationVersion: String
+    public val applicationVersion: String
         get() {
             return try {
                 val context = Notificare.requireContext().applicationContext
@@ -42,19 +44,19 @@ object NotificareUtils {
             }
         }
 
-    val deviceString: String
+    public val deviceString: String
         get() = "${Build.MANUFACTURER} ${Build.MODEL}"
 
-    val deviceLanguage: String
+    public val deviceLanguage: String
         get() = Locale.getDefault().language
 
-    val deviceRegion: String
+    public val deviceRegion: String
         get() = Locale.getDefault().country
 
-    val osVersion: String
+    public val osVersion: String
         get() = Build.VERSION.RELEASE
 
-    val timeZoneOffset: Double
+    public val timeZoneOffset: Double
         get() {
             val timeZone = TimeZone.getDefault()
             val calendar = GregorianCalendar.getInstance(timeZone)
@@ -62,7 +64,7 @@ object NotificareUtils {
             return timeZone.getOffset(calendar.timeInMillis) / 3600000.toDouble()
         }
 
-    fun getLoadedModules(): List<String> {
+    internal fun getLoadedModules(): List<String> {
         val modules = mutableListOf<String>()
 
         NotificareModule.Module.values().forEach { module ->
@@ -74,7 +76,7 @@ object NotificareUtils {
         return modules
     }
 
-    fun createMoshi(): Moshi {
+    internal fun createMoshi(): Moshi {
         return Moshi.Builder()
             .add(UseDefaultsWhenNullFactory())
             .add(Date::class.java, Rfc3339DateJsonAdapter())
@@ -83,7 +85,7 @@ object NotificareUtils {
             .build()
     }
 
-    suspend fun loadBitmap(url: String): Bitmap = withContext(Dispatchers.IO) {
+    public suspend fun loadBitmap(url: String): Bitmap = withContext(Dispatchers.IO) {
         @Suppress("BlockingMethodInNonBlockingContext")
         val bitmap = Glide.with(Notificare.requireContext())
             .asBitmap()
@@ -94,7 +96,7 @@ object NotificareUtils {
         withContext(Dispatchers.Main) { bitmap }
     }
 
-    fun loadImage(url: String, view: ImageView) {
+    public fun loadImage(url: String, view: ImageView) {
         Glide.with(Notificare.requireContext())
             .load(url)
             .into(view)

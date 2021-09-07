@@ -1,7 +1,7 @@
 package re.notifica
 
-interface NotificareCallback<T> {
-    fun onSuccess(result: T)
+public interface NotificareCallback<T> {
+    public fun onSuccess(result: T)
 
-    fun onFailure(e: Exception)
+    public fun onFailure(e: Exception)
 }
