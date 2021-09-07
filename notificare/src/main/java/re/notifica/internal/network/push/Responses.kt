@@ -1,8 +1,8 @@
 package re.notifica.internal.network.push
 
-import androidx.annotation.RestrictTo
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
+import re.notifica.InternalNotificareApi
 import re.notifica.models.NotificareApplication
 import re.notifica.models.NotificareDoNotDisturb
 import re.notifica.models.NotificareDynamicLink
@@ -55,13 +55,12 @@ internal data class DeviceUserDataResponse(
     val userData: Map<String, String?>?,
 )
 
-@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+@InternalNotificareApi
 @JsonClass(generateAdapter = true)
 public data class NotificationResponse(
     val notification: Notification,
 ) {
 
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     @JsonClass(generateAdapter = true)
     public data class Notification(
         @Json(name = "_id") val id: String,

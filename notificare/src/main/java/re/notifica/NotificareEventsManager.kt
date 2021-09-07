@@ -1,6 +1,5 @@
 package re.notifica
 
-import androidx.annotation.RestrictTo
 import androidx.work.*
 import kotlinx.coroutines.*
 import re.notifica.internal.common.recoverable
@@ -71,7 +70,7 @@ public class NotificareEventsManager {
         log("re.notifica.event.custom.$event", data)
     }
 
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    @InternalNotificareApi
     public fun log(event: String, data: NotificareEventData? = null, notificationId: String? = null) {
         GlobalScope.launch {
             val device = Notificare.deviceManager.currentDevice

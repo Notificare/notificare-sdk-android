@@ -1,22 +1,18 @@
 package re.notifica.modules
 
 import android.content.SharedPreferences
-import androidx.annotation.RestrictTo
+import re.notifica.InternalNotificareApi
 
-@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+@InternalNotificareApi
 public abstract class NotificareModule {
 
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     public open fun migrate(savedState: SharedPreferences, settings: SharedPreferences) {
     }
 
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     public abstract fun configure()
 
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     public abstract suspend fun launch()
 
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     public abstract suspend fun unlaunch()
 
 

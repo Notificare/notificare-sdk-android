@@ -1,7 +1,6 @@
 package re.notifica
 
 import android.content.Intent
-import androidx.annotation.RestrictTo
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -88,7 +87,7 @@ public class NotificareDeviceManager {
         }
     }
 
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    @InternalNotificareApi
     public suspend fun registerTemporary(): Unit = withContext(Dispatchers.IO) {
         val device = currentDevice
 
@@ -106,7 +105,7 @@ public class NotificareDeviceManager {
         )
     }
 
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    @InternalNotificareApi
     public suspend fun registerPushToken(
         transport: NotificareTransport,
         token: String
