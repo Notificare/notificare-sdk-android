@@ -7,7 +7,7 @@ import re.notifica.models.NotificareNotification
 
 @Parcelize
 @JsonClass(generateAdapter = true)
-data class NotificareScannable(
+public data class NotificareScannable(
     val id: String,
     val name: String,
     val tag: String,

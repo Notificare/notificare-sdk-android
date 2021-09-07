@@ -20,7 +20,7 @@ import re.notifica.internal.NotificareLogger
 import re.notifica.scannables.ScannableActivity
 import re.notifica.scannables.fcm.R
 
-class QrCodeScannerFragment : Fragment(R.layout.notificare_scannable_qr_code_fcm_fragment) {
+public class QrCodeScannerFragment : Fragment(R.layout.notificare_scannable_qr_code_fcm_fragment) {
     private lateinit var surfaceView: SurfaceView
     private var cameraSource: CameraSource? = null
 

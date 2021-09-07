@@ -5,18 +5,18 @@ import androidx.fragment.app.Fragment
 import re.notifica.Notificare
 import re.notifica.internal.NotificareLogger
 
-interface NotificareServiceManager {
+public interface NotificareServiceManager {
 
-    val hasMobileServicesAvailable: Boolean
+    public val hasMobileServicesAvailable: Boolean
 
-    fun getQrCodeScannerFragmentClass(): Class<out Fragment>
+    public fun getQrCodeScannerFragmentClass(): Class<out Fragment>
 
-    object Factory {
+    public object Factory {
 
         private const val FCM_FQN = "re.notifica.scannables.fcm.NotificareServiceManager"
         private const val HMS_FQN = "re.notifica.scannables.hms.NotificareServiceManager"
 
-        fun create(context: Context): NotificareServiceManager? {
+        internal fun create(context: Context): NotificareServiceManager? {
             val preferredMobileServices = checkNotNull(Notificare.options)
                 .preferredMobileServices
                 ?.lowercase()

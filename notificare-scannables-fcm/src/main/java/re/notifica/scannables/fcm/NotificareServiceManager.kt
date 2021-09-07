@@ -9,7 +9,7 @@ import re.notifica.scannables.NotificareServiceManager
 import re.notifica.scannables.fcm.ui.QrCodeScannerFragment
 
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-class NotificareServiceManager(
+public class NotificareServiceManager(
     private val context: Context,
 ) : NotificareServiceManager {
 
