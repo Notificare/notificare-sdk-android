@@ -34,6 +34,7 @@ import re.notifica.modules.NotificareModule
 import re.notifica.push.internal.InboxIntegration
 import re.notifica.push.internal.NotificarePushSystemIntentReceiver
 import re.notifica.push.internal.NotificareSharedPreferences
+import re.notifica.push.internal.PushServiceManager
 import re.notifica.push.internal.network.push.DeviceUpdateNotificationSettingsPayload
 import re.notifica.push.models.*
 import java.util.concurrent.atomic.AtomicInteger
@@ -61,7 +62,7 @@ public object NotificarePush : NotificareModule() {
     internal lateinit var sharedPreferences: NotificareSharedPreferences
         private set
 
-    internal var serviceManager: NotificareServiceManager? = null
+    internal var serviceManager: PushServiceManager? = null
         private set
 
     public var intentReceiver: Class<out NotificarePushIntentReceiver> = NotificarePushIntentReceiver::class.java
@@ -92,7 +93,7 @@ public object NotificarePush : NotificareModule() {
 
     override fun configure() {
         sharedPreferences = NotificareSharedPreferences(Notificare.requireContext())
-        serviceManager = NotificareServiceManager.Factory.create(Notificare.requireContext())
+        serviceManager = PushServiceManager.create()
 
         checkPushPermissions()
 
@@ -167,7 +168,7 @@ public object NotificarePush : NotificareModule() {
         sharedPreferences.remoteNotificationsEnabled = true
 
         // Request a push provider token.
-        manager.registerDeviceToken()
+        manager.requestPushToken()
     }
 
     public fun disableRemoteNotifications() {
