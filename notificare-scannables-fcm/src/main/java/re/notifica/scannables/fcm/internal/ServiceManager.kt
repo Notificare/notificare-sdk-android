@@ -1,0 +1,21 @@
+package re.notifica.scannables.fcm.internal
+
+import androidx.fragment.app.Fragment
+import com.google.android.gms.common.ConnectionResult
+import com.google.android.gms.common.GoogleApiAvailability
+import re.notifica.InternalNotificareApi
+import re.notifica.Notificare
+import re.notifica.scannables.fcm.ui.QrCodeScannerFragment
+import re.notifica.scannables.internal.ServiceManager
+
+@InternalNotificareApi
+public class ServiceManager : ServiceManager() {
+
+    override val available: Boolean
+        get() = GoogleApiAvailability.getInstance()
+            .isGooglePlayServicesAvailable(Notificare.requireContext()) == ConnectionResult.SUCCESS
+
+    override fun getQrCodeScannerFragmentClass(): Class<out Fragment> {
+        return QrCodeScannerFragment::class.java
+    }
+}

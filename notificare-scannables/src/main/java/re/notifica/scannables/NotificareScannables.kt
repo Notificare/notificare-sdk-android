@@ -15,11 +15,12 @@ import re.notifica.internal.NotificareLogger
 import re.notifica.internal.common.putEnumExtra
 import re.notifica.internal.network.request.NotificareRequest
 import re.notifica.modules.NotificareModule
+import re.notifica.scannables.internal.ServiceManager
 import re.notifica.scannables.internal.network.push.FetchScannableResponse
 import re.notifica.scannables.models.NotificareScannable
 
 public object NotificareScannables : NotificareModule() {
-    internal var serviceManager: NotificareServiceManager? = null
+    internal var serviceManager: ServiceManager? = null
         private set
 
     private val listeners = mutableListOf<ScannableSessionListener>()
@@ -27,7 +28,7 @@ public object NotificareScannables : NotificareModule() {
     // region Notificare Module
 
     override fun configure() {
-        serviceManager = NotificareServiceManager.Factory.create(Notificare.requireContext())
+        serviceManager = ServiceManager.create()
     }
 
     override suspend fun launch() {}
