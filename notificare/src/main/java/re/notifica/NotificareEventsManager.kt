@@ -6,6 +6,7 @@ import re.notifica.internal.NotificareLogger
 import re.notifica.internal.common.recoverable
 import re.notifica.internal.network.request.NotificareRequest
 import re.notifica.internal.storage.database.ktx.toEntity
+import re.notifica.internal.toEvent
 import re.notifica.internal.workers.ProcessEventsWorker
 import re.notifica.models.NotificareEvent
 import re.notifica.models.NotificareEventData
@@ -51,6 +52,16 @@ public class NotificareEventsManager {
         log(EVENT_APPLICATION_OPEN)
     }
 
+    public fun logApplicationException(throwable: Throwable) {
+        GlobalScope.launch {
+            try {
+                log(throwable.toEvent())
+            } catch (e: Exception) {
+                NotificareLogger.error("Failed to log an event.", e)
+            }
+        }
+    }
+
     public fun logApplicationClose(sessionLength: Double) {
         log(
             EVENT_APPLICATION_CLOSE, mapOf(
@@ -94,7 +105,7 @@ public class NotificareEventsManager {
         }
     }
 
-    private suspend fun log(event: NotificareEvent): Unit = withContext(Dispatchers.IO) {
+    internal suspend fun log(event: NotificareEvent): Unit = withContext(Dispatchers.IO) {
         if (!Notificare.isConfigured) {
             NotificareLogger.debug("Notificare is not configured. Skipping event log...")
             return@withContext
