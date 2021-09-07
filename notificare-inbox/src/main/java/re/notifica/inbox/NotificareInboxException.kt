@@ -1,10 +1,10 @@
 package re.notifica.inbox
 
-sealed class NotificareInboxException {
+public sealed class NotificareInboxException {
 
-    class InboxUnavailable :
+    public class InboxUnavailable :
         Exception("Inbox functionality is not available for this app. Please configure it via the dashboard.")
 
-    class AutoBadgeUnavailable :
+    public class AutoBadgeUnavailable :
         Exception("Auto badge functionality is not available for this app. Please configure it via the dashboard.")
 }
