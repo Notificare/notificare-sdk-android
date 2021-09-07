@@ -13,7 +13,7 @@ import re.notifica.assets.models.NotificareAsset
 import re.notifica.internal.network.request.NotificareRequest
 import re.notifica.modules.NotificareModule
 
-object NotificareAssets : NotificareModule() {
+public object NotificareAssets : NotificareModule() {
 
     // region Notificare Module
 
@@ -25,7 +25,7 @@ object NotificareAssets : NotificareModule() {
 
     // endregion
 
-    suspend fun fetchAssets(group: String): List<NotificareAsset> = withContext(Dispatchers.IO) {
+    public suspend fun fetchAssets(group: String): List<NotificareAsset> = withContext(Dispatchers.IO) {
         val application = Notificare.application ?: run {
             NotificareLogger.warning("Notificare application is not yet available.")
             throw NotificareException.NotReady()
@@ -45,7 +45,7 @@ object NotificareAssets : NotificareModule() {
             .map { it.toModel() }
     }
 
-    fun fetchAssets(group: String, callback: NotificareCallback<List<NotificareAsset>>) {
+    public fun fetchAssets(group: String, callback: NotificareCallback<List<NotificareAsset>>) {
         GlobalScope.launch {
             try {
                 val assets = fetchAssets(group)
