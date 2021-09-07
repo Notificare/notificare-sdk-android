@@ -1,6 +1,8 @@
 include ':notificare'
 include ':notificare-assets'
 include ':notificare-geo'
+include ':notificare-geo-fcm'
+include ':notificare-geo-hms'
 include ':notificare-inbox'
 include ':notificare-push'
 include ':notificare-push-fcm'
