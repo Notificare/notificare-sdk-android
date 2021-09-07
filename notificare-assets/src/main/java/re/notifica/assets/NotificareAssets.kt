@@ -7,7 +7,7 @@ import kotlinx.coroutines.withContext
 import re.notifica.Notificare
 import re.notifica.NotificareCallback
 import re.notifica.NotificareException
-import re.notifica.NotificareLogger
+import re.notifica.internal.NotificareLogger
 import re.notifica.assets.internal.network.push.FetchAssetsResponse
 import re.notifica.assets.models.NotificareAsset
 import re.notifica.internal.network.request.NotificareRequest

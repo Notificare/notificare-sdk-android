@@ -2,7 +2,7 @@ package re.notifica.push
 
 import android.content.Context
 import re.notifica.Notificare
-import re.notifica.NotificareLogger
+import re.notifica.internal.NotificareLogger
 import re.notifica.models.NotificareTransport
 
 interface NotificareServiceManager {

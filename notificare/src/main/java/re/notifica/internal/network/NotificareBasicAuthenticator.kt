@@ -2,7 +2,7 @@ package re.notifica.internal.network
 
 import okhttp3.*
 import re.notifica.Notificare
-import re.notifica.NotificareLogger
+import re.notifica.internal.NotificareLogger
 
 internal class NotificareBasicAuthenticator : Authenticator {
     override fun authenticate(route: Route?, response: Response): Request {

@@ -13,7 +13,7 @@ import androidx.core.content.ContextCompat
 import com.google.android.material.snackbar.Snackbar
 import re.notifica.Notificare
 import re.notifica.NotificareCallback
-import re.notifica.NotificareLogger
+import re.notifica.internal.NotificareLogger
 import re.notifica.assets.NotificareAssets
 import re.notifica.assets.models.NotificareAsset
 import re.notifica.models.*

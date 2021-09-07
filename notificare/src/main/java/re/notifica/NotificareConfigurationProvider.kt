@@ -4,6 +4,7 @@ import android.content.ContentProvider
 import android.content.ContentValues
 import android.database.Cursor
 import android.net.Uri
+import re.notifica.internal.NotificareLogger
 
 /**
  * Auto configuration during application startup.

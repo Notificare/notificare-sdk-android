@@ -3,7 +3,7 @@ package re.notifica.push.ui
 import android.content.res.Resources.NotFoundException
 import androidx.annotation.ColorInt
 import re.notifica.Notificare
-import re.notifica.NotificareLogger
+import re.notifica.internal.NotificareLogger
 import re.notifica.internal.NotificareOptions
 
 val NotificareOptions.closeWindowQueryParameter: String

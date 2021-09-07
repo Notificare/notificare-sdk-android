@@ -11,7 +11,7 @@ import kotlinx.coroutines.*
 import re.notifica.Notificare
 import re.notifica.NotificareCallback
 import re.notifica.NotificareException
-import re.notifica.NotificareLogger
+import re.notifica.internal.NotificareLogger
 import re.notifica.inbox.internal.database.InboxDatabase
 import re.notifica.inbox.internal.database.entities.InboxItemEntity
 import re.notifica.inbox.internal.network.push.InboxResponse

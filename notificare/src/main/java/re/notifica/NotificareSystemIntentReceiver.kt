@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import re.notifica.internal.NotificareLogger
 import java.util.*
 
 internal class NotificareSystemIntentReceiver : BroadcastReceiver() {

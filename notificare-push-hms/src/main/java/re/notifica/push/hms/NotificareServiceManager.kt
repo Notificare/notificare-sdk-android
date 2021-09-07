@@ -10,7 +10,7 @@ import com.huawei.hms.push.HmsMessaging
 import com.huawei.hms.push.RemoteMessage
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import re.notifica.NotificareLogger
+import re.notifica.internal.NotificareLogger
 import re.notifica.models.NotificareTransport
 import re.notifica.push.NotificarePush
 import re.notifica.push.NotificareServiceManager

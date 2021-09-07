@@ -7,7 +7,7 @@ import android.view.LayoutInflater
 import android.widget.ArrayAdapter
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
-import re.notifica.NotificareLogger
+import re.notifica.internal.NotificareLogger
 import re.notifica.internal.NotificareUtils
 import re.notifica.models.NotificareNotification
 import re.notifica.push.ui.NotificarePushUI

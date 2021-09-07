@@ -10,7 +10,7 @@ import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.commit
 import re.notifica.NotificareCallback
-import re.notifica.NotificareLogger
+import re.notifica.internal.NotificareLogger
 import re.notifica.internal.common.getEnum
 import re.notifica.internal.common.getEnumExtra
 import re.notifica.internal.common.putEnum

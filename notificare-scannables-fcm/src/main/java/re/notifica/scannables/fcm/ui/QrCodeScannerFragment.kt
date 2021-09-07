@@ -16,7 +16,7 @@ import com.google.android.gms.vision.CameraSource
 import com.google.android.gms.vision.Detector
 import com.google.android.gms.vision.barcode.Barcode
 import com.google.android.gms.vision.barcode.BarcodeDetector
-import re.notifica.NotificareLogger
+import re.notifica.internal.NotificareLogger
 import re.notifica.scannables.ScannableActivity
 import re.notifica.scannables.fcm.R
 

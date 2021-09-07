@@ -13,10 +13,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import re.notifica.internal.*
 import re.notifica.internal.NotificareLaunchState
-import re.notifica.internal.NotificareOptions
-import re.notifica.internal.NotificareServices
-import re.notifica.internal.NotificareUtils
 import re.notifica.internal.network.push.*
 import re.notifica.internal.network.request.NotificareRequest
 import re.notifica.internal.storage.SharedPreferencesMigration

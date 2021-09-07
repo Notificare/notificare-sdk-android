@@ -3,6 +3,7 @@ package re.notifica
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import re.notifica.internal.NotificareLogger
 import re.notifica.models.NotificareApplication
 import re.notifica.models.NotificareDevice
 

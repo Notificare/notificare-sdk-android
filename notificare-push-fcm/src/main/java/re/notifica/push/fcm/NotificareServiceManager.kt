@@ -8,7 +8,7 @@ import com.google.firebase.messaging.RemoteMessage
 import com.google.firebase.messaging.ktx.messaging
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import re.notifica.NotificareLogger
+import re.notifica.internal.NotificareLogger
 import re.notifica.models.NotificareTransport
 import re.notifica.push.NotificarePush
 import re.notifica.push.NotificareServiceManager

@@ -1,5 +1,6 @@
 package re.notifica
 
+import re.notifica.internal.NotificareLogger
 import re.notifica.internal.NotificareUtils
 import re.notifica.internal.network.request.NotificareRequest
 import re.notifica.models.NotificareEvent

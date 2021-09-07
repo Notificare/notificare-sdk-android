@@ -2,6 +2,7 @@ package re.notifica
 
 import androidx.work.*
 import kotlinx.coroutines.*
+import re.notifica.internal.NotificareLogger
 import re.notifica.internal.common.recoverable
 import re.notifica.internal.network.request.NotificareRequest
 import re.notifica.internal.storage.database.ktx.toEntity

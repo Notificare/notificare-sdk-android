@@ -3,7 +3,7 @@ package re.notifica.scannables
 import android.content.Context
 import androidx.fragment.app.Fragment
 import re.notifica.Notificare
-import re.notifica.NotificareLogger
+import re.notifica.internal.NotificareLogger
 
 interface NotificareServiceManager {
 

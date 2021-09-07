@@ -1,7 +1,10 @@
-package re.notifica
+package re.notifica.internal
 
 import android.os.Build
 import android.util.Log
+import re.notifica.InternalNotificareApi
+import re.notifica.Notificare
+import re.notifica.NotificareConfigurationProvider
 import java.io.PrintWriter
 import java.io.StringWriter
 import java.util.regex.Pattern

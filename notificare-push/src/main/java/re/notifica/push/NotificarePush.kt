@@ -24,7 +24,7 @@ import org.json.JSONObject
 import re.notifica.Notificare
 import re.notifica.NotificareCallback
 import re.notifica.NotificareException
-import re.notifica.NotificareLogger
+import re.notifica.internal.NotificareLogger
 import re.notifica.internal.NotificareUtils
 import re.notifica.internal.network.request.NotificareRequest
 import re.notifica.models.NotificareApplication
