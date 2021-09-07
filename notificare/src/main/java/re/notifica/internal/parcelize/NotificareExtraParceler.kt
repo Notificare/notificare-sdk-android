@@ -5,6 +5,7 @@ import com.squareup.moshi.Types
 import kotlinx.parcelize.Parceler
 import re.notifica.InternalNotificareApi
 import re.notifica.Notificare
+import re.notifica.internal.moshi
 
 @InternalNotificareApi
 public object NotificareExtraParceler : Parceler<Map<String, Any>> {

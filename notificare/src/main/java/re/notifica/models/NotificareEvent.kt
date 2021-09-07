@@ -5,6 +5,7 @@ import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.JsonClass
 import com.squareup.moshi.Types
 import re.notifica.Notificare
+import re.notifica.internal.moshi
 
 public typealias NotificareEventData = Map<String, Any?>
 

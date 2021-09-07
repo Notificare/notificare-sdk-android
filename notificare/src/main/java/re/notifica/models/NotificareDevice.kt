@@ -5,6 +5,7 @@ import com.squareup.moshi.JsonClass
 import kotlinx.parcelize.Parcelize
 import org.json.JSONObject
 import re.notifica.Notificare
+import re.notifica.internal.moshi
 import java.util.*
 
 public typealias NotificareUserData = Map<String, String>

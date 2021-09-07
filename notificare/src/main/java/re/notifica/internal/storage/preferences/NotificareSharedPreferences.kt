@@ -5,6 +5,7 @@ import android.content.Context
 import androidx.core.content.edit
 import re.notifica.Notificare
 import re.notifica.internal.NotificareLogger
+import re.notifica.internal.moshi
 import re.notifica.models.NotificareApplication
 import re.notifica.models.NotificareDevice
 import re.notifica.models.NotificareEvent

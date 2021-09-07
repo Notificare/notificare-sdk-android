@@ -11,7 +11,7 @@ import okhttp3.logging.HttpLoggingInterceptor
 import re.notifica.BuildConfig
 import re.notifica.InternalNotificareApi
 import re.notifica.Notificare
-import re.notifica.internal.NotificareUtils
+import re.notifica.internal.moshi
 import re.notifica.internal.network.NetworkException
 import re.notifica.internal.network.NotificareBasicAuthenticator
 import re.notifica.internal.network.NotificareHeadersInterceptor
@@ -31,8 +31,6 @@ public class NotificareRequest private constructor(
 
         private val HTTP_METHODS_REQUIRE_BODY = arrayOf("PATCH", "POST", "PUT")
         private val MEDIA_TYPE_JSON = "application/json; charset=utf-8".toMediaType()
-
-        private val moshi = NotificareUtils.createMoshi()
 
         private val client = OkHttpClient.Builder()
             .authenticator(NotificareBasicAuthenticator())
@@ -57,7 +55,7 @@ public class NotificareRequest private constructor(
 
         return withContext(Dispatchers.IO) {
             try {
-                val adapter = moshi.adapter(klass.java)
+                val adapter = Notificare.moshi.adapter(klass.java)
 
                 @Suppress("BlockingMethodInNonBlockingContext")
                 adapter.fromJson(body.source())
@@ -137,7 +135,7 @@ public class NotificareRequest private constructor(
                         else -> body::class.java
                     }
 
-                    val adapter = moshi.adapter<T>(klass)
+                    val adapter = Notificare.moshi.adapter<T>(klass)
                     adapter.toJson(body).toRequestBody(MEDIA_TYPE_JSON)
                 } catch (e: Exception) {
                     throw NetworkException.ParsingException(message = "Unable to encode body into JSON.", cause = e)

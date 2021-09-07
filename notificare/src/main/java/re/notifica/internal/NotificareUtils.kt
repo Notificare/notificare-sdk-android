@@ -6,15 +6,10 @@ import android.os.Build
 import android.util.Log
 import android.widget.ImageView
 import com.bumptech.glide.Glide
-import com.squareup.moshi.Moshi
-import com.squareup.moshi.adapters.Rfc3339DateJsonAdapter
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import re.notifica.InternalNotificareApi
 import re.notifica.Notificare
-import re.notifica.internal.moshi.NotificareTimeAdapter
-import re.notifica.internal.moshi.NotificareTransportAdapter
-import re.notifica.internal.moshi.UseDefaultsWhenNullFactory
 import re.notifica.modules.NotificareModule
 import java.util.*
 
@@ -74,15 +69,6 @@ public object NotificareUtils {
         }
 
         return modules
-    }
-
-    internal fun createMoshi(): Moshi {
-        return Moshi.Builder()
-            .add(UseDefaultsWhenNullFactory())
-            .add(Date::class.java, Rfc3339DateJsonAdapter())
-            .add(NotificareTimeAdapter())
-            .add(NotificareTransportAdapter())
-            .build()
     }
 
     public suspend fun loadBitmap(url: String): Bitmap = withContext(Dispatchers.IO) {

@@ -4,6 +4,7 @@ import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 import org.json.JSONObject
 import re.notifica.Notificare
+import re.notifica.internal.moshi
 import re.notifica.models.NotificareNotification
 import java.util.*
 

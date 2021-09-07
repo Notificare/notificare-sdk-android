@@ -7,6 +7,7 @@ import kotlinx.parcelize.Parcelize
 import kotlinx.parcelize.WriteWith
 import org.json.JSONObject
 import re.notifica.Notificare
+import re.notifica.internal.moshi
 import re.notifica.internal.parcelize.NotificationContentDataParceler
 import re.notifica.internal.parcelize.NotificareExtraParceler
 import java.util.*
