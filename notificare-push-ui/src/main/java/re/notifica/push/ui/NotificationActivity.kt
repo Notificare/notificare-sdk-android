@@ -10,7 +10,7 @@ import re.notifica.models.NotificareNotification
 import re.notifica.push.ui.databinding.NotificareNotificationActivityBinding
 import re.notifica.push.ui.notifications.NotificationContainerFragment
 
-open class NotificationActivity : AppCompatActivity(), NotificationContainerFragment.Callback {
+public open class NotificationActivity : AppCompatActivity(), NotificationContainerFragment.Callback {
 
     private lateinit var binding: NotificareNotificationActivityBinding
     private lateinit var notification: NotificareNotification

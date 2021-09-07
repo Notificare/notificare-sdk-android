@@ -14,7 +14,7 @@ import re.notifica.push.ui.NotificarePushUI
 import re.notifica.push.ui.R
 import re.notifica.push.ui.databinding.NotificareAlertDialogBinding
 
-class NotificationDialog : DialogFragment() {
+public class NotificationDialog : DialogFragment() {
 
     private var callback: Callback? = null
     private var notification: NotificareNotification? = null
@@ -101,25 +101,25 @@ class NotificationDialog : DialogFragment() {
         callback?.onNotificationDialogDismiss()
     }
 
-    companion object {
+    public companion object {
         private const val SAVED_STATE_NOTIFICATION = "re.notifica.ui.Notification"
 
-        fun newInstance(notification: NotificareNotification): NotificationDialog {
+        public fun newInstance(notification: NotificareNotification): NotificationDialog {
             return NotificationDialog().apply {
                 this.notification = notification
             }
         }
     }
 
-    interface Callback {
-        fun onNotificationDialogOkClick()
+    public interface Callback {
+        public fun onNotificationDialogOkClick()
 
-        fun onNotificationDialogCancelClick()
+        public fun onNotificationDialogCancelClick()
 
-        fun onNotificationDialogDismiss()
+        public fun onNotificationDialogDismiss()
 
-        fun onNotificationDialogActionClick(position: Int)
+        public fun onNotificationDialogActionClick(position: Int)
 
-        fun onNotificationDialogOpenPassbookClick()
+        public fun onNotificationDialogOpenPassbookClick()
     }
 }

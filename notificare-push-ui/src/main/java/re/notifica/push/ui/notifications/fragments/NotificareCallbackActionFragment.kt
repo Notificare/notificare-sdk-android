@@ -27,7 +27,7 @@ import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.IOException
 
-class NotificareCallbackActionFragment private constructor() : Fragment() {
+public class NotificareCallbackActionFragment private constructor() : Fragment() {
 
     private lateinit var pendingResult: NotificarePendingResult
     private lateinit var callback: NotificationFragment.Callback
@@ -164,12 +164,12 @@ class NotificareCallbackActionFragment private constructor() : Fragment() {
         }
     }
 
-    companion object {
+    public companion object {
         private const val EXTRA_PENDING_RESULT = "re.notifica.extra.PendingResult"
 
         private const val SAMPLE_SIZE_MAX_PIXELS = 307200 // 640 x 480
 
-        fun newInstance(pendingResult: NotificarePendingResult): NotificareCallbackActionFragment {
+        public fun newInstance(pendingResult: NotificarePendingResult): NotificareCallbackActionFragment {
             return NotificareCallbackActionFragment().apply {
                 arguments = bundleOf(
                     EXTRA_PENDING_RESULT to pendingResult

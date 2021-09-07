@@ -9,7 +9,7 @@ import re.notifica.models.NotificareNotification
 import re.notifica.push.ui.R
 
 
-class NotificationActionsDialog : DialogFragment() {
+public class NotificationActionsDialog : DialogFragment() {
 
     private lateinit var callback: Callback
     private var notification: NotificareNotification? = null
@@ -64,21 +64,21 @@ class NotificationActionsDialog : DialogFragment() {
         outState.putParcelable(SAVED_STATE_NOTIFICATION, notification)
     }
 
-    companion object {
+    public companion object {
         private const val SAVED_STATE_NOTIFICATION = "re.notifica.ui.Notification"
 
-        fun newInstance(notification: NotificareNotification): NotificationActionsDialog {
+        public fun newInstance(notification: NotificareNotification): NotificationActionsDialog {
             return NotificationActionsDialog().apply {
                 this.notification = notification
             }
         }
     }
 
-    interface Callback {
-        fun onActionDialogCloseClick()
+    public interface Callback {
+        public fun onActionDialogCloseClick()
 
-        fun onActionDialogCancelClick()
+        public fun onActionDialogCancelClick()
 
-        fun onActionDialogActionClick(which: Int)
+        public fun onActionDialogActionClick(which: Int)
     }
 }

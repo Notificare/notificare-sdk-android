@@ -5,5 +5,4 @@ import androidx.core.content.FileProvider
 /**
  * Empty subclass of FileProvider to prevent merging with other FileProviders from the manifest
  */
-class FileProvider : FileProvider() {
-}
+public class FileProvider : FileProvider()

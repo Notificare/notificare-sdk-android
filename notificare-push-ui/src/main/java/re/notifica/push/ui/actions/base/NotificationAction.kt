@@ -4,7 +4,7 @@ import android.content.Context
 import re.notifica.models.NotificareNotification
 import re.notifica.push.ui.models.NotificarePendingResult
 
-abstract class NotificationAction(
+internal abstract class NotificationAction(
     protected val context: Context,
     protected val notification: NotificareNotification,
     protected val action: NotificareNotification.Action,

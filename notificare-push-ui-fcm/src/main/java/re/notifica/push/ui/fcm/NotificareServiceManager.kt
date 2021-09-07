@@ -8,7 +8,7 @@ import re.notifica.models.NotificareNotification
 import re.notifica.push.ui.NotificareServiceManager
 
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-class NotificareServiceManager(
+public class NotificareServiceManager(
     private val context: Context,
 ) : NotificareServiceManager {
 

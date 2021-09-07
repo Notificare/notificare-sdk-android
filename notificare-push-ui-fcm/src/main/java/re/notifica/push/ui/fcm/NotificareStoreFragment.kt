@@ -10,7 +10,7 @@ import re.notifica.push.ui.NotificarePushUI
 import re.notifica.push.ui.notifications.fragments.base.NotificationFragment
 
 @Keep
-class NotificareStoreFragment : NotificationFragment() {
+public class NotificareStoreFragment : NotificationFragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)

@@ -14,7 +14,7 @@ import re.notifica.push.ui.*
 import re.notifica.push.ui.actions.base.NotificationAction
 import re.notifica.push.ui.models.NotificarePendingResult
 
-class NotificationWebViewAction(
+internal class NotificationWebViewAction(
     context: Context,
     notification: NotificareNotification,
     action: NotificareNotification.Action

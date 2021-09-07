@@ -20,7 +20,7 @@ import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
 
-class NotificationCallbackAction(
+internal class NotificationCallbackAction(
     context: Context,
     notification: NotificareNotification,
     action: NotificareNotification.Action

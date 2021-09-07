@@ -16,7 +16,7 @@ import re.notifica.models.NotificareNotification
 import re.notifica.push.ui.NotificarePushUI
 
 @Keep
-class NotificareMapFragment : SupportMapFragment(), OnMapReadyCallback {
+public class NotificareMapFragment : SupportMapFragment(), OnMapReadyCallback {
 
     private lateinit var notification: NotificareNotification
     //private lateinit var callback: NotificationFragment.Callback

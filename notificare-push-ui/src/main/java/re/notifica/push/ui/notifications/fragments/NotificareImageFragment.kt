@@ -13,7 +13,7 @@ import re.notifica.push.ui.NotificarePushUI
 import re.notifica.push.ui.databinding.NotificareNotificationImageFragmentBinding
 import re.notifica.push.ui.notifications.fragments.base.NotificationFragment
 
-class NotificareImageFragment : NotificationFragment() {
+public class NotificareImageFragment : NotificationFragment() {
 
     private lateinit var binding: NotificareNotificationImageFragmentBinding
 
@@ -44,7 +44,7 @@ class NotificareImageFragment : NotificationFragment() {
         }
     }
 
-    class ImageAdapter(
+    public class ImageAdapter(
         private val notification: NotificareNotification,
         fragment: Fragment
     ) : FragmentStateAdapter(fragment) {
@@ -62,7 +62,7 @@ class NotificareImageFragment : NotificationFragment() {
         }
     }
 
-    class ImageChildFragment : Fragment() {
+    public class ImageChildFragment : Fragment() {
         private lateinit var content: NotificareNotification.Content
 
         override fun onCreate(savedInstanceState: Bundle?) {
@@ -93,7 +93,7 @@ class NotificareImageFragment : NotificationFragment() {
         }
     }
 
-    companion object {
+    public companion object {
         private const val SAVED_STATE_CONTENT = "re.notifica.ui.Content"
     }
 }

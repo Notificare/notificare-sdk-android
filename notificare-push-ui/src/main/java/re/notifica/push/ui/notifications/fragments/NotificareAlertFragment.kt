@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import re.notifica.push.ui.notifications.fragments.base.NotificationFragment
 
-class NotificareAlertFragment : NotificationFragment() {
+public class NotificareAlertFragment : NotificationFragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater,

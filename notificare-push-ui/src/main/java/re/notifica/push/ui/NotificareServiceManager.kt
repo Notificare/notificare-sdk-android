@@ -5,18 +5,18 @@ import re.notifica.Notificare
 import re.notifica.internal.NotificareLogger
 import re.notifica.models.NotificareNotification
 
-interface NotificareServiceManager {
+public interface NotificareServiceManager {
 
-    val hasMobileServicesAvailable: Boolean
+    public val hasMobileServicesAvailable: Boolean
 
-    fun getFragmentCanonicalClassName(notification: NotificareNotification): String?
+    public fun getFragmentCanonicalClassName(notification: NotificareNotification): String?
 
-    object Factory {
+    public object Factory {
 
         private const val FCM_FQN = "re.notifica.push.ui.fcm.NotificareServiceManager"
         private const val HMS_FQN = "re.notifica.push.ui.hms.NotificareServiceManager"
 
-        fun create(context: Context): NotificareServiceManager? {
+        internal fun create(context: Context): NotificareServiceManager? {
             val preferredMobileServices = checkNotNull(Notificare.options)
                 .preferredMobileServices
                 ?.lowercase()

@@ -16,7 +16,7 @@ import re.notifica.models.NotificareNotification
 import re.notifica.push.ui.*
 import re.notifica.push.ui.notifications.fragments.base.NotificationFragment
 
-open class NotificationWebViewClient(
+internal open class NotificationWebViewClient(
     private val notification: NotificareNotification,
     private val callback: NotificationFragment.Callback,
 ) : WebViewClient() {

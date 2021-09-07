@@ -13,7 +13,7 @@ import re.notifica.push.ui.R
 import re.notifica.push.ui.actions.base.NotificationAction
 import re.notifica.push.ui.models.NotificarePendingResult
 
-class NotificationBrowserAction(
+internal class NotificationBrowserAction(
     context: Context,
     notification: NotificareNotification,
     action: NotificareNotification.Action

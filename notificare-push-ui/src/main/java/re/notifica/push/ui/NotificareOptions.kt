@@ -6,7 +6,7 @@ import re.notifica.Notificare
 import re.notifica.internal.NotificareLogger
 import re.notifica.internal.NotificareOptions
 
-val NotificareOptions.closeWindowQueryParameter: String
+public val NotificareOptions.closeWindowQueryParameter: String
     get() {
         return info.metaData?.getString(
             "re.notifica.push.ui.close_window_query_parameter",
@@ -14,7 +14,7 @@ val NotificareOptions.closeWindowQueryParameter: String
         ) ?: "notificareCloseWindow"
     }
 
-val NotificareOptions.openActionsQueryParameter: String
+public val NotificareOptions.openActionsQueryParameter: String
     get() {
         return info.metaData.getString(
             "re.notifica.push.ui.open_actions_query_parameter",
@@ -22,7 +22,7 @@ val NotificareOptions.openActionsQueryParameter: String
         ) ?: "notificareOpenActions"
     }
 
-val NotificareOptions.openActionQueryParameter: String
+public val NotificareOptions.openActionQueryParameter: String
     get() {
         return info.metaData.getString(
             "re.notifica.push.ui.open_action_query_parameter",
@@ -30,7 +30,7 @@ val NotificareOptions.openActionQueryParameter: String
         ) ?: "notificareOpenAction"
     }
 
-val NotificareOptions.urlSchemes: List<String>
+public val NotificareOptions.urlSchemes: List<String>
     get() {
         val resource = info.metaData?.getInt("re.notifica.push.ui.notification_url_schemes")
 
@@ -45,7 +45,7 @@ val NotificareOptions.urlSchemes: List<String>
         return emptyList()
     }
 
-val NotificareOptions.showNotificationProgress: Boolean
+public val NotificareOptions.showNotificationProgress: Boolean
     get() {
         return info.metaData?.getBoolean(
             "re.notifica.push.ui.show_notification_progress",
@@ -53,7 +53,7 @@ val NotificareOptions.showNotificationProgress: Boolean
         ) ?: true
     }
 
-val NotificareOptions.showNotificationToasts: Boolean
+public val NotificareOptions.showNotificationToasts: Boolean
     get() {
         return info.metaData?.getBoolean(
             "re.notifica.push.ui.show_notification_toasts",
@@ -61,7 +61,7 @@ val NotificareOptions.showNotificationToasts: Boolean
         ) ?: false
     }
 
-val NotificareOptions.customTabsShowTitle: Boolean
+public val NotificareOptions.customTabsShowTitle: Boolean
     get() {
         return info.metaData?.getBoolean(
             "re.notifica.push.ui.custom_tabs_show_title",
@@ -69,7 +69,7 @@ val NotificareOptions.customTabsShowTitle: Boolean
         ) ?: true
     }
 
-val NotificareOptions.customTabsColorScheme: String?
+public val NotificareOptions.customTabsColorScheme: String?
     get() {
         return info.metaData?.getString(
             "re.notifica.push.ui.custom_tabs_color_scheme",
@@ -78,7 +78,7 @@ val NotificareOptions.customTabsColorScheme: String?
     }
 
 @get:ColorInt
-val NotificareOptions.customTabsToolbarColor: Int?
+public val NotificareOptions.customTabsToolbarColor: Int?
     get() {
         val resource = info.metaData?.getInt("re.notifica.push.ui.custom_tabs_toolbar_color")
 
@@ -97,7 +97,7 @@ val NotificareOptions.customTabsToolbarColor: Int?
     }
 
 @get:ColorInt
-val NotificareOptions.customTabsNavigationBarColor: Int?
+public val NotificareOptions.customTabsNavigationBarColor: Int?
     get() {
         val resource = info.metaData?.getInt("re.notifica.push.ui.custom_tabs_navigation_bar_color")
 
@@ -116,7 +116,7 @@ val NotificareOptions.customTabsNavigationBarColor: Int?
     }
 
 @get:ColorInt
-val NotificareOptions.customTabsNavigationBarDividerColor: Int?
+public val NotificareOptions.customTabsNavigationBarDividerColor: Int?
     get() {
         val resource = info.metaData?.getInt("re.notifica.push.ui.custom_tabs_navigation_bar_divider_color")
 

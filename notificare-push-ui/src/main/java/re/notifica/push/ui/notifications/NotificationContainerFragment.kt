@@ -23,7 +23,7 @@ import re.notifica.push.ui.models.NotificarePendingResult
 import re.notifica.push.ui.notifications.fragments.NotificareCallbackActionFragment
 import re.notifica.push.ui.notifications.fragments.base.NotificationFragment
 
-class NotificationContainerFragment
+public class NotificationContainerFragment
     : Fragment(), NotificationFragment.Callback, NotificationDialog.Callback, NotificationActionsDialog.Callback {
 
     private lateinit var binding: NotificareNotificationContainerFragmentBinding
@@ -422,10 +422,10 @@ class NotificationContainerFragment
 
     // endregion
 
-    companion object {
+    public companion object {
         private const val CAMERA_REQUEST_CODE = 1
 
-        fun newInstance(
+        public fun newInstance(
             notification: NotificareNotification,
             action: NotificareNotification.Action?
         ): NotificationContainerFragment {
@@ -438,24 +438,24 @@ class NotificationContainerFragment
         }
     }
 
-    interface Callback {
-        fun onNotificationFragmentFinished()
+    public interface Callback {
+        public fun onNotificationFragmentFinished()
 
-        fun onNotificationFragmentShouldShowActionBar(notification: NotificareNotification)
+        public fun onNotificationFragmentShouldShowActionBar(notification: NotificareNotification)
 
-        fun onNotificationFragmentCanHideActionBar(notification: NotificareNotification)
+        public fun onNotificationFragmentCanHideActionBar(notification: NotificareNotification)
 
-        fun onNotificationFragmentStartProgress(notification: NotificareNotification)
+        public fun onNotificationFragmentStartProgress(notification: NotificareNotification)
 
-        fun onNotificationFragmentEndProgress(notification: NotificareNotification)
+        public fun onNotificationFragmentEndProgress(notification: NotificareNotification)
 
-        fun onNotificationFragmentActionCanceled(notification: NotificareNotification)
+        public fun onNotificationFragmentActionCanceled(notification: NotificareNotification)
 
-        fun onNotificationFragmentActionFailed(
+        public fun onNotificationFragmentActionFailed(
             notification: NotificareNotification,
             reason: String?
         )
 
-        fun onNotificationFragmentActionSucceeded(notification: NotificareNotification)
+        public fun onNotificationFragmentActionSucceeded(notification: NotificareNotification)
     }
 }
