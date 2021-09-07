@@ -247,21 +247,6 @@ public object Notificare {
         NotificareLogger.debug("Removed an OnReadyListener (${readyListeners.size} in total).")
     }
 
-    public fun onReady(fn: ((application: NotificareApplication) -> Unit)) {
-        // Add an anonymous listener.
-        addOnReadyListener(
-            object : OnReadyListener {
-                override fun onReady(application: NotificareApplication) {
-                    // Remove the anonymous listener.
-                    removeOnReadyListener(this)
-
-                    // Run the lambda function provided by the consumer.
-                    fn(application)
-                }
-            }
-        )
-    }
-
     public suspend fun fetchApplication(): NotificareApplication = withContext(Dispatchers.IO) {
         NotificareRequest.Builder()
             .get("/application/info")
