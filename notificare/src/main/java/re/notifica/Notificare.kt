@@ -8,13 +8,11 @@ import android.content.res.Resources
 import android.net.Uri
 import android.os.Build
 import androidx.core.app.NotificationManagerCompat
-import com.squareup.moshi.Moshi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import re.notifica.internal.*
-import re.notifica.internal.NotificareLaunchState
 import re.notifica.internal.network.push.*
 import re.notifica.internal.network.request.NotificareRequest
 import re.notifica.internal.storage.SharedPreferencesMigration
@@ -36,13 +34,12 @@ public object Notificare {
     public const val INTENT_EXTRA_ACTION: String = "re.notifica.intent.extra.Action"
 
     // Internal modules
-    @InternalNotificareApi
-    public val moshi: Moshi = NotificareUtils.createMoshi()
     internal lateinit var database: NotificareDatabase
         private set
     internal lateinit var sharedPreferences: NotificareSharedPreferences
         private set
     internal val sessionManager = NotificareSessionManager()
+    internal val crashReporter = CrashReporter()
 
     // internal var reachability: NotificareReachability? = null
     //     private set
@@ -50,7 +47,6 @@ public object Notificare {
     // Consumer modules
     public val eventsManager: NotificareEventsManager = NotificareEventsManager()
     public val deviceManager: NotificareDeviceManager = NotificareDeviceManager()
-    public val crashReporter: NotificareCrashReporter = NotificareCrashReporter()
 
     // Configurations
     private var context: WeakReference<Context>? = null
