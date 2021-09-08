@@ -13,7 +13,6 @@ import androidx.core.content.ContextCompat
 import com.google.android.material.snackbar.Snackbar
 import re.notifica.Notificare
 import re.notifica.NotificareCallback
-import re.notifica.internal.NotificareLogger
 import re.notifica.assets.NotificareAssets
 import re.notifica.assets.models.NotificareAsset
 import re.notifica.models.*
@@ -93,7 +92,7 @@ class MainActivity : AppCompatActivity(), Notificare.OnReadyListener, Notificare
         }
 
         val uri = intent.data ?: return
-        NotificareLogger.info("Received deep link with uri = $uri")
+        Log.i(TAG, "Received deep link with uri = $uri")
     }
 
     fun onLaunchClicked(@Suppress("UNUSED_PARAMETER") view: View) {
@@ -326,7 +325,7 @@ class MainActivity : AppCompatActivity(), Notificare.OnReadyListener, Notificare
     // region NotificarePushUI.LifecycleListener
 
     override fun onNotificationWillPresent(notification: NotificareNotification) {
-        NotificareLogger.info("---> notification will present '${notification.id}'")
+        Log.i(TAG, "---> notification will present '${notification.id}'")
 
         Handler(Looper.getMainLooper()).post {
             Toast.makeText(this, "Notification will present", Toast.LENGTH_SHORT).show()
@@ -334,7 +333,7 @@ class MainActivity : AppCompatActivity(), Notificare.OnReadyListener, Notificare
     }
 
     override fun onNotificationPresented(notification: NotificareNotification) {
-        NotificareLogger.info("---> notification presented '${notification.id}'")
+        Log.i(TAG, "---> notification presented '${notification.id}'")
 
         Handler(Looper.getMainLooper()).post {
             Toast.makeText(this, "Notification presented", Toast.LENGTH_SHORT).show()
@@ -342,7 +341,7 @@ class MainActivity : AppCompatActivity(), Notificare.OnReadyListener, Notificare
     }
 
     override fun onNotificationFinishedPresenting(notification: NotificareNotification) {
-        NotificareLogger.info("---> notification finished presenting '${notification.id}'")
+        Log.i(TAG, "---> notification finished presenting '${notification.id}'")
 
         Handler(Looper.getMainLooper()).post {
             Toast.makeText(this, "Notification finished presenting", Toast.LENGTH_SHORT).show()
@@ -350,7 +349,7 @@ class MainActivity : AppCompatActivity(), Notificare.OnReadyListener, Notificare
     }
 
     override fun onNotificationFailedToPresent(notification: NotificareNotification) {
-        NotificareLogger.info("---> notification failed to present '${notification.id}'")
+        Log.i(TAG, "---> notification failed to present '${notification.id}'")
 
         Handler(Looper.getMainLooper()).post {
             Toast.makeText(this, "Notification failed to present", Toast.LENGTH_SHORT).show()
@@ -358,7 +357,7 @@ class MainActivity : AppCompatActivity(), Notificare.OnReadyListener, Notificare
     }
 
     override fun onNotificationUrlClicked(notification: NotificareNotification, uri: Uri) {
-        NotificareLogger.info("---> notification url clicked '${notification.id}'")
+        Log.i(TAG, "---> notification url clicked '${notification.id}'")
 
         Handler(Looper.getMainLooper()).post {
             Toast.makeText(this, "Notification URL clicked", Toast.LENGTH_SHORT).show()
@@ -366,7 +365,7 @@ class MainActivity : AppCompatActivity(), Notificare.OnReadyListener, Notificare
     }
 
     override fun onActionWillExecute(notification: NotificareNotification, action: NotificareNotification.Action) {
-        NotificareLogger.info("---> action will execute '${action.label}'")
+        Log.i(TAG, "---> action will execute '${action.label}'")
 
         Handler(Looper.getMainLooper()).post {
             Toast.makeText(this, "Action will execute", Toast.LENGTH_SHORT).show()
@@ -374,7 +373,7 @@ class MainActivity : AppCompatActivity(), Notificare.OnReadyListener, Notificare
     }
 
     override fun onActionExecuted(notification: NotificareNotification, action: NotificareNotification.Action) {
-        NotificareLogger.info("---> action executed '${action.label}'")
+        Log.i(TAG, "---> action executed '${action.label}'")
 
         Handler(Looper.getMainLooper()).post {
             Toast.makeText(this, "Action executed", Toast.LENGTH_SHORT).show()
@@ -386,7 +385,7 @@ class MainActivity : AppCompatActivity(), Notificare.OnReadyListener, Notificare
         action: NotificareNotification.Action,
         error: Exception?
     ) {
-        NotificareLogger.info("---> action failed to execute '${action.label}'")
+        Log.i(TAG, "---> action failed to execute '${action.label}'")
 
         Handler(Looper.getMainLooper()).post {
             Toast.makeText(this, "Action failed to execute", Toast.LENGTH_SHORT).show()
@@ -398,7 +397,7 @@ class MainActivity : AppCompatActivity(), Notificare.OnReadyListener, Notificare
         action: NotificareNotification.Action,
         uri: Uri
     ) {
-        NotificareLogger.info("---> custom action received '$uri'")
+        Log.i(TAG, "---> custom action received '$uri'")
 
         Handler(Looper.getMainLooper()).post {
             Toast.makeText(this, "Custom action received", Toast.LENGTH_SHORT).show()
