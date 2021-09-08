@@ -8,11 +8,9 @@ import android.content.res.Resources
 import android.net.Uri
 import android.os.Build
 import androidx.core.app.NotificationManagerCompat
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import re.notifica.internal.*
+import re.notifica.internal.ktx.toCallbackFunction
 import re.notifica.internal.network.push.*
 import re.notifica.internal.network.request.NotificareRequest
 import re.notifica.internal.storage.SharedPreferencesMigration
@@ -138,6 +136,7 @@ public object Notificare {
         NotificareLogger.info("Launching Notificare.")
         state = NotificareLaunchState.LAUNCHING
 
+        @OptIn(DelicateCoroutinesApi::class)
         GlobalScope.launch(Dispatchers.IO) {
             try {
                 val application = fetchApplication()
@@ -199,6 +198,8 @@ public object Notificare {
         }
 
         NotificareLogger.info("Un-launching Notificare.")
+
+        @OptIn(DelicateCoroutinesApi::class)
         GlobalScope.launch {
             try {
                 NotificareLogger.debug("Registering a temporary device.")
@@ -259,16 +260,8 @@ public object Notificare {
             }
     }
 
-    public fun fetchApplication(callback: NotificareCallback<NotificareApplication>) {
-        GlobalScope.launch {
-            try {
-                val application = fetchApplication()
-                callback.onSuccess(application)
-            } catch (e: Exception) {
-                callback.onFailure(e)
-            }
-        }
-    }
+    public fun fetchApplication(callback: NotificareCallback<NotificareApplication>): Unit =
+        toCallbackFunction(::fetchApplication)(callback)
 
     public suspend fun fetchNotification(id: String): NotificareNotification = withContext(Dispatchers.IO) {
         if (!isConfigured) {
@@ -282,16 +275,8 @@ public object Notificare {
             .toModel()
     }
 
-    public fun fetchNotification(id: String, callback: NotificareCallback<NotificareNotification>) {
-        GlobalScope.launch {
-            try {
-                val notification = fetchNotification(id)
-                callback.onSuccess(notification)
-            } catch (e: Exception) {
-                callback.onFailure(e)
-            }
-        }
-    }
+    public fun fetchNotification(id: String, callback: NotificareCallback<NotificareNotification>): Unit =
+        toCallbackFunction(::fetchNotification)(id, callback)
 
     public suspend fun fetchDynamicLink(uri: Uri): NotificareDynamicLink = withContext(Dispatchers.IO) {
         if (!isConfigured) {
@@ -310,16 +295,8 @@ public object Notificare {
             .link
     }
 
-    public fun fetchDynamicLink(uri: Uri, callback: NotificareCallback<NotificareDynamicLink>) {
-        GlobalScope.launch {
-            try {
-                val link = fetchDynamicLink(uri)
-                callback.onSuccess(link)
-            } catch (e: Exception) {
-                callback.onFailure(e)
-            }
-        }
-    }
+    public fun fetchDynamicLink(uri: Uri, callback: NotificareCallback<NotificareDynamicLink>): Unit =
+        toCallbackFunction(::fetchDynamicLink)(uri, callback)
 
     public suspend fun createNotificationReply(
         notification: NotificareNotification,

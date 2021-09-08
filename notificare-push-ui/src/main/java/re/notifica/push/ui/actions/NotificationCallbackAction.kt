@@ -126,7 +126,9 @@ internal class NotificationCallbackAction(
                     mimeType = mimeType
                 )
 
-                NotificarePushUI.lifecycleListeners.forEach { it.onActionExecuted(notification, action) }
+                withContext(Dispatchers.Main) {
+                    NotificarePushUI.lifecycleListeners.forEach { it.onActionExecuted(notification, action) }
+                }
 
                 return@withContext
             }
@@ -141,9 +143,20 @@ internal class NotificationCallbackAction(
             GlobalScope.launch(Dispatchers.IO) {
                 try {
                     Notificare.callNotificationReplyWebhook(targetUri, params)
-                    NotificarePushUI.lifecycleListeners.forEach { it.onActionExecuted(notification, action) }
+
+                    withContext(Dispatchers.Main) {
+                        NotificarePushUI.lifecycleListeners.forEach { it.onActionExecuted(notification, action) }
+                    }
                 } catch (e: Exception) {
-                    NotificarePushUI.lifecycleListeners.forEach { it.onActionFailedToExecute(notification, action, e) }
+                    withContext(Dispatchers.Main) {
+                        NotificarePushUI.lifecycleListeners.forEach {
+                            it.onActionFailedToExecute(
+                                notification,
+                                action,
+                                e
+                            )
+                        }
+                    }
                 }
             }
 

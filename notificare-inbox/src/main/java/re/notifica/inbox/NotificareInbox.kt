@@ -17,6 +17,7 @@ import re.notifica.inbox.internal.network.push.InboxResponse
 import re.notifica.inbox.internal.workers.ExpireItemWorker
 import re.notifica.inbox.models.NotificareInboxItem
 import re.notifica.internal.NotificareLogger
+import re.notifica.internal.ktx.toCallbackFunction
 import re.notifica.internal.network.NetworkException
 import re.notifica.internal.network.request.NotificareRequest
 import re.notifica.models.NotificareNotification
@@ -147,6 +148,7 @@ public object NotificareInbox : NotificareModule() {
             return
         }
 
+        @OptIn(DelicateCoroutinesApi::class)
         GlobalScope.launch {
             try {
                 reloadInbox()
@@ -187,16 +189,8 @@ public object NotificareInbox : NotificareModule() {
         return@withContext item.notification
     }
 
-    public fun open(item: NotificareInboxItem, callback: NotificareCallback<NotificareNotification>) {
-        GlobalScope.launch {
-            try {
-                val notification = open(item)
-                callback.onSuccess(notification)
-            } catch (e: Exception) {
-                callback.onFailure(e)
-            }
-        }
-    }
+    public fun open(item: NotificareInboxItem, callback: NotificareCallback<NotificareNotification>): Unit =
+        toCallbackFunction(::open)(item, callback)
 
     public suspend fun markAsRead(item: NotificareInboxItem): Unit = withContext(Dispatchers.IO) {
         val application = Notificare.application ?: run {
@@ -220,16 +214,8 @@ public object NotificareInbox : NotificareModule() {
         Notificare.removeNotificationFromNotificationCenter(item.notification)
     }
 
-    public fun markAsRead(item: NotificareInboxItem, callback: NotificareCallback<Unit>) {
-        GlobalScope.launch {
-            try {
-                markAsRead(item)
-                callback.onSuccess(Unit)
-            } catch (e: Exception) {
-                callback.onFailure(e)
-            }
-        }
-    }
+    public fun markAsRead(item: NotificareInboxItem, callback: NotificareCallback<Unit>): Unit =
+        toCallbackFunction(::markAsRead)(item, callback)
 
     public suspend fun markAllAsRead(): Unit = withContext(Dispatchers.IO) {
         val application = Notificare.application ?: run {
@@ -259,16 +245,8 @@ public object NotificareInbox : NotificareModule() {
         clearNotificationCenter()
     }
 
-    public fun markAllAsRead(callback: NotificareCallback<Unit>) {
-        GlobalScope.launch {
-            try {
-                markAllAsRead()
-                callback.onSuccess(Unit)
-            } catch (e: Exception) {
-                callback.onFailure(e)
-            }
-        }
-    }
+    public fun markAllAsRead(callback: NotificareCallback<Unit>): Unit =
+        toCallbackFunction(::markAllAsRead)(callback)
 
     public suspend fun remove(item: NotificareInboxItem): Unit = withContext(Dispatchers.IO) {
         val application = Notificare.application ?: run {
@@ -293,16 +271,8 @@ public object NotificareInbox : NotificareModule() {
         Notificare.removeNotificationFromNotificationCenter(item.notification)
     }
 
-    public fun remove(item: NotificareInboxItem, callback: NotificareCallback<Unit>) {
-        GlobalScope.launch {
-            try {
-                remove(item)
-                callback.onSuccess(Unit)
-            } catch (e: Exception) {
-                callback.onFailure(e)
-            }
-        }
-    }
+    public fun remove(item: NotificareInboxItem, callback: NotificareCallback<Unit>): Unit =
+        toCallbackFunction(::remove)(item, callback)
 
     public suspend fun clear(): Unit = withContext(Dispatchers.IO) {
         val application = Notificare.application ?: run {
@@ -328,16 +298,8 @@ public object NotificareInbox : NotificareModule() {
         clearNotificationCenter()
     }
 
-    public fun clear(callback: NotificareCallback<Unit>) {
-        GlobalScope.launch {
-            try {
-                clear()
-                callback.onSuccess(Unit)
-            } catch (e: Exception) {
-                callback.onFailure(e)
-            }
-        }
-    }
+    public fun clear(callback: NotificareCallback<Unit>): Unit =
+        toCallbackFunction(::clear)(callback)
 
     internal suspend fun addItem(item: NotificareInboxItem): Unit = withContext(Dispatchers.IO) {
         val entity = InboxItemEntity.from(item)

@@ -15,7 +15,7 @@ import android.widget.ImageView
 import androidx.core.os.bundleOf
 import androidx.exifinterface.media.ExifInterface
 import androidx.fragment.app.Fragment
-import kotlinx.coroutines.GlobalScope
+import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
 import re.notifica.Notificare
 import re.notifica.internal.NotificareLogger
@@ -134,7 +134,7 @@ public class NotificareCallbackActionFragment private constructor() : Fragment()
     private fun onSendClicked(@Suppress("UNUSED_PARAMETER") view: View) {
         callback.onNotificationFragmentStartProgress()
 
-        GlobalScope.launch {
+        lifecycleScope.launch {
             try {
                 val mediaUrl = imageBytes?.let {
                     Notificare.uploadNotificationReplyAsset(

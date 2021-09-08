@@ -172,6 +172,7 @@ public object NotificarePush : NotificareModule() {
     }
 
     public fun disableRemoteNotifications() {
+        @OptIn(DelicateCoroutinesApi::class)
         GlobalScope.launch {
             try {
                 // Keep track of the status in local storage.
@@ -243,6 +244,7 @@ public object NotificarePush : NotificareModule() {
         // Log the notification open event.
         Notificare.eventsManager.logNotificationOpened(notification.id)
 
+        @OptIn(DelicateCoroutinesApi::class)
         GlobalScope.launch(Dispatchers.IO) {
             @Suppress("NAME_SHADOWING")
             val notification: NotificareNotification = try {
@@ -391,6 +393,7 @@ public object NotificarePush : NotificareModule() {
     private fun handleNotification(message: NotificareNotificationRemoteMessage) {
         Notificare.eventsManager.logNotificationReceived(message.id)
 
+        @OptIn(DelicateCoroutinesApi::class)
         GlobalScope.launch {
             val notification = try {
                 Notificare.fetchNotification(message.id)

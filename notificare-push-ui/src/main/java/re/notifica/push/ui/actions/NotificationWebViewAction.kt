@@ -58,7 +58,10 @@ internal class NotificationWebViewAction(
                 .launchUrl(context, uri)
 
             Notificare.createNotificationReply(notification, action)
-            NotificarePushUI.lifecycleListeners.forEach { it.onActionExecuted(notification, action) }
+
+            withContext(Dispatchers.Main) {
+                NotificarePushUI.lifecycleListeners.forEach { it.onActionExecuted(notification, action) }
+            }
         } else {
             throw Exception(context.getString(R.string.notificare_action_failed))
         }

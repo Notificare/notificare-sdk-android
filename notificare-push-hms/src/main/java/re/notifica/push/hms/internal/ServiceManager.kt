@@ -23,7 +23,7 @@ public class ServiceManager : ServiceManager() {
             .isHuaweiMobileServicesAvailable(Notificare.requireContext()) == ConnectionResult.SUCCESS
 
     override val transport: NotificareTransport
-        get() = NotificareTransport.GCM
+        get() = NotificareTransport.HMS
 
     override fun requestPushToken() {
         Thread {

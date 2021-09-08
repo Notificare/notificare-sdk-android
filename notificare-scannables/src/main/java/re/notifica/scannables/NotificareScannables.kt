@@ -6,13 +6,12 @@ import android.content.Intent
 import android.net.Uri
 import android.nfc.NfcManager
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import re.notifica.Notificare
 import re.notifica.NotificareCallback
 import re.notifica.internal.NotificareLogger
 import re.notifica.internal.common.putEnumExtra
+import re.notifica.internal.ktx.toCallbackFunction
 import re.notifica.internal.network.request.NotificareRequest
 import re.notifica.modules.NotificareModule
 import re.notifica.scannables.internal.ServiceManager
@@ -91,20 +90,8 @@ public object NotificareScannables : NotificareModule() {
             .toModel()
     }
 
-    public fun fetchScannable(tag: String, callback: NotificareCallback<NotificareScannable>) {
-        GlobalScope.launch {
-            try {
-                val scannable = fetchScannable(tag)
-                withContext(Dispatchers.Main) {
-                    callback.onSuccess(scannable)
-                }
-            } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
-                    callback.onFailure(e)
-                }
-            }
-        }
-    }
+    public fun fetchScannable(tag: String, callback: NotificareCallback<NotificareScannable>): Unit =
+        toCallbackFunction(::fetchScannable)(tag, callback)
 
 
     internal fun notifyListeners(scannable: NotificareScannable) {

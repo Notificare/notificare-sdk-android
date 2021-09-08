@@ -1,15 +1,14 @@
 package re.notifica.assets
 
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import re.notifica.Notificare
 import re.notifica.NotificareCallback
 import re.notifica.NotificareException
-import re.notifica.internal.NotificareLogger
 import re.notifica.assets.internal.network.push.FetchAssetsResponse
 import re.notifica.assets.models.NotificareAsset
+import re.notifica.internal.NotificareLogger
+import re.notifica.internal.ktx.toCallbackFunction
 import re.notifica.internal.network.request.NotificareRequest
 import re.notifica.modules.NotificareModule
 
@@ -45,14 +44,6 @@ public object NotificareAssets : NotificareModule() {
             .map { it.toModel() }
     }
 
-    public fun fetchAssets(group: String, callback: NotificareCallback<List<NotificareAsset>>) {
-        GlobalScope.launch {
-            try {
-                val assets = fetchAssets(group)
-                callback.onSuccess(assets)
-            } catch (e: Exception) {
-                callback.onFailure(e)
-            }
-        }
-    }
+    public fun fetchAssets(group: String, callback: NotificareCallback<List<NotificareAsset>>): Unit =
+        toCallbackFunction(::fetchAssets)(group, callback)
 }

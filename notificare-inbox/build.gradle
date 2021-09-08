@@ -34,6 +34,7 @@ android {
         jvmTarget = '1.8'
         freeCompilerArgs += [
                 '-Xexplicit-api=strict',
+                '-Xopt-in=kotlin.RequiresOptIn',
                 '-Xopt-in=re.notifica.InternalNotificareApi',
         ]
     }

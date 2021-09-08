@@ -4,9 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import androidx.annotation.RestrictTo
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import re.notifica.Notificare
 import re.notifica.internal.NotificareLogger
 import re.notifica.models.NotificareNotification
@@ -90,9 +88,12 @@ public object NotificarePushUI : NotificareModule() {
     ) {
         NotificareLogger.debug("Presenting notification action '${action.type}' for notification '${notification.id}'.")
 
+        @OptIn(DelicateCoroutinesApi::class)
         GlobalScope.launch(Dispatchers.IO) {
             try {
-                lifecycleListeners.forEach { it.onActionWillExecute(notification, action) }
+                withContext(Dispatchers.Main) {
+                    lifecycleListeners.forEach { it.onActionWillExecute(notification, action) }
+                }
 
                 if (action.type == NotificareNotification.Action.TYPE_CALLBACK && (action.camera || action.keyboard)) {
                     val intent = Intent(Notificare.requireContext(), notificationActivity)
@@ -109,15 +110,19 @@ public object NotificarePushUI : NotificareModule() {
                 val handler = createActionHandler(activity, notification, action) ?: run {
                     NotificareLogger.debug("Unable to create an action handler for '${action.type}'.")
 
-                    val error = Exception("Unable to create an action handler for '${action.type}'.")
-                    lifecycleListeners.forEach { it.onActionFailedToExecute(notification, action, error) }
+                    withContext(Dispatchers.Main) {
+                        val error = Exception("Unable to create an action handler for '${action.type}'.")
+                        lifecycleListeners.forEach { it.onActionFailedToExecute(notification, action, error) }
+                    }
 
                     return@launch
                 }
 
                 handler.execute()
             } catch (e: Exception) {
-                lifecycleListeners.forEach { it.onActionFailedToExecute(notification, action, e) }
+                withContext(Dispatchers.Main) {
+                    lifecycleListeners.forEach { it.onActionFailedToExecute(notification, action, e) }
+                }
             }
         }
     }
@@ -203,7 +208,7 @@ public object NotificarePushUI : NotificareModule() {
 
     public interface NotificationLifecycleListener {
         public fun onNotificationWillPresent(notification: NotificareNotification) {
-            NotificareLogger.debug("Notification will present, please override onNotificationPresented if you want to receive these events.")
+            NotificareLogger.debug("Notification will present, please override onNotificationWillPresent if you want to receive these events.")
         }
 
         public fun onNotificationPresented(notification: NotificareNotification) {

@@ -3,8 +3,6 @@ package re.notifica.sample
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import android.view.View
 import android.widget.Toast
@@ -326,58 +324,37 @@ class MainActivity : AppCompatActivity(), Notificare.OnReadyListener, Notificare
 
     override fun onNotificationWillPresent(notification: NotificareNotification) {
         Log.i(TAG, "---> notification will present '${notification.id}'")
-
-        Handler(Looper.getMainLooper()).post {
-            Toast.makeText(this, "Notification will present", Toast.LENGTH_SHORT).show()
-        }
+        Toast.makeText(this, "Notification will present", Toast.LENGTH_SHORT).show()
     }
 
     override fun onNotificationPresented(notification: NotificareNotification) {
         Log.i(TAG, "---> notification presented '${notification.id}'")
-
-        Handler(Looper.getMainLooper()).post {
-            Toast.makeText(this, "Notification presented", Toast.LENGTH_SHORT).show()
-        }
+        Toast.makeText(this, "Notification presented", Toast.LENGTH_SHORT).show()
     }
 
     override fun onNotificationFinishedPresenting(notification: NotificareNotification) {
         Log.i(TAG, "---> notification finished presenting '${notification.id}'")
-
-        Handler(Looper.getMainLooper()).post {
-            Toast.makeText(this, "Notification finished presenting", Toast.LENGTH_SHORT).show()
-        }
+        Toast.makeText(this, "Notification finished presenting", Toast.LENGTH_SHORT).show()
     }
 
     override fun onNotificationFailedToPresent(notification: NotificareNotification) {
         Log.i(TAG, "---> notification failed to present '${notification.id}'")
-
-        Handler(Looper.getMainLooper()).post {
-            Toast.makeText(this, "Notification failed to present", Toast.LENGTH_SHORT).show()
-        }
+        Toast.makeText(this, "Notification failed to present", Toast.LENGTH_SHORT).show()
     }
 
     override fun onNotificationUrlClicked(notification: NotificareNotification, uri: Uri) {
         Log.i(TAG, "---> notification url clicked '${notification.id}'")
-
-        Handler(Looper.getMainLooper()).post {
-            Toast.makeText(this, "Notification URL clicked", Toast.LENGTH_SHORT).show()
-        }
+        Toast.makeText(this, "Notification URL clicked", Toast.LENGTH_SHORT).show()
     }
 
     override fun onActionWillExecute(notification: NotificareNotification, action: NotificareNotification.Action) {
         Log.i(TAG, "---> action will execute '${action.label}'")
-
-        Handler(Looper.getMainLooper()).post {
-            Toast.makeText(this, "Action will execute", Toast.LENGTH_SHORT).show()
-        }
+        Toast.makeText(this, "Action will execute", Toast.LENGTH_SHORT).show()
     }
 
     override fun onActionExecuted(notification: NotificareNotification, action: NotificareNotification.Action) {
         Log.i(TAG, "---> action executed '${action.label}'")
-
-        Handler(Looper.getMainLooper()).post {
-            Toast.makeText(this, "Action executed", Toast.LENGTH_SHORT).show()
-        }
+        Toast.makeText(this, "Action executed", Toast.LENGTH_SHORT).show()
     }
 
     override fun onActionFailedToExecute(
@@ -386,10 +363,7 @@ class MainActivity : AppCompatActivity(), Notificare.OnReadyListener, Notificare
         error: Exception?
     ) {
         Log.i(TAG, "---> action failed to execute '${action.label}'")
-
-        Handler(Looper.getMainLooper()).post {
-            Toast.makeText(this, "Action failed to execute", Toast.LENGTH_SHORT).show()
-        }
+        Toast.makeText(this, "Action failed to execute", Toast.LENGTH_SHORT).show()
     }
 
     override fun onCustomActionReceived(
@@ -398,10 +372,7 @@ class MainActivity : AppCompatActivity(), Notificare.OnReadyListener, Notificare
         uri: Uri
     ) {
         Log.i(TAG, "---> custom action received '$uri'")
-
-        Handler(Looper.getMainLooper()).post {
-            Toast.makeText(this, "Custom action received", Toast.LENGTH_SHORT).show()
-        }
+        Toast.makeText(this, "Custom action received", Toast.LENGTH_SHORT).show()
     }
 
     // endregion

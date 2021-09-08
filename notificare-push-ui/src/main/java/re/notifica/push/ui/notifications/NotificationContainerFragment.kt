@@ -10,8 +10,7 @@ import android.provider.MediaStore
 import android.view.*
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
+import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
 import re.notifica.Notificare
 import re.notifica.internal.NotificareLogger
@@ -216,7 +215,7 @@ public class NotificationContainerFragment
             return
         }
 
-        GlobalScope.launch(Dispatchers.Main) {
+        lifecycleScope.launch {
             try {
                 callback.onNotificationFragmentStartProgress(notification)
 

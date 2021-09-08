@@ -1,16 +1,14 @@
 package re.notifica
 
 import android.content.Intent
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import re.notifica.*
 import re.notifica.internal.NotificareLogger
 import re.notifica.internal.NotificareUtils
 import re.notifica.internal.common.filterNotNull
 import re.notifica.internal.common.toByteArray
 import re.notifica.internal.common.toHex
+import re.notifica.internal.ktx.toCallbackFunction
 import re.notifica.internal.network.push.*
 import re.notifica.internal.network.request.NotificareRequest
 import re.notifica.models.NotificareDevice
@@ -77,16 +75,8 @@ public class NotificareDeviceManager {
         register(currentDevice.transport, currentDevice.id, userId, userName)
     }
 
-    public fun register(userId: String?, userName: String?, callback: NotificareCallback<Unit>) {
-        GlobalScope.launch {
-            try {
-                register(userId, userName)
-                callback.onSuccess(Unit)
-            } catch (e: Exception) {
-                callback.onFailure(e)
-            }
-        }
-    }
+    public fun register(userId: String?, userName: String?, callback: NotificareCallback<Unit>): Unit =
+        toCallbackFunction(::register)(userId, userName, callback)
 
     @InternalNotificareApi
     public suspend fun registerTemporary(): Unit = withContext(Dispatchers.IO) {
@@ -148,16 +138,8 @@ public class NotificareDeviceManager {
         }
     }
 
-    public fun updatePreferredLanguage(preferredLanguage: String?, callback: NotificareCallback<Unit>) {
-        GlobalScope.launch {
-            try {
-                updatePreferredLanguage(preferredLanguage)
-                callback.onSuccess(Unit)
-            } catch (e: Exception) {
-                callback.onFailure(e)
-            }
-        }
-    }
+    public fun updatePreferredLanguage(preferredLanguage: String?, callback: NotificareCallback<Unit>): Unit =
+        toCallbackFunction(::updatePreferredLanguage)(preferredLanguage, callback)
 
     public suspend fun fetchTags(): List<String> = withContext(Dispatchers.IO) {
         val device = checkNotificareReady()
@@ -168,31 +150,15 @@ public class NotificareDeviceManager {
             .tags
     }
 
-    public fun fetchTags(callback: NotificareCallback<List<String>>) {
-        GlobalScope.launch {
-            try {
-                val tags = fetchTags()
-                callback.onSuccess(tags)
-            } catch (e: Exception) {
-                callback.onFailure(e)
-            }
-        }
-    }
+    public fun fetchTags(callback: NotificareCallback<List<String>>): Unit =
+        toCallbackFunction(::fetchTags)(callback)
 
     public suspend fun addTag(tag: String): Unit = withContext(Dispatchers.IO) {
         addTags(listOf(tag))
     }
 
-    public fun addTag(tag: String, callback: NotificareCallback<Unit>) {
-        GlobalScope.launch {
-            try {
-                addTag(tag)
-                callback.onSuccess(Unit)
-            } catch (e: Exception) {
-                callback.onFailure(e)
-            }
-        }
-    }
+    public fun addTag(tag: String, callback: NotificareCallback<Unit>): Unit =
+        toCallbackFunction(::addTag)(tag, callback)
 
     public suspend fun addTags(tags: List<String>): Unit = withContext(Dispatchers.IO) {
         val device = checkNotificareReady()
@@ -201,31 +167,15 @@ public class NotificareDeviceManager {
             .response()
     }
 
-    public fun addTags(tags: List<String>, callback: NotificareCallback<Unit>) {
-        GlobalScope.launch {
-            try {
-                addTags(tags)
-                callback.onSuccess(Unit)
-            } catch (e: Exception) {
-                callback.onFailure(e)
-            }
-        }
-    }
+    public fun addTags(tags: List<String>, callback: NotificareCallback<Unit>): Unit =
+        toCallbackFunction(::addTags)(tags, callback)
 
     public suspend fun removeTag(tag: String): Unit = withContext(Dispatchers.IO) {
         removeTags(listOf(tag))
     }
 
-    public fun removeTag(tag: String, callback: NotificareCallback<Unit>) {
-        GlobalScope.launch {
-            try {
-                removeTag(tag)
-                callback.onSuccess(Unit)
-            } catch (e: Exception) {
-                callback.onFailure(e)
-            }
-        }
-    }
+    public fun removeTag(tag: String, callback: NotificareCallback<Unit>): Unit =
+        toCallbackFunction(::removeTag)(tag, callback)
 
     public suspend fun removeTags(tags: List<String>): Unit = withContext(Dispatchers.IO) {
         val device = checkNotificareReady()
@@ -234,16 +184,8 @@ public class NotificareDeviceManager {
             .response()
     }
 
-    public fun removeTags(tags: List<String>, callback: NotificareCallback<Unit>) {
-        GlobalScope.launch {
-            try {
-                removeTags(tags)
-                callback.onSuccess(Unit)
-            } catch (e: Exception) {
-                callback.onFailure(e)
-            }
-        }
-    }
+    public fun removeTags(tags: List<String>, callback: NotificareCallback<Unit>): Unit =
+        toCallbackFunction(::removeTags)(tags, callback)
 
     public suspend fun clearTags(): Unit = withContext(Dispatchers.IO) {
         val device = checkNotificareReady()
@@ -252,16 +194,8 @@ public class NotificareDeviceManager {
             .response()
     }
 
-    public fun clearTags(callback: NotificareCallback<Unit>) {
-        GlobalScope.launch {
-            try {
-                clearTags()
-                callback.onSuccess(Unit)
-            } catch (e: Exception) {
-                callback.onFailure(e)
-            }
-        }
-    }
+    public fun clearTags(callback: NotificareCallback<Unit>): Unit =
+        toCallbackFunction(::clearTags)(callback)
 
     public suspend fun fetchDoNotDisturb(): NotificareDoNotDisturb? = withContext(Dispatchers.IO) {
         val device = checkNotificareReady()
@@ -276,16 +210,8 @@ public class NotificareDeviceManager {
         return@withContext dnd
     }
 
-    public fun fetchDoNotDisturb(callback: NotificareCallback<NotificareDoNotDisturb?>) {
-        GlobalScope.launch {
-            try {
-                val dnd = fetchDoNotDisturb()
-                callback.onSuccess(dnd)
-            } catch (e: Exception) {
-                callback.onFailure(e)
-            }
-        }
-    }
+    public fun fetchDoNotDisturb(callback: NotificareCallback<NotificareDoNotDisturb?>): Unit =
+        toCallbackFunction(::fetchDoNotDisturb)(callback)
 
     public suspend fun updateDoNotDisturb(dnd: NotificareDoNotDisturb): Unit = withContext(Dispatchers.IO) {
         val device = checkNotificareReady()
@@ -297,16 +223,8 @@ public class NotificareDeviceManager {
         currentDevice?.dnd = dnd
     }
 
-    public fun updateDoNotDisturb(dnd: NotificareDoNotDisturb, callback: NotificareCallback<Unit>) {
-        GlobalScope.launch {
-            try {
-                updateDoNotDisturb(dnd)
-                callback.onSuccess(Unit)
-            } catch (e: Exception) {
-                callback.onFailure(e)
-            }
-        }
-    }
+    public fun updateDoNotDisturb(dnd: NotificareDoNotDisturb, callback: NotificareCallback<Unit>): Unit =
+        toCallbackFunction(::updateDoNotDisturb)(dnd, callback)
 
     public suspend fun clearDoNotDisturb(): Unit = withContext(Dispatchers.IO) {
         val device = checkNotificareReady()
@@ -318,16 +236,8 @@ public class NotificareDeviceManager {
         currentDevice?.dnd = null
     }
 
-    public fun clearDoNotDisturb(callback: NotificareCallback<Unit>) {
-        GlobalScope.launch {
-            try {
-                clearDoNotDisturb()
-                callback.onSuccess(Unit)
-            } catch (e: Exception) {
-                callback.onFailure(e)
-            }
-        }
-    }
+    public fun clearDoNotDisturb(callback: NotificareCallback<Unit>): Unit =
+        toCallbackFunction(::clearDoNotDisturb)(callback)
 
     public suspend fun fetchUserData(): NotificareUserData = withContext(Dispatchers.IO) {
         val device = checkNotificareReady()
@@ -343,16 +253,8 @@ public class NotificareDeviceManager {
         return@withContext userData
     }
 
-    public fun fetchUserData(callback: NotificareCallback<NotificareUserData>) {
-        GlobalScope.launch {
-            try {
-                val userData = fetchUserData()
-                callback.onSuccess(userData)
-            } catch (e: Exception) {
-                callback.onFailure(e)
-            }
-        }
-    }
+    public fun fetchUserData(callback: NotificareCallback<NotificareUserData>): Unit =
+        toCallbackFunction(::fetchUserData)(callback)
 
     public suspend fun updateUserData(userData: NotificareUserData): Unit = withContext(Dispatchers.IO) {
         val device = checkNotificareReady()
@@ -364,16 +266,8 @@ public class NotificareDeviceManager {
         currentDevice?.userData = userData
     }
 
-    public fun updateUserData(userData: NotificareUserData, callback: NotificareCallback<Unit>) {
-        GlobalScope.launch {
-            try {
-                updateUserData(userData)
-                callback.onSuccess(Unit)
-            } catch (e: Exception) {
-                callback.onFailure(e)
-            }
-        }
-    }
+    public fun updateUserData(userData: NotificareUserData, callback: NotificareCallback<Unit>): Unit =
+        toCallbackFunction(::updateUserData)(userData, callback)
 
     internal suspend fun delete(): Unit = withContext(Dispatchers.IO) {
         val device = checkNotificareReady()
@@ -527,6 +421,7 @@ public class NotificareDeviceManager {
     }
 
     internal fun registerTestDevice(nonce: String, callback: NotificareCallback<Unit>) {
+        @OptIn(DelicateCoroutinesApi::class)
         GlobalScope.launch {
             withContext(Dispatchers.IO) {
                 try {

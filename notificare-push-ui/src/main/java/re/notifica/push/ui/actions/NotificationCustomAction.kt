@@ -21,10 +21,15 @@ internal class NotificationCustomAction(
         val uri = action.target?.let { Uri.parse(it) }
 
         if (uri != null && uri.scheme != null && uri.host != null) {
-            NotificarePushUI.lifecycleListeners.forEach { it.onCustomActionReceived(notification, action, uri) }
+            withContext(Dispatchers.Main) {
+                NotificarePushUI.lifecycleListeners.forEach { it.onCustomActionReceived(notification, action, uri) }
+            }
 
             Notificare.createNotificationReply(notification, action)
-            NotificarePushUI.lifecycleListeners.forEach { it.onActionExecuted(notification, action) }
+
+            withContext(Dispatchers.Main) {
+                NotificarePushUI.lifecycleListeners.forEach { it.onActionExecuted(notification, action) }
+            }
         } else {
             throw Exception(context.getString(R.string.notificare_action_failed))
         }
