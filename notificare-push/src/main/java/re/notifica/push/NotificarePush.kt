@@ -138,6 +138,7 @@ public object NotificarePush : NotificareModule() {
         private set(value) {
             if (::sharedPreferences.isInitialized) {
                 sharedPreferences.allowedUI = value
+                return
             }
 
             NotificareLogger.warning("Calling this method requires Notificare to have been configured.")
