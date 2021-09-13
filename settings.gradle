@@ -1,5 +1,6 @@
 include ':notificare'
 include ':notificare-assets'
+include ':notificare-authentication'
 include ':notificare-inbox'
 include ':notificare-push'
 include ':notificare-push-fcm'

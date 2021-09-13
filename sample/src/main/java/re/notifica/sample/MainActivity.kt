@@ -13,6 +13,10 @@ import re.notifica.Notificare
 import re.notifica.NotificareCallback
 import re.notifica.assets.NotificareAssets
 import re.notifica.assets.models.NotificareAsset
+import re.notifica.authentication.NotificareAuthentication
+import re.notifica.authentication.models.NotificareUser
+import re.notifica.authentication.models.NotificareUserPreference
+import re.notifica.authentication.models.NotificareUserSegment
 import re.notifica.models.*
 import re.notifica.push.NotificarePush
 import re.notifica.push.ui.NotificarePushUI
@@ -89,8 +93,39 @@ class MainActivity : AppCompatActivity(), Notificare.OnReadyListener, Notificare
             }
         }
 
+        val validateUserToken = NotificareAuthentication.parseValidateUserToken(intent)
+        if (validateUserToken != null) {
+            NotificareAuthentication.validateUser(validateUserToken, object : NotificareCallback<Unit> {
+                override fun onSuccess(result: Unit) {
+                    Log.i(TAG, "User validated.")
+                }
+
+                override fun onFailure(e: Exception) {
+                    Log.e(TAG, "Failed to validate user.", e)
+                }
+            })
+
+            return
+        }
+
+        val passwordResetToken = NotificareAuthentication.parsePasswordResetToken(intent)
+        if (passwordResetToken != null) {
+            NotificareAuthentication.resetPassword("123456", passwordResetToken, object : NotificareCallback<Unit> {
+                override fun onSuccess(result: Unit) {
+                    Log.i(TAG, "User password reset.")
+                }
+
+                override fun onFailure(e: Exception) {
+                    Log.e(TAG, "Failed to reset user password.", e)
+                }
+            })
+
+            return
+        }
+
         val uri = intent.data ?: return
         Log.i(TAG, "Received deep link with uri = $uri")
+        Toast.makeText(this, "Deep link = $uri", Toast.LENGTH_SHORT).show()
     }
 
     fun onLaunchClicked(@Suppress("UNUSED_PARAMETER") view: View) {
@@ -308,6 +343,252 @@ class MainActivity : AppCompatActivity(), Notificare.OnReadyListener, Notificare
         } else {
             NotificareScannables.startQrCodeScannableSession(this)
         }
+    }
+
+
+    fun onCreateUserAccountClicked(@Suppress("UNUSED_PARAMETER") view: View) {
+        NotificareAuthentication.createAccount(
+            email = "helder+1@notifica.re",
+            password = "123456",
+            name = "Helder Pinhal",
+            callback = object : NotificareCallback<Unit> {
+                override fun onSuccess(result: Unit) {
+                    Snackbar.make(binding.root, "Done.", Snackbar.LENGTH_SHORT).show()
+                }
+
+                override fun onFailure(e: Exception) {
+                    Snackbar.make(binding.root, "Error: ${e.message}", Snackbar.LENGTH_SHORT).show()
+                }
+            })
+    }
+
+    fun onLoginClicked(@Suppress("UNUSED_PARAMETER") view: View) {
+        NotificareAuthentication.login("helder@notifica.re", "123456", object : NotificareCallback<Unit> {
+            override fun onSuccess(result: Unit) {
+                Snackbar.make(binding.root, "Done.", Snackbar.LENGTH_SHORT).show()
+            }
+
+            override fun onFailure(e: Exception) {
+                Snackbar.make(binding.root, "Error: ${e.message}", Snackbar.LENGTH_SHORT).show()
+            }
+        })
+    }
+
+    fun onLogoutClicked(@Suppress("UNUSED_PARAMETER") view: View) {
+        NotificareAuthentication.logout(object : NotificareCallback<Unit> {
+            override fun onSuccess(result: Unit) {
+                Snackbar.make(binding.root, "Done.", Snackbar.LENGTH_SHORT).show()
+            }
+
+            override fun onFailure(e: Exception) {
+                Snackbar.make(binding.root, "Error: ${e.message}", Snackbar.LENGTH_SHORT).show()
+            }
+        })
+    }
+
+    fun onFetchUserDetailsClicked(@Suppress("UNUSED_PARAMETER") view: View) {
+        NotificareAuthentication.fetchUserDetails(object : NotificareCallback<NotificareUser> {
+            override fun onSuccess(result: NotificareUser) {
+                Log.i(TAG, "User: $result")
+                Snackbar.make(binding.root, "$result", Snackbar.LENGTH_SHORT).show()
+            }
+
+            override fun onFailure(e: Exception) {
+                Snackbar.make(binding.root, "Error: ${e.message}", Snackbar.LENGTH_SHORT).show()
+            }
+        })
+    }
+
+    fun onFetchUserPreferencesClicked(@Suppress("UNUSED_PARAMETER") view: View) {
+        NotificareAuthentication.fetchUserPreferences(object : NotificareCallback<List<NotificareUserPreference>> {
+            override fun onSuccess(result: List<NotificareUserPreference>) {
+                Log.i(TAG, "User preferences: $result")
+                Snackbar.make(binding.root, "$result", Snackbar.LENGTH_SHORT).show()
+            }
+
+            override fun onFailure(e: Exception) {
+                Snackbar.make(binding.root, "Error: ${e.message}", Snackbar.LENGTH_SHORT).show()
+            }
+        })
+    }
+
+    fun onFetchUserSegmentsClicked(@Suppress("UNUSED_PARAMETER") view: View) {
+        NotificareAuthentication.fetchUserSegments(object : NotificareCallback<List<NotificareUserSegment>> {
+            override fun onSuccess(result: List<NotificareUserSegment>) {
+                Log.i(TAG, "User segments: $result")
+                Snackbar.make(binding.root, "$result", Snackbar.LENGTH_SHORT).show()
+            }
+
+            override fun onFailure(e: Exception) {
+                Snackbar.make(binding.root, "Error: ${e.message}", Snackbar.LENGTH_SHORT).show()
+            }
+        })
+    }
+
+    fun onSendPasswordResetClicked(@Suppress("UNUSED_PARAMETER") view: View) {
+        NotificareAuthentication.sendPasswordReset("helder@notifica.re", object : NotificareCallback<Unit> {
+            override fun onSuccess(result: Unit) {
+                Snackbar.make(binding.root, "Done.", Snackbar.LENGTH_SHORT).show()
+            }
+
+            override fun onFailure(e: Exception) {
+                Snackbar.make(binding.root, "Error: ${e.message}", Snackbar.LENGTH_SHORT).show()
+            }
+        })
+    }
+
+    fun onResetPasswordClicked(@Suppress("UNUSED_PARAMETER") view: View) {
+        NotificareAuthentication.resetPassword(
+            password = "123456",
+            token = "2825735c68d7b649c237becb6a245bbc6ab7c4684ce711aa03bc14e0cf9b99c7",
+            callback = object : NotificareCallback<Unit> {
+                override fun onSuccess(result: Unit) {
+                    Snackbar.make(binding.root, "Done.", Snackbar.LENGTH_SHORT).show()
+                }
+
+                override fun onFailure(e: Exception) {
+                    Snackbar.make(binding.root, "Error: ${e.message}", Snackbar.LENGTH_SHORT).show()
+                }
+            }
+        )
+    }
+
+    fun onChangePasswordClicked(@Suppress("UNUSED_PARAMETER") view: View) {
+        NotificareAuthentication.changePassword("123456", object : NotificareCallback<Unit> {
+            override fun onSuccess(result: Unit) {
+                Snackbar.make(binding.root, "Done.", Snackbar.LENGTH_SHORT).show()
+            }
+
+            override fun onFailure(e: Exception) {
+                Snackbar.make(binding.root, "Error: ${e.message}", Snackbar.LENGTH_SHORT).show()
+            }
+        })
+    }
+
+    fun onValidateUserClicked(@Suppress("UNUSED_PARAMETER") view: View) {
+        NotificareAuthentication.validateUser(
+            token = "46f9a90a64652bb986907fd4784457ab0b738b269abd1ac80359589398dd7801",
+            callback = object : NotificareCallback<Unit> {
+                override fun onSuccess(result: Unit) {
+                    Snackbar.make(binding.root, "Done.", Snackbar.LENGTH_SHORT).show()
+                }
+
+                override fun onFailure(e: Exception) {
+                    Snackbar.make(binding.root, "Error: ${e.message}", Snackbar.LENGTH_SHORT).show()
+                }
+            }
+        )
+    }
+
+    fun onGeneratePushEmailClicked(@Suppress("UNUSED_PARAMETER") view: View) {
+        NotificareAuthentication.generatePushEmailAddress(object : NotificareCallback<NotificareUser> {
+            override fun onSuccess(result: NotificareUser) {
+                Log.i(TAG, "$result")
+                Snackbar.make(binding.root, "$result", Snackbar.LENGTH_SHORT).show()
+            }
+
+            override fun onFailure(e: Exception) {
+                Snackbar.make(binding.root, "Error: ${e.message}", Snackbar.LENGTH_SHORT).show()
+            }
+        })
+    }
+
+    fun onAddUserSegmentClicked(@Suppress("UNUSED_PARAMETER") view: View) {
+        NotificareAuthentication.fetchUserSegments(object : NotificareCallback<List<NotificareUserSegment>> {
+            override fun onSuccess(result: List<NotificareUserSegment>) {
+                val segment = result.first()
+
+                NotificareAuthentication.addUserSegment(segment, object : NotificareCallback<Unit> {
+                    override fun onSuccess(result: Unit) {
+                        Snackbar.make(binding.root, "Done.", Snackbar.LENGTH_SHORT).show()
+                    }
+
+                    override fun onFailure(e: Exception) {
+                        Snackbar.make(binding.root, "Error: ${e.message}", Snackbar.LENGTH_SHORT).show()
+                    }
+                })
+            }
+
+            override fun onFailure(e: Exception) {
+                Snackbar.make(binding.root, "Error: ${e.message}", Snackbar.LENGTH_SHORT).show()
+            }
+        })
+    }
+
+    fun onRemoveUserSegmentClicked(@Suppress("UNUSED_PARAMETER") view: View) {
+        NotificareAuthentication.fetchUserSegments(object : NotificareCallback<List<NotificareUserSegment>> {
+            override fun onSuccess(result: List<NotificareUserSegment>) {
+                val segment = result.first()
+
+                NotificareAuthentication.removeUserSegment(segment, object : NotificareCallback<Unit> {
+                    override fun onSuccess(result: Unit) {
+                        Snackbar.make(binding.root, "Done.", Snackbar.LENGTH_SHORT).show()
+                    }
+
+                    override fun onFailure(e: Exception) {
+                        Snackbar.make(binding.root, "Error: ${e.message}", Snackbar.LENGTH_SHORT).show()
+                    }
+                })
+            }
+
+            override fun onFailure(e: Exception) {
+                Snackbar.make(binding.root, "Error: ${e.message}", Snackbar.LENGTH_SHORT).show()
+            }
+        })
+    }
+
+    fun onAddUserSegmentToPreferenceClicked(@Suppress("UNUSED_PARAMETER") view: View) {
+        NotificareAuthentication.fetchUserPreferences(object : NotificareCallback<List<NotificareUserPreference>> {
+            override fun onSuccess(result: List<NotificareUserPreference>) {
+                val preference = result.first()
+                val option = preference.options.first()
+
+                NotificareAuthentication.addUserSegmentToPreference(
+                    option,
+                    preference,
+                    object : NotificareCallback<Unit> {
+                        override fun onSuccess(result: Unit) {
+                            Snackbar.make(binding.root, "Done.", Snackbar.LENGTH_SHORT).show()
+                        }
+
+                        override fun onFailure(e: Exception) {
+                            Snackbar.make(binding.root, "Error: ${e.message}", Snackbar.LENGTH_SHORT).show()
+                        }
+                    }
+                )
+            }
+
+            override fun onFailure(e: Exception) {
+                Snackbar.make(binding.root, "Error: ${e.message}", Snackbar.LENGTH_SHORT).show()
+            }
+        })
+    }
+
+    fun onRemoveUserSegmentFromPreferenceClicked(@Suppress("UNUSED_PARAMETER") view: View) {
+        NotificareAuthentication.fetchUserPreferences(object : NotificareCallback<List<NotificareUserPreference>> {
+            override fun onSuccess(result: List<NotificareUserPreference>) {
+                val preference = result.first()
+                val option = preference.options.first()
+
+                NotificareAuthentication.removeUserSegmentFromPreference(
+                    option,
+                    preference,
+                    object : NotificareCallback<Unit> {
+                        override fun onSuccess(result: Unit) {
+                            Snackbar.make(binding.root, "Done.", Snackbar.LENGTH_SHORT).show()
+                        }
+
+                        override fun onFailure(e: Exception) {
+                            Snackbar.make(binding.root, "Error: ${e.message}", Snackbar.LENGTH_SHORT).show()
+                        }
+                    }
+                )
+            }
+
+            override fun onFailure(e: Exception) {
+                Snackbar.make(binding.root, "Error: ${e.message}", Snackbar.LENGTH_SHORT).show()
+            }
+        })
     }
 
     // region Notificare.OnReadyListener

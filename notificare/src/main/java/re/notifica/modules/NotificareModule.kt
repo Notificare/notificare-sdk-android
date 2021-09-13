@@ -21,7 +21,8 @@ public abstract class NotificareModule {
         PUSH_UI(fqn = "re.notifica.push.ui.NotificarePushUI"),
         INBOX(fqn = "re.notifica.inbox.NotificareInbox"),
         ASSETS(fqn = "re.notifica.assets.NotificareAssets"),
-        SCANNABLES(fqn = "re.notifica.scannables.NotificareScannables");
+        SCANNABLES(fqn = "re.notifica.scannables.NotificareScannables"),
+        AUTHENTICATION(fqn = "re.notifica.authentication.NotificareAuthentication");
 
         val isAvailable: Boolean
             get() {
