@@ -7,9 +7,9 @@ import kotlinx.coroutines.withContext
 import okhttp3.FormBody
 import re.notifica.Notificare
 import re.notifica.NotificareCallback
-import re.notifica.NotificareLogger
 import re.notifica.authentication.NotificareAuthentication
 import re.notifica.authentication.internal.network.push.OAuthResponse
+import re.notifica.internal.NotificareLogger
 import re.notifica.internal.network.request.NotificareRequest
 
 internal class AuthenticationRenewal : NotificareRequest.AuthenticationRefreshListener {

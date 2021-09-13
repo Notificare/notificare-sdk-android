@@ -5,8 +5,9 @@ import android.content.SharedPreferences
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKeys
 import re.notifica.Notificare
-import re.notifica.NotificareLogger
 import re.notifica.authentication.internal.oauth.Credentials
+import re.notifica.internal.NotificareLogger
+import re.notifica.internal.moshi
 
 internal class NotificareSharedPreferences(context: Context) {
 

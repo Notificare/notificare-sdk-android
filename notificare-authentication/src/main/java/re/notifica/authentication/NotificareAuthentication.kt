@@ -4,8 +4,6 @@ import android.content.Intent
 import android.content.SharedPreferences
 import com.google.api.client.auth.oauth2.GoogleStorageUtils
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okhttp3.FormBody
 import re.notifica.*
@@ -16,10 +14,12 @@ import re.notifica.authentication.internal.storage.preferences.NotificareSharedP
 import re.notifica.authentication.models.NotificareUser
 import re.notifica.authentication.models.NotificareUserPreference
 import re.notifica.authentication.models.NotificareUserSegment
+import re.notifica.internal.NotificareLogger
+import re.notifica.internal.ktx.toCallbackFunction
 import re.notifica.internal.network.request.NotificareRequest
 import re.notifica.modules.NotificareModule
 
-object NotificareAuthentication : NotificareModule() {
+public object NotificareAuthentication : NotificareModule() {
 
     internal lateinit var sharedPreferences: NotificareSharedPreferences
     private val authenticationRenewal = AuthenticationRenewal()
@@ -49,10 +49,10 @@ object NotificareAuthentication : NotificareModule() {
 
     // endregion
 
-    val isLoggedIn: Boolean
+    public val isLoggedIn: Boolean
         get() = sharedPreferences.credentials != null
 
-    suspend fun login(email: String, password: String): Unit = withContext(Dispatchers.IO) {
+    public suspend fun login(email: String, password: String): Unit = withContext(Dispatchers.IO) {
         checkPrerequisites()
 
         val device = checkNotNull(Notificare.deviceManager.currentDevice)
@@ -86,22 +86,10 @@ object NotificareAuthentication : NotificareModule() {
         Notificare.eventsManager.logUserLogin()
     }
 
-    fun login(email: String, password: String, callback: NotificareCallback<Unit>) {
-        GlobalScope.launch {
-            try {
-                val result = login(email, password)
-                withContext(Dispatchers.Main) {
-                    callback.onSuccess(result)
-                }
-            } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
-                    callback.onFailure(e)
-                }
-            }
-        }
-    }
+    public fun login(email: String, password: String, callback: NotificareCallback<Unit>): Unit =
+        toCallbackFunction(::login)(email, password, callback)
 
-    suspend fun logout(): Unit = withContext(Dispatchers.IO) {
+    public suspend fun logout(): Unit = withContext(Dispatchers.IO) {
         checkPrerequisites()
         checkUserLoggedInPrerequisite()
 
@@ -121,22 +109,10 @@ object NotificareAuthentication : NotificareModule() {
         Notificare.eventsManager.logUserLogout()
     }
 
-    fun logout(callback: NotificareCallback<Unit>) {
-        GlobalScope.launch {
-            try {
-                val result = logout()
-                withContext(Dispatchers.Main) {
-                    callback.onSuccess(result)
-                }
-            } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
-                    callback.onFailure(e)
-                }
-            }
-        }
-    }
+    public fun logout(callback: NotificareCallback<Unit>): Unit =
+        toCallbackFunction(::logout)(callback)
 
-    suspend fun fetchUserDetails(): NotificareUser = withContext(Dispatchers.IO) {
+    public suspend fun fetchUserDetails(): NotificareUser = withContext(Dispatchers.IO) {
         checkPrerequisites()
         checkUserLoggedInPrerequisite()
 
@@ -155,22 +131,10 @@ object NotificareAuthentication : NotificareModule() {
         return@withContext user
     }
 
-    fun fetchUserDetails(callback: NotificareCallback<NotificareUser>) {
-        GlobalScope.launch {
-            try {
-                val result = fetchUserDetails()
-                withContext(Dispatchers.Main) {
-                    callback.onSuccess(result)
-                }
-            } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
-                    callback.onFailure(e)
-                }
-            }
-        }
-    }
+    public fun fetchUserDetails(callback: NotificareCallback<NotificareUser>): Unit =
+        toCallbackFunction(::fetchUserDetails)(callback)
 
-    suspend fun changePassword(password: String): Unit = withContext(Dispatchers.IO) {
+    public suspend fun changePassword(password: String): Unit = withContext(Dispatchers.IO) {
         checkPrerequisites()
         checkUserLoggedInPrerequisite()
 
@@ -189,22 +153,10 @@ object NotificareAuthentication : NotificareModule() {
         Notificare.eventsManager.logChangePassword()
     }
 
-    fun changePassword(password: String, callback: NotificareCallback<Unit>) {
-        GlobalScope.launch {
-            try {
-                val result = changePassword(password)
-                withContext(Dispatchers.Main) {
-                    callback.onSuccess(result)
-                }
-            } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
-                    callback.onFailure(e)
-                }
-            }
-        }
-    }
+    public fun changePassword(password: String, callback: NotificareCallback<Unit>): Unit =
+        toCallbackFunction(::changePassword)(password, callback)
 
-    suspend fun generatePushEmailAddress(): NotificareUser = withContext(Dispatchers.IO) {
+    public suspend fun generatePushEmailAddress(): NotificareUser = withContext(Dispatchers.IO) {
         checkPrerequisites()
         checkUserLoggedInPrerequisite()
 
@@ -223,22 +175,10 @@ object NotificareAuthentication : NotificareModule() {
         return@withContext user
     }
 
-    fun generatePushEmailAddress(callback: NotificareCallback<NotificareUser>) {
-        GlobalScope.launch {
-            try {
-                val result = generatePushEmailAddress()
-                withContext(Dispatchers.Main) {
-                    callback.onSuccess(result)
-                }
-            } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
-                    callback.onFailure(e)
-                }
-            }
-        }
-    }
+    public fun generatePushEmailAddress(callback: NotificareCallback<NotificareUser>): Unit =
+        toCallbackFunction(::generatePushEmailAddress)(callback)
 
-    suspend fun createAccount(
+    public suspend fun createAccount(
         email: String,
         password: String,
         name: String? = null
@@ -258,22 +198,14 @@ object NotificareAuthentication : NotificareModule() {
         Notificare.eventsManager.logCreateUserAccount()
     }
 
-    fun createAccount(email: String, password: String, name: String? = null, callback: NotificareCallback<Unit>) {
-        GlobalScope.launch {
-            try {
-                val result = createAccount(email, password, name)
-                withContext(Dispatchers.Main) {
-                    callback.onSuccess(result)
-                }
-            } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
-                    callback.onFailure(e)
-                }
-            }
-        }
-    }
+    public fun createAccount(
+        email: String,
+        password: String,
+        name: String? = null,
+        callback: NotificareCallback<Unit>
+    ): Unit = toCallbackFunction(::createAccount)(email, password, name, callback)
 
-    suspend fun validateUser(token: String): Unit = withContext(Dispatchers.IO) {
+    public suspend fun validateUser(token: String): Unit = withContext(Dispatchers.IO) {
         checkPrerequisites()
 
         NotificareRequest.Builder()
@@ -283,22 +215,10 @@ object NotificareAuthentication : NotificareModule() {
         Notificare.eventsManager.logValidateUser()
     }
 
-    fun validateUser(token: String, callback: NotificareCallback<Unit>) {
-        GlobalScope.launch {
-            try {
-                val result = validateUser(token)
-                withContext(Dispatchers.Main) {
-                    callback.onSuccess(result)
-                }
-            } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
-                    callback.onFailure(e)
-                }
-            }
-        }
-    }
+    public fun validateUser(token: String, callback: NotificareCallback<Unit>): Unit =
+        toCallbackFunction(::validateUser)(token, callback)
 
-    suspend fun sendPasswordReset(email: String): Unit = withContext(Dispatchers.IO) {
+    public suspend fun sendPasswordReset(email: String): Unit = withContext(Dispatchers.IO) {
         checkPrerequisites()
 
         val payload = SendPasswordResetPayload(
@@ -312,22 +232,10 @@ object NotificareAuthentication : NotificareModule() {
         Notificare.eventsManager.logSendPasswordReset()
     }
 
-    fun sendPasswordReset(email: String, callback: NotificareCallback<Unit>) {
-        GlobalScope.launch {
-            try {
-                val result = sendPasswordReset(email)
-                withContext(Dispatchers.Main) {
-                    callback.onSuccess(result)
-                }
-            } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
-                    callback.onFailure(e)
-                }
-            }
-        }
-    }
+    public fun sendPasswordReset(email: String, callback: NotificareCallback<Unit>): Unit =
+        toCallbackFunction(::sendPasswordReset)(email, callback)
 
-    suspend fun resetPassword(password: String, token: String): Unit = withContext(Dispatchers.IO) {
+    public suspend fun resetPassword(password: String, token: String): Unit = withContext(Dispatchers.IO) {
         checkPrerequisites()
 
         val payload = ResetPasswordPayload(
@@ -341,22 +249,10 @@ object NotificareAuthentication : NotificareModule() {
         Notificare.eventsManager.logResetPassword()
     }
 
-    fun resetPassword(password: String, token: String, callback: NotificareCallback<Unit>) {
-        GlobalScope.launch {
-            try {
-                val result = resetPassword(password, token)
-                withContext(Dispatchers.Main) {
-                    callback.onSuccess(result)
-                }
-            } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
-                    callback.onFailure(e)
-                }
-            }
-        }
-    }
+    public fun resetPassword(password: String, token: String, callback: NotificareCallback<Unit>): Unit =
+        toCallbackFunction(::resetPassword)(password, token, callback)
 
-    suspend fun fetchUserPreferences(): List<NotificareUserPreference> = withContext(Dispatchers.IO) {
+    public suspend fun fetchUserPreferences(): List<NotificareUserPreference> = withContext(Dispatchers.IO) {
         checkPrerequisites()
         checkUserLoggedInPrerequisite()
 
@@ -391,22 +287,10 @@ object NotificareAuthentication : NotificareModule() {
             .filterNotNull()
     }
 
-    fun fetchUserPreferences(callback: NotificareCallback<List<NotificareUserPreference>>) {
-        GlobalScope.launch {
-            try {
-                val result = fetchUserPreferences()
-                withContext(Dispatchers.Main) {
-                    callback.onSuccess(result)
-                }
-            } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
-                    callback.onFailure(e)
-                }
-            }
-        }
-    }
+    public fun fetchUserPreferences(callback: NotificareCallback<List<NotificareUserPreference>>): Unit =
+        toCallbackFunction(::fetchUserPreferences)(callback)
 
-    suspend fun fetchUserSegments(): List<NotificareUserSegment> = withContext(Dispatchers.IO) {
+    public suspend fun fetchUserSegments(): List<NotificareUserSegment> = withContext(Dispatchers.IO) {
         checkPrerequisites()
 
         NotificareRequest.Builder()
@@ -416,22 +300,10 @@ object NotificareAuthentication : NotificareModule() {
             .map { it.toModel() }
     }
 
-    fun fetchUserSegments(callback: NotificareCallback<List<NotificareUserSegment>>) {
-        GlobalScope.launch {
-            try {
-                val result = fetchUserSegments()
-                withContext(Dispatchers.Main) {
-                    callback.onSuccess(result)
-                }
-            } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
-                    callback.onFailure(e)
-                }
-            }
-        }
-    }
+    public fun fetchUserSegments(callback: NotificareCallback<List<NotificareUserSegment>>): Unit =
+        toCallbackFunction(::fetchUserSegments)(callback)
 
-    suspend fun addUserSegment(segment: NotificareUserSegment): Unit = withContext(Dispatchers.IO) {
+    public suspend fun addUserSegment(segment: NotificareUserSegment): Unit = withContext(Dispatchers.IO) {
         checkPrerequisites()
         checkUserLoggedInPrerequisite()
 
@@ -444,22 +316,10 @@ object NotificareAuthentication : NotificareModule() {
             .response()
     }
 
-    fun addUserSegment(segment: NotificareUserSegment, callback: NotificareCallback<Unit>) {
-        GlobalScope.launch {
-            try {
-                val result = addUserSegment(segment)
-                withContext(Dispatchers.Main) {
-                    callback.onSuccess(result)
-                }
-            } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
-                    callback.onFailure(e)
-                }
-            }
-        }
-    }
+    public fun addUserSegment(segment: NotificareUserSegment, callback: NotificareCallback<Unit>): Unit =
+        toCallbackFunction(::addUserSegment)(segment, callback)
 
-    suspend fun removeUserSegment(segment: NotificareUserSegment): Unit = withContext(Dispatchers.IO) {
+    public suspend fun removeUserSegment(segment: NotificareUserSegment): Unit = withContext(Dispatchers.IO) {
         checkPrerequisites()
         checkUserLoggedInPrerequisite()
 
@@ -472,126 +332,62 @@ object NotificareAuthentication : NotificareModule() {
             .response()
     }
 
-    fun removeUserSegment(segment: NotificareUserSegment, callback: NotificareCallback<Unit>) {
-        GlobalScope.launch {
-            try {
-                val result = removeUserSegment(segment)
-                withContext(Dispatchers.Main) {
-                    callback.onSuccess(result)
-                }
-            } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
-                    callback.onFailure(e)
-                }
-            }
-        }
-    }
+    public fun removeUserSegment(segment: NotificareUserSegment, callback: NotificareCallback<Unit>): Unit =
+        toCallbackFunction(::removeUserSegment)(segment, callback)
 
-    suspend fun addUserSegmentToPreference(
+    public suspend fun addUserSegmentToPreference(
         segment: NotificareUserSegment,
         preference: NotificareUserPreference
     ): Unit = withContext(Dispatchers.IO) {
         addUserSegmentToPreference(segment.id, preference)
     }
 
-    fun addUserSegmentToPreference(
+    public fun addUserSegmentToPreference(
         segment: NotificareUserSegment,
         preference: NotificareUserPreference,
         callback: NotificareCallback<Unit>
-    ) {
-        GlobalScope.launch {
-            try {
-                val result = addUserSegmentToPreference(segment, preference)
-                withContext(Dispatchers.Main) {
-                    callback.onSuccess(result)
-                }
-            } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
-                    callback.onFailure(e)
-                }
-            }
-        }
-    }
+    ): Unit = toCallbackFunction(suspend { addUserSegmentToPreference(segment, preference) })(callback)
 
-    suspend fun addUserSegmentToPreference(
+    public suspend fun addUserSegmentToPreference(
         option: NotificareUserPreference.Option,
         preference: NotificareUserPreference
     ): Unit = withContext(Dispatchers.IO) {
         addUserSegmentToPreference(option.segmentId, preference)
     }
 
-    fun addUserSegmentToPreference(
+    public fun addUserSegmentToPreference(
         option: NotificareUserPreference.Option,
         preference: NotificareUserPreference,
         callback: NotificareCallback<Unit>
-    ) {
-        GlobalScope.launch {
-            try {
-                val result = addUserSegmentToPreference(option, preference)
-                withContext(Dispatchers.Main) {
-                    callback.onSuccess(result)
-                }
-            } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
-                    callback.onFailure(e)
-                }
-            }
-        }
-    }
+    ): Unit = toCallbackFunction(suspend { addUserSegmentToPreference(option, preference) })(callback)
 
-    suspend fun removeUserSegmentFromPreference(
+    public suspend fun removeUserSegmentFromPreference(
         segment: NotificareUserSegment,
         preference: NotificareUserPreference
     ): Unit = withContext(Dispatchers.IO) {
         removeUserSegmentFromPreference(segment.id, preference)
     }
 
-    fun removeUserSegmentFromPreference(
+    public fun removeUserSegmentFromPreference(
         segment: NotificareUserSegment,
         preference: NotificareUserPreference,
         callback: NotificareCallback<Unit>
-    ) {
-        GlobalScope.launch {
-            try {
-                val result = removeUserSegmentFromPreference(segment, preference)
-                withContext(Dispatchers.Main) {
-                    callback.onSuccess(result)
-                }
-            } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
-                    callback.onFailure(e)
-                }
-            }
-        }
-    }
+    ): Unit = toCallbackFunction(suspend { removeUserSegmentFromPreference(segment, preference) })(callback)
 
-    suspend fun removeUserSegmentFromPreference(
+    public suspend fun removeUserSegmentFromPreference(
         option: NotificareUserPreference.Option,
         preference: NotificareUserPreference
     ): Unit = withContext(Dispatchers.IO) {
         removeUserSegmentFromPreference(option.segmentId, preference)
     }
 
-    fun removeUserSegmentFromPreference(
+    public fun removeUserSegmentFromPreference(
         option: NotificareUserPreference.Option,
         preference: NotificareUserPreference,
         callback: NotificareCallback<Unit>
-    ) {
-        GlobalScope.launch {
-            try {
-                val result = removeUserSegmentFromPreference(option, preference)
-                withContext(Dispatchers.Main) {
-                    callback.onSuccess(result)
-                }
-            } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
-                    callback.onFailure(e)
-                }
-            }
-        }
-    }
+    ): Unit = toCallbackFunction(suspend { removeUserSegmentFromPreference(option, preference) })(callback)
 
-    fun parsePasswordResetToken(intent: Intent): String? {
+    public fun parsePasswordResetToken(intent: Intent): String? {
         val application = Notificare.application ?: return null
         val uri = intent.data ?: return null
         val host = uri.host ?: return null
@@ -607,7 +403,7 @@ object NotificareAuthentication : NotificareModule() {
         return pathSegments[2]
     }
 
-    fun parseValidateUserToken(intent: Intent): String? {
+    public fun parseValidateUserToken(intent: Intent): String? {
         val application = Notificare.application ?: return null
         val uri = intent.data ?: return null
         val host = uri.host ?: return null
