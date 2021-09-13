@@ -25,6 +25,7 @@ android {
         jvmTarget = '1.8'
         freeCompilerArgs = [
                 '-Xexplicit-api=strict',
+                '-Xopt-in=re.notifica.InternalNotificareApi',
         ]
     }
 }
@@ -35,4 +36,7 @@ dependencies {
     // Notificare
     implementation project(':notificare')
     implementation project(':notificare-geo')
+
+    // Huawei Mobile Services
+    implementation "com.huawei.hms:location:$huawei_location_version"
 }

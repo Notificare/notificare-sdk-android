@@ -22,7 +22,8 @@ public abstract class NotificareModule {
         INBOX(fqn = "re.notifica.inbox.NotificareInbox"),
         ASSETS(fqn = "re.notifica.assets.NotificareAssets"),
         SCANNABLES(fqn = "re.notifica.scannables.NotificareScannables"),
-        AUTHENTICATION(fqn = "re.notifica.authentication.NotificareAuthentication");
+        AUTHENTICATION(fqn = "re.notifica.authentication.NotificareAuthentication"),
+        GEO(fqn = "re.notifica.geo.NotificareGeo");
 
         val isAvailable: Boolean
             get() {
