@@ -1,13 +1,14 @@
 package re.notifica.internal.parcelize
 
 import android.os.Parcel
-import androidx.annotation.RestrictTo
 import com.squareup.moshi.Types
 import kotlinx.parcelize.Parceler
+import re.notifica.InternalNotificareApi
 import re.notifica.Notificare
+import re.notifica.internal.moshi
 
-@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-object NotificareExtraParceler : Parceler<Map<String, Any>> {
+@InternalNotificareApi
+public object NotificareExtraParceler : Parceler<Map<String, Any>> {
     override fun create(parcel: Parcel): Map<String, Any> {
         val str = parcel.readString() ?: return mapOf()
 

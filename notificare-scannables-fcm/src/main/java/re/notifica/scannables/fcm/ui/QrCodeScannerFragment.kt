@@ -16,11 +16,11 @@ import com.google.android.gms.vision.CameraSource
 import com.google.android.gms.vision.Detector
 import com.google.android.gms.vision.barcode.Barcode
 import com.google.android.gms.vision.barcode.BarcodeDetector
-import re.notifica.NotificareLogger
+import re.notifica.internal.NotificareLogger
 import re.notifica.scannables.ScannableActivity
 import re.notifica.scannables.fcm.R
 
-class QrCodeScannerFragment : Fragment(R.layout.notificare_scannable_qr_code_fcm_fragment) {
+public class QrCodeScannerFragment : Fragment(R.layout.notificare_scannable_qr_code_fcm_fragment) {
     private lateinit var surfaceView: SurfaceView
     private var cameraSource: CameraSource? = null
 

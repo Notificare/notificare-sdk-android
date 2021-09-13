@@ -9,31 +9,34 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.internal.EMPTY_REQUEST
 import okhttp3.logging.HttpLoggingInterceptor
 import re.notifica.BuildConfig
+import re.notifica.InternalNotificareApi
 import re.notifica.Notificare
-import re.notifica.internal.NotificareUtils
+import re.notifica.NotificareCallback
+import re.notifica.internal.NotificareLogger
+import re.notifica.internal.moshi
 import re.notifica.internal.network.NetworkException
-import re.notifica.internal.network.NotificareBasicAuthenticator
 import re.notifica.internal.network.NotificareHeadersInterceptor
 import java.io.IOException
+import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 import kotlin.reflect.KClass
 
-class NotificareRequest private constructor(
+@InternalNotificareApi
+public class NotificareRequest private constructor(
     private val request: Request,
     private val validStatusCodes: IntRange,
+    private val refreshListener: AuthenticationRefreshListener?,
 ) {
 
-    companion object {
+    private companion object {
 
         private val HTTP_METHODS_REQUIRE_BODY = arrayOf("PATCH", "POST", "PUT")
         private val MEDIA_TYPE_JSON = "application/json; charset=utf-8".toMediaType()
 
-        private val moshi = NotificareUtils.createMoshi()
-
         private val client = OkHttpClient.Builder()
-            .authenticator(NotificareBasicAuthenticator())
+            // .authenticator(NotificareBasicAuthenticator())
             .addInterceptor(NotificareHeadersInterceptor())
             .addInterceptor(HttpLoggingInterceptor().apply {
                 level = if (BuildConfig.DEBUG) {
@@ -45,9 +48,9 @@ class NotificareRequest private constructor(
             .build()
     }
 
-    suspend fun response(): Response = response(true)
+    public suspend fun response(): Response = response(true)
 
-    suspend fun <T : Any> responseDecodable(klass: KClass<T>): T {
+    public suspend fun <T : Any> responseDecodable(klass: KClass<T>): T {
         val response = response(closeResponse = false)
 
         val body = response.body
@@ -55,7 +58,7 @@ class NotificareRequest private constructor(
 
         return withContext(Dispatchers.IO) {
             try {
-                val adapter = moshi.adapter(klass.java)
+                val adapter = Notificare.moshi.adapter(klass.java)
 
                 @Suppress("BlockingMethodInNonBlockingContext")
                 adapter.fromJson(body.source())
@@ -75,48 +78,104 @@ class NotificareRequest private constructor(
             }
 
             override fun onResponse(call: Call, response: Response) {
-                if (response.code !in validStatusCodes) {
-                    continuation.resumeWithException(
-                        NetworkException.ValidationException(
-                            response = response,
-                            validStatusCodes = validStatusCodes,
-                        )
-                    )
-
-                    if (closeResponse) response.body?.close()
-                    return
-                }
-
-                if (closeResponse) response.body?.close()
-                continuation.resume(response)
+                handleResponse(
+                    response = response,
+                    closeResponse = closeResponse,
+                    refreshAuthentication = true,
+                    continuation = continuation
+                )
             }
         })
     }
 
-    class Builder {
+    private fun handleResponse(
+        response: Response,
+        closeResponse: Boolean,
+        refreshAuthentication: Boolean,
+        continuation: Continuation<Response>
+    ) {
+        try {
+            if (response.code == 401 && refreshAuthentication && refreshListener != null) {
+                // Forcefully close the body. Decodable responses will not proceed.
+                response.body?.close()
+
+                NotificareLogger.debug("Authentication credentials have expired. Trying to refresh.")
+                refreshListener.onRefreshAuthentication(object : NotificareCallback<Authentication> {
+                    override fun onSuccess(result: Authentication) {
+                        val newRequest = response.request.newBuilder()
+                            .header("Authorization", result.encode())
+                            .build()
+
+                        client.newCall(newRequest).enqueue(object : Callback {
+                            override fun onFailure(call: Call, e: IOException) {
+                                continuation.resumeWithException(e)
+                            }
+
+                            override fun onResponse(call: Call, response: Response) {
+                                handleResponse(
+                                    response = response,
+                                    closeResponse = closeResponse,
+                                    refreshAuthentication = false,
+                                    continuation = continuation
+                                )
+                            }
+                        })
+                    }
+
+                    override fun onFailure(e: Exception) {
+                        continuation.resumeWithException(NetworkException.AuthenticationRefreshException(e))
+                    }
+                })
+
+                return
+            }
+
+            if (response.code !in validStatusCodes) {
+                // Forcefully close the body. Decodable responses will not proceed.
+                response.body?.close()
+
+                continuation.resumeWithException(
+                    NetworkException.ValidationException(
+                        response = response,
+                        validStatusCodes = validStatusCodes,
+                    )
+                )
+
+                return
+            }
+
+            continuation.resume(response)
+        } finally {
+            if (closeResponse) response.body?.close()
+        }
+    }
+
+    public class Builder {
 
         private var baseUrl: String? = null
         private var url: String? = null
         private var queryItems = mutableMapOf<String, String?>()
+        private var authentication: Authentication? = createDefaultAuthentication()
+        private var authenticationRefreshListener: AuthenticationRefreshListener? = null
         private var headers = mutableMapOf<String, String>()
         private var method: String? = null
         private var body: RequestBody? = null
         private var validStatusCodes: IntRange = 200..299
 
-        fun baseUrl(url: String): Builder {
+        public fun baseUrl(url: String): Builder {
             this.baseUrl = url
             return this
         }
 
-        fun get(url: String): Builder = method("GET", url, null)
+        public fun get(url: String): Builder = method("GET", url, null)
 
-        fun <T : Any> patch(url: String, body: T? = null): Builder = method("PATCH", url, body)
+        public fun <T : Any> patch(url: String, body: T? = null): Builder = method("PATCH", url, body)
 
-        fun <T : Any> post(url: String, body: T? = null): Builder = method("POST", url, body)
+        public fun <T : Any> post(url: String, body: T? = null): Builder = method("POST", url, body)
 
-        fun <T : Any> put(url: String, body: T? = null): Builder = method("PUT", url, body)
+        public fun <T : Any> put(url: String, body: T? = null): Builder = method("PUT", url, body)
 
-        fun <T : Any> delete(url: String, body: T? = null): Builder = method("DELETE", url, body)
+        public fun <T : Any> delete(url: String, body: T? = null): Builder = method("DELETE", url, body)
 
         private fun <T : Any> method(method: String, url: String, body: T?): Builder {
             this.method = method
@@ -124,6 +183,7 @@ class NotificareRequest private constructor(
             this.body = when (body) {
                 null -> if (HTTP_METHODS_REQUIRE_BODY.contains(method)) EMPTY_REQUEST else null
                 is ByteArray -> body.toRequestBody()
+                is FormBody -> body
                 else -> try {
                     val klass = when (body) {
                         // Moshi only supports the default collection types therefore we need to cast them down.
@@ -135,7 +195,7 @@ class NotificareRequest private constructor(
                         else -> body::class.java
                     }
 
-                    val adapter = moshi.adapter<T>(klass)
+                    val adapter = Notificare.moshi.adapter<T>(klass)
                     adapter.toJson(body).toRequestBody(MEDIA_TYPE_JSON)
                 } catch (e: Exception) {
                     throw NetworkException.ParsingException(message = "Unable to encode body into JSON.", cause = e)
@@ -145,34 +205,44 @@ class NotificareRequest private constructor(
             return this
         }
 
-        fun query(items: Map<String, String?>): Builder {
+        public fun query(items: Map<String, String?>): Builder {
             queryItems.putAll(items)
             return this
         }
 
-        fun query(item: Pair<String, String?>): Builder {
+        public fun query(item: Pair<String, String?>): Builder {
             queryItems[item.first] = item.second
             return this
         }
 
-        fun query(name: String, value: String?): Builder {
+        public fun query(name: String, value: String?): Builder {
             queryItems[name] = value
             return this
         }
 
-        fun header(name: String, value: String): Builder {
+        public fun header(name: String, value: String): Builder {
             headers[name] = value
             return this
         }
 
-        fun validate(validStatusCodes: IntRange = 200..299): Builder {
+        public fun authentication(authentication: Authentication?): Builder {
+            this.authentication = authentication
+            return this
+        }
+
+        public fun authenticationRefreshListener(refreshListener: AuthenticationRefreshListener?): Builder {
+            this.authenticationRefreshListener = refreshListener
+            return this
+        }
+
+        public fun validate(validStatusCodes: IntRange = 200..299): Builder {
             this.validStatusCodes = validStatusCodes
             return this
         }
 
 
         @Throws(IllegalArgumentException::class)
-        fun build(): NotificareRequest {
+        public fun build(): NotificareRequest {
             val method = requireNotNull(method) { "Please provide the HTTP method for the request." }
 
             val request = Request.Builder()
@@ -181,18 +251,26 @@ class NotificareRequest private constructor(
                     headers.forEach {
                         header(it.key, it.value)
                     }
+
+                    authentication?.run {
+                        header("Authorization", encode())
+                    }
                 }
                 .method(method, body)
                 .build()
 
-            return NotificareRequest(request = request, validStatusCodes = validStatusCodes)
+            return NotificareRequest(
+                request = request,
+                validStatusCodes = validStatusCodes,
+                refreshListener = authenticationRefreshListener,
+            )
         }
 
-        suspend fun response(): Response {
+        public suspend fun response(): Response {
             return build().response()
         }
 
-        suspend fun <T : Any> responseDecodable(klass: KClass<T>): T {
+        public suspend fun <T : Any> responseDecodable(klass: KClass<T>): T {
             return build().responseDecodable(klass)
         }
 
@@ -201,7 +279,7 @@ class NotificareRequest private constructor(
             var url = requireNotNull(url) { "Please provide the URL for the request." }
 
             if (!url.startsWith("http://") && !url.startsWith("https://")) {
-                val baseUrl = requireNotNull(baseUrl ?: Notificare.servicesConfig?.pushHost) {
+                val baseUrl = requireNotNull(baseUrl ?: Notificare.servicesInfo?.environment?.pushHost) {
                     "Unable to determine the base url for the request."
                 }
 
@@ -223,5 +301,44 @@ class NotificareRequest private constructor(
 
             return url.toHttpUrl()
         }
+
+        private fun createDefaultAuthentication(): Authentication? {
+            val key = Notificare.servicesInfo?.applicationKey
+            val secret = Notificare.servicesInfo?.applicationSecret
+
+            if (key == null || secret == null) {
+                NotificareLogger.warning("Notificare application authentication not configured.")
+                return null
+            }
+
+            return Authentication.Basic(key, secret)
+        }
+    }
+
+    public sealed class Authentication {
+        public abstract fun encode(): String
+
+        public data class Basic(
+            val username: String,
+            val password: String,
+        ) : Authentication() {
+
+            override fun encode(): String {
+                return Credentials.basic(username, password)
+            }
+        }
+
+        public data class Bearer(
+            val token: String,
+        ) : Authentication() {
+
+            override fun encode(): String {
+                return "Bearer $token"
+            }
+        }
+    }
+
+    public interface AuthenticationRefreshListener {
+        public fun onRefreshAuthentication(callback: NotificareCallback<Authentication>)
     }
 }

@@ -62,6 +62,28 @@
 
                 <data android:scheme="test.nc${notificareApplicationId}" />
             </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="${notificareApplicationId}.applinks.notifica.re"
+                    android:pathPrefix="/oauth/validate"
+                    android:scheme="https" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="${notificareApplicationId}.applinks.notifica.re"
+                    android:pathPrefix="/oauth/resetpassword"
+                    android:scheme="https" />
+            </intent-filter>
         </activity>
         <activity
             android:name=".ui.inbox.InboxActivity"

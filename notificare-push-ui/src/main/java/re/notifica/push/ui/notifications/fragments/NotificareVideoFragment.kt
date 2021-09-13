@@ -13,7 +13,7 @@ import re.notifica.push.ui.databinding.NotificareNotificationVideoFragmentBindin
 import re.notifica.push.ui.notifications.fragments.base.NotificationFragment
 import re.notifica.push.ui.utils.NotificationWebViewClient
 
-class NotificareVideoFragment : NotificationFragment() {
+public class NotificareVideoFragment : NotificationFragment() {
 
     private lateinit var binding: NotificareNotificationVideoFragmentBinding
     private var customView: View? = null
@@ -82,7 +82,7 @@ class NotificareVideoFragment : NotificationFragment() {
         binding.webView.destroy()
     }
 
-    inner class VideoChromeClient : WebChromeClient() {
+    public inner class VideoChromeClient : WebChromeClient() {
         override fun onShowCustomView(view: View, callback: CustomViewCallback) {
             // if a view already exists then immediately terminate the new one
             if (customView != null) {
@@ -125,7 +125,7 @@ class NotificareVideoFragment : NotificationFragment() {
         }
     }
 
-    companion object {
+    public companion object {
         private const val youTubeVideoHTML =
             "<!DOCTYPE html><html><head><meta name=\"viewport\" content=\"initial-scale=1, maximum-scale=1\"><style>body{margin:0px 0px 0px 0px;} #player{width: 100vw; height: 100vh;}</style></head><body><div id=\"player\"></div><script>var tag = document.createElement('script'); tag.src = 'https://www.youtube.com/player_api'; var firstScriptTag = document.getElementsByTagName('script')[0]; firstScriptTag.parentNode.insertBefore(tag, firstScriptTag); var player; function onYouTubePlayerAPIReady() { player = new YT.Player('player', { width:window.innerWidth, height:window.innerHeight, videoId:'%s', events: { onReady: onPlayerReady } }); } function onPlayerReady(event) { event.target.playVideo(); } function resizePlayer(width, height) {player.setSize(width, height);}</script></body></html>"
 

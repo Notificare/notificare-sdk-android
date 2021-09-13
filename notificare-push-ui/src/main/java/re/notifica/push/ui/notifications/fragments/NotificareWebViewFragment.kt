@@ -12,7 +12,7 @@ import re.notifica.push.ui.databinding.NotificareNotificationWebViewFragmentBind
 import re.notifica.push.ui.notifications.fragments.base.NotificationFragment
 import re.notifica.push.ui.utils.NotificationWebViewClient
 
-class NotificareWebViewFragment : NotificationFragment() {
+public class NotificareWebViewFragment : NotificationFragment() {
 
     private lateinit var binding: NotificareNotificationWebViewFragmentBinding
 

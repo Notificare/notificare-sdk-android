@@ -22,7 +22,7 @@ android {
 
         manifestPlaceholders = [
                 notificareApplicationId: properties.getProperty('notificare.development.application.id'),
-                googleMapsApiKey: properties.getProperty('google.maps.key'),
+                googleMapsApiKey       : properties.getProperty('google.maps.key'),
         ]
     }
 
@@ -57,10 +57,12 @@ dependencies {
     implementation "androidx.appcompat:appcompat:$androidx_app_compat_version"
     implementation "androidx.constraintlayout:constraintlayout:$androidx_constraint_layout_version"
     implementation "androidx.core:core-ktx:$androidx_core_version"
+    implementation "androidx.lifecycle:lifecycle-runtime-ktx:$androidx_lifecycle_version"
     implementation 'com.google.android.material:material:1.4.0'
 
     implementation project(':notificare')
     implementation project(':notificare-assets')
+    implementation project(':notificare-authentication')
     implementation project(':notificare-inbox')
 
     implementation project(':notificare-push')

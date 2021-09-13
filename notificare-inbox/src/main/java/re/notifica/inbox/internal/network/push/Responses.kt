@@ -7,7 +7,7 @@ import re.notifica.models.NotificareNotification
 import java.util.*
 
 @JsonClass(generateAdapter = true)
-data class InboxResponse(
+internal data class InboxResponse(
     val inboxItems: List<InboxItem>,
     val count: Int,
     val unread: Int,

@@ -11,7 +11,7 @@ import re.notifica.push.ui.databinding.NotificareNotificationUrlFragmentBinding
 import re.notifica.push.ui.notifications.fragments.base.NotificationFragment
 import re.notifica.push.ui.utils.NotificationWebViewClient
 
-class NotificareUrlFragment : NotificationFragment() {
+public class NotificareUrlFragment : NotificationFragment() {
 
     private lateinit var binding: NotificareNotificationUrlFragmentBinding
 

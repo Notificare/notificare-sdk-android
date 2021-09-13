@@ -5,14 +5,14 @@ import kotlinx.parcelize.Parcelize
 import re.notifica.models.NotificareNotification
 import java.util.*
 
-interface NotificareRemoteMessage {
-    val messageId: String?
-    val sentTime: Long
-    val collapseKey: String?
-    val ttl: Long
+public interface NotificareRemoteMessage {
+    public val messageId: String?
+    public val sentTime: Long
+    public val collapseKey: String?
+    public val ttl: Long
 }
 
-data class NotificareUnknownRemoteMessage(
+public data class NotificareUnknownRemoteMessage(
     override val messageId: String?,
     override val sentTime: Long,
     override val collapseKey: String?,
@@ -27,7 +27,7 @@ data class NotificareUnknownRemoteMessage(
     val data: Map<String, String?>,
 ) : NotificareRemoteMessage {
 
-    fun toNotification(): NotificareUnknownNotification {
+    public fun toNotification(): NotificareUnknownNotification {
         return NotificareUnknownNotification(
             messageId = messageId,
             messageType = messageType,
@@ -44,7 +44,7 @@ data class NotificareUnknownRemoteMessage(
     }
 }
 
-data class NotificareSystemRemoteMessage(
+public data class NotificareSystemRemoteMessage(
     override val messageId: String?,
     override val sentTime: Long,
     override val collapseKey: String?,
@@ -57,7 +57,7 @@ data class NotificareSystemRemoteMessage(
 ) : NotificareRemoteMessage
 
 @Parcelize
-data class NotificareNotificationRemoteMessage(
+public data class NotificareNotificationRemoteMessage(
     override val messageId: String?,
     override val sentTime: Long,
     override val collapseKey: String?,
@@ -95,7 +95,7 @@ data class NotificareNotificationRemoteMessage(
     val lightsOff: Int?,
 ) : NotificareRemoteMessage, Parcelable {
 
-    fun toNotification(): NotificareNotification {
+    public fun toNotification(): NotificareNotification {
         return NotificareNotification(
             id = notificationId,
             partial = true,

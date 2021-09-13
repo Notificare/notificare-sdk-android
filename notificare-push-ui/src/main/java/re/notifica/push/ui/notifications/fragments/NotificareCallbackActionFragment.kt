@@ -15,10 +15,10 @@ import android.widget.ImageView
 import androidx.core.os.bundleOf
 import androidx.exifinterface.media.ExifInterface
 import androidx.fragment.app.Fragment
-import kotlinx.coroutines.GlobalScope
+import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
 import re.notifica.Notificare
-import re.notifica.NotificareLogger
+import re.notifica.internal.NotificareLogger
 import re.notifica.push.ui.R
 import re.notifica.push.ui.actions.NotificationCallbackAction
 import re.notifica.push.ui.models.NotificarePendingResult
@@ -27,7 +27,7 @@ import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.IOException
 
-class NotificareCallbackActionFragment private constructor() : Fragment() {
+public class NotificareCallbackActionFragment private constructor() : Fragment() {
 
     private lateinit var pendingResult: NotificarePendingResult
     private lateinit var callback: NotificationFragment.Callback
@@ -134,7 +134,7 @@ class NotificareCallbackActionFragment private constructor() : Fragment() {
     private fun onSendClicked(@Suppress("UNUSED_PARAMETER") view: View) {
         callback.onNotificationFragmentStartProgress()
 
-        GlobalScope.launch {
+        lifecycleScope.launch {
             try {
                 val mediaUrl = imageBytes?.let {
                     Notificare.uploadNotificationReplyAsset(
@@ -164,12 +164,12 @@ class NotificareCallbackActionFragment private constructor() : Fragment() {
         }
     }
 
-    companion object {
+    public companion object {
         private const val EXTRA_PENDING_RESULT = "re.notifica.extra.PendingResult"
 
         private const val SAMPLE_SIZE_MAX_PIXELS = 307200 // 640 x 480
 
-        fun newInstance(pendingResult: NotificarePendingResult): NotificareCallbackActionFragment {
+        public fun newInstance(pendingResult: NotificarePendingResult): NotificareCallbackActionFragment {
             return NotificareCallbackActionFragment().apply {
                 arguments = bundleOf(
                     EXTRA_PENDING_RESULT to pendingResult

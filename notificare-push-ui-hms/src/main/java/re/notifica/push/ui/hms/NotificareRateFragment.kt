@@ -12,7 +12,7 @@ import re.notifica.push.ui.NotificarePushUI
 import re.notifica.push.ui.notifications.fragments.base.NotificationFragment
 
 @Keep
-class NotificareRateFragment : NotificationFragment() {
+public class NotificareRateFragment : NotificationFragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return super.onCreateView(inflater, container, savedInstanceState).also {

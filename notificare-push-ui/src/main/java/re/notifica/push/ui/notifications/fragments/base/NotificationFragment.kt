@@ -6,7 +6,7 @@ import androidx.fragment.app.Fragment
 import re.notifica.Notificare
 import re.notifica.models.NotificareNotification
 
-open class NotificationFragment : Fragment() {
+public open class NotificationFragment : Fragment() {
 
     protected lateinit var notification: NotificareNotification
     protected lateinit var callback: Callback
@@ -22,7 +22,7 @@ open class NotificationFragment : Fragment() {
 
         notification = savedInstanceState?.getParcelable(Notificare.INTENT_EXTRA_NOTIFICATION)
             ?: arguments?.getParcelable(Notificare.INTENT_EXTRA_NOTIFICATION)
-                    ?: throw IllegalArgumentException("Missing required notification parameter.")
+                ?: throw IllegalArgumentException("Missing required notification parameter.")
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -30,29 +30,29 @@ open class NotificationFragment : Fragment() {
         outState.putParcelable(Notificare.INTENT_EXTRA_NOTIFICATION, notification)
     }
 
-    interface Callback {
-        fun onNotificationFragmentFinished()
+    public interface Callback {
+        public fun onNotificationFragmentFinished()
 
-        fun onNotificationFragmentShouldShowActionBar()
+        public fun onNotificationFragmentShouldShowActionBar()
 
-        fun onNotificationFragmentCanHideActionBar()
+        public fun onNotificationFragmentCanHideActionBar()
 
-        fun onNotificationFragmentCanHideActionsMenu()
+        public fun onNotificationFragmentCanHideActionsMenu()
 
-        fun onNotificationFragmentStartProgress()
+        public fun onNotificationFragmentStartProgress()
 
-        fun onNotificationFragmentEndProgress()
+        public fun onNotificationFragmentEndProgress()
 
-        fun onNotificationFragmentActionCanceled()
+        public fun onNotificationFragmentActionCanceled()
 
-        fun onNotificationFragmentActionFailed(reason: String)
+        public fun onNotificationFragmentActionFailed(reason: String)
 
-        fun onNotificationFragmentActionSucceeded()
+        public fun onNotificationFragmentActionSucceeded()
 
-        fun onNotificationFragmentShowActions()
+        public fun onNotificationFragmentShowActions()
 
-        fun onNotificationFragmentHandleAction(action: NotificareNotification.Action)
+        public fun onNotificationFragmentHandleAction(action: NotificareNotification.Action)
 
-        fun onNotificationFragmentStartActivity(intent: Intent)
+        public fun onNotificationFragmentStartActivity(intent: Intent)
     }
 }

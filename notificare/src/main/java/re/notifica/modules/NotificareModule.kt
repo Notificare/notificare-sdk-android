@@ -1,23 +1,19 @@
 package re.notifica.modules
 
 import android.content.SharedPreferences
-import androidx.annotation.RestrictTo
+import re.notifica.InternalNotificareApi
 
-@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-abstract class NotificareModule {
+@InternalNotificareApi
+public abstract class NotificareModule {
 
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    open fun migrate(savedState: SharedPreferences, settings: SharedPreferences) {
+    public open fun migrate(savedState: SharedPreferences, settings: SharedPreferences) {
     }
 
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    abstract fun configure()
+    public abstract fun configure()
 
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    abstract suspend fun launch()
+    public abstract suspend fun launch()
 
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    abstract suspend fun unlaunch()
+    public abstract suspend fun unlaunch()
 
 
     internal enum class Module(val fqn: String) {
@@ -25,7 +21,8 @@ abstract class NotificareModule {
         PUSH_UI(fqn = "re.notifica.push.ui.NotificarePushUI"),
         INBOX(fqn = "re.notifica.inbox.NotificareInbox"),
         ASSETS(fqn = "re.notifica.assets.NotificareAssets"),
-        SCANNABLES(fqn = "re.notifica.scannables.NotificareScannables");
+        SCANNABLES(fqn = "re.notifica.scannables.NotificareScannables"),
+        AUTHENTICATION(fqn = "re.notifica.authentication.NotificareAuthentication");
 
         val isAvailable: Boolean
             get() {

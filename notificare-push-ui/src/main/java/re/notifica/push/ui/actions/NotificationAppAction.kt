@@ -8,14 +8,14 @@ import android.net.Uri
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import re.notifica.Notificare
-import re.notifica.NotificareLogger
+import re.notifica.internal.NotificareLogger
 import re.notifica.models.NotificareNotification
 import re.notifica.push.ui.NotificarePushUI
 import re.notifica.push.ui.R
 import re.notifica.push.ui.actions.base.NotificationAction
 import re.notifica.push.ui.models.NotificarePendingResult
 
-class NotificationAppAction(
+internal class NotificationAppAction(
     context: Context,
     notification: NotificareNotification,
     action: NotificareNotification.Action
@@ -39,7 +39,10 @@ class NotificationAppAction(
             }
 
             Notificare.createNotificationReply(notification, action)
-            NotificarePushUI.lifecycleListeners.forEach { it.onActionExecuted(notification, action) }
+
+            withContext(Dispatchers.Main) {
+                NotificarePushUI.lifecycleListeners.forEach { it.onActionExecuted(notification, action) }
+            }
         } else {
             throw Exception(context.getString(R.string.notificare_action_failed))
         }

@@ -10,15 +10,15 @@ import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.commit
 import re.notifica.NotificareCallback
-import re.notifica.NotificareLogger
+import re.notifica.internal.NotificareLogger
 import re.notifica.internal.common.getEnum
 import re.notifica.internal.common.getEnumExtra
 import re.notifica.internal.common.putEnum
 import re.notifica.scannables.models.NotificareScannable
 
-class ScannableActivity : AppCompatActivity() {
+public class ScannableActivity : AppCompatActivity() {
 
-    companion object {
+    public companion object {
         internal const val EXTRA_MODE = "re.notifica.scannables.extra.ScanMode"
     }
 
@@ -141,7 +141,7 @@ class ScannableActivity : AppCompatActivity() {
     // endregion
 
 
-    fun handleScannableTag(tag: String) {
+    public fun handleScannableTag(tag: String) {
         if (handlingScannable) return
         handlingScannable = true
 
@@ -158,7 +158,7 @@ class ScannableActivity : AppCompatActivity() {
         })
     }
 
-    fun handleScannableError(error: Exception) {
+    public fun handleScannableError(error: Exception) {
         NotificareScannables.notifyListeners(error)
     }
 

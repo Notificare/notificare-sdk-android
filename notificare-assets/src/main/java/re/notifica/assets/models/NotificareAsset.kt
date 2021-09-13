@@ -8,7 +8,7 @@ import re.notifica.internal.parcelize.NotificareExtraParceler
 
 @Parcelize
 @JsonClass(generateAdapter = true)
-data class NotificareAsset(
+public data class NotificareAsset(
     val title: String,
     val description: String?,
     val key: String?,
@@ -20,14 +20,14 @@ data class NotificareAsset(
 
     @Parcelize
     @JsonClass(generateAdapter = true)
-    data class Button(
+    public data class Button(
         val label: String?,
         val action: String?,
     ) : Parcelable
 
     @Parcelize
     @JsonClass(generateAdapter = true)
-    data class MetaData(
+    public data class MetaData(
         val originalFileName: String,
         val contentType: String,
         val contentLength: Int,

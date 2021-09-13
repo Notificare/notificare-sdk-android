@@ -13,7 +13,7 @@ import re.notifica.push.ui.R
 import re.notifica.push.ui.actions.base.NotificationAction
 import re.notifica.push.ui.models.NotificarePendingResult
 
-class NotificationBrowserAction(
+internal class NotificationBrowserAction(
     context: Context,
     notification: NotificareNotification,
     action: NotificareNotification.Action
@@ -32,7 +32,10 @@ class NotificationBrowserAction(
             context.startActivity(intent)
 
             Notificare.createNotificationReply(notification, action)
-            NotificarePushUI.lifecycleListeners.forEach { it.onActionExecuted(notification, action) }
+
+            withContext(Dispatchers.Main) {
+                NotificarePushUI.lifecycleListeners.forEach { it.onActionExecuted(notification, action) }
+            }
         } else {
             throw Exception(context.getString(R.string.notificare_action_failed))
         }

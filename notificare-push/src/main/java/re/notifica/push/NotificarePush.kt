@@ -24,7 +24,7 @@ import org.json.JSONObject
 import re.notifica.Notificare
 import re.notifica.NotificareCallback
 import re.notifica.NotificareException
-import re.notifica.NotificareLogger
+import re.notifica.internal.NotificareLogger
 import re.notifica.internal.NotificareUtils
 import re.notifica.internal.network.request.NotificareRequest
 import re.notifica.models.NotificareApplication
@@ -34,40 +34,41 @@ import re.notifica.modules.NotificareModule
 import re.notifica.push.internal.InboxIntegration
 import re.notifica.push.internal.NotificarePushSystemIntentReceiver
 import re.notifica.push.internal.NotificareSharedPreferences
+import re.notifica.push.internal.ServiceManager
 import re.notifica.push.internal.network.push.DeviceUpdateNotificationSettingsPayload
 import re.notifica.push.models.*
 import java.util.concurrent.atomic.AtomicInteger
 
-object NotificarePush : NotificareModule() {
+public object NotificarePush : NotificareModule() {
 
-    const val SDK_VERSION = BuildConfig.SDK_VERSION
+    public const val SDK_VERSION: String = BuildConfig.SDK_VERSION
 
-    const val DEFAULT_NOTIFICATION_CHANNEL_ID = "notificare_channel_default"
+    public const val DEFAULT_NOTIFICATION_CHANNEL_ID: String = "notificare_channel_default"
 
     // Intent actions
-    const val INTENT_ACTION_REMOTE_MESSAGE_OPENED = "re.notifica.intent.action.RemoteMessageOpened"
-    const val INTENT_ACTION_NOTIFICATION_RECEIVED = "re.notifica.intent.action.NotificationReceived"
-    const val INTENT_ACTION_SYSTEM_NOTIFICATION_RECEIVED = "re.notifica.intent.action.SystemNotificationReceived"
-    const val INTENT_ACTION_UNKNOWN_NOTIFICATION_RECEIVED = "re.notifica.intent.action.UnknownNotificationReceived"
-    const val INTENT_ACTION_NOTIFICATION_OPENED = "re.notifica.intent.action.NotificationOpened"
-    const val INTENT_ACTION_ACTION_OPENED = "re.notifica.intent.action.ActionOpened"
+    public const val INTENT_ACTION_REMOTE_MESSAGE_OPENED: String = "re.notifica.intent.action.RemoteMessageOpened"
+    public const val INTENT_ACTION_NOTIFICATION_RECEIVED: String = "re.notifica.intent.action.NotificationReceived"
+    public const val INTENT_ACTION_SYSTEM_NOTIFICATION_RECEIVED: String = "re.notifica.intent.action.SystemNotificationReceived"
+    public const val INTENT_ACTION_UNKNOWN_NOTIFICATION_RECEIVED: String = "re.notifica.intent.action.UnknownNotificationReceived"
+    public const val INTENT_ACTION_NOTIFICATION_OPENED: String = "re.notifica.intent.action.NotificationOpened"
+    public const val INTENT_ACTION_ACTION_OPENED: String = "re.notifica.intent.action.ActionOpened"
 
     // Intent extras
-    const val INTENT_EXTRA_REMOTE_MESSAGE = "re.notifica.intent.extra.RemoteMessage"
-    const val INTENT_EXTRA_TEXT_RESPONSE = "re.notifica.intent.extra.TextResponse"
+    public const val INTENT_EXTRA_REMOTE_MESSAGE: String = "re.notifica.intent.extra.RemoteMessage"
+    public const val INTENT_EXTRA_TEXT_RESPONSE: String = "re.notifica.intent.extra.TextResponse"
 
     private val notificationSequence = AtomicInteger()
 
     internal lateinit var sharedPreferences: NotificareSharedPreferences
         private set
 
-    internal var serviceManager: NotificareServiceManager? = null
+    internal var serviceManager: ServiceManager? = null
         private set
 
-    var intentReceiver: Class<out NotificarePushIntentReceiver> = NotificarePushIntentReceiver::class.java
+    public var intentReceiver: Class<out NotificarePushIntentReceiver> = NotificarePushIntentReceiver::class.java
 
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    var postponedDeviceToken: String? = null
+    public var postponedDeviceToken: String? = null
 
     override fun migrate(savedState: SharedPreferences, settings: SharedPreferences) {
         val preferences = NotificareSharedPreferences(Notificare.requireContext())
@@ -92,7 +93,7 @@ object NotificarePush : NotificareModule() {
 
     override fun configure() {
         sharedPreferences = NotificareSharedPreferences(Notificare.requireContext())
-        serviceManager = NotificareServiceManager.Factory.create(Notificare.requireContext())
+        serviceManager = ServiceManager.create()
 
         checkPushPermissions()
 
@@ -115,7 +116,7 @@ object NotificarePush : NotificareModule() {
 
     override suspend fun unlaunch() {}
 
-    val isRemoteNotificationsEnabled: Boolean
+    public val isRemoteNotificationsEnabled: Boolean
         get() {
             if (::sharedPreferences.isInitialized) {
                 return sharedPreferences.remoteNotificationsEnabled
@@ -125,7 +126,7 @@ object NotificarePush : NotificareModule() {
             return false
         }
 
-    var allowedUI: Boolean
+    public var allowedUI: Boolean
         get() {
             if (::sharedPreferences.isInitialized) {
                 return sharedPreferences.allowedUI
@@ -137,12 +138,13 @@ object NotificarePush : NotificareModule() {
         private set(value) {
             if (::sharedPreferences.isInitialized) {
                 sharedPreferences.allowedUI = value
+                return
             }
 
             NotificareLogger.warning("Calling this method requires Notificare to have been configured.")
         }
 
-    fun enableRemoteNotifications() {
+    public fun enableRemoteNotifications() {
         if (!Notificare.isReady) {
             NotificareLogger.warning("Notificare is not ready yet.")
             return
@@ -167,10 +169,11 @@ object NotificarePush : NotificareModule() {
         sharedPreferences.remoteNotificationsEnabled = true
 
         // Request a push provider token.
-        manager.registerDeviceToken()
+        manager.requestPushToken()
     }
 
-    fun disableRemoteNotifications() {
+    public fun disableRemoteNotifications() {
+        @OptIn(DelicateCoroutinesApi::class)
         GlobalScope.launch {
             try {
                 // Keep track of the status in local storage.
@@ -187,7 +190,10 @@ object NotificarePush : NotificareModule() {
     }
 
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    suspend fun registerPushToken(transport: NotificareTransport, token: String): Unit = withContext(Dispatchers.IO) {
+    public suspend fun registerPushToken(
+        transport: NotificareTransport,
+        token: String
+    ): Unit = withContext(Dispatchers.IO) {
         Notificare.deviceManager.registerPushToken(transport, token)
 
         try {
@@ -200,7 +206,7 @@ object NotificarePush : NotificareModule() {
     }
 
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    fun handleRemoteMessage(message: NotificareRemoteMessage) {
+    public fun handleRemoteMessage(message: NotificareRemoteMessage) {
         when (message) {
             is NotificareSystemRemoteMessage -> handleSystemNotification(message)
             is NotificareNotificationRemoteMessage -> handleNotification(message)
@@ -216,7 +222,7 @@ object NotificarePush : NotificareModule() {
         }
     }
 
-    fun handleTrampolineIntent(intent: Intent): Boolean {
+    public fun handleTrampolineIntent(intent: Intent): Boolean {
         if (intent.action != INTENT_ACTION_REMOTE_MESSAGE_OPENED) {
             NotificareLogger.debug("Received an un-processable intent. Ignoring...")
             return false
@@ -231,7 +237,7 @@ object NotificarePush : NotificareModule() {
         return true
     }
 
-    fun handleTrampolineMessage(
+    public fun handleTrampolineMessage(
         message: NotificareNotificationRemoteMessage,
         notification: NotificareNotification,
         action: NotificareNotification.Action?
@@ -239,6 +245,7 @@ object NotificarePush : NotificareModule() {
         // Log the notification open event.
         Notificare.eventsManager.logNotificationOpened(notification.id)
 
+        @OptIn(DelicateCoroutinesApi::class)
         GlobalScope.launch(Dispatchers.IO) {
             @Suppress("NAME_SHADOWING")
             val notification: NotificareNotification = try {
@@ -387,6 +394,7 @@ object NotificarePush : NotificareModule() {
     private fun handleNotification(message: NotificareNotificationRemoteMessage) {
         Notificare.eventsManager.logNotificationReceived(message.id)
 
+        @OptIn(DelicateCoroutinesApi::class)
         GlobalScope.launch {
             val notification = try {
                 Notificare.fetchNotification(message.id)

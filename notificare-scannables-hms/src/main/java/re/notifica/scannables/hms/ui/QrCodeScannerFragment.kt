@@ -9,7 +9,7 @@ import com.huawei.hms.ml.scan.HmsScan
 import re.notifica.scannables.ScannableActivity
 import re.notifica.scannables.hms.R
 
-class QrCodeScannerFragment : Fragment(R.layout.notificare_scannable_qr_code_hms_fragment) {
+public class QrCodeScannerFragment : Fragment(R.layout.notificare_scannable_qr_code_hms_fragment) {
     private lateinit var cameraView: ViewGroup
     private lateinit var remoteView: RemoteView
 

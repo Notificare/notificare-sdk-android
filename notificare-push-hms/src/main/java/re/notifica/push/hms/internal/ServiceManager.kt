@@ -1,40 +1,35 @@
-package re.notifica.push.hms
+package re.notifica.push.hms.internal
 
-import android.content.Context
 import com.huawei.agconnect.AGConnectOptionsBuilder
 import com.huawei.hms.aaid.HmsInstanceId
 import com.huawei.hms.api.ConnectionResult
 import com.huawei.hms.api.HuaweiApiAvailability
 import com.huawei.hms.common.ApiException
 import com.huawei.hms.push.HmsMessaging
-import com.huawei.hms.push.RemoteMessage
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import re.notifica.NotificareLogger
+import re.notifica.InternalNotificareApi
+import re.notifica.Notificare
+import re.notifica.internal.NotificareLogger
 import re.notifica.models.NotificareTransport
 import re.notifica.push.NotificarePush
-import re.notifica.push.NotificareServiceManager
+import re.notifica.push.internal.ServiceManager
 
-@Suppress("unused")
-class NotificareServiceManager(
-    private val context: Context,
-) : NotificareServiceManager {
+@InternalNotificareApi
+public class ServiceManager : ServiceManager() {
+
+    override val available: Boolean
+        get() = HuaweiApiAvailability.getInstance()
+            .isHuaweiMobileServicesAvailable(Notificare.requireContext()) == ConnectionResult.SUCCESS
 
     override val transport: NotificareTransport
         get() = NotificareTransport.HMS
 
-    override val hasMobileServicesAvailable: Boolean
-        get() = HuaweiApiAvailability.getInstance().isHuaweiMobileServicesAvailable(context) == ConnectionResult.SUCCESS
-
-    init {
-        if (!hasMobileServicesAvailable) {
-            throw IllegalStateException("Huawei Mobile Services are not available.")
-        }
-    }
-
-    override fun registerDeviceToken() {
+    override fun requestPushToken() {
         Thread {
             try {
+                val context = Notificare.requireContext()
+
                 // read from agconnect-services.json
                 val options = AGConnectOptionsBuilder().build(context)
                 val appId = options.getString("client/app_id")
@@ -56,11 +51,5 @@ class NotificareServiceManager(
                 NotificareLogger.error("Failed to retrieve HMS token.", e)
             }
         }.start()
-    }
-
-    companion object {
-        fun isNotificareNotification(remoteMessage: RemoteMessage): Boolean {
-            return remoteMessage.dataOfMap?.get("x-sender") == "notificare"
-        }
     }
 }

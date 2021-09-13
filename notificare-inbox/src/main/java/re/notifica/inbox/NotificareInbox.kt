@@ -11,12 +11,13 @@ import kotlinx.coroutines.*
 import re.notifica.Notificare
 import re.notifica.NotificareCallback
 import re.notifica.NotificareException
-import re.notifica.NotificareLogger
 import re.notifica.inbox.internal.database.InboxDatabase
 import re.notifica.inbox.internal.database.entities.InboxItemEntity
 import re.notifica.inbox.internal.network.push.InboxResponse
 import re.notifica.inbox.internal.workers.ExpireItemWorker
 import re.notifica.inbox.models.NotificareInboxItem
+import re.notifica.internal.NotificareLogger
+import re.notifica.internal.ktx.toCallbackFunction
 import re.notifica.internal.network.NetworkException
 import re.notifica.internal.network.request.NotificareRequest
 import re.notifica.models.NotificareNotification
@@ -24,9 +25,9 @@ import re.notifica.modules.NotificareModule
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-object NotificareInbox : NotificareModule() {
+public object NotificareInbox : NotificareModule() {
 
-    const val SDK_VERSION = BuildConfig.SDK_VERSION
+    public const val SDK_VERSION: String = BuildConfig.SDK_VERSION
 
     internal lateinit var database: InboxDatabase
 
@@ -58,7 +59,7 @@ object NotificareInbox : NotificareModule() {
         Comparator { lhs, rhs -> rhs.time.compareTo(lhs.time) }
     )
 
-    val items: SortedSet<NotificareInboxItem>
+    public val items: SortedSet<NotificareInboxItem>
         get() {
             val application = Notificare.application ?: run {
                 NotificareLogger.warning("Notificare application is not yet available.")
@@ -74,7 +75,7 @@ object NotificareInbox : NotificareModule() {
         }
 
     private var _badge: Int = 0
-    val badge: Int
+    public val badge: Int
         get() {
             val application = Notificare.application ?: run {
                 NotificareLogger.warning("Notificare application is not yet available.")
@@ -95,11 +96,11 @@ object NotificareInbox : NotificareModule() {
         }
 
     private val _observableItems = MutableLiveData<SortedSet<NotificareInboxItem>>(sortedSetOf())
-    val observableItems: LiveData<SortedSet<NotificareInboxItem>>
+    public val observableItems: LiveData<SortedSet<NotificareInboxItem>>
         get() = _observableItems
 
     private val _observableBadge = MutableLiveData(0)
-    val observableBadge: LiveData<Int>
+    public val observableBadge: LiveData<Int>
         get() = _observableBadge
 
     private val visibleItems: SortedSet<NotificareInboxItem>
@@ -136,7 +137,7 @@ object NotificareInbox : NotificareModule() {
         }
     }
 
-    fun refresh() {
+    public fun refresh() {
         val application = Notificare.application ?: run {
             NotificareLogger.warning("Notificare application not yet available.")
             return
@@ -147,6 +148,7 @@ object NotificareInbox : NotificareModule() {
             return
         }
 
+        @OptIn(DelicateCoroutinesApi::class)
         GlobalScope.launch {
             try {
                 reloadInbox()
@@ -156,7 +158,7 @@ object NotificareInbox : NotificareModule() {
         }
     }
 
-    suspend fun open(item: NotificareInboxItem): NotificareNotification = withContext(Dispatchers.IO) {
+    public suspend fun open(item: NotificareInboxItem): NotificareNotification = withContext(Dispatchers.IO) {
         val application = Notificare.application ?: run {
             NotificareLogger.warning("Notificare application not yet available.")
             throw NotificareException.NotReady()
@@ -187,18 +189,10 @@ object NotificareInbox : NotificareModule() {
         return@withContext item.notification
     }
 
-    fun open(item: NotificareInboxItem, callback: NotificareCallback<NotificareNotification>) {
-        GlobalScope.launch {
-            try {
-                val notification = open(item)
-                callback.onSuccess(notification)
-            } catch (e: Exception) {
-                callback.onFailure(e)
-            }
-        }
-    }
+    public fun open(item: NotificareInboxItem, callback: NotificareCallback<NotificareNotification>): Unit =
+        toCallbackFunction(::open)(item, callback)
 
-    suspend fun markAsRead(item: NotificareInboxItem): Unit = withContext(Dispatchers.IO) {
+    public suspend fun markAsRead(item: NotificareInboxItem): Unit = withContext(Dispatchers.IO) {
         val application = Notificare.application ?: run {
             NotificareLogger.warning("Notificare application not yet available.")
             throw NotificareException.NotReady()
@@ -220,18 +214,10 @@ object NotificareInbox : NotificareModule() {
         Notificare.removeNotificationFromNotificationCenter(item.notification)
     }
 
-    fun markAsRead(item: NotificareInboxItem, callback: NotificareCallback<Unit>) {
-        GlobalScope.launch {
-            try {
-                markAsRead(item)
-                callback.onSuccess(Unit)
-            } catch (e: Exception) {
-                callback.onFailure(e)
-            }
-        }
-    }
+    public fun markAsRead(item: NotificareInboxItem, callback: NotificareCallback<Unit>): Unit =
+        toCallbackFunction(::markAsRead)(item, callback)
 
-    suspend fun markAllAsRead(): Unit = withContext(Dispatchers.IO) {
+    public suspend fun markAllAsRead(): Unit = withContext(Dispatchers.IO) {
         val application = Notificare.application ?: run {
             NotificareLogger.warning("Notificare application not yet available.")
             throw NotificareException.NotReady()
@@ -259,18 +245,10 @@ object NotificareInbox : NotificareModule() {
         clearNotificationCenter()
     }
 
-    fun markAllAsRead(callback: NotificareCallback<Unit>) {
-        GlobalScope.launch {
-            try {
-                markAllAsRead()
-                callback.onSuccess(Unit)
-            } catch (e: Exception) {
-                callback.onFailure(e)
-            }
-        }
-    }
+    public fun markAllAsRead(callback: NotificareCallback<Unit>): Unit =
+        toCallbackFunction(::markAllAsRead)(callback)
 
-    suspend fun remove(item: NotificareInboxItem): Unit = withContext(Dispatchers.IO) {
+    public suspend fun remove(item: NotificareInboxItem): Unit = withContext(Dispatchers.IO) {
         val application = Notificare.application ?: run {
             NotificareLogger.warning("Notificare application not yet available.")
             throw NotificareException.NotReady()
@@ -293,18 +271,10 @@ object NotificareInbox : NotificareModule() {
         Notificare.removeNotificationFromNotificationCenter(item.notification)
     }
 
-    fun remove(item: NotificareInboxItem, callback: NotificareCallback<Unit>) {
-        GlobalScope.launch {
-            try {
-                remove(item)
-                callback.onSuccess(Unit)
-            } catch (e: Exception) {
-                callback.onFailure(e)
-            }
-        }
-    }
+    public fun remove(item: NotificareInboxItem, callback: NotificareCallback<Unit>): Unit =
+        toCallbackFunction(::remove)(item, callback)
 
-    suspend fun clear(): Unit = withContext(Dispatchers.IO) {
+    public suspend fun clear(): Unit = withContext(Dispatchers.IO) {
         val application = Notificare.application ?: run {
             NotificareLogger.warning("Notificare application not yet available.")
             throw NotificareException.NotReady()
@@ -328,16 +298,8 @@ object NotificareInbox : NotificareModule() {
         clearNotificationCenter()
     }
 
-    fun clear(callback: NotificareCallback<Unit>) {
-        GlobalScope.launch {
-            try {
-                clear()
-                callback.onSuccess(Unit)
-            } catch (e: Exception) {
-                callback.onFailure(e)
-            }
-        }
-    }
+    public fun clear(callback: NotificareCallback<Unit>): Unit =
+        toCallbackFunction(::clear)(callback)
 
     internal suspend fun addItem(item: NotificareInboxItem): Unit = withContext(Dispatchers.IO) {
         val entity = InboxItemEntity.from(item)

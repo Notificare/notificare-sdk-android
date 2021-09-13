@@ -1,36 +1,29 @@
-package re.notifica.push.fcm
+package re.notifica.push.fcm.internal
 
-import android.content.Context
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.firebase.ktx.Firebase
-import com.google.firebase.messaging.RemoteMessage
 import com.google.firebase.messaging.ktx.messaging
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import re.notifica.NotificareLogger
+import re.notifica.InternalNotificareApi
+import re.notifica.Notificare
+import re.notifica.internal.NotificareLogger
 import re.notifica.models.NotificareTransport
 import re.notifica.push.NotificarePush
-import re.notifica.push.NotificareServiceManager
+import re.notifica.push.internal.ServiceManager
 
-@Suppress("unused")
-class NotificareServiceManager(
-    private val context: Context,
-) : NotificareServiceManager {
+@InternalNotificareApi
+public class ServiceManager : ServiceManager() {
+
+    override val available: Boolean
+        get() = GoogleApiAvailability.getInstance()
+            .isGooglePlayServicesAvailable(Notificare.requireContext()) == ConnectionResult.SUCCESS
 
     override val transport: NotificareTransport
         get() = NotificareTransport.GCM
 
-    override val hasMobileServicesAvailable: Boolean
-        get() = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(context) == ConnectionResult.SUCCESS
-
-    init {
-        if (!hasMobileServicesAvailable) {
-            throw IllegalStateException("Google Play Services are not available.")
-        }
-    }
-
-    override fun registerDeviceToken() {
+    override fun requestPushToken() {
         Firebase.messaging.token.addOnCompleteListener { task ->
             if (task.isSuccessful && task.result != null) {
                 NotificareLogger.info("Retrieved FCM token.")
@@ -48,12 +41,6 @@ class NotificareServiceManager(
             } else {
                 NotificareLogger.error("Failed to retrieve FCM token.")
             }
-        }
-    }
-
-    companion object {
-        fun isNotificareNotification(remoteMessage: RemoteMessage): Boolean {
-            return remoteMessage.data["x-sender"] == "notificare"
         }
     }
 }

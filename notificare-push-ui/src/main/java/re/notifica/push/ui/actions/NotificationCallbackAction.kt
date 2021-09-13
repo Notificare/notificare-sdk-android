@@ -9,7 +9,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import re.notifica.Notificare
-import re.notifica.NotificareLogger
+import re.notifica.internal.NotificareLogger
 import re.notifica.models.NotificareNotification
 import re.notifica.push.ui.NotificarePushUI
 import re.notifica.push.ui.R
@@ -20,7 +20,7 @@ import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
 
-class NotificationCallbackAction(
+internal class NotificationCallbackAction(
     context: Context,
     notification: NotificareNotification,
     action: NotificareNotification.Action
@@ -126,7 +126,9 @@ class NotificationCallbackAction(
                     mimeType = mimeType
                 )
 
-                NotificarePushUI.lifecycleListeners.forEach { it.onActionExecuted(notification, action) }
+                withContext(Dispatchers.Main) {
+                    NotificarePushUI.lifecycleListeners.forEach { it.onActionExecuted(notification, action) }
+                }
 
                 return@withContext
             }
@@ -141,9 +143,20 @@ class NotificationCallbackAction(
             GlobalScope.launch(Dispatchers.IO) {
                 try {
                     Notificare.callNotificationReplyWebhook(targetUri, params)
-                    NotificarePushUI.lifecycleListeners.forEach { it.onActionExecuted(notification, action) }
+
+                    withContext(Dispatchers.Main) {
+                        NotificarePushUI.lifecycleListeners.forEach { it.onActionExecuted(notification, action) }
+                    }
                 } catch (e: Exception) {
-                    NotificarePushUI.lifecycleListeners.forEach { it.onActionFailedToExecute(notification, action, e) }
+                    withContext(Dispatchers.Main) {
+                        NotificarePushUI.lifecycleListeners.forEach {
+                            it.onActionFailedToExecute(
+                                notification,
+                                action,
+                                e
+                            )
+                        }
+                    }
                 }
             }
 

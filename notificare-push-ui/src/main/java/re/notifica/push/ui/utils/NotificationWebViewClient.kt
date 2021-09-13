@@ -11,12 +11,12 @@ import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import re.notifica.Notificare
-import re.notifica.NotificareLogger
+import re.notifica.internal.NotificareLogger
 import re.notifica.models.NotificareNotification
 import re.notifica.push.ui.*
 import re.notifica.push.ui.notifications.fragments.base.NotificationFragment
 
-open class NotificationWebViewClient(
+internal open class NotificationWebViewClient(
     private val notification: NotificareNotification,
     private val callback: NotificationFragment.Callback,
 ) : WebViewClient() {

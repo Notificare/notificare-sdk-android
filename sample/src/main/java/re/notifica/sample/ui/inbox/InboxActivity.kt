@@ -9,11 +9,11 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import re.notifica.inbox.NotificareInbox
 import re.notifica.inbox.models.NotificareInboxItem
@@ -61,8 +61,8 @@ class InboxActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.refresh -> NotificareInbox.refresh()
-            R.id.read_all -> GlobalScope.launch { NotificareInbox.markAllAsRead() }
-            R.id.remove_all -> GlobalScope.launch { NotificareInbox.clear() }
+            R.id.read_all -> lifecycleScope.launch { NotificareInbox.markAllAsRead() }
+            R.id.remove_all -> lifecycleScope.launch { NotificareInbox.clear() }
             else -> return super.onOptionsItemSelected(item)
         }
 
@@ -109,7 +109,7 @@ class InboxActivity : AppCompatActivity() {
                 binding.readStatus.isVisible = !item.opened
 
                 binding.root.setOnClickListener {
-                    GlobalScope.launch {
+                    lifecycleScope.launch {
                         val notification = NotificareInbox.open(item)
                         NotificarePushUI.presentNotification(this@InboxActivity, notification)
                     }
@@ -119,20 +119,20 @@ class InboxActivity : AppCompatActivity() {
                     val bottomSheet = InboxItemActionsBottomSheet().apply {
                         listener = object : InboxItemActionsBottomSheet.Listener {
                             override fun onOpenClicked() {
-                                GlobalScope.launch {
+                                lifecycleScope.launch {
                                     val notification = NotificareInbox.open(item)
                                     NotificarePushUI.presentNotification(this@InboxActivity, notification)
                                 }
                             }
 
                             override fun onMarkAsReadClicked() {
-                                GlobalScope.launch {
+                                lifecycleScope.launch {
                                     NotificareInbox.markAsRead(item)
                                 }
                             }
 
                             override fun onDeleteClicked() {
-                                GlobalScope.launch {
+                                lifecycleScope.launch {
                                     NotificareInbox.remove(item)
                                 }
                             }

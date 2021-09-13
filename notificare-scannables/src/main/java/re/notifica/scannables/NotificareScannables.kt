@@ -6,20 +6,20 @@ import android.content.Intent
 import android.net.Uri
 import android.nfc.NfcManager
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import re.notifica.Notificare
 import re.notifica.NotificareCallback
-import re.notifica.NotificareLogger
+import re.notifica.internal.NotificareLogger
 import re.notifica.internal.common.putEnumExtra
+import re.notifica.internal.ktx.toCallbackFunction
 import re.notifica.internal.network.request.NotificareRequest
 import re.notifica.modules.NotificareModule
+import re.notifica.scannables.internal.ServiceManager
 import re.notifica.scannables.internal.network.push.FetchScannableResponse
 import re.notifica.scannables.models.NotificareScannable
 
-object NotificareScannables : NotificareModule() {
-    internal var serviceManager: NotificareServiceManager? = null
+public object NotificareScannables : NotificareModule() {
+    internal var serviceManager: ServiceManager? = null
         private set
 
     private val listeners = mutableListOf<ScannableSessionListener>()
@@ -27,7 +27,7 @@ object NotificareScannables : NotificareModule() {
     // region Notificare Module
 
     override fun configure() {
-        serviceManager = NotificareServiceManager.Factory.create(Notificare.requireContext())
+        serviceManager = ServiceManager.create()
     }
 
     override suspend fun launch() {}
@@ -36,7 +36,7 @@ object NotificareScannables : NotificareModule() {
 
     // endregion
 
-    val canStartNfcScannableSession: Boolean
+    public val canStartNfcScannableSession: Boolean
         get() {
             if (!Notificare.isConfigured) {
                 NotificareLogger.warning("You must configure Notificare before executing 'canStartNfcScannableSession'.")
@@ -49,12 +49,16 @@ object NotificareScannables : NotificareModule() {
             return adapter.isEnabled
         }
 
-    fun addListener(listener: ScannableSessionListener) = listeners.add(listener)
+    public fun addListener(listener: ScannableSessionListener) {
+        listeners.add(listener)
+    }
 
-    fun removeListener(listener: ScannableSessionListener) = listeners.remove(listener)
+    public fun removeListener(listener: ScannableSessionListener) {
+        listeners.remove(listener)
+    }
 
 
-    fun startScannableSession(activity: Activity) {
+    public fun startScannableSession(activity: Activity) {
         if (canStartNfcScannableSession) {
             startNfcScannableSession(activity)
         } else {
@@ -62,21 +66,21 @@ object NotificareScannables : NotificareModule() {
         }
     }
 
-    fun startNfcScannableSession(activity: Activity) {
+    public fun startNfcScannableSession(activity: Activity) {
         val intent = Intent(activity, ScannableActivity::class.java)
             .putEnumExtra(ScannableActivity.EXTRA_MODE, ScannableActivity.ScanMode.NFC)
 
         activity.startActivity(intent)
     }
 
-    fun startQrCodeScannableSession(activity: Activity) {
+    public fun startQrCodeScannableSession(activity: Activity) {
         val intent = Intent(activity, ScannableActivity::class.java)
             .putEnumExtra(ScannableActivity.EXTRA_MODE, ScannableActivity.ScanMode.QR_CODE)
 
         activity.startActivity(intent)
     }
 
-    suspend fun fetchScannable(tag: String): NotificareScannable = withContext(Dispatchers.IO) {
+    public suspend fun fetchScannable(tag: String): NotificareScannable = withContext(Dispatchers.IO) {
         NotificareRequest.Builder()
             .get("/scannable/tag/${Uri.encode(tag)}")
             .query("deviceID", Notificare.deviceManager.currentDevice?.id)
@@ -86,20 +90,8 @@ object NotificareScannables : NotificareModule() {
             .toModel()
     }
 
-    fun fetchScannable(tag: String, callback: NotificareCallback<NotificareScannable>) {
-        GlobalScope.launch {
-            try {
-                val scannable = fetchScannable(tag)
-                withContext(Dispatchers.Main) {
-                    callback.onSuccess(scannable)
-                }
-            } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
-                    callback.onFailure(e)
-                }
-            }
-        }
-    }
+    public fun fetchScannable(tag: String, callback: NotificareCallback<NotificareScannable>): Unit =
+        toCallbackFunction(::fetchScannable)(tag, callback)
 
 
     internal fun notifyListeners(scannable: NotificareScannable) {
@@ -115,9 +107,9 @@ object NotificareScannables : NotificareModule() {
     }
 
 
-    interface ScannableSessionListener {
-        fun onScannableDetected(scannable: NotificareScannable)
+    public interface ScannableSessionListener {
+        public fun onScannableDetected(scannable: NotificareScannable)
 
-        fun onScannerSessionError(error: Exception)
+        public fun onScannerSessionError(error: Exception)
     }
 }

@@ -2,6 +2,7 @@ package re.notifica.inbox.internal.database.converters
 
 import androidx.room.TypeConverter
 import re.notifica.Notificare
+import re.notifica.internal.moshi
 import re.notifica.models.NotificareNotification
 
 internal class NotificationConverter {

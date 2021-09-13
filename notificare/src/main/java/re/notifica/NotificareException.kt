@@ -1,9 +1,9 @@
 package re.notifica
 
-sealed class NotificareException(message: String, cause: Throwable? = null) :
+public sealed class NotificareException(message: String, cause: Throwable? = null) :
     Exception(message, cause) {
 
-    class NotReady : NotificareException("Notificare is not ready yet.")
+    public class NotReady : NotificareException("Notificare is not ready yet.")
 
-    class Unknown(cause: Throwable) : NotificareException("Unknown exception occurred.", cause)
+    public class Unknown(cause: Throwable) : NotificareException("Unknown exception occurred.", cause)
 }

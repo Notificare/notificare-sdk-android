@@ -1,6 +1,6 @@
 package re.notifica.models
 
-enum class NotificareTransport {
+public enum class NotificareTransport {
     NOTIFICARE,
     GCM,
     HMS
