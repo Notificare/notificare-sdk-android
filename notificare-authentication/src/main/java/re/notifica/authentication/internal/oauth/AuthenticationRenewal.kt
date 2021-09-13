@@ -1,8 +1,6 @@
 package re.notifica.authentication.internal.oauth
 
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okhttp3.FormBody
 import re.notifica.Notificare
@@ -10,6 +8,7 @@ import re.notifica.NotificareCallback
 import re.notifica.authentication.NotificareAuthentication
 import re.notifica.authentication.internal.network.push.OAuthResponse
 import re.notifica.internal.NotificareLogger
+import re.notifica.internal.ktx.toCallbackFunction
 import re.notifica.internal.network.request.NotificareRequest
 
 internal class AuthenticationRenewal : NotificareRequest.AuthenticationRefreshListener {
@@ -30,24 +29,18 @@ internal class AuthenticationRenewal : NotificareRequest.AuthenticationRefreshLi
             performingRenewal = true
         }
 
-        refreshCredentialsAsync()
-    }
+        refreshCredentials(object : NotificareCallback<Credentials> {
+            override fun onSuccess(result: Credentials) {
+                // Persist the updated credentials.
+                NotificareAuthentication.sharedPreferences.credentials = result
 
-    private fun refreshCredentialsAsync() {
-        GlobalScope.launch {
-            try {
-                val credentials = refreshCredentials()
-                NotificareAuthentication.sharedPreferences.credentials = credentials
-
-                withContext(Dispatchers.Main) {
-                    notify(NotificareRequest.Authentication.Bearer(credentials.accessToken))
-                }
-            } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
-                    notify(e)
-                }
+                notify(NotificareRequest.Authentication.Bearer(result.accessToken))
             }
-        }
+
+            override fun onFailure(e: Exception) {
+                notify(e)
+            }
+        })
     }
 
     private suspend fun refreshCredentials(): Credentials = withContext(Dispatchers.IO) {
@@ -72,6 +65,9 @@ internal class AuthenticationRenewal : NotificareRequest.AuthenticationRefreshLi
             expiresIn = response.expires_in,
         )
     }
+
+    private fun refreshCredentials(callback: NotificareCallback<Credentials>): Unit =
+        toCallbackFunction(::refreshCredentials)(callback)
 
     private fun notify(authentication: NotificareRequest.Authentication) {
         synchronized(lock) {
