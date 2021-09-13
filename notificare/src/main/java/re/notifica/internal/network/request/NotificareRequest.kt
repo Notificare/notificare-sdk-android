@@ -279,7 +279,7 @@ public class NotificareRequest private constructor(
             var url = requireNotNull(url) { "Please provide the URL for the request." }
 
             if (!url.startsWith("http://") && !url.startsWith("https://")) {
-                val baseUrl = requireNotNull(baseUrl ?: Notificare.servicesConfig?.pushHost) {
+                val baseUrl = requireNotNull(baseUrl ?: Notificare.servicesInfo?.environment?.pushHost) {
                     "Unable to determine the base url for the request."
                 }
 
@@ -303,8 +303,8 @@ public class NotificareRequest private constructor(
         }
 
         private fun createDefaultAuthentication(): Authentication? {
-            val key = Notificare.applicationKey
-            val secret = Notificare.applicationSecret
+            val key = Notificare.servicesInfo?.applicationKey
+            val secret = Notificare.servicesInfo?.applicationSecret
 
             if (key == null || secret == null) {
                 NotificareLogger.warning("Notificare application authentication not configured.")

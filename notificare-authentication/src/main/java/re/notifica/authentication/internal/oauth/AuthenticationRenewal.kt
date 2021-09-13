@@ -49,8 +49,8 @@ internal class AuthenticationRenewal : NotificareRequest.AuthenticationRefreshLi
 
         val payload = FormBody.Builder()
             .add("grant_type", "refresh_token")
-            .add("client_id", requireNotNull(Notificare.applicationKey))
-            .add("client_secret", requireNotNull(Notificare.applicationSecret))
+            .add("client_id", requireNotNull(Notificare.servicesInfo?.applicationKey))
+            .add("client_secret", requireNotNull(Notificare.servicesInfo?.applicationSecret))
             .add("refresh_token", credentials.refreshToken)
             .build()
 

@@ -48,11 +48,7 @@ public object Notificare {
 
     // Configurations
     private var context: WeakReference<Context>? = null
-    public var servicesConfig: NotificareServices? = null
-        private set
-    public var applicationKey: String? = null
-        private set
-    public var applicationSecret: String? = null
+    public var servicesInfo: NotificareServicesInfo? = null
         private set
     public var options: NotificareOptions? = null
         private set
@@ -107,15 +103,21 @@ public object Notificare {
         val services = try {
             val useTestApi = context.resources.getBoolean(R.bool.notificare_services_use_test_api)
             if (useTestApi) {
-                NotificareServices.TEST
+                NotificareServicesInfo.Environment.TEST
             } else {
-                NotificareServices.PRODUCTION
+                NotificareServicesInfo.Environment.PRODUCTION
             }
         } catch (e: Resources.NotFoundException) {
-            NotificareServices.PRODUCTION
+            NotificareServicesInfo.Environment.PRODUCTION
         }
 
-        configure(context, applicationKey, applicationSecret, services)
+        val servicesInfo = NotificareServicesInfo(
+            applicationKey = applicationKey,
+            applicationSecret = applicationSecret,
+            environment = services
+        )
+
+        configure(context, servicesInfo)
     }
 
     public fun requireContext(): Context {
@@ -448,20 +450,13 @@ public object Notificare {
 
     // endregion
 
-    private fun configure(
-        context: Context,
-        applicationKey: String,
-        applicationSecret: String,
-        services: NotificareServices
-    ) {
-        if (applicationKey.isBlank() || applicationSecret.isBlank()) {
+    private fun configure(context: Context, servicesInfo: NotificareServicesInfo) {
+        if (servicesInfo.applicationKey.isBlank() || servicesInfo.applicationSecret.isBlank()) {
             throw IllegalArgumentException("Notificare cannot be configured without an application key and secret.")
         }
 
         this.context = WeakReference(context.applicationContext)
-        this.servicesConfig = services
-        this.applicationKey = applicationKey
-        this.applicationSecret = applicationSecret
+        this.servicesInfo = servicesInfo
         this.options = NotificareOptions(context.applicationContext)
 
         // Late init modules
@@ -515,12 +510,12 @@ public object Notificare {
         val uri = intent.data ?: return null
         val host = uri.host ?: return null
 
-        val services = servicesConfig ?: run {
+        val servicesInfo = servicesInfo ?: run {
             NotificareLogger.warning("Unable to parse dynamic link. Notificare services have not been configured.")
             return null
         }
 
-        if (!Pattern.matches("^([a-z0-9-])+\\.${Pattern.quote(services.dynamicLinkDomain)}$", host)) {
+        if (!Pattern.matches("^([a-z0-9-])+\\.${Pattern.quote(servicesInfo.environment.dynamicLinkDomain)}$", host)) {
             NotificareLogger.debug("Domain pattern wasn't a match.")
             return null
         }

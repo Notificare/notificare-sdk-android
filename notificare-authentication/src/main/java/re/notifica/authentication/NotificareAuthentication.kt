@@ -59,8 +59,8 @@ public object NotificareAuthentication : NotificareModule() {
 
         val payload = FormBody.Builder()
             .add("grant_type", "password")
-            .add("client_id", requireNotNull(Notificare.applicationKey))
-            .add("client_secret", requireNotNull(Notificare.applicationSecret))
+            .add("client_id", requireNotNull(Notificare.servicesInfo?.applicationKey))
+            .add("client_secret", requireNotNull(Notificare.servicesInfo?.applicationSecret))
             .add("username", email)
             .add("password", password)
             .build()
