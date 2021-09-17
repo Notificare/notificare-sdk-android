@@ -15,6 +15,7 @@ import re.notifica.NotificareCallback
 import re.notifica.NotificareException
 import re.notifica.geo.internal.ServiceManager
 import re.notifica.geo.internal.contains
+import re.notifica.geo.internal.isValid
 import re.notifica.geo.internal.network.push.FetchRegionsResponse
 import re.notifica.geo.internal.network.push.RegionTriggerPayload
 import re.notifica.geo.internal.network.push.UpdateDeviceLocationPayload
@@ -164,6 +165,11 @@ public object NotificareGeo : NotificareModule() {
 
     @InternalNotificareApi
     public fun handleLocationUpdate(location: Location) {
+        if (!location.isValid) {
+            NotificareLogger.warning("Received an invalid location update(${location.latitude}, ${location.longitude}).")
+            return
+        }
+
         if (shouldUpdateLocation(location)) {
             Toast.makeText(Notificare.requireContext(), "location updated", Toast.LENGTH_SHORT).show()
 
