@@ -93,7 +93,7 @@ public class ServiceManager : ServiceManager() {
     @SuppressLint("MissingPermission")
     override fun enableLocationUpdates() {
         if (locationUpdatesStarted) {
-            // TODO updateLocationServicesAuthStatus
+            NotificareLogger.debug("Location updates were previously enabled. Skipping...")
             return
         }
 

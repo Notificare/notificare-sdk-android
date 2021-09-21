@@ -502,6 +502,7 @@ public object NotificareGeo : NotificareModule() {
     private fun clearRegions() {
         // Remove the cached regions.
         localStorage.monitoredRegions = emptyList()
+        localStorage.enteredRegions = emptySet()
 
         // Stop monitoring all regions.
         serviceManager?.clearMonitoringRegions()
