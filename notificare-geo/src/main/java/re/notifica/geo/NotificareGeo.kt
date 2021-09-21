@@ -170,13 +170,45 @@ public object NotificareGeo : NotificareModule() {
             return
         }
 
+        //
+        // Handle ongoing region sessions.
+        //
+        // TODO handle region sessions
+
+        //
+        // Handle polygon enters & exits.
+        //
+        localStorage.monitoredRegions
+            .filter { it.isPolygon }
+            .forEach { region ->
+                val entered = localStorage.enteredRegions.contains(region.id)
+                val inside = region.contains(location)
+
+                if (!entered && inside) {
+                    triggerRegionEnter(region)
+
+                    // TODO start region session
+                } else if (entered && !inside) {
+                    triggerRegionExit(region)
+
+                    // TODO stop region session
+                }
+
+                if (inside) {
+                    // TODO start monitoring for beacons
+                } else {
+                    // TODO stop monitoring for beacons
+                }
+            }
+
+        //
+        // Handle location updates & loading new geofences.
+        //
         if (shouldUpdateLocation(location)) {
             Toast.makeText(Notificare.requireContext(), "location updated", Toast.LENGTH_SHORT).show()
 
             // Keep a reference to the last known location.
             lastKnownLocation = location
-
-            // TODO handle polygon enters
 
             @OptIn(DelicateCoroutinesApi::class)
             GlobalScope.launch {
@@ -213,7 +245,9 @@ public object NotificareGeo : NotificareModule() {
                     GlobalScope.launch {
                         try {
                             val location = checkNotNull(serviceManager).getCurrentLocationAsync().await()
-                            if (region.contains(location)) {
+                            val inside = region.contains(location)
+
+                            if (inside) {
                                 NotificareLogger.debug("Entered the polygon.")
 
                                 triggerRegionEnter(region)
