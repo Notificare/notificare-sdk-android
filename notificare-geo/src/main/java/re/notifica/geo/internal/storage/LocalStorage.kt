@@ -9,6 +9,7 @@ import re.notifica.internal.NotificareLogger
 import re.notifica.internal.moshi
 
 private const val PREFERENCES_FILE_NAME = "re.notifica.geo.preferences"
+private const val PREFERENCE_LOCATION_SERVICES_ENABLED = "re.notifica.geo.preferences.location_services_enabled"
 private const val PREFERENCE_MONITORED_REGIONS = "re.notifica.geo.preferences.monitored_regions"
 private const val PREFERENCE_ENTERED_REGIONS = "re.notifica.geo.preferences.entered_regions"
 
@@ -17,6 +18,10 @@ internal class LocalStorage(context: Context) {
         PREFERENCES_FILE_NAME,
         Context.MODE_PRIVATE
     )
+
+    var locationServicesEnabled: Boolean
+        get() = sharedPreferences.getBoolean(PREFERENCE_LOCATION_SERVICES_ENABLED, false)
+        set(value) = sharedPreferences.edit { putBoolean(PREFERENCE_LOCATION_SERVICES_ENABLED, value) }
 
     var monitoredRegions: List<NotificareRegion>
         get() {

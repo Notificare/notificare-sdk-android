@@ -135,8 +135,8 @@ public class ServiceManager : ServiceManager() {
     override fun disableLocationUpdates() {
         // Remove all geofences.
         geofencingClient.removeGeofences(geofencingPendingIntent)
-            .addOnSuccessListener { }
-            .addOnFailureListener { }
+            .addOnSuccessListener { NotificareLogger.debug("Removed all geofences.") }
+            .addOnFailureListener { NotificareLogger.debug("Failed to remove all geofences.") }
 
         // Stop listening for location updates.
         fusedLocationClient.removeLocationUpdates(locationPendingIntent)

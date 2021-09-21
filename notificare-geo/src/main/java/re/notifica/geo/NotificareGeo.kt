@@ -77,8 +77,11 @@ public object NotificareGeo : NotificareModule() {
             ) == PackageManager.PERMISSION_GRANTED
         }
 
-    public val locationServicesEnabled: Boolean
-        get() = true
+    public var locationServicesEnabled: Boolean
+        get() = localStorage.locationServicesEnabled
+        private set(value) {
+            localStorage.locationServicesEnabled = value
+        }
 
     // region NotificareModule
 
@@ -122,6 +125,7 @@ public object NotificareGeo : NotificareModule() {
             @OptIn(DelicateCoroutinesApi::class)
             GlobalScope.launch {
                 try {
+                    lastKnownLocation = null
                     clearLocation()
                     NotificareLogger.debug("Device location cleared.")
 
@@ -135,7 +139,13 @@ public object NotificareGeo : NotificareModule() {
             return
         }
 
+        // Keep track of the location services status.
+        localStorage.locationServicesEnabled = true
+
+        // Start the location updates.
         serviceManager?.enableLocationUpdates()
+
+        NotificareLogger.info("Location updates enabled.")
     }
 
     public fun disableLocationUpdates() {
@@ -144,6 +154,9 @@ public object NotificareGeo : NotificareModule() {
         } catch (e: Exception) {
             return
         }
+
+        // Keep track of the location services status.
+        localStorage.locationServicesEnabled = false
 
         lastKnownLocation = null
         clearRegions()
@@ -160,6 +173,8 @@ public object NotificareGeo : NotificareModule() {
                 NotificareLogger.error("Failed to clear the device location.", e)
             }
         }
+
+        NotificareLogger.info("Location updates disabled.")
     }
 
 
