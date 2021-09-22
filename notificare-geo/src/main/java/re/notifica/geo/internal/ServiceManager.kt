@@ -13,8 +13,6 @@ public abstract class ServiceManager : AbstractServiceManager() {
 
     public abstract fun disableLocationUpdates()
 
-    public abstract fun getCountryCode(location: Location): String?
-
     public abstract fun getCurrentLocationAsync(): Deferred<Location>
 
     public abstract fun startMonitoringRegions(regions: List<NotificareRegion>)

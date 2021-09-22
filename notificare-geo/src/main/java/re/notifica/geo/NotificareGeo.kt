@@ -2,6 +2,7 @@ package re.notifica.geo
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.location.Geocoder
 import android.location.Location
 import android.os.Build
 import android.widget.Toast
@@ -40,6 +41,7 @@ public object NotificareGeo : NotificareModule() {
     public const val INTENT_ACTION_GEOFENCE_TRANSITION: String = "re.notifica.intent.action.GeofenceTransition"
 
     private lateinit var localStorage: LocalStorage
+    private var geocoder: Geocoder? = null
     private var serviceManager: ServiceManager? = null
     private var lastKnownLocation: Location? = null
 
@@ -89,7 +91,10 @@ public object NotificareGeo : NotificareModule() {
     // region NotificareModule
 
     override fun configure() {
-        localStorage = LocalStorage(Notificare.requireContext())
+        val context = Notificare.requireContext()
+
+        localStorage = LocalStorage(context)
+        geocoder = if (Geocoder.isPresent()) Geocoder(context) else null
         serviceManager = ServiceManager.create()
     }
 
@@ -229,7 +234,7 @@ public object NotificareGeo : NotificareModule() {
             @OptIn(DelicateCoroutinesApi::class)
             GlobalScope.launch {
                 try {
-                    val country = checkNotNull(serviceManager).getCountryCode(location)
+                    val country = getCountryCode(location)
 
                     NotificareLogger.info("Updating device location.")
                     updateLocation(location, country)
@@ -535,5 +540,17 @@ public object NotificareGeo : NotificareModule() {
 
         // Stop monitoring all regions.
         serviceManager?.clearMonitoringRegions()
+    }
+
+    private fun getCountryCode(location: Location): String? {
+        return try {
+            geocoder
+                ?.getFromLocation(location.latitude, location.longitude, 1)
+                ?.firstOrNull()
+                ?.countryCode
+        } catch (e: Exception) {
+            NotificareLogger.warning("Unable to reverse geocode the location.", e)
+            null
+        }
     }
 }

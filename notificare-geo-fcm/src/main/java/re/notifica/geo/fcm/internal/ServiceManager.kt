@@ -3,7 +3,6 @@ package re.notifica.geo.fcm.internal
 import android.annotation.SuppressLint
 import android.app.PendingIntent
 import android.content.Intent
-import android.location.Geocoder
 import android.location.Location
 import android.os.Build
 import com.google.android.gms.common.ConnectionResult
@@ -24,7 +23,6 @@ public class ServiceManager : ServiceManager() {
 
     private val fusedLocationClient: FusedLocationProviderClient
     private val geofencingClient: GeofencingClient
-    private val geocoder: Geocoder?
 
     private var locationUpdatesStarted = false
     private val locationPendingIntent: PendingIntent
@@ -40,7 +38,6 @@ public class ServiceManager : ServiceManager() {
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
         geofencingClient = LocationServices.getGeofencingClient(context)
-        geocoder = if (Geocoder.isPresent()) Geocoder(context) else null
 
         // region Setup location pending intent
 
@@ -99,6 +96,8 @@ public class ServiceManager : ServiceManager() {
 
         fusedLocationClient.lastLocation.addOnSuccessListener { location ->
             if (location != null) {
+                // NotificareGeo.handleLocationUpdate(location)
+
                 val intent = Intent()
                     .putExtra(
                         "com.google.android.gms.location.EXTRA_LOCATION_RESULT",
@@ -142,18 +141,6 @@ public class ServiceManager : ServiceManager() {
         fusedLocationClient.removeLocationUpdates(locationPendingIntent)
 
         locationUpdatesStarted = false
-    }
-
-    override fun getCountryCode(location: Location): String? {
-        return try {
-            geocoder
-                ?.getFromLocation(location.latitude, location.longitude, 1)
-                ?.firstOrNull()
-                ?.countryCode
-        } catch (e: Exception) {
-            NotificareLogger.warning("Unable to reverse geocode the location.", e)
-            null
-        }
     }
 
     @SuppressLint("MissingPermission")
