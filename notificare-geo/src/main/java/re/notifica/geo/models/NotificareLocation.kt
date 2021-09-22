@@ -24,7 +24,7 @@ public data class NotificareLocation(
     // TODO add JSON methods
 
     public companion object {
-        private fun toModel(location: Location): NotificareLocation {
+        public operator fun invoke(location: Location): NotificareLocation {
             val verticalAccuracy: Double =
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) location.verticalAccuracyMeters.toDouble()
                 else 0.0

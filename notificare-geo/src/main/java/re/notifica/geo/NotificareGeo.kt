@@ -20,7 +20,10 @@ import re.notifica.geo.internal.network.push.FetchRegionsResponse
 import re.notifica.geo.internal.network.push.RegionTriggerPayload
 import re.notifica.geo.internal.network.push.UpdateDeviceLocationPayload
 import re.notifica.geo.internal.storage.LocalStorage
+import re.notifica.geo.ktx.logRegionSession
+import re.notifica.geo.models.NotificareLocation
 import re.notifica.geo.models.NotificareRegion
+import re.notifica.geo.models.NotificareRegionSession
 import re.notifica.internal.NotificareLogger
 import re.notifica.internal.network.request.NotificareRequest
 import re.notifica.modules.NotificareModule
@@ -28,8 +31,8 @@ import re.notifica.modules.NotificareModule
 public object NotificareGeo : NotificareModule() {
 
     // TODO consider providing these parameters as options.
-    public const val DEFAULT_LOCATION_UPDATES_INTERVAL: Long = 60 * 1000
-    public const val DEFAULT_LOCATION_UPDATES_FASTEST_INTERVAL: Long = 30 * 1000
+    public const val DEFAULT_LOCATION_UPDATES_INTERVAL: Long = (60 * 1000).toLong()
+    public const val DEFAULT_LOCATION_UPDATES_FASTEST_INTERVAL: Long = (30 * 1000).toLong()
     public const val DEFAULT_LOCATION_UPDATES_SMALLEST_DISPLACEMENT: Double = 10.0
     public const val DEFAULT_GEOFENCE_RESPONSIVENESS: Int = 0
 
@@ -188,7 +191,7 @@ public object NotificareGeo : NotificareModule() {
         //
         // Handle ongoing region sessions.
         //
-        // TODO handle region sessions
+        updateRegionSessions(NotificareLocation(location))
 
         //
         // Handle polygon enters & exits.
@@ -201,12 +204,10 @@ public object NotificareGeo : NotificareModule() {
 
                 if (!entered && inside) {
                     triggerRegionEnter(region)
-
-                    // TODO start region session
+                    startRegionSession(region)
                 } else if (entered && !inside) {
                     triggerRegionExit(region)
-
-                    // TODO stop region session
+                    stopRegionSession(region)
                 }
 
                 if (inside) {
@@ -244,8 +245,6 @@ public object NotificareGeo : NotificareModule() {
 
     @InternalNotificareApi
     public fun handleRegionEnter(identifiers: List<String>) {
-        Toast.makeText(Notificare.requireContext(), "on enter = $identifiers", Toast.LENGTH_LONG).show()
-
         identifiers.forEach { regionId ->
             val region = localStorage.monitoredRegions.firstOrNull { it.id == regionId } ?: run {
                 NotificareLogger.warning("Received an enter event for non-cached region '$regionId'.")
@@ -266,7 +265,7 @@ public object NotificareGeo : NotificareModule() {
                                 NotificareLogger.debug("Entered the polygon.")
 
                                 triggerRegionEnter(region)
-                                // TODO start region session
+                                startRegionSession(region)
                             }
                         } catch (e: Exception) {
                             NotificareLogger.warning("Failed to determine the current location.", e)
@@ -283,7 +282,7 @@ public object NotificareGeo : NotificareModule() {
             // Make sure we're not inside the region.
             if (!localStorage.enteredRegions.contains(regionId)) {
                 triggerRegionEnter(region)
-                // TODO start region session
+                startRegionSession(region)
             }
 
             // Start monitoring for beacons in this region.
@@ -293,8 +292,6 @@ public object NotificareGeo : NotificareModule() {
 
     @InternalNotificareApi
     public fun handleRegionExit(identifiers: List<String>) {
-        Toast.makeText(Notificare.requireContext(), "on exit = $identifiers", Toast.LENGTH_LONG).show()
-
         identifiers.forEach { regionId ->
             val region = localStorage.monitoredRegions.firstOrNull { it.id == regionId } ?: run {
                 NotificareLogger.warning("Received an exit event for non-cached region '$regionId'.")
@@ -304,7 +301,7 @@ public object NotificareGeo : NotificareModule() {
             // Make sure we're inside the region.
             if (localStorage.enteredRegions.contains(regionId)) {
                 triggerRegionExit(region)
-                // TODO end region session
+                stopRegionSession(region)
             }
 
             // Stop monitoring for beacons in this region.
@@ -497,6 +494,38 @@ public object NotificareGeo : NotificareModule() {
                     NotificareLogger.error("Failed to trigger a region exit.", e)
                 }
             })
+    }
+
+    private fun startRegionSession(region: NotificareRegion) {
+        NotificareLogger.debug("Starting session for region '${region.name}'.")
+        val session = NotificareRegionSession(region)
+
+        val location = lastKnownLocation?.let { NotificareLocation(it) }
+        if (location != null) {
+            session.locations.add(location)
+        }
+
+        localStorage.addRegionSession(session)
+    }
+
+    private fun updateRegionSessions(location: NotificareLocation) {
+        NotificareLogger.debug("Updating region sessions.")
+        localStorage.updateRegionSessions(location)
+    }
+
+    private fun stopRegionSession(region: NotificareRegion) {
+        NotificareLogger.debug("Stopping session for region '${region.name}'.")
+
+        val session = localStorage.regionSessions[region.id] ?: run {
+            NotificareLogger.warning("Skipping region session end since no session exists for region '${region.name}'.")
+            return
+        }
+
+        // Submit the event for processing.
+        Notificare.eventsManager.logRegionSession(session)
+
+        // Remove the session from local storage.
+        localStorage.removeRegionSession(session)
     }
 
     private fun clearRegions() {
