@@ -65,6 +65,10 @@ dependencies {
     implementation project(':notificare-authentication')
     implementation project(':notificare-inbox')
 
+    implementation project(':notificare-geo')
+    implementation project(':notificare-geo-fcm')
+    implementation project(':notificare-geo-hms')
+
     implementation project(':notificare-push')
     implementation project(':notificare-push-fcm')
     implementation project(':notificare-push-hms')

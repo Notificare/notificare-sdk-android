@@ -1,11 +1,16 @@
 package re.notifica.sample
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.google.android.material.snackbar.Snackbar
@@ -17,6 +22,7 @@ import re.notifica.authentication.NotificareAuthentication
 import re.notifica.authentication.models.NotificareUser
 import re.notifica.authentication.models.NotificareUserPreference
 import re.notifica.authentication.models.NotificareUserSegment
+import re.notifica.geo.NotificareGeo
 import re.notifica.models.*
 import re.notifica.push.NotificarePush
 import re.notifica.push.ui.NotificarePushUI
@@ -31,6 +37,28 @@ class MainActivity : AppCompatActivity(), Notificare.OnReadyListener, Notificare
     NotificareScannables.ScannableSessionListener {
 
     private lateinit var binding: ActivityMainBinding
+
+    private val foregroundLocationPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        if (permissions.any { !it.value }) {
+            Log.i(TAG, "User denied foreground location permissions.")
+            return@registerForActivityResult
+        }
+
+        onEnableLocationUpdatesClicked(binding.root)
+    }
+
+    private val backgroundLocationPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        if (!granted) {
+            Log.i(TAG, "User denied background location permissions.")
+            return@registerForActivityResult
+        }
+
+        onEnableLocationUpdatesClicked(binding.root)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -345,7 +373,6 @@ class MainActivity : AppCompatActivity(), Notificare.OnReadyListener, Notificare
         }
     }
 
-
     fun onCreateUserAccountClicked(@Suppress("UNUSED_PARAMETER") view: View) {
         NotificareAuthentication.createAccount(
             email = "helder+1@notifica.re",
@@ -591,11 +618,77 @@ class MainActivity : AppCompatActivity(), Notificare.OnReadyListener, Notificare
         })
     }
 
+    fun onEnableLocationUpdatesClicked(@Suppress("UNUSED_PARAMETER") view: View) {
+        val foregroundLocationPermission =
+            ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+
+        if (foregroundLocationPermission != PackageManager.PERMISSION_GRANTED) {
+            if (shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)) {
+                AlertDialog.Builder(this)
+                    .setTitle(R.string.app_name)
+                    .setMessage(R.string.main_foreground_permission_rationale)
+                    .setPositiveButton(android.R.string.ok) { _, _ ->
+                        foregroundLocationPermissionLauncher.launch(
+                            arrayOf(
+                                Manifest.permission.ACCESS_COARSE_LOCATION,
+                                Manifest.permission.ACCESS_FINE_LOCATION
+                            )
+                        )
+                    }
+                    .show()
+
+                return
+            }
+
+            foregroundLocationPermissionLauncher.launch(
+                arrayOf(
+                    Manifest.permission.ACCESS_COARSE_LOCATION,
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                )
+            )
+
+            return
+        }
+
+        val backgroundLocationPermissionStr =
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) Manifest.permission.ACCESS_BACKGROUND_LOCATION
+            else Manifest.permission.ACCESS_FINE_LOCATION
+
+        val backgroundLocationPermission = ContextCompat.checkSelfPermission(this, backgroundLocationPermissionStr)
+
+        if (backgroundLocationPermission != PackageManager.PERMISSION_GRANTED) {
+            if (shouldShowRequestPermissionRationale(backgroundLocationPermissionStr)) {
+                AlertDialog.Builder(this)
+                    .setTitle(R.string.app_name)
+                    .setMessage(R.string.main_background_permission_rationale)
+                    .setPositiveButton(android.R.string.ok) { _, _ ->
+                        backgroundLocationPermissionLauncher.launch(backgroundLocationPermissionStr)
+                    }
+                    .show()
+
+                return
+            }
+
+            backgroundLocationPermissionLauncher.launch(backgroundLocationPermissionStr)
+            return
+        }
+
+        NotificareGeo.enableLocationUpdates()
+    }
+
+    fun onDisableLocationUpdatesClicked(@Suppress("UNUSED_PARAMETER") view: View) {
+        NotificareGeo.disableLocationUpdates()
+    }
+
     // region Notificare.OnReadyListener
 
     override fun onReady(application: NotificareApplication) {
         if (NotificarePush.isRemoteNotificationsEnabled) {
             NotificarePush.enableRemoteNotifications()
+        }
+
+        if (NotificareGeo.locationServicesEnabled) {
+            NotificareGeo.enableLocationUpdates()
         }
     }
 
