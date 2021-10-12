@@ -36,6 +36,7 @@ buildscript {
         moshi_version = '1.12.0'
         okhttp_version = '4.9.1'
         glide_version = '4.12.0'
+        altbeacon_version = '2.19.1'
 
         // Firebase & Google Services
         firebase_bom_version = '26.4.0'

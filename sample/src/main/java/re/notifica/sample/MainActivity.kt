@@ -60,6 +60,17 @@ class MainActivity : AppCompatActivity(), Notificare.OnReadyListener, Notificare
         onEnableLocationUpdatesClicked(binding.root)
     }
 
+    private val bluetoothScanPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        if (!granted) {
+            Log.i(TAG, "User denied bluetooth scan permissions.")
+            return@registerForActivityResult
+        }
+
+        onEnableLocationUpdatesClicked(binding.root)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater).also {
@@ -619,59 +630,9 @@ class MainActivity : AppCompatActivity(), Notificare.OnReadyListener, Notificare
     }
 
     fun onEnableLocationUpdatesClicked(@Suppress("UNUSED_PARAMETER") view: View) {
-        val foregroundLocationPermission =
-            ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-
-        if (foregroundLocationPermission != PackageManager.PERMISSION_GRANTED) {
-            if (shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)) {
-                AlertDialog.Builder(this)
-                    .setTitle(R.string.app_name)
-                    .setMessage(R.string.main_foreground_permission_rationale)
-                    .setPositiveButton(android.R.string.ok) { _, _ ->
-                        foregroundLocationPermissionLauncher.launch(
-                            arrayOf(
-                                Manifest.permission.ACCESS_COARSE_LOCATION,
-                                Manifest.permission.ACCESS_FINE_LOCATION
-                            )
-                        )
-                    }
-                    .show()
-
-                return
-            }
-
-            foregroundLocationPermissionLauncher.launch(
-                arrayOf(
-                    Manifest.permission.ACCESS_COARSE_LOCATION,
-                    Manifest.permission.ACCESS_FINE_LOCATION
-                )
-            )
-
-            return
-        }
-
-        val backgroundLocationPermissionStr =
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) Manifest.permission.ACCESS_BACKGROUND_LOCATION
-            else Manifest.permission.ACCESS_FINE_LOCATION
-
-        val backgroundLocationPermission = ContextCompat.checkSelfPermission(this, backgroundLocationPermissionStr)
-
-        if (backgroundLocationPermission != PackageManager.PERMISSION_GRANTED) {
-            if (shouldShowRequestPermissionRationale(backgroundLocationPermissionStr)) {
-                AlertDialog.Builder(this)
-                    .setTitle(R.string.app_name)
-                    .setMessage(R.string.main_background_permission_rationale)
-                    .setPositiveButton(android.R.string.ok) { _, _ ->
-                        backgroundLocationPermissionLauncher.launch(backgroundLocationPermissionStr)
-                    }
-                    .show()
-
-                return
-            }
-
-            backgroundLocationPermissionLauncher.launch(backgroundLocationPermissionStr)
-            return
-        }
+        if (!ensureForegroundLocationPermission()) return
+        if (!ensureBackgroundLocationPermission()) return
+        if (!ensureBluetoothScanPermission()) return
 
         NotificareGeo.enableLocationUpdates()
     }
@@ -776,6 +737,86 @@ class MainActivity : AppCompatActivity(), Notificare.OnReadyListener, Notificare
     }
 
     // endregion
+
+    private fun ensureForegroundLocationPermission(): Boolean {
+        val permission = Manifest.permission.ACCESS_FINE_LOCATION
+        val granted = ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED
+        if (granted) return true
+
+        if (shouldShowRequestPermissionRationale(permission)) {
+            AlertDialog.Builder(this)
+                .setTitle(R.string.app_name)
+                .setMessage(R.string.main_foreground_permission_rationale)
+                .setPositiveButton(android.R.string.ok) { _, _ ->
+                    foregroundLocationPermissionLauncher.launch(
+                        arrayOf(
+                            Manifest.permission.ACCESS_COARSE_LOCATION,
+                            Manifest.permission.ACCESS_FINE_LOCATION
+                        )
+                    )
+                }
+                .show()
+
+            return false
+        }
+
+        foregroundLocationPermissionLauncher.launch(
+            arrayOf(
+                Manifest.permission.ACCESS_COARSE_LOCATION,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            )
+        )
+
+        return false
+    }
+
+    private fun ensureBackgroundLocationPermission(): Boolean {
+        val permission = when {
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q -> Manifest.permission.ACCESS_BACKGROUND_LOCATION
+            else -> Manifest.permission.ACCESS_FINE_LOCATION
+        }
+
+        val granted = ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED
+        if (granted) return true
+
+        if (shouldShowRequestPermissionRationale(permission)) {
+            AlertDialog.Builder(this)
+                .setTitle(R.string.app_name)
+                .setMessage(R.string.main_background_permission_rationale)
+                .setPositiveButton(android.R.string.ok) { _, _ ->
+                    backgroundLocationPermissionLauncher.launch(permission)
+                }
+                .show()
+
+            return false
+        }
+
+        backgroundLocationPermissionLauncher.launch(permission)
+        return false
+    }
+
+    private fun ensureBluetoothScanPermission(): Boolean {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) return true
+
+        val permission = Manifest.permission.BLUETOOTH_SCAN
+        val granted = ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED
+        if (granted) return true
+
+        if (shouldShowRequestPermissionRationale(permission)) {
+            AlertDialog.Builder(this)
+                .setTitle(R.string.app_name)
+                .setMessage(R.string.main_background_permission_rationale)
+                .setPositiveButton(android.R.string.ok) { _, _ ->
+                    bluetoothScanPermissionLauncher.launch(permission)
+                }
+                .show()
+
+            return false
+        }
+
+        bluetoothScanPermissionLauncher.launch(permission)
+        return false
+    }
 
     companion object {
         private val TAG = MainActivity::class.java.simpleName

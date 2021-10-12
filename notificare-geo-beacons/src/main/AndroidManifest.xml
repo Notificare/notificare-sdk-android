@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="re.notifica.geo.beacons">
+
+    <!--    <uses-permission-->
+    <!--        android:name="android.permission.BLUETOOTH"-->
+    <!--        android:maxSdkVersion="30"-->
+    <!--        tools:replace="maxSdkVersion" />-->
+
+    <!--    <uses-permission-->
+    <!--        android:name="android.permission.BLUETOOTH_ADMIN"-->
+    <!--        android:maxSdkVersion="30"-->
+    <!--        tools:replace="maxSdkVersion" />-->
+
+    <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
+
+</manifest>

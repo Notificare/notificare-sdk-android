@@ -1,6 +1,7 @@
 package re.notifica.geo.internal.network.push
 
 import com.squareup.moshi.JsonClass
+import re.notifica.geo.models.NotificareBeacon
 import re.notifica.geo.models.NotificareRegion
 
 @JsonClass(generateAdapter = true)
@@ -69,6 +70,33 @@ internal data class FetchRegionsResponse(
                 distance = distance,
                 timeZone = timezone,
                 timeZoneOffset = timeZoneOffset,
+            )
+        }
+    }
+}
+
+@JsonClass(generateAdapter = true)
+internal data class FetchBeaconsResponse(
+    val beacons: List<Beacon>
+) {
+
+    @JsonClass(generateAdapter = true)
+    internal data class Beacon(
+        val _id: String,
+        val name: String,
+        val major: Int,
+        val minor: Int,
+        val triggers: Boolean,
+    ) {
+
+        internal fun toModel(): NotificareBeacon {
+            return NotificareBeacon(
+                id = _id,
+                name = name,
+                major = major,
+                minor = minor,
+                triggers = triggers,
+                proximity = null,
             )
         }
     }

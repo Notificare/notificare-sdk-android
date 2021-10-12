@@ -21,3 +21,9 @@ internal data class RegionTriggerPayload(
     val deviceID: String,
     val region: String,
 )
+
+@JsonClass(generateAdapter = true)
+internal data class BeaconTriggerPayload(
+    val deviceID: String,
+    val beacon: String,
+)
