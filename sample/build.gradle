@@ -14,7 +14,7 @@ android {
     buildToolsVersion build_tools_version
 
     defaultConfig {
-        applicationId "re.notifica.demo"
+        applicationId "re.notifica.sample"
         minSdkVersion min_sdk_version
         targetSdkVersion target_sdk_version
         versionCode 30000
