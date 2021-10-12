@@ -224,7 +224,6 @@ public object NotificarePush : NotificareModule() {
 
     public fun handleTrampolineIntent(intent: Intent): Boolean {
         if (intent.action != INTENT_ACTION_REMOTE_MESSAGE_OPENED) {
-            NotificareLogger.debug("Received an un-processable intent. Ignoring...")
             return false
         }
 
