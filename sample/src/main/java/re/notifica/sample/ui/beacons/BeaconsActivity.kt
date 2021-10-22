@@ -10,7 +10,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import re.notifica.Notificare
 import re.notifica.geo.NotificareGeo
+import re.notifica.geo.ktx.geo
 import re.notifica.geo.models.NotificareBeacon
 import re.notifica.geo.models.NotificareLocation
 import re.notifica.geo.models.NotificareRegion
@@ -37,13 +39,13 @@ class BeaconsActivity : AppCompatActivity(), NotificareGeo.Listener {
     override fun onStart() {
         super.onStart()
 
-        NotificareGeo.addListener(this)
+        Notificare.geo().addListener(this)
     }
 
     override fun onStop() {
         super.onStop()
 
-        NotificareGeo.removeListener(this)
+        Notificare.geo().removeListener(this)
     }
 
 

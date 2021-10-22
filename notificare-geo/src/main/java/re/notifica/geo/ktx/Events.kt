@@ -1,14 +1,16 @@
 package re.notifica.geo.ktx
 
-import re.notifica.NotificareEventsManager
+import re.notifica.Notificare
+import re.notifica.NotificareEventsModule
 import re.notifica.geo.models.NotificareRegionSession
 import java.util.*
 
-public fun NotificareEventsManager.logRegionSession(session: NotificareRegionSession) {
+@Suppress("unused")
+public fun NotificareEventsModule.logRegionSession(session: NotificareRegionSession) {
     val sessionEnd = session.end ?: Date()
     val sessionLength = (sessionEnd.time - session.start.time) / 1000.0
 
-    log(
+    Notificare.eventsInternal().log(
         event = "re.notifica.event.region.Session",
         data = mapOf(
             "region" to session.regionId,

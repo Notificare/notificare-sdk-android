@@ -10,7 +10,7 @@ import re.notifica.InternalNotificareApi
 import re.notifica.Notificare
 import re.notifica.internal.NotificareLogger
 import re.notifica.models.NotificareTransport
-import re.notifica.push.NotificarePush
+import re.notifica.push.fcm.ktx.pushInternal
 import re.notifica.push.internal.ServiceManager
 
 @InternalNotificareApi
@@ -30,7 +30,7 @@ public class ServiceManager : ServiceManager() {
 
                 GlobalScope.launch {
                     try {
-                        NotificarePush.registerPushToken(transport, token = requireNotNull(task.result))
+                        Notificare.pushInternal().registerPushToken(transport, token = requireNotNull(task.result))
                         NotificareLogger.debug("Registered the device with a FCM token.")
                     } catch (e: Exception) {
                         NotificareLogger.debug("Failed to register the device with a FCM token.", e)

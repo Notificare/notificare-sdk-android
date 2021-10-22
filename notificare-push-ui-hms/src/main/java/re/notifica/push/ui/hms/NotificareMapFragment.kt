@@ -13,7 +13,7 @@ import com.huawei.hms.maps.model.MarkerOptions
 import re.notifica.Notificare
 import re.notifica.internal.common.waitForLayout
 import re.notifica.models.NotificareNotification
-import re.notifica.push.ui.NotificarePushUI
+import re.notifica.push.ui.hms.ktx.pushUIInternal
 
 @Keep
 public class NotificareMapFragment : SupportMapFragment(), OnMapReadyCallback {
@@ -81,7 +81,9 @@ public class NotificareMapFragment : SupportMapFragment(), OnMapReadyCallback {
             }
         }
 
-        NotificarePushUI.lifecycleListeners.forEach { it.onNotificationPresented(notification) }
+        Notificare.pushUIInternal().lifecycleListeners.forEach {
+            it.onNotificationPresented(notification)
+        }
     }
 
     // endregion

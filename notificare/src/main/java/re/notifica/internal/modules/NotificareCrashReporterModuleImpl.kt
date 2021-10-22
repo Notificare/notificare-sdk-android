@@ -1,10 +1,15 @@
-package re.notifica.internal
+package re.notifica.internal.modules
 
 import re.notifica.Notificare
-import re.notifica.NotificareEventsManager
+import re.notifica.internal.NotificareLogger
+import re.notifica.internal.NotificareModule
+import re.notifica.internal.NotificareUtils
+import re.notifica.ktx.device
+import re.notifica.ktx.eventsImplementation
+import re.notifica.ktx.session
 import re.notifica.models.NotificareEvent
 
-internal class CrashReporter {
+internal object NotificareCrashReporterModuleImpl : NotificareModule() {
 
     private var defaultUncaughtExceptionHandler: Thread.UncaughtExceptionHandler? = null
     private val uncaughtExceptionHandler = Thread.UncaughtExceptionHandler { thread: Thread, throwable: Throwable ->
@@ -21,21 +26,23 @@ internal class CrashReporter {
         defaultUncaughtExceptionHandler.uncaughtException(thread, throwable)
     }
 
-    internal fun configure() {
+    // region Notificare Module
+
+    override fun configure() {
         if (checkNotNull(Notificare.options).crashReportsEnabled) {
             defaultUncaughtExceptionHandler = Thread.getDefaultUncaughtExceptionHandler()
             Thread.setDefaultUncaughtExceptionHandler(uncaughtExceptionHandler)
         }
     }
 
-    internal suspend fun launch() {
+    override suspend fun launch() {
         val crashReport = Notificare.sharedPreferences.crashReport ?: run {
             NotificareLogger.debug("No crash report to process.")
             return
         }
 
         try {
-            Notificare.eventsManager.log(crashReport)
+            Notificare.eventsImplementation().log(crashReport)
             NotificareLogger.info("Crash report processed.")
 
             // Clean up the stored crash report
@@ -44,18 +51,20 @@ internal class CrashReporter {
             NotificareLogger.error("Failed to process a crash report.", e)
         }
     }
+
+    // endregion
 }
 
 internal fun Throwable.toEvent(): NotificareEvent {
     val timestamp = System.currentTimeMillis()
 
     return NotificareEvent(
-        type = NotificareEventsManager.EVENT_APPLICATION_EXCEPTION,
+        type = EVENT_APPLICATION_EXCEPTION,
         timestamp = timestamp,
-        deviceId = Notificare.deviceManager.currentDevice?.id,
-        sessionId = Notificare.sessionManager.sessionId,
+        deviceId = Notificare.device().currentDevice?.id,
+        sessionId = Notificare.session().sessionId,
         notificationId = null,
-        userId = Notificare.deviceManager.currentDevice?.userId,
+        userId = Notificare.device().currentDevice?.userId,
         data = mapOf(
             "platform" to "Android",
             "osVersion" to NotificareUtils.osVersion,

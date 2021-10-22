@@ -11,9 +11,10 @@ import kotlinx.coroutines.withContext
 import re.notifica.Notificare
 import re.notifica.internal.NotificareLogger
 import re.notifica.models.NotificareNotification
-import re.notifica.push.ui.NotificarePushUI
 import re.notifica.push.ui.R
 import re.notifica.push.ui.actions.base.NotificationAction
+import re.notifica.push.ui.ktx.pushUIImplementation
+import re.notifica.push.ui.ktx.pushUIInternal
 import re.notifica.push.ui.models.NotificarePendingResult
 import java.io.File
 import java.io.IOException
@@ -73,7 +74,7 @@ internal class NotificationCallbackAction(
             val file = getOutputMediaFile(type) ?: return null
             return FileProvider.getUriForFile(
                 Notificare.requireContext(),
-                NotificarePushUI.contentFileProviderAuthority,
+                Notificare.pushUIImplementation().contentFileProviderAuthority,
                 file
             )
         } catch (e: Exception) {
@@ -127,7 +128,7 @@ internal class NotificationCallbackAction(
                 )
 
                 withContext(Dispatchers.Main) {
-                    NotificarePushUI.lifecycleListeners.forEach { it.onActionExecuted(notification, action) }
+                    Notificare.pushUIInternal().lifecycleListeners.forEach { it.onActionExecuted(notification, action) }
                 }
 
                 return@withContext
@@ -145,11 +146,16 @@ internal class NotificationCallbackAction(
                     Notificare.callNotificationReplyWebhook(targetUri, params)
 
                     withContext(Dispatchers.Main) {
-                        NotificarePushUI.lifecycleListeners.forEach { it.onActionExecuted(notification, action) }
+                        Notificare.pushUIInternal().lifecycleListeners.forEach {
+                            it.onActionExecuted(
+                                notification,
+                                action
+                            )
+                        }
                     }
                 } catch (e: Exception) {
                     withContext(Dispatchers.Main) {
-                        NotificarePushUI.lifecycleListeners.forEach {
+                        Notificare.pushUIInternal().lifecycleListeners.forEach {
                             it.onActionFailedToExecute(
                                 notification,
                                 action,

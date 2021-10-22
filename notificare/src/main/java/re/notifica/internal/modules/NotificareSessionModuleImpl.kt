@@ -1,4 +1,4 @@
-package re.notifica.internal
+package re.notifica.internal.modules
 
 import android.app.Activity
 import android.app.Application
@@ -6,10 +6,13 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import re.notifica.Notificare
+import re.notifica.internal.NotificareLogger
+import re.notifica.internal.NotificareModule
+import re.notifica.ktx.events
 import java.text.SimpleDateFormat
 import java.util.*
 
-internal class NotificareSessionManager {
+internal object NotificareSessionModuleImpl : NotificareModule() {
 
     private val handler = Handler(Looper.getMainLooper())
 
@@ -25,7 +28,7 @@ internal class NotificareSessionManager {
         val sessionStart = sessionStart ?: return@Runnable
         val sessionEnd = sessionEnd ?: return@Runnable
 
-        Notificare.eventsManager.logApplicationClose(
+        Notificare.events().logApplicationClose(
             sessionLength = sessionEnd.time - sessionStart.time / 1000.toDouble()
         )
 
@@ -34,7 +37,9 @@ internal class NotificareSessionManager {
         this.sessionEnd = null
     }
 
-    fun configure() {
+    // region Notificare Module
+
+    override fun configure() {
         val context = Notificare.requireContext() as Application
 
         context.registerActivityLifecycleCallbacks(object : Application.ActivityLifecycleCallbacks {
@@ -56,7 +61,7 @@ internal class NotificareSessionManager {
                 sessionStart = Date().also {
                     val format = SimpleDateFormat("HH:mm:ss", Locale.getDefault())
                     NotificareLogger.debug("Session '$sessionId' started at ${format.format(it)}")
-                    Notificare.eventsManager.logApplicationOpen()
+                    Notificare.events().logApplicationOpen()
                 }
             }
 
@@ -86,5 +91,5 @@ internal class NotificareSessionManager {
         })
     }
 
-    suspend fun launch() {}
+    // endregion
 }

@@ -1,58 +1,67 @@
-package re.notifica
+package re.notifica.internal.modules
 
 import androidx.work.*
 import kotlinx.coroutines.*
+import re.notifica.Notificare
+import re.notifica.NotificareEventsModule
+import re.notifica.NotificareInternalEventsModule
 import re.notifica.internal.NotificareLogger
+import re.notifica.internal.NotificareModule
 import re.notifica.internal.common.recoverable
 import re.notifica.internal.network.request.NotificareRequest
 import re.notifica.internal.storage.database.ktx.toEntity
-import re.notifica.internal.toEvent
 import re.notifica.internal.workers.ProcessEventsWorker
+import re.notifica.ktx.device
+import re.notifica.ktx.session
 import re.notifica.models.NotificareEvent
 import re.notifica.models.NotificareEventData
 
-public class NotificareEventsManager {
+private const val EVENT_APPLICATION_INSTALL = "re.notifica.event.application.Install"
+private const val EVENT_APPLICATION_REGISTRATION = "re.notifica.event.application.Registration"
+private const val EVENT_APPLICATION_UPGRADE = "re.notifica.event.application.Upgrade"
+private const val EVENT_APPLICATION_OPEN = "re.notifica.event.application.Open"
+private const val EVENT_APPLICATION_CLOSE = "re.notifica.event.application.Close"
+internal const val EVENT_APPLICATION_EXCEPTION = "re.notifica.event.application.Exception"
+private const val EVENT_NOTIFICATION_OPEN = "re.notifica.event.notification.Open"
+private const val TASK_UPLOAD_EVENTS = "re.notifica.tasks.events.Upload"
 
-    public companion object {
-        internal const val EVENT_APPLICATION_INSTALL = "re.notifica.event.application.Install"
-        internal const val EVENT_APPLICATION_REGISTRATION = "re.notifica.event.application.Registration"
-        internal const val EVENT_APPLICATION_UPGRADE = "re.notifica.event.application.Upgrade"
-        internal const val EVENT_APPLICATION_OPEN = "re.notifica.event.application.Open"
-        internal const val EVENT_APPLICATION_CLOSE = "re.notifica.event.application.Close"
-        internal const val EVENT_APPLICATION_EXCEPTION = "re.notifica.event.application.Exception"
-        internal const val EVENT_NOTIFICATION_OPEN = "re.notifica.event.notification.Open"
-
-        internal const val TASK_PROCESS_EVENTS = "re.notifica.tasks.process_events"
-    }
+internal object NotificareEventsModuleImpl : NotificareModule(), NotificareEventsModule,
+    NotificareInternalEventsModule {
 
     private val discardableEvents = listOf<String>()
 
-    internal fun configure() {
-        // TODO listen to connectivity changes
-        // TODO listen to lifecycle changes (app open)
-    }
+    // region Notificare Module
 
-    internal fun launch() {
+//    override fun configure() {
+//        // TODO listen to connectivity changes
+//        // TODO listen to lifecycle changes (app open)
+//    }
+
+    override suspend fun launch() {
         scheduleUploadWorker()
     }
 
-    public fun logApplicationInstall() {
+    // endregion
+
+    // region Notificare Events Module
+
+    override fun logApplicationInstall() {
         log(EVENT_APPLICATION_INSTALL)
     }
 
-    public fun logApplicationRegistration() {
+    override fun logApplicationRegistration() {
         log(EVENT_APPLICATION_REGISTRATION)
     }
 
-    public fun logApplicationUpgrade() {
+    override fun logApplicationUpgrade() {
         log(EVENT_APPLICATION_UPGRADE)
     }
 
-    public fun logApplicationOpen() {
+    override fun logApplicationOpen() {
         log(EVENT_APPLICATION_OPEN)
     }
 
-    public fun logApplicationException(throwable: Throwable) {
+    override fun logApplicationException(throwable: Throwable) {
         GlobalScope.launch {
             try {
                 log(throwable.toEvent())
@@ -62,7 +71,7 @@ public class NotificareEventsManager {
         }
     }
 
-    public fun logApplicationClose(sessionLength: Double) {
+    override fun logApplicationClose(sessionLength: Double) {
         log(
             EVENT_APPLICATION_CLOSE, mapOf(
                 "length" to sessionLength.toString()
@@ -70,7 +79,7 @@ public class NotificareEventsManager {
         )
     }
 
-    public fun logNotificationOpened(id: String) {
+    override fun logNotificationOpen(id: String) {
         log(
             event = EVENT_NOTIFICATION_OPEN,
             data = null,
@@ -78,24 +87,25 @@ public class NotificareEventsManager {
         )
     }
 
-    public fun logCustom(event: String, data: NotificareEventData? = null) {
+    override fun logCustom(event: String, data: NotificareEventData?) {
         log("re.notifica.event.custom.$event", data)
     }
 
-    @InternalNotificareApi
-    public fun log(event: String, data: NotificareEventData? = null, notificationId: String? = null) {
-        GlobalScope.launch {
-            val device = Notificare.deviceManager.currentDevice
+    // endregion
 
+    // region Notificare Internal Events Module
+
+    override fun log(event: String, data: NotificareEventData?, notificationId: String?) {
+        GlobalScope.launch {
             try {
                 log(
                     NotificareEvent(
                         type = event,
                         timestamp = System.currentTimeMillis(),
-                        deviceId = device?.id,
-                        sessionId = Notificare.sessionManager.sessionId,
+                        deviceId = Notificare.device().currentDevice?.id,
+                        sessionId = Notificare.session().sessionId,
                         notificationId = notificationId,
-                        userId = device?.userId,
+                        userId = Notificare.device().currentDevice?.userId,
                         data = data
                     )
                 )
@@ -104,6 +114,8 @@ public class NotificareEventsManager {
             }
         }
     }
+
+    // endregion
 
     internal suspend fun log(event: NotificareEvent): Unit = withContext(Dispatchers.IO) {
         if (!Notificare.isConfigured) {
@@ -134,7 +146,7 @@ public class NotificareEventsManager {
         WorkManager
             .getInstance(Notificare.requireContext())
             .enqueueUniqueWork(
-                TASK_PROCESS_EVENTS,
+                TASK_UPLOAD_EVENTS,
                 ExistingWorkPolicy.KEEP,
                 OneTimeWorkRequestBuilder<ProcessEventsWorker>()
                     .setConstraints(

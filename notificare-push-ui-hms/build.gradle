@@ -5,8 +5,6 @@ android {
     defaultConfig {
         minSdkVersion min_sdk_version
         targetSdkVersion target_sdk_version
-
-        buildConfigField "String", "SDK_VERSION", "\"${maven_artifact_version.tokenize("-").first()}\""
     }
 
     buildTypes {

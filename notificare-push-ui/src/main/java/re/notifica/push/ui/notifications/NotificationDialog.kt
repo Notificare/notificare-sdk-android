@@ -7,12 +7,13 @@ import android.view.LayoutInflater
 import android.widget.ArrayAdapter
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
+import re.notifica.Notificare
 import re.notifica.internal.NotificareLogger
 import re.notifica.internal.NotificareUtils
 import re.notifica.models.NotificareNotification
-import re.notifica.push.ui.NotificarePushUI
 import re.notifica.push.ui.R
 import re.notifica.push.ui.databinding.NotificareAlertDialogBinding
+import re.notifica.push.ui.ktx.pushUIInternal
 
 public class NotificationDialog : DialogFragment() {
 
@@ -83,7 +84,7 @@ public class NotificationDialog : DialogFragment() {
         super.onActivityCreated(savedInstanceState)
 
         val notification = notification ?: return
-        NotificarePushUI.lifecycleListeners.forEach { it.onNotificationPresented(notification) }
+        Notificare.pushUIInternal().lifecycleListeners.forEach { it.onNotificationPresented(notification) }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

@@ -1,4 +1,4 @@
-package re.notifica.modules
+package re.notifica.internal
 
 import android.content.SharedPreferences
 import re.notifica.InternalNotificareApi
@@ -6,22 +6,28 @@ import re.notifica.InternalNotificareApi
 @InternalNotificareApi
 public abstract class NotificareModule {
 
-    public open fun migrate(savedState: SharedPreferences, settings: SharedPreferences) {
-    }
+    public open fun migrate(savedState: SharedPreferences, settings: SharedPreferences) {}
 
-    public abstract fun configure()
+    public open fun configure() {}
 
-    public abstract suspend fun launch()
+    public open suspend fun launch() {}
 
-    public abstract suspend fun unlaunch()
+    public open suspend fun unlaunch() {}
 
 
     internal enum class Module(val fqn: String) {
+        // Default modules
+        DEVICE(fqn = "re.notifica.internal.modules.NotificareDeviceModuleImpl"),
+        EVENTS(fqn = "re.notifica.internal.modules.NotificareEventsModuleImpl"),
+        SESSION(fqn = "re.notifica.internal.modules.NotificareSessionModuleImpl"),
+        CRASH_REPORTER(fqn = "re.notifica.internal.modules.NotificareCrashReporterModuleImpl"),
+
+        // Peer modules
         PUSH(fqn = "re.notifica.push.NotificarePush"),
         PUSH_UI(fqn = "re.notifica.push.ui.NotificarePushUI"),
-        INBOX(fqn = "re.notifica.inbox.NotificareInbox"),
-        ASSETS(fqn = "re.notifica.assets.NotificareAssets"),
-        SCANNABLES(fqn = "re.notifica.scannables.NotificareScannables"),
+        INBOX(fqn = "re.notifica.inbox.internal.NotificareInboxImpl"),
+        ASSETS(fqn = "re.notifica.assets.internal.NotificareAssetsModuleImpl"),
+        SCANNABLES(fqn = "re.notifica.scannables.internal.NotificareScannablesImpl"),
         AUTHENTICATION(fqn = "re.notifica.authentication.NotificareAuthentication"),
         GEO(fqn = "re.notifica.geo.NotificareGeo");
 

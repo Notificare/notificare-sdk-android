@@ -7,10 +7,11 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
+import re.notifica.Notificare
 import re.notifica.internal.NotificareUtils
 import re.notifica.models.NotificareNotification
-import re.notifica.push.ui.NotificarePushUI
 import re.notifica.push.ui.databinding.NotificareNotificationImageFragmentBinding
+import re.notifica.push.ui.ktx.pushUIInternal
 import re.notifica.push.ui.notifications.fragments.base.NotificationFragment
 
 public class NotificareImageFragment : NotificationFragment() {
@@ -38,9 +39,9 @@ public class NotificareImageFragment : NotificationFragment() {
         super.onActivityCreated(savedInstanceState)
 
         if (notification.content.isEmpty()) {
-            NotificarePushUI.lifecycleListeners.forEach { it.onNotificationFailedToPresent(notification) }
+            Notificare.pushUIInternal().lifecycleListeners.forEach { it.onNotificationFailedToPresent(notification) }
         } else {
-            NotificarePushUI.lifecycleListeners.forEach { it.onNotificationPresented(notification) }
+            Notificare.pushUIInternal().lifecycleListeners.forEach { it.onNotificationPresented(notification) }
         }
     }
 

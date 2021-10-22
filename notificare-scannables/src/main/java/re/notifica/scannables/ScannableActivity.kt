@@ -9,11 +9,14 @@ import android.os.Bundle
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.commit
+import re.notifica.Notificare
 import re.notifica.NotificareCallback
 import re.notifica.internal.NotificareLogger
 import re.notifica.internal.common.getEnum
 import re.notifica.internal.common.getEnumExtra
 import re.notifica.internal.common.putEnum
+import re.notifica.scannables.ktx.scannables
+import re.notifica.scannables.ktx.scannablesImplementation
 import re.notifica.scannables.models.NotificareScannable
 
 public class ScannableActivity : AppCompatActivity() {
@@ -45,9 +48,9 @@ public class ScannableActivity : AppCompatActivity() {
         when (mode) {
             ScanMode.NFC -> setupNfcAdapter()
             ScanMode.QR_CODE -> {
-                val manager = NotificareScannables.serviceManager ?: run {
+                val manager = Notificare.scannablesImplementation().serviceManager ?: run {
                     val error = IllegalStateException("No scannables dependencies have been detected.")
-                    NotificareScannables.notifyListeners(error)
+                    Notificare.scannablesImplementation().notifyListeners(error)
 
                     finish()
                     return
@@ -97,7 +100,9 @@ public class ScannableActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        NotificareScannables.notifyListeners(NotificareScannablesException.UserCancelledScannableSession())
+        Notificare.scannablesImplementation()
+            .notifyListeners(NotificareScannablesException.UserCancelledScannableSession())
+
         super.onBackPressed()
     }
 
@@ -145,21 +150,21 @@ public class ScannableActivity : AppCompatActivity() {
         if (handlingScannable) return
         handlingScannable = true
 
-        NotificareScannables.fetchScannable(tag, object : NotificareCallback<NotificareScannable> {
+        Notificare.scannables().fetchScannable(tag, object : NotificareCallback<NotificareScannable> {
             override fun onSuccess(result: NotificareScannable) {
-                NotificareScannables.notifyListeners(result)
+                Notificare.scannablesImplementation().notifyListeners(result)
                 finish()
             }
 
             override fun onFailure(e: Exception) {
-                NotificareScannables.notifyListeners(e)
+                Notificare.scannablesImplementation().notifyListeners(e)
                 finish()
             }
         })
     }
 
     public fun handleScannableError(error: Exception) {
-        NotificareScannables.notifyListeners(error)
+        Notificare.scannablesImplementation().notifyListeners(error)
     }
 
 

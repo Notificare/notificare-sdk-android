@@ -6,8 +6,6 @@ android {
         minSdkVersion min_sdk_version
         targetSdkVersion target_sdk_version
 
-        buildConfigField "String", "SDK_VERSION", "\"${maven_artifact_version.tokenize("-").first()}\""
-
         javaCompileOptions {
             annotationProcessorOptions {
                 arguments = [

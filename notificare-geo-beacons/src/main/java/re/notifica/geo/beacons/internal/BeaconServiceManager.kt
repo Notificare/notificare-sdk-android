@@ -4,7 +4,7 @@ import org.altbeacon.beacon.*
 import org.altbeacon.beacon.service.RangedBeacon
 import re.notifica.InternalNotificareApi
 import re.notifica.Notificare
-import re.notifica.geo.NotificareGeo
+import re.notifica.geo.beacons.ktx.geoInternal
 import re.notifica.geo.internal.BeaconServiceManager
 import re.notifica.geo.models.NotificareBeacon
 import re.notifica.geo.models.NotificareRegion
@@ -118,7 +118,7 @@ public class BeaconServiceManager(
             beaconManager.startRangingBeacons(region)
         }
 
-        NotificareGeo.handleBeaconEnter(region.uniqueId, region.id2.toInt(), region.id3?.toInt())
+        Notificare.geoInternal().handleBeaconEnter(region.uniqueId, region.id2.toInt(), region.id3?.toInt())
     }
 
     override fun didExitRegion(region: Region) {
@@ -129,7 +129,7 @@ public class BeaconServiceManager(
             beaconManager.stopRangingBeacons(region)
         }
 
-        NotificareGeo.handleBeaconExit(region.uniqueId, region.id2.toInt(), region.id3.toInt())
+        Notificare.geoInternal().handleBeaconExit(region.uniqueId, region.id2.toInt(), region.id3.toInt())
     }
 
     override fun didDetermineStateForRegion(state: Int, region: Region) {
@@ -143,7 +143,7 @@ public class BeaconServiceManager(
     override fun didRangeBeaconsInRegion(beacons: MutableCollection<org.altbeacon.beacon.Beacon>?, region: Region?) {
         if (beacons == null || region == null) return
 
-        NotificareGeo.handleRangingBeacons(
+        Notificare.geoInternal().handleRangingBeacons(
             regionId = region.uniqueId,
             beacons = beacons.map { b ->
                 Beacon(

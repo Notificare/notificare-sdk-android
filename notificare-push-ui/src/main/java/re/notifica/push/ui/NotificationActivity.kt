@@ -8,6 +8,7 @@ import androidx.core.view.isVisible
 import re.notifica.Notificare
 import re.notifica.models.NotificareNotification
 import re.notifica.push.ui.databinding.NotificareNotificationActivityBinding
+import re.notifica.push.ui.ktx.pushUIImplementation
 import re.notifica.push.ui.notifications.NotificationContainerFragment
 
 public open class NotificationActivity : AppCompatActivity(), NotificationContainerFragment.Callback {
@@ -46,7 +47,9 @@ public open class NotificationActivity : AppCompatActivity(), NotificationContai
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == android.R.id.home) {
-            NotificarePushUI.lifecycleListeners.forEach { it.onNotificationFinishedPresenting(notification) }
+            Notificare.pushUIImplementation().lifecycleListeners.forEach {
+                it.onNotificationFinishedPresenting(notification)
+            }
         }
 
         return super.onOptionsItemSelected(item)
@@ -55,7 +58,9 @@ public open class NotificationActivity : AppCompatActivity(), NotificationContai
     override fun finish() {
         super.finish()
 
-        NotificarePushUI.lifecycleListeners.forEach { it.onNotificationFinishedPresenting(notification) }
+        Notificare.pushUIImplementation().lifecycleListeners.forEach {
+            it.onNotificationFinishedPresenting(notification)
+        }
     }
 
     // region NotificationContainerFragment.Callback

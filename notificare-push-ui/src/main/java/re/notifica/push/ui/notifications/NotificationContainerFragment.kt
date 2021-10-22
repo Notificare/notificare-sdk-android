@@ -18,6 +18,8 @@ import re.notifica.models.NotificareNotification
 import re.notifica.push.ui.NotificarePushUI
 import re.notifica.push.ui.R
 import re.notifica.push.ui.databinding.NotificareNotificationContainerFragmentBinding
+import re.notifica.push.ui.ktx.pushUIImplementation
+import re.notifica.push.ui.ktx.pushUIInternal
 import re.notifica.push.ui.models.NotificarePendingResult
 import re.notifica.push.ui.notifications.fragments.NotificareCallbackActionFragment
 import re.notifica.push.ui.notifications.fragments.base.NotificationFragment
@@ -79,7 +81,7 @@ public class NotificationContainerFragment
         if (savedInstanceState != null) return
 
         val type = NotificareNotification.NotificationType.from(notification.type)
-        val fragmentClassName = NotificarePushUI.getFragmentCanonicalClassName(notification)
+        val fragmentClassName = Notificare.pushUIImplementation().getFragmentCanonicalClassName(notification)
 
         val fragment = fragmentClassName?.let {
             try {
@@ -210,7 +212,11 @@ public class NotificationContainerFragment
             return
         }
 
-        val actionHandler = NotificarePushUI.createActionHandler(requireActivity(), notification, action) ?: run {
+        val actionHandler = Notificare.pushUIImplementation().createActionHandler(
+            activity = requireActivity(),
+            notification = notification,
+            action = action,
+        ) ?: run {
             NotificareLogger.debug("Unable to create an action handler for '${action.type}'.")
             return
         }
@@ -219,7 +225,7 @@ public class NotificationContainerFragment
             try {
                 callback.onNotificationFragmentStartProgress(notification)
 
-                NotificarePushUI.lifecycleListeners.forEach { it.onActionWillExecute(notification, action) }
+                Notificare.pushUIInternal().lifecycleListeners.forEach { it.onActionWillExecute(notification, action) }
 
                 val result = actionHandler.execute()
                 pendingResult = result
@@ -240,7 +246,7 @@ public class NotificationContainerFragment
                         )
 
                         val error = Exception(requireContext().getString(R.string.notificare_action_camera_failed))
-                        NotificarePushUI.lifecycleListeners.forEach {
+                        Notificare.pushUIInternal().lifecycleListeners.forEach {
                             it.onActionFailedToExecute(
                                 notification,
                                 action,
@@ -266,7 +272,9 @@ public class NotificationContainerFragment
                 callback.onNotificationFragmentEndProgress(notification)
                 callback.onNotificationFragmentActionFailed(notification, e.localizedMessage)
 
-                NotificarePushUI.lifecycleListeners.forEach { it.onActionFailedToExecute(notification, action, e) }
+                Notificare.pushUIInternal().lifecycleListeners.forEach {
+                    it.onActionFailedToExecute(notification, action, e)
+                }
             }
         }
     }

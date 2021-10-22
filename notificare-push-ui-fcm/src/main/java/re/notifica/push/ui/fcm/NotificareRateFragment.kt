@@ -8,7 +8,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.Keep
-import re.notifica.push.ui.NotificarePushUI
+import re.notifica.Notificare
+import re.notifica.push.ui.fcm.ktx.pushUIInternal
 import re.notifica.push.ui.notifications.fragments.base.NotificationFragment
 
 @Keep
@@ -23,7 +24,7 @@ public class NotificareRateFragment : NotificationFragment() {
                 callback.onNotificationFragmentStartActivity(rateIntent)
                 callback.onNotificationFragmentFinished()
 
-                NotificarePushUI.lifecycleListeners.forEach { it.onNotificationPresented(notification) }
+                Notificare.pushUIInternal().lifecycleListeners.forEach { it.onNotificationPresented(notification) }
             } catch (e: ActivityNotFoundException) {
                 val uri = Uri.parse("https://play.google.com/store/apps/details?id=${inflater.context.packageName}")
                 val rateIntent = Intent(Intent.ACTION_VIEW, uri)
@@ -31,7 +32,7 @@ public class NotificareRateFragment : NotificationFragment() {
                 callback.onNotificationFragmentStartActivity(rateIntent)
                 callback.onNotificationFragmentFinished()
 
-                NotificarePushUI.lifecycleListeners.forEach { it.onNotificationFailedToPresent(notification) }
+                Notificare.pushUIInternal().lifecycleListeners.forEach { it.onNotificationFailedToPresent(notification) }
             }
         }
     }

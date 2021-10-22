@@ -7,13 +7,15 @@ import android.location.Location
 import com.huawei.hms.location.Geofence
 import com.huawei.hms.location.GeofenceData
 import com.huawei.hms.location.LocationResult
-import re.notifica.geo.NotificareGeo
+import re.notifica.Notificare
+import re.notifica.geo.NotificareInternalGeo
+import re.notifica.geo.hms.ktx.geoInternal
 import re.notifica.internal.NotificareLogger
 
 public class LocationReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         when (intent.action) {
-            NotificareGeo.INTENT_ACTION_LOCATION_UPDATED -> {
+            NotificareInternalGeo.INTENT_ACTION_LOCATION_UPDATED -> {
                 if (LocationResult.hasResult(intent)) {
                     val result = LocationResult.extractResult(intent)
                     val location = result.lastLocation
@@ -21,7 +23,7 @@ public class LocationReceiver : BroadcastReceiver() {
                     onLocationUpdated(location)
                 }
             }
-            NotificareGeo.INTENT_ACTION_GEOFENCE_TRANSITION -> {
+            NotificareInternalGeo.INTENT_ACTION_GEOFENCE_TRANSITION -> {
                 val event = GeofenceData.getDataFromIntent(intent)
                 if (event.isFailure) {
                     NotificareLogger.warning("Geofencing error: ${event.errorCode}")
@@ -38,16 +40,16 @@ public class LocationReceiver : BroadcastReceiver() {
 
     private fun onLocationUpdated(location: Location) {
         NotificareLogger.debug("Location updated = (${location.latitude}, ${location.longitude})")
-        NotificareGeo.handleLocationUpdate(location)
+        Notificare.geoInternal().handleLocationUpdate(location)
     }
 
     private fun onRegionEnter(geofences: List<Geofence>) {
         NotificareLogger.debug("Received a region enter event for ${geofences.size} geofences.")
-        NotificareGeo.handleRegionEnter(geofences.map { it.uniqueId })
+        Notificare.geoInternal().handleRegionEnter(geofences.map { it.uniqueId })
     }
 
     private fun onRegionExit(geofences: List<Geofence>) {
         NotificareLogger.debug("Received a region exit event for ${geofences.size} geofences.")
-        NotificareGeo.handleRegionExit(geofences.map { it.uniqueId })
+        Notificare.geoInternal().handleRegionExit(geofences.map { it.uniqueId })
     }
 }

@@ -5,8 +5,8 @@ import kotlinx.coroutines.withContext
 import okhttp3.FormBody
 import re.notifica.Notificare
 import re.notifica.NotificareCallback
-import re.notifica.authentication.NotificareAuthentication
 import re.notifica.authentication.internal.network.push.OAuthResponse
+import re.notifica.authentication.ktx.authenticationImplementation
 import re.notifica.internal.NotificareLogger
 import re.notifica.internal.ktx.toCallbackFunction
 import re.notifica.internal.network.request.NotificareRequest
@@ -32,7 +32,7 @@ internal class AuthenticationRenewal : NotificareRequest.AuthenticationRefreshLi
         refreshCredentials(object : NotificareCallback<Credentials> {
             override fun onSuccess(result: Credentials) {
                 // Persist the updated credentials.
-                NotificareAuthentication.sharedPreferences.credentials = result
+                Notificare.authenticationImplementation().sharedPreferences.credentials = result
 
                 notify(NotificareRequest.Authentication.Bearer(result.accessToken))
             }
@@ -44,7 +44,7 @@ internal class AuthenticationRenewal : NotificareRequest.AuthenticationRefreshLi
     }
 
     private suspend fun refreshCredentials(): Credentials = withContext(Dispatchers.IO) {
-        val credentials = NotificareAuthentication.sharedPreferences.credentials
+        val credentials = Notificare.authenticationImplementation().sharedPreferences.credentials
             ?: throw IllegalStateException("Cannot refresh without a previous set of credentials.")
 
         val payload = FormBody.Builder()

@@ -10,7 +10,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import re.notifica.InternalNotificareApi
 import re.notifica.Notificare
-import re.notifica.modules.NotificareModule
 import java.util.*
 
 @InternalNotificareApi
