@@ -23,13 +23,13 @@ public abstract class NotificareModule {
         CRASH_REPORTER(fqn = "re.notifica.internal.modules.NotificareCrashReporterModuleImpl"),
 
         // Peer modules
-        PUSH(fqn = "re.notifica.push.NotificarePush"),
-        PUSH_UI(fqn = "re.notifica.push.ui.NotificarePushUI"),
+        PUSH(fqn = "re.notifica.push.internal.NotificarePushImpl"),
+        PUSH_UI(fqn = "re.notifica.push.ui.internal.NotificarePushUIImpl"),
         INBOX(fqn = "re.notifica.inbox.internal.NotificareInboxImpl"),
-        ASSETS(fqn = "re.notifica.assets.internal.NotificareAssetsModuleImpl"),
+        ASSETS(fqn = "re.notifica.assets.internal.NotificareAssetsImpl"),
         SCANNABLES(fqn = "re.notifica.scannables.internal.NotificareScannablesImpl"),
-        AUTHENTICATION(fqn = "re.notifica.authentication.NotificareAuthentication"),
-        GEO(fqn = "re.notifica.geo.NotificareGeo");
+        AUTHENTICATION(fqn = "re.notifica.authentication.internal.NotificareAuthenticationImpl"),
+        GEO(fqn = "re.notifica.geo.internal.NotificareGeoImpl");
 
         val isAvailable: Boolean
             get() {
@@ -52,6 +52,14 @@ public abstract class NotificareModule {
                     return klass.getDeclaredField("INSTANCE").get(null) as? NotificareModule
                 } catch (e: Exception) {
                     null
+                }
+            }
+
+        internal val isPeer: Boolean
+            get() {
+                return when (this) {
+                    DEVICE, EVENTS, SESSION, CRASH_REPORTER -> false
+                    else -> true
                 }
             }
     }

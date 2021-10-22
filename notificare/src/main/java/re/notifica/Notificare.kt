@@ -141,11 +141,11 @@ public object Notificare {
                 // Loop all possible modules and launch the available ones.
                 NotificareModule.Module.values().forEach { module ->
                     module.instance?.run {
-                        NotificareLogger.debug("Launching '${module.name.lowercase()}' plugin.")
+                        NotificareLogger.debug("Launching module: ${module.name.lowercase()}")
                         try {
                             this.launch()
                         } catch (e: Exception) {
-                            NotificareLogger.debug("Failed to launch ${module.name.lowercase()}': $e")
+                            NotificareLogger.debug("Failed to launch '${module.name.lowercase()}': $e")
                             throw e
                         }
                     }
@@ -154,7 +154,7 @@ public object Notificare {
                 state = NotificareLaunchState.READY
 
                 val enabledServices = application.services.filter { it.value }.map { it.key }
-                val enabledModules = NotificareUtils.getLoadedModules()
+                val enabledModules = NotificareUtils.getEnabledPeerModules()
 
                 NotificareLogger.debug("/==================================================================================/")
                 NotificareLogger.debug("Notificare SDK is ready to use for application")
@@ -199,11 +199,10 @@ public object Notificare {
                 // Loop all possible modules and un-launch the available ones.
                 NotificareModule.Module.values().reversed().forEach { module ->
                     module.instance?.run {
-                        NotificareLogger.debug("Un-launching '${module.name.lowercase()}' plugin.")
+                        NotificareLogger.debug("Un-launching module: ${module.name.lowercase()}.")
 
                         try {
                             this.unlaunch()
-                            NotificareLogger.debug("Un-launched '${module.name.lowercase()}' plugin.")
                         } catch (e: Exception) {
                             NotificareLogger.debug("Failed to un-launch ${module.name.lowercase()}': $e")
                             throw e
@@ -454,7 +453,7 @@ public object Notificare {
 
         NotificareModule.Module.values().forEach { module ->
             module.instance?.run {
-                NotificareLogger.debug("Configuring '${module.name.lowercase()}' plugin.")
+                NotificareLogger.debug("Configuring module: ${module.name.lowercase()}")
                 this.configure()
             }
         }
