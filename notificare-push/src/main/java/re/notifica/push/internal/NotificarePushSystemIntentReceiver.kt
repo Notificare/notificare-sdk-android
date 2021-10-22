@@ -51,10 +51,10 @@ internal class NotificarePushSystemIntentReceiver : BroadcastReceiver() {
         action: NotificareNotification.Action,
         responseText: String?
     ) {
-        // Log the notification open event.
-        Notificare.events().logNotificationOpen(notification.id)
-
         GlobalScope.launch(Dispatchers.IO) {
+            // Log the notification open event.
+            Notificare.events().logNotificationOpen(notification.id)
+
             @Suppress("NAME_SHADOWING")
             val notification = try {
                 if (notification.partial) {

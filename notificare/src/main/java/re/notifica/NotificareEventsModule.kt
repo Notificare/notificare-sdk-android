@@ -4,25 +4,41 @@ import re.notifica.models.NotificareEventData
 
 public interface NotificareEventsModule {
 
-    public fun logApplicationInstall()
+    public suspend fun logApplicationInstall()
 
-    public fun logApplicationRegistration()
+    public fun logApplicationInstall(callback: NotificareCallback<Unit>)
 
-    public fun logApplicationUpgrade()
+    public suspend fun logApplicationRegistration()
 
-    public fun logApplicationOpen()
+    public fun logApplicationRegistration(callback: NotificareCallback<Unit>)
 
-    public fun logApplicationException(throwable: Throwable)
+    public suspend fun logApplicationUpgrade()
 
-    public fun logApplicationClose(sessionLength: Double)
+    public fun logApplicationUpgrade(callback: NotificareCallback<Unit>)
 
-    public fun logNotificationOpen(id: String)
+    public suspend fun logApplicationOpen()
 
-    public fun logCustom(event: String, data: NotificareEventData? = null)
+    public fun logApplicationOpen(callback: NotificareCallback<Unit>)
+
+    public suspend fun logApplicationException(throwable: Throwable)
+
+    public fun logApplicationException(throwable: Throwable, callback: NotificareCallback<Unit>)
+
+    public suspend fun logApplicationClose(sessionLength: Double)
+
+    public fun logApplicationClose(sessionLength: Double, callback: NotificareCallback<Unit>)
+
+    public suspend fun logNotificationOpen(id: String)
+
+    public fun logNotificationOpen(id: String, callback: NotificareCallback<Unit>)
+
+    public suspend fun logCustom(event: String, data: NotificareEventData? = null)
+
+    public fun logCustom(event: String, data: NotificareEventData? = null, callback: NotificareCallback<Unit>)
 }
 
 public interface NotificareInternalEventsModule {
 
     @InternalNotificareApi
-    public fun log(event: String, data: NotificareEventData? = null, notificationId: String? = null)
+    public suspend fun log(event: String, data: NotificareEventData? = null, notificationId: String? = null)
 }

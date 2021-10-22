@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import re.notifica.Notificare
+import re.notifica.NotificareCallback
 import re.notifica.internal.NotificareLogger
 import re.notifica.internal.NotificareModule
 import re.notifica.ktx.events
@@ -29,7 +30,12 @@ internal object NotificareSessionModuleImpl : NotificareModule() {
         val sessionEnd = sessionEnd ?: return@Runnable
 
         Notificare.events().logApplicationClose(
-            sessionLength = sessionEnd.time - sessionStart.time / 1000.toDouble()
+            sessionLength = sessionEnd.time - sessionStart.time / 1000.toDouble(),
+            callback = object : NotificareCallback<Unit> {
+                override fun onSuccess(result: Unit) {}
+
+                override fun onFailure(e: Exception) {}
+            }
         )
 
         this.sessionId = null
@@ -61,7 +67,11 @@ internal object NotificareSessionModuleImpl : NotificareModule() {
                 sessionStart = Date().also {
                     val format = SimpleDateFormat("HH:mm:ss", Locale.getDefault())
                     NotificareLogger.debug("Session '$sessionId' started at ${format.format(it)}")
-                    Notificare.events().logApplicationOpen()
+                    Notificare.events().logApplicationOpen(object : NotificareCallback<Unit> {
+                        override fun onSuccess(result: Unit) {}
+
+                        override fun onFailure(e: Exception) {}
+                    })
                 }
             }
 

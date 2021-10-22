@@ -239,11 +239,11 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
         notification: NotificareNotification,
         action: NotificareNotification.Action?
     ) {
-        // Log the notification open event.
-        Notificare.events().logNotificationOpen(notification.id)
-
         @OptIn(DelicateCoroutinesApi::class)
         GlobalScope.launch(Dispatchers.IO) {
+            // Log the notification open event.
+            Notificare.events().logNotificationOpen(notification.id)
+
             @Suppress("NAME_SHADOWING")
             val notification: NotificareNotification = try {
                 if (notification.partial) {
@@ -389,10 +389,10 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
     }
 
     private fun handleNotification(message: NotificareNotificationRemoteMessage) {
-        Notificare.events().logNotificationReceived(message.id)
-
         @OptIn(DelicateCoroutinesApi::class)
         GlobalScope.launch {
+            Notificare.events().logNotificationReceived(message.id)
+
             val notification = try {
                 Notificare.fetchNotification(message.id)
             } catch (e: Exception) {

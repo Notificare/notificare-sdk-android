@@ -3,11 +3,7 @@ package re.notifica.internal.modules
 import re.notifica.Notificare
 import re.notifica.internal.NotificareLogger
 import re.notifica.internal.NotificareModule
-import re.notifica.internal.NotificareUtils
-import re.notifica.ktx.device
 import re.notifica.ktx.eventsImplementation
-import re.notifica.ktx.session
-import re.notifica.models.NotificareEvent
 
 internal object NotificareCrashReporterModuleImpl : NotificareModule() {
 
@@ -53,28 +49,4 @@ internal object NotificareCrashReporterModuleImpl : NotificareModule() {
     }
 
     // endregion
-}
-
-internal fun Throwable.toEvent(): NotificareEvent {
-    val timestamp = System.currentTimeMillis()
-
-    return NotificareEvent(
-        type = EVENT_APPLICATION_EXCEPTION,
-        timestamp = timestamp,
-        deviceId = Notificare.device().currentDevice?.id,
-        sessionId = Notificare.session().sessionId,
-        notificationId = null,
-        userId = Notificare.device().currentDevice?.userId,
-        data = mapOf(
-            "platform" to "Android",
-            "osVersion" to NotificareUtils.osVersion,
-            "deviceString" to NotificareUtils.deviceString,
-            "sdkVersion" to Notificare.SDK_VERSION,
-            "appVersion" to NotificareUtils.applicationVersion,
-            "timestamp" to timestamp.toString(),
-            "name" to this.message,
-            "reason" to this.cause?.toString(),
-            "stackSymbols" to this.stackTraceToString(),
-        )
-    )
 }

@@ -3,11 +3,14 @@ package re.notifica.internal.modules
 import androidx.work.*
 import kotlinx.coroutines.*
 import re.notifica.Notificare
+import re.notifica.NotificareCallback
 import re.notifica.NotificareEventsModule
 import re.notifica.NotificareInternalEventsModule
 import re.notifica.internal.NotificareLogger
 import re.notifica.internal.NotificareModule
+import re.notifica.internal.NotificareUtils
 import re.notifica.internal.common.recoverable
+import re.notifica.internal.ktx.toCallbackFunction
 import re.notifica.internal.network.request.NotificareRequest
 import re.notifica.internal.storage.database.ktx.toEntity
 import re.notifica.internal.workers.ProcessEventsWorker
@@ -21,7 +24,7 @@ private const val EVENT_APPLICATION_REGISTRATION = "re.notifica.event.applicatio
 private const val EVENT_APPLICATION_UPGRADE = "re.notifica.event.application.Upgrade"
 private const val EVENT_APPLICATION_OPEN = "re.notifica.event.application.Open"
 private const val EVENT_APPLICATION_CLOSE = "re.notifica.event.application.Close"
-internal const val EVENT_APPLICATION_EXCEPTION = "re.notifica.event.application.Exception"
+private const val EVENT_APPLICATION_EXCEPTION = "re.notifica.event.application.Exception"
 private const val EVENT_NOTIFICATION_OPEN = "re.notifica.event.notification.Open"
 private const val TASK_UPLOAD_EVENTS = "re.notifica.tasks.events.Upload"
 
@@ -45,33 +48,42 @@ internal object NotificareEventsModuleImpl : NotificareModule(), NotificareEvent
 
     // region Notificare Events Module
 
-    override fun logApplicationInstall() {
+    override suspend fun logApplicationInstall() {
         log(EVENT_APPLICATION_INSTALL)
     }
 
-    override fun logApplicationRegistration() {
+    override fun logApplicationInstall(callback: NotificareCallback<Unit>): Unit =
+        toCallbackFunction(::logApplicationInstall)(callback)
+
+    override suspend fun logApplicationRegistration() {
         log(EVENT_APPLICATION_REGISTRATION)
     }
 
-    override fun logApplicationUpgrade() {
+    override fun logApplicationRegistration(callback: NotificareCallback<Unit>): Unit =
+        toCallbackFunction(::logApplicationRegistration)(callback)
+
+    override suspend fun logApplicationUpgrade() {
         log(EVENT_APPLICATION_UPGRADE)
     }
 
-    override fun logApplicationOpen() {
+    override fun logApplicationUpgrade(callback: NotificareCallback<Unit>): Unit =
+        toCallbackFunction(::logApplicationUpgrade)(callback)
+
+    override suspend fun logApplicationOpen() {
         log(EVENT_APPLICATION_OPEN)
     }
 
-    override fun logApplicationException(throwable: Throwable) {
-        GlobalScope.launch {
-            try {
-                log(throwable.toEvent())
-            } catch (e: Exception) {
-                NotificareLogger.error("Failed to log an event.", e)
-            }
-        }
+    override fun logApplicationOpen(callback: NotificareCallback<Unit>): Unit =
+        toCallbackFunction(::logApplicationOpen)(callback)
+
+    override suspend fun logApplicationException(throwable: Throwable) {
+        log(throwable.toEvent())
     }
 
-    override fun logApplicationClose(sessionLength: Double) {
+    override fun logApplicationException(throwable: Throwable, callback: NotificareCallback<Unit>): Unit =
+        toCallbackFunction(::logApplicationException)(throwable, callback)
+
+    override suspend fun logApplicationClose(sessionLength: Double) {
         log(
             EVENT_APPLICATION_CLOSE, mapOf(
                 "length" to sessionLength.toString()
@@ -79,7 +91,10 @@ internal object NotificareEventsModuleImpl : NotificareModule(), NotificareEvent
         )
     }
 
-    override fun logNotificationOpen(id: String) {
+    override fun logApplicationClose(sessionLength: Double, callback: NotificareCallback<Unit>): Unit =
+        toCallbackFunction(::logApplicationClose)(sessionLength, callback)
+
+    override suspend fun logNotificationOpen(id: String) {
         log(
             event = EVENT_NOTIFICATION_OPEN,
             data = null,
@@ -87,32 +102,32 @@ internal object NotificareEventsModuleImpl : NotificareModule(), NotificareEvent
         )
     }
 
-    override fun logCustom(event: String, data: NotificareEventData?) {
+    override fun logNotificationOpen(id: String, callback: NotificareCallback<Unit>): Unit =
+        toCallbackFunction(::logNotificationOpen)(id, callback)
+
+    override suspend fun logCustom(event: String, data: NotificareEventData?) {
         log("re.notifica.event.custom.$event", data)
     }
+
+    override fun logCustom(event: String, data: NotificareEventData?, callback: NotificareCallback<Unit>): Unit =
+        toCallbackFunction(::logCustom)(event, data, callback)
 
     // endregion
 
     // region Notificare Internal Events Module
 
-    override fun log(event: String, data: NotificareEventData?, notificationId: String?) {
-        GlobalScope.launch {
-            try {
-                log(
-                    NotificareEvent(
-                        type = event,
-                        timestamp = System.currentTimeMillis(),
-                        deviceId = Notificare.device().currentDevice?.id,
-                        sessionId = Notificare.session().sessionId,
-                        notificationId = notificationId,
-                        userId = Notificare.device().currentDevice?.userId,
-                        data = data
-                    )
-                )
-            } catch (e: Exception) {
-                NotificareLogger.error("Failed to log an event.", e)
-            }
-        }
+    override suspend fun log(event: String, data: NotificareEventData?, notificationId: String?) {
+        log(
+            NotificareEvent(
+                type = event,
+                timestamp = System.currentTimeMillis(),
+                deviceId = Notificare.device().currentDevice?.id,
+                sessionId = Notificare.session().sessionId,
+                notificationId = notificationId,
+                userId = Notificare.device().currentDevice?.userId,
+                data = data
+            )
+        )
     }
 
     // endregion
@@ -157,4 +172,28 @@ internal object NotificareEventsModuleImpl : NotificareModule(), NotificareEvent
                     .build()
             )
     }
+}
+
+internal fun Throwable.toEvent(): NotificareEvent {
+    val timestamp = System.currentTimeMillis()
+
+    return NotificareEvent(
+        type = EVENT_APPLICATION_EXCEPTION,
+        timestamp = timestamp,
+        deviceId = Notificare.device().currentDevice?.id,
+        sessionId = Notificare.session().sessionId,
+        notificationId = null,
+        userId = Notificare.device().currentDevice?.userId,
+        data = mapOf(
+            "platform" to "Android",
+            "osVersion" to NotificareUtils.osVersion,
+            "deviceString" to NotificareUtils.deviceString,
+            "sdkVersion" to Notificare.SDK_VERSION,
+            "appVersion" to NotificareUtils.applicationVersion,
+            "timestamp" to timestamp.toString(),
+            "name" to this.message,
+            "reason" to this.cause?.toString(),
+            "stackSymbols" to this.stackTraceToString(),
+        )
+    )
 }

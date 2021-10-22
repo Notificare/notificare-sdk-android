@@ -1,12 +1,14 @@
 package re.notifica.geo.ktx
 
 import re.notifica.Notificare
+import re.notifica.NotificareCallback
 import re.notifica.NotificareEventsModule
 import re.notifica.geo.models.NotificareRegionSession
+import re.notifica.internal.ktx.toCallbackFunction
 import java.util.*
 
 @Suppress("unused")
-public fun NotificareEventsModule.logRegionSession(session: NotificareRegionSession) {
+public suspend fun NotificareEventsModule.logRegionSession(session: NotificareRegionSession) {
     val sessionEnd = session.end ?: Date()
     val sessionLength = (sessionEnd.time - session.start.time) / 1000.0
 
@@ -32,3 +34,9 @@ public fun NotificareEventsModule.logRegionSession(session: NotificareRegionSess
         ),
     )
 }
+
+public fun NotificareEventsModule.logRegionSession(
+    session: NotificareRegionSession,
+    callback: NotificareCallback<Unit>,
+): Unit =
+    toCallbackFunction(::logRegionSession)(session, callback)
