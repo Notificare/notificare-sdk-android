@@ -134,7 +134,14 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
     // region Notificare Geo
 
     override var hasLocationServicesEnabled: Boolean
-        get() = localStorage.locationServicesEnabled
+        get() {
+            if (::localStorage.isInitialized) {
+                return localStorage.locationServicesEnabled
+            }
+
+            NotificareLogger.warning("Calling this method requires Notificare to have been configured.")
+            return false
+        }
         private set(value) {
             localStorage.locationServicesEnabled = value
         }
@@ -747,7 +754,11 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
         }
 
         // Submit the event for processing.
-        Notificare.events().logRegionSession(session)
+        Notificare.events().logRegionSession(session, object : NotificareCallback<Unit> {
+            override fun onSuccess(result: Unit) {}
+
+            override fun onFailure(e: Exception) {}
+        })
 
         // Remove the session from local storage.
         localStorage.removeRegionSession(session)
