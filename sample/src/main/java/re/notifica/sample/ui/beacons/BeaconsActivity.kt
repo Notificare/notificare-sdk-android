@@ -3,7 +3,6 @@ package re.notifica.sample.ui.beacons
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -89,7 +88,9 @@ class BeaconsActivity : AppCompatActivity(), NotificareGeo.Listener {
         }
 
 
-        private class BeaconViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        private class BeaconViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
+            BeaconRowBinding.inflate(LayoutInflater.from(parent.context), parent, false).root
+        ) {
             private val binding = BeaconRowBinding.bind(itemView)
 
             fun bind(beacon: NotificareBeacon) {
@@ -101,13 +102,6 @@ class BeaconsActivity : AppCompatActivity(), NotificareGeo.Listener {
                     NotificareBeacon.Proximity.NEAR -> binding.proximity.setImageResource(R.drawable.ic_signal_wifi_3_bar)
                     NotificareBeacon.Proximity.FAR -> binding.proximity.setImageResource(R.drawable.ic_signal_wifi_1_bar)
                     null -> binding.proximity.setImageDrawable(null)
-                }
-            }
-
-            companion object {
-                operator fun invoke(parent: ViewGroup): BeaconViewHolder {
-                    val view = LayoutInflater.from(parent.context).inflate(R.layout.beacon_row, parent, false)
-                    return BeaconViewHolder(view)
                 }
             }
         }

@@ -88,6 +88,10 @@
         <activity
             android:name=".ui.inbox.InboxActivity"
             android:exported="false" />
+
+        <activity
+            android:name=".ui.beacons.BeaconsActivity"
+            android:exported="false" />
         <activity
             android:name="re.notifica.push.ui.NotificationActivity"
             android:exported="false"

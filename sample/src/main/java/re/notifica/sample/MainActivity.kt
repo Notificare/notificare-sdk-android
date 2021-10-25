@@ -22,13 +22,18 @@ import re.notifica.authentication.ktx.authentication
 import re.notifica.authentication.models.NotificareUser
 import re.notifica.authentication.models.NotificareUserPreference
 import re.notifica.authentication.models.NotificareUserSegment
+import re.notifica.geo.NotificareGeo
 import re.notifica.geo.ktx.geo
+import re.notifica.geo.models.NotificareBeacon
+import re.notifica.geo.models.NotificareLocation
+import re.notifica.geo.models.NotificareRegion
 import re.notifica.ktx.device
 import re.notifica.models.*
 import re.notifica.push.ktx.push
 import re.notifica.push.ui.NotificarePushUI
 import re.notifica.push.ui.ktx.pushUI
 import re.notifica.sample.databinding.ActivityMainBinding
+import re.notifica.sample.ui.beacons.BeaconsActivity
 import re.notifica.sample.ui.inbox.InboxActivity
 import re.notifica.scannables.NotificareScannables
 import re.notifica.scannables.NotificareScannablesException
@@ -37,7 +42,7 @@ import re.notifica.scannables.models.NotificareScannable
 import java.util.*
 
 class MainActivity : AppCompatActivity(), Notificare.OnReadyListener, NotificarePushUI.NotificationLifecycleListener,
-    NotificareScannables.ScannableSessionListener {
+    NotificareScannables.ScannableSessionListener, NotificareGeo.Listener {
 
     private lateinit var binding: ActivityMainBinding
 
@@ -85,6 +90,7 @@ class MainActivity : AppCompatActivity(), Notificare.OnReadyListener, Notificare
         Notificare.addOnReadyListener(this)
         Notificare.pushUI().addLifecycleListener(this)
         Notificare.scannables().addListener(this)
+        Notificare.geo().addListener(this)
     }
 
     override fun onDestroy() {
@@ -93,6 +99,7 @@ class MainActivity : AppCompatActivity(), Notificare.OnReadyListener, Notificare
         Notificare.addOnReadyListener(this)
         Notificare.pushUI().removeLifecycleListener(this)
         Notificare.scannables().removeListener(this)
+        Notificare.geo().removeListener(this)
     }
 
     override fun onNewIntent(intent: Intent?) {
@@ -644,6 +651,10 @@ class MainActivity : AppCompatActivity(), Notificare.OnReadyListener, Notificare
         Notificare.geo().disableLocationUpdates()
     }
 
+    fun onRangingBeaconsClicked(@Suppress("UNUSED_PARAMETER") view: View) {
+        startActivity(Intent(this, BeaconsActivity::class.java))
+    }
+
     // region Notificare.OnReadyListener
 
     override fun onReady(application: NotificareApplication) {
@@ -737,6 +748,36 @@ class MainActivity : AppCompatActivity(), Notificare.OnReadyListener, Notificare
             setBackgroundTint(ContextCompat.getColor(this@MainActivity, R.color.notificare_error))
             setTextColor(ContextCompat.getColor(this@MainActivity, R.color.white))
         }.show()
+    }
+
+    // endregion
+
+    // region NotificareGeo.Listener
+
+    override fun onLocationUpdated(location: NotificareLocation) {
+        Log.w(TAG, "---> onLocationUpdated = $location")
+    }
+
+    override fun onEnterRegion(region: NotificareRegion) {
+        Log.w(TAG, "---> onEnterRegion = $region")
+    }
+
+    override fun onExitRegion(region: NotificareRegion) {
+        Log.w(TAG, "---> onExitRegion = $region")
+    }
+
+    override fun onEnterBeacon(beacon: NotificareBeacon) {
+        Log.w(TAG, "---> onEnterBeacon = $beacon")
+    }
+
+    override fun onExitBeacon(beacon: NotificareBeacon) {
+        Log.w(TAG, "---> onExitBeacon = $beacon")
+    }
+
+    override fun onBeaconsRanged(region: NotificareRegion, beacons: List<NotificareBeacon>) {
+//        Log.w(TAG, "---> onBeaconsRanged")
+//        Log.w(TAG, "---> region = $region")
+//        Log.w(TAG, "---> beacons = $beacons")
     }
 
     // endregion

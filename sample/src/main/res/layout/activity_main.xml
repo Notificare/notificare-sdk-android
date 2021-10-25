@@ -53,6 +53,14 @@
                 android:onClick="onDisableLocationUpdatesClicked"
                 android:text="Disable location updates" />
 
+            <Button
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="onRangingBeaconsClicked"
+                android:text="Ranging beacons" />
+
+
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
