@@ -10,7 +10,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import re.notifica.InternalNotificareApi
 import re.notifica.Notificare
-import re.notifica.modules.NotificareModule
 import java.util.*
 
 @InternalNotificareApi
@@ -59,16 +58,10 @@ public object NotificareUtils {
             return timeZone.getOffset(calendar.timeInMillis) / 3600000.toDouble()
         }
 
-    internal fun getLoadedModules(): List<String> {
-        val modules = mutableListOf<String>()
-
-        NotificareModule.Module.values().forEach { module ->
-            if (module.isAvailable) {
-                modules.add(module.name.lowercase())
-            }
-        }
-
-        return modules
+    internal fun getEnabledPeerModules(): List<String> {
+        return NotificareModule.Module.values()
+            .filter { it.isPeer && it.isAvailable }
+            .map { it.name.lowercase() }
     }
 
     public suspend fun loadBitmap(url: String): Bitmap = withContext(Dispatchers.IO) {

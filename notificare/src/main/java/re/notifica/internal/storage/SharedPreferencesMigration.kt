@@ -10,7 +10,7 @@ import re.notifica.internal.moshi
 import re.notifica.internal.storage.preferences.NotificareSharedPreferences
 import re.notifica.models.NotificareDevice
 import re.notifica.models.NotificareTransport
-import re.notifica.modules.NotificareModule
+import re.notifica.internal.NotificareModule
 import java.util.*
 
 internal class SharedPreferencesMigration(

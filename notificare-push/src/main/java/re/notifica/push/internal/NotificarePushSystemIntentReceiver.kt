@@ -10,8 +10,9 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import re.notifica.Notificare
 import re.notifica.internal.NotificareLogger
+import re.notifica.ktx.events
 import re.notifica.models.NotificareNotification
-import re.notifica.push.NotificarePush
+import re.notifica.push.NotificarePushIntentReceiver
 import re.notifica.push.models.NotificareNotificationRemoteMessage
 
 internal class NotificarePushSystemIntentReceiver : BroadcastReceiver() {
@@ -24,7 +25,7 @@ internal class NotificarePushSystemIntentReceiver : BroadcastReceiver() {
         when (intent.action) {
             INTENT_ACTION_QUICK_RESPONSE -> {
                 val message: NotificareNotificationRemoteMessage = requireNotNull(
-                    intent.getParcelableExtra(NotificarePush.INTENT_EXTRA_REMOTE_MESSAGE)
+                    intent.getParcelableExtra(NotificarePushIntentReceiver.INTENT_EXTRA_REMOTE_MESSAGE)
                 )
 
                 val notification: NotificareNotification = requireNotNull(
@@ -36,7 +37,7 @@ internal class NotificarePushSystemIntentReceiver : BroadcastReceiver() {
                 )
 
                 val responseText = RemoteInput.getResultsFromIntent(intent)
-                    ?.getCharSequence(NotificarePush.INTENT_EXTRA_TEXT_RESPONSE)
+                    ?.getCharSequence(NotificarePushIntentReceiver.INTENT_EXTRA_TEXT_RESPONSE)
                     ?.toString()
 
                 onQuickResponse(message, notification, action, responseText)
@@ -50,10 +51,10 @@ internal class NotificarePushSystemIntentReceiver : BroadcastReceiver() {
         action: NotificareNotification.Action,
         responseText: String?
     ) {
-        // Log the notification open event.
-        Notificare.eventsManager.logNotificationOpened(notification.id)
-
         GlobalScope.launch(Dispatchers.IO) {
+            // Log the notification open event.
+            Notificare.events().logNotificationOpen(notification.id)
+
             @Suppress("NAME_SHADOWING")
             val notification = try {
                 if (notification.partial) {

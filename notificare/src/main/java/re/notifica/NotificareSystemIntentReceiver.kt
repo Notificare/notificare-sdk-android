@@ -6,6 +6,7 @@ import android.content.Intent
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import re.notifica.internal.NotificareLogger
+import re.notifica.ktx.deviceImplementation
 import java.util.*
 
 internal class NotificareSystemIntentReceiver : BroadcastReceiver() {
@@ -23,7 +24,7 @@ internal class NotificareSystemIntentReceiver : BroadcastReceiver() {
 
         GlobalScope.launch {
             try {
-                Notificare.deviceManager.updateTimeZone()
+                Notificare.deviceImplementation().updateTimeZone()
                 NotificareLogger.debug("Successfully updated device time zone.")
             } catch (e: Exception) {
                 NotificareLogger.error("Failed to update device time zone.", e)
@@ -36,7 +37,7 @@ internal class NotificareSystemIntentReceiver : BroadcastReceiver() {
 
         GlobalScope.launch {
             try {
-                Notificare.deviceManager.updateLanguage()
+                Notificare.deviceImplementation().updateLanguage()
                 NotificareLogger.debug("Successfully updated device locale.")
             } catch (e: Exception) {
                 NotificareLogger.error("Failed to update device locale.", e)

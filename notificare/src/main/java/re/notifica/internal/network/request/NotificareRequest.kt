@@ -13,6 +13,7 @@ import re.notifica.InternalNotificareApi
 import re.notifica.Notificare
 import re.notifica.NotificareCallback
 import re.notifica.internal.NotificareLogger
+import re.notifica.internal.ktx.toCallbackFunction
 import re.notifica.internal.moshi
 import re.notifica.internal.network.NetworkException
 import re.notifica.internal.network.NotificareHeadersInterceptor
@@ -270,9 +271,15 @@ public class NotificareRequest private constructor(
             return build().response()
         }
 
+        public fun response(callback: NotificareCallback<Response>): Unit =
+            toCallbackFunction(::response)(callback)
+
         public suspend fun <T : Any> responseDecodable(klass: KClass<T>): T {
             return build().responseDecodable(klass)
         }
+
+        public fun <T : Any> responseDecodable(klass: KClass<T>, callback: NotificareCallback<T>): Unit =
+            toCallbackFunction(suspend { responseDecodable(klass) })(callback)
 
         @Throws(IllegalArgumentException::class)
         private fun computeCompleteUrl(): HttpUrl {

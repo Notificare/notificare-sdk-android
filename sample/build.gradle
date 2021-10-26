@@ -14,7 +14,7 @@ android {
     buildToolsVersion build_tools_version
 
     defaultConfig {
-        applicationId "re.notifica.demo"
+        applicationId "re.notifica.sample"
         minSdkVersion min_sdk_version
         targetSdkVersion target_sdk_version
         versionCode 30000
@@ -64,6 +64,11 @@ dependencies {
     implementation project(':notificare-assets')
     implementation project(':notificare-authentication')
     implementation project(':notificare-inbox')
+
+    implementation project(':notificare-geo')
+    implementation project(':notificare-geo-fcm')
+    implementation project(':notificare-geo-hms')
+    implementation project(':notificare-geo-beacons')
 
     implementation project(':notificare-push')
     implementation project(':notificare-push-fcm')

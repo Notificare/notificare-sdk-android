@@ -6,41 +6,59 @@ import android.content.Intent
 import re.notifica.Notificare
 import re.notifica.internal.NotificareLogger
 import re.notifica.models.NotificareNotification
+import re.notifica.push.ktx.push
 import re.notifica.push.models.NotificareSystemNotification
 import re.notifica.push.models.NotificareUnknownNotification
 
 public open class NotificarePushIntentReceiver : BroadcastReceiver() {
+
+    public companion object {
+        // Intent actions
+        internal const val INTENT_ACTION_REMOTE_MESSAGE_OPENED: String =
+            "re.notifica.intent.action.RemoteMessageOpened"
+        internal const val INTENT_ACTION_NOTIFICATION_RECEIVED: String =
+            "re.notifica.intent.action.NotificationReceived"
+        internal const val INTENT_ACTION_SYSTEM_NOTIFICATION_RECEIVED: String =
+            "re.notifica.intent.action.SystemNotificationReceived"
+        internal const val INTENT_ACTION_UNKNOWN_NOTIFICATION_RECEIVED: String =
+            "re.notifica.intent.action.UnknownNotificationReceived"
+
+        // Intent extras
+        internal const val INTENT_EXTRA_REMOTE_MESSAGE: String = "re.notifica.intent.extra.RemoteMessage"
+        internal const val INTENT_EXTRA_TEXT_RESPONSE: String = "re.notifica.intent.extra.TextResponse"
+    }
+
     override fun onReceive(context: Context, intent: Intent) {
         when (intent.action) {
-            NotificarePush.INTENT_ACTION_NOTIFICATION_RECEIVED -> {
+            INTENT_ACTION_NOTIFICATION_RECEIVED -> {
                 val notification: NotificareNotification = requireNotNull(
                     intent.getParcelableExtra(Notificare.INTENT_EXTRA_NOTIFICATION)
                 )
 
                 onNotificationReceived(notification)
             }
-            NotificarePush.INTENT_ACTION_SYSTEM_NOTIFICATION_RECEIVED -> {
+            INTENT_ACTION_SYSTEM_NOTIFICATION_RECEIVED -> {
                 val notification: NotificareSystemNotification = requireNotNull(
                     intent.getParcelableExtra(Notificare.INTENT_EXTRA_NOTIFICATION)
                 )
 
                 onSystemNotificationReceived(notification)
             }
-            NotificarePush.INTENT_ACTION_UNKNOWN_NOTIFICATION_RECEIVED -> {
+            INTENT_ACTION_UNKNOWN_NOTIFICATION_RECEIVED -> {
                 val notification: NotificareUnknownNotification = requireNotNull(
                     intent.getParcelableExtra(Notificare.INTENT_EXTRA_NOTIFICATION)
                 )
 
                 onUnknownNotificationReceived(notification)
             }
-            NotificarePush.INTENT_ACTION_NOTIFICATION_OPENED -> {
+            Notificare.push().INTENT_ACTION_NOTIFICATION_OPENED -> {
                 val notification: NotificareNotification = requireNotNull(
                     intent.getParcelableExtra(Notificare.INTENT_EXTRA_NOTIFICATION)
                 )
 
                 onNotificationOpened(notification)
             }
-            NotificarePush.INTENT_ACTION_ACTION_OPENED -> {
+            Notificare.push().INTENT_ACTION_ACTION_OPENED -> {
                 val notification: NotificareNotification = requireNotNull(
                     intent.getParcelableExtra(Notificare.INTENT_EXTRA_NOTIFICATION)
                 )

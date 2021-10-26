@@ -15,9 +15,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
-import re.notifica.inbox.NotificareInbox
+import re.notifica.Notificare
+import re.notifica.inbox.ktx.inbox
 import re.notifica.inbox.models.NotificareInboxItem
-import re.notifica.push.ui.NotificarePushUI
+import re.notifica.push.ui.ktx.pushUI
 import re.notifica.sample.R
 import re.notifica.sample.databinding.ActivityInboxBinding
 import re.notifica.sample.databinding.RowInboxItemBinding
@@ -38,16 +39,16 @@ class InboxActivity : AppCompatActivity() {
         binding.list.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
         binding.list.adapter = InboxAdapter().also { adapter = it }
 
-        NotificareInbox.observableItems.observe(this) {
+        Notificare.inbox().observableItems.observe(this) {
             adapter.data = it.toList()
         }
 
-        NotificareInbox.observableBadge.observe(this) { badge ->
+        Notificare.inbox().observableBadge.observe(this) { badge ->
             Snackbar.make(binding.root, "Unread count: $badge", Snackbar.LENGTH_LONG).show()
 
-            if (badge != NotificareInbox.badge) {
+            if (badge != Notificare.inbox().badge) {
                 AlertDialog.Builder(this)
-                    .setMessage("Badge mismatch.\nLiveData = $badge\nNotificareInbox.badge = ${NotificareInbox.badge}")
+                    .setMessage("Badge mismatch.\nLiveData = $badge\nNotificareInbox.badge = ${Notificare.inbox().badge}")
                     .show()
             }
         }
@@ -60,9 +61,9 @@ class InboxActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.refresh -> NotificareInbox.refresh()
-            R.id.read_all -> lifecycleScope.launch { NotificareInbox.markAllAsRead() }
-            R.id.remove_all -> lifecycleScope.launch { NotificareInbox.clear() }
+            R.id.refresh -> Notificare.inbox().refresh()
+            R.id.read_all -> lifecycleScope.launch { Notificare.inbox().markAllAsRead() }
+            R.id.remove_all -> lifecycleScope.launch { Notificare.inbox().clear() }
             else -> return super.onOptionsItemSelected(item)
         }
 
@@ -110,8 +111,8 @@ class InboxActivity : AppCompatActivity() {
 
                 binding.root.setOnClickListener {
                     lifecycleScope.launch {
-                        val notification = NotificareInbox.open(item)
-                        NotificarePushUI.presentNotification(this@InboxActivity, notification)
+                        val notification = Notificare.inbox().open(item)
+                        Notificare.pushUI().presentNotification(this@InboxActivity, notification)
                     }
                 }
 
@@ -120,20 +121,20 @@ class InboxActivity : AppCompatActivity() {
                         listener = object : InboxItemActionsBottomSheet.Listener {
                             override fun onOpenClicked() {
                                 lifecycleScope.launch {
-                                    val notification = NotificareInbox.open(item)
-                                    NotificarePushUI.presentNotification(this@InboxActivity, notification)
+                                    val notification = Notificare.inbox().open(item)
+                                    Notificare.pushUI().presentNotification(this@InboxActivity, notification)
                                 }
                             }
 
                             override fun onMarkAsReadClicked() {
                                 lifecycleScope.launch {
-                                    NotificareInbox.markAsRead(item)
+                                    Notificare.inbox().markAsRead(item)
                                 }
                             }
 
                             override fun onDeleteClicked() {
                                 lifecycleScope.launch {
-                                    NotificareInbox.remove(item)
+                                    Notificare.inbox().remove(item)
                                 }
                             }
                         }

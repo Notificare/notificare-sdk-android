@@ -6,8 +6,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.WebChromeClient
-import re.notifica.push.ui.NotificarePushUI
+import re.notifica.Notificare
 import re.notifica.push.ui.databinding.NotificareNotificationUrlFragmentBinding
+import re.notifica.push.ui.ktx.pushUIInternal
 import re.notifica.push.ui.notifications.fragments.base.NotificationFragment
 import re.notifica.push.ui.utils.NotificationWebViewClient
 
@@ -41,7 +42,7 @@ public class NotificareUrlFragment : NotificationFragment() {
     private fun setupContent() {
         val content = notification.content.firstOrNull()
         val url = content?.data as? String ?: run {
-            NotificarePushUI.lifecycleListeners.forEach { it.onNotificationFailedToPresent(notification) }
+            Notificare.pushUIInternal().lifecycleListeners.forEach { it.onNotificationFailedToPresent(notification) }
             return
         }
 

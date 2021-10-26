@@ -16,10 +16,11 @@ import re.notifica.internal.network.request.NotificareRequest
 import re.notifica.internal.storage.SharedPreferencesMigration
 import re.notifica.internal.storage.database.NotificareDatabase
 import re.notifica.internal.storage.preferences.NotificareSharedPreferences
+import re.notifica.ktx.device
+import re.notifica.ktx.deviceImplementation
 import re.notifica.models.NotificareApplication
 import re.notifica.models.NotificareDynamicLink
 import re.notifica.models.NotificareNotification
-import re.notifica.modules.NotificareModule
 import java.lang.ref.WeakReference
 import java.net.URLEncoder
 import java.util.regex.Pattern
@@ -36,15 +37,9 @@ public object Notificare {
         private set
     internal lateinit var sharedPreferences: NotificareSharedPreferences
         private set
-    internal val sessionManager = NotificareSessionManager()
-    internal val crashReporter = CrashReporter()
 
     // internal var reachability: NotificareReachability? = null
     //     private set
-
-    // Consumer modules
-    public val eventsManager: NotificareEventsManager = NotificareEventsManager()
-    public val deviceManager: NotificareDeviceManager = NotificareDeviceManager()
 
     // Configurations
     private var context: WeakReference<Context>? = null
@@ -143,20 +138,14 @@ public object Notificare {
             try {
                 val application = fetchApplication()
 
-                sessionManager.launch()
-                deviceManager.launch()
-                eventsManager.launch()
-                crashReporter.launch()
-
                 // Loop all possible modules and launch the available ones.
                 NotificareModule.Module.values().forEach { module ->
                     module.instance?.run {
-                        NotificareLogger.debug("Launching '${module.name.lowercase()}' plugin.")
+                        NotificareLogger.debug("Launching module: ${module.name.lowercase()}")
                         try {
                             this.launch()
-                            NotificareLogger.debug("Launched '${module.name.lowercase()}' plugin.")
                         } catch (e: Exception) {
-                            NotificareLogger.debug("Failed to launch ${module.name.lowercase()}': $e")
+                            NotificareLogger.debug("Failed to launch '${module.name.lowercase()}': $e")
                             throw e
                         }
                     }
@@ -165,7 +154,7 @@ public object Notificare {
                 state = NotificareLaunchState.READY
 
                 val enabledServices = application.services.filter { it.value }.map { it.key }
-                val enabledModules = NotificareUtils.getLoadedModules()
+                val enabledModules = NotificareUtils.getEnabledPeerModules()
 
                 NotificareLogger.debug("/==================================================================================/")
                 NotificareLogger.debug("Notificare SDK is ready to use for application")
@@ -205,16 +194,15 @@ public object Notificare {
         GlobalScope.launch {
             try {
                 NotificareLogger.debug("Registering a temporary device.")
-                deviceManager.registerTemporary()
+                deviceImplementation().registerTemporary()
 
                 // Loop all possible modules and un-launch the available ones.
                 NotificareModule.Module.values().reversed().forEach { module ->
                     module.instance?.run {
-                        NotificareLogger.debug("Un-launching '${module.name.lowercase()}' plugin.")
+                        NotificareLogger.debug("Un-launching module: ${module.name.lowercase()}.")
 
                         try {
                             this.unlaunch()
-                            NotificareLogger.debug("Un-launched '${module.name.lowercase()}' plugin.")
                         } catch (e: Exception) {
                             NotificareLogger.debug("Failed to un-launch ${module.name.lowercase()}': $e")
                             throw e
@@ -223,10 +211,10 @@ public object Notificare {
                 }
 
                 NotificareLogger.debug("Clearing device tags.")
-                deviceManager.clearTags()
+                device().clearTags()
 
                 NotificareLogger.debug("Removing device.")
-                deviceManager.delete()
+                deviceImplementation().delete()
 
                 NotificareLogger.info("Un-launched Notificare.")
                 state = NotificareLaunchState.CONFIGURED
@@ -266,9 +254,7 @@ public object Notificare {
         toCallbackFunction(::fetchApplication)(callback)
 
     public suspend fun fetchNotification(id: String): NotificareNotification = withContext(Dispatchers.IO) {
-        if (!isConfigured) {
-            throw NotificareException.NotReady()
-        }
+        if (!isConfigured) throw NotificareNotConfiguredException()
 
         NotificareRequest.Builder()
             .get("/notification/$id")
@@ -281,9 +267,7 @@ public object Notificare {
         toCallbackFunction(::fetchNotification)(id, callback)
 
     public suspend fun fetchDynamicLink(uri: Uri): NotificareDynamicLink = withContext(Dispatchers.IO) {
-        if (!isConfigured) {
-            throw NotificareException.NotReady()
-        }
+        if (!isConfigured) throw NotificareNotConfiguredException()
 
         @Suppress("BlockingMethodInNonBlockingContext")
         val uriEncodedLink = URLEncoder.encode(uri.toString(), "UTF-8")
@@ -291,8 +275,8 @@ public object Notificare {
         NotificareRequest.Builder()
             .get("/link/dynamic/${uriEncodedLink}")
             .query("platform", "Android")
-            .query("deviceID", deviceManager.currentDevice?.id)
-            .query("userID", deviceManager.currentDevice?.userId)
+            .query("deviceID", device().currentDevice?.id)
+            .query("userID", device().currentDevice?.userId)
             .responseDecodable(DynamicLinkResponse::class)
             .link
     }
@@ -307,10 +291,10 @@ public object Notificare {
         media: String? = null,
         mimeType: String? = null,
     ): Unit = withContext(Dispatchers.IO) {
-        val device = deviceManager.currentDevice
-        if (!isReady || device == null) {
-            throw NotificareException.NotReady()
-        }
+        if (!isConfigured) throw NotificareNotConfiguredException()
+
+        val device = device().currentDevice
+            ?: throw NotificareDeviceUnavailableException()
 
         NotificareRequest.Builder()
             .post(
@@ -343,8 +327,8 @@ public object Notificare {
         }
 
         // Add our standard properties.
-        params["userID"] = deviceManager.currentDevice?.userId
-        params["deviceID"] = deviceManager.currentDevice?.id
+        params["userID"] = device().currentDevice?.userId
+        params["deviceID"] = device().currentDevice?.id
 
         // Add all the items passed via data.
         params.putAll(data)
@@ -358,7 +342,7 @@ public object Notificare {
         payload: ByteArray,
         contentType: String
     ): String = withContext(Dispatchers.IO) {
-        if (!isConfigured) throw NotificareException.NotReady()
+        if (!isConfigured) throw NotificareNotConfiguredException()
 
         val response = NotificareRequest.Builder()
             .header("Content-Type", contentType)
@@ -414,7 +398,7 @@ public object Notificare {
     public fun handleTestDeviceIntent(intent: Intent): Boolean {
         val nonce = parseTestDeviceNonce(intent) ?: return false
 
-        deviceManager.registerTestDevice(nonce, object : NotificareCallback<Unit> {
+        deviceImplementation().registerTestDevice(nonce, object : NotificareCallback<Unit> {
             override fun onSuccess(result: Unit) {
                 NotificareLogger.info("Device registered for testing.")
             }
@@ -463,16 +447,9 @@ public object Notificare {
         this.database = NotificareDatabase.create(context.applicationContext)
         this.sharedPreferences = NotificareSharedPreferences(context.applicationContext)
 
-        NotificareLogger.debug("Configuring available modules.")
-        sessionManager.configure()
-        crashReporter.configure()
-        // database.configure()
-        eventsManager.configure()
-        deviceManager.configure()
-
         NotificareModule.Module.values().forEach { module ->
             module.instance?.run {
-                NotificareLogger.debug("Configuring plugin: ${module.name.lowercase()}")
+                NotificareLogger.debug("Configuring module: ${module.name.lowercase()}")
                 this.configure()
             }
         }

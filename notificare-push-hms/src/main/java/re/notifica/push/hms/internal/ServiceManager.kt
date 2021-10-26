@@ -12,7 +12,7 @@ import re.notifica.InternalNotificareApi
 import re.notifica.Notificare
 import re.notifica.internal.NotificareLogger
 import re.notifica.models.NotificareTransport
-import re.notifica.push.NotificarePush
+import re.notifica.push.hms.ktx.pushInternal
 import re.notifica.push.internal.ServiceManager
 
 @InternalNotificareApi
@@ -38,7 +38,7 @@ public class ServiceManager : ServiceManager() {
                 if (token != null && token.isNotEmpty()) {
                     GlobalScope.launch {
                         try {
-                            NotificarePush.registerPushToken(transport, token = token)
+                            Notificare.pushInternal().registerPushToken(transport, token = token)
                             NotificareLogger.debug("Registered the device with a HMS token.")
                         } catch (e: Exception) {
                             NotificareLogger.debug("Failed to register the device with a HMS token.", e)

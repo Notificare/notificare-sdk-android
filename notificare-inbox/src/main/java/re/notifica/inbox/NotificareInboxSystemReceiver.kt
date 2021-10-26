@@ -8,9 +8,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import re.notifica.Notificare
-import re.notifica.internal.NotificareLogger
 import re.notifica.inbox.internal.database.entities.InboxItemEntity
+import re.notifica.inbox.ktx.inboxImplementation
 import re.notifica.inbox.models.NotificareInboxItem
+import re.notifica.internal.NotificareLogger
 import re.notifica.models.NotificareNotification
 import java.util.*
 
@@ -42,7 +43,7 @@ internal class NotificareInboxSystemReceiver : BroadcastReceiver() {
     }
 
     private fun onReload() {
-        NotificareInbox.refresh()
+        Notificare.inboxImplementation().refresh()
     }
 
     private fun onNotificationReceived(notification: NotificareNotification, bundle: Bundle) {
@@ -70,7 +71,7 @@ internal class NotificareInboxSystemReceiver : BroadcastReceiver() {
         GlobalScope.launch {
             try {
                 NotificareLogger.debug("Adding inbox item to the database.")
-                NotificareInbox.addItem(item)
+                Notificare.inboxImplementation().addItem(item)
             } catch (e: Exception) {
                 NotificareLogger.error("Failed to save inbox item to the database.", e)
             }
@@ -82,7 +83,7 @@ internal class NotificareInboxSystemReceiver : BroadcastReceiver() {
     private fun onMarkItemAsRead(id: String) {
         GlobalScope.launch(Dispatchers.IO) {
             try {
-                val entity = NotificareInbox.database.inbox().findById(id) ?: run {
+                val entity = Notificare.inboxImplementation().database.inbox().findById(id) ?: run {
                     NotificareLogger.warning("Unable to find item '$id' in the local database.")
                     return@launch
                 }
@@ -91,7 +92,7 @@ internal class NotificareInboxSystemReceiver : BroadcastReceiver() {
                 item._opened = true
 
                 // Mark the item as read in the local inbox.
-                NotificareInbox.database.inbox().update(InboxItemEntity.from(item))
+                Notificare.inboxImplementation().database.inbox().update(InboxItemEntity.from(item))
             } catch (e: Exception) {
                 NotificareLogger.error("Failed to mark item '$id' as read.", e)
             }

@@ -1,13 +1,14 @@
 package re.notifica.push
 
 import re.notifica.internal.NotificareOptions
+import re.notifica.push.internal.NotificarePushImpl
 
 public val NotificareOptions.defaultChannelId: String
     get() {
         return info.metaData?.getString(
             "re.notifica.push.default_channel_id",
-            NotificarePush.DEFAULT_NOTIFICATION_CHANNEL_ID,
-        ) ?: NotificarePush.DEFAULT_NOTIFICATION_CHANNEL_ID
+            NotificarePushImpl.DEFAULT_NOTIFICATION_CHANNEL_ID,
+        ) ?: NotificarePushImpl.DEFAULT_NOTIFICATION_CHANNEL_ID
     }
 
 public val NotificareOptions.automaticDefaultChannelEnabled: Boolean

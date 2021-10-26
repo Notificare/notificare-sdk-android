@@ -12,6 +12,7 @@ import re.notifica.Notificare
 import re.notifica.models.NotificareNotification
 import re.notifica.push.ui.*
 import re.notifica.push.ui.actions.base.NotificationAction
+import re.notifica.push.ui.ktx.pushUIInternal
 import re.notifica.push.ui.models.NotificarePendingResult
 
 internal class NotificationWebViewAction(
@@ -60,7 +61,9 @@ internal class NotificationWebViewAction(
             Notificare.createNotificationReply(notification, action)
 
             withContext(Dispatchers.Main) {
-                NotificarePushUI.lifecycleListeners.forEach { it.onActionExecuted(notification, action) }
+                Notificare.pushUIInternal().lifecycleListeners.forEach {
+                    it.onActionExecuted(notification, action)
+                }
             }
         } else {
             throw Exception(context.getString(R.string.notificare_action_failed))

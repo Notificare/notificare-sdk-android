@@ -17,7 +17,7 @@
             android:paddingHorizontal="16dp"
             android:paddingVertical="8dp">
 
-            <com.google.android.material.button.MaterialButton
+            <Button
                 style="@style/Widget.MaterialComponents.Button.TextButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -30,6 +30,44 @@
                 android:layout_height="wrap_content"
                 android:onClick="onUnlaunchClicked"
                 android:text="Unlaunch Notificare" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:gravity="center"
+                android:text="Geo"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6" />
+
+            <Button
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="onEnableLocationUpdatesClicked"
+                android:text="Enable location updates" />
+
+            <Button
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="onDisableLocationUpdatesClicked"
+                android:text="Disable location updates" />
+
+            <Button
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="onRangingBeaconsClicked"
+                android:text="Ranging beacons" />
+
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:gravity="center"
+                android:text="Push"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6" />
 
             <Button
                 style="@style/Widget.MaterialComponents.Button.TextButton"
@@ -143,12 +181,28 @@
                 android:onClick="onFetchNotificationClicked"
                 android:text="Fetch notification" />
 
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:gravity="center"
+                android:text="Assets"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6" />
+
             <Button
                 style="@style/Widget.MaterialComponents.Button.TextButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:onClick="onFetchAssetsClicked"
                 android:text="Fetch assets" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:gravity="center"
+                android:text="Scannables"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6" />
 
             <Button
                 style="@style/Widget.MaterialComponents.Button.TextButton"
