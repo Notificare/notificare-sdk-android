@@ -101,7 +101,7 @@ public class ScannableActivity : AppCompatActivity() {
 
     override fun onBackPressed() {
         Notificare.scannablesImplementation()
-            .notifyListeners(NotificareScannablesException.UserCancelledScannableSession())
+            .notifyListeners(NotificareUserCancelledScannableSessionException())
 
         super.onBackPressed()
     }

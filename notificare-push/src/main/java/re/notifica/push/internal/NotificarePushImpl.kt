@@ -22,7 +22,7 @@ import kotlinx.coroutines.*
 import org.json.JSONObject
 import re.notifica.Notificare
 import re.notifica.NotificareCallback
-import re.notifica.NotificareException
+import re.notifica.NotificareDeviceUnavailableException
 import re.notifica.internal.NotificareLogger
 import re.notifica.internal.NotificareModule
 import re.notifica.internal.NotificareUtils
@@ -646,10 +646,8 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
     }
 
     private suspend fun updateNotificationSettings(allowedUI: Boolean): Unit = withContext(Dispatchers.IO) {
-        val device = Notificare.device().currentDevice ?: run {
-            NotificareLogger.warning("No device registered yet.")
-            throw NotificareException.NotReady()
-        }
+        val device = Notificare.device().currentDevice
+            ?: throw NotificareDeviceUnavailableException()
 
         NotificareRequest.Builder()
             .put(

@@ -254,9 +254,7 @@ public object Notificare {
         toCallbackFunction(::fetchApplication)(callback)
 
     public suspend fun fetchNotification(id: String): NotificareNotification = withContext(Dispatchers.IO) {
-        if (!isConfigured) {
-            throw NotificareException.NotReady()
-        }
+        if (!isConfigured) throw NotificareNotConfiguredException()
 
         NotificareRequest.Builder()
             .get("/notification/$id")
@@ -269,9 +267,7 @@ public object Notificare {
         toCallbackFunction(::fetchNotification)(id, callback)
 
     public suspend fun fetchDynamicLink(uri: Uri): NotificareDynamicLink = withContext(Dispatchers.IO) {
-        if (!isConfigured) {
-            throw NotificareException.NotReady()
-        }
+        if (!isConfigured) throw NotificareNotConfiguredException()
 
         @Suppress("BlockingMethodInNonBlockingContext")
         val uriEncodedLink = URLEncoder.encode(uri.toString(), "UTF-8")
@@ -295,10 +291,10 @@ public object Notificare {
         media: String? = null,
         mimeType: String? = null,
     ): Unit = withContext(Dispatchers.IO) {
+        if (!isConfigured) throw NotificareNotConfiguredException()
+
         val device = device().currentDevice
-        if (!isReady || device == null) {
-            throw NotificareException.NotReady()
-        }
+            ?: throw NotificareDeviceUnavailableException()
 
         NotificareRequest.Builder()
             .post(
@@ -346,7 +342,7 @@ public object Notificare {
         payload: ByteArray,
         contentType: String
     ): String = withContext(Dispatchers.IO) {
-        if (!isConfigured) throw NotificareException.NotReady()
+        if (!isConfigured) throw NotificareNotConfiguredException()
 
         val response = NotificareRequest.Builder()
             .header("Content-Type", contentType)

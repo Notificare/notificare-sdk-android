@@ -36,7 +36,7 @@ import re.notifica.sample.databinding.ActivityMainBinding
 import re.notifica.sample.ui.beacons.BeaconsActivity
 import re.notifica.sample.ui.inbox.InboxActivity
 import re.notifica.scannables.NotificareScannables
-import re.notifica.scannables.NotificareScannablesException
+import re.notifica.scannables.NotificareUserCancelledScannableSessionException
 import re.notifica.scannables.ktx.scannables
 import re.notifica.scannables.models.NotificareScannable
 import java.util.*
@@ -740,7 +740,7 @@ class MainActivity : AppCompatActivity(), Notificare.OnReadyListener, Notificare
     }
 
     override fun onScannerSessionError(error: Exception) {
-        if (error is NotificareScannablesException.UserCancelledScannableSession) {
+        if (error is NotificareUserCancelledScannableSessionException) {
             return
         }
 

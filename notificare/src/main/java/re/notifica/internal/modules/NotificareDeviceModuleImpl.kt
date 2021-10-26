@@ -19,7 +19,8 @@ import re.notifica.models.NotificareTransport
 import re.notifica.models.NotificareUserData
 import java.util.*
 
-internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDeviceModule, NotificareInternalDeviceModule {
+internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDeviceModule,
+    NotificareInternalDeviceModule {
 
     // region Notificare Module
 
@@ -77,15 +78,17 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
         }
 
     override suspend fun register(userId: String?, userName: String?): Unit = withContext(Dispatchers.IO) {
-        val currentDevice = checkNotificareReady()
-        register(currentDevice.transport, currentDevice.id, userId, userName)
+        checkPrerequisites()
+
+        val device = checkNotNull(currentDevice)
+        register(device.transport, device.id, userId, userName)
     }
 
     override fun register(userId: String?, userName: String?, callback: NotificareCallback<Unit>): Unit =
         toCallbackFunction(::register)(userId, userName, callback)
 
     override suspend fun updatePreferredLanguage(preferredLanguage: String?): Unit = withContext(Dispatchers.IO) {
-        checkNotificareReady()
+        checkPrerequisites()
 
         if (preferredLanguage != null) {
             val parts = preferredLanguage.split("-")
@@ -113,7 +116,9 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
         toCallbackFunction(::updatePreferredLanguage)(preferredLanguage, callback)
 
     override suspend fun fetchTags(): List<String> = withContext(Dispatchers.IO) {
-        val device = checkNotificareReady()
+        checkPrerequisites()
+
+        val device = checkNotNull(currentDevice)
 
         NotificareRequest.Builder()
             .get("/device/${device.id}/tags")
@@ -132,7 +137,9 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
         toCallbackFunction(::addTag)(tag, callback)
 
     override suspend fun addTags(tags: List<String>): Unit = withContext(Dispatchers.IO) {
-        val device = checkNotificareReady()
+        checkPrerequisites()
+
+        val device = checkNotNull(currentDevice)
         NotificareRequest.Builder()
             .put("/device/${device.id}/addtags", DeviceTagsPayload(tags))
             .response()
@@ -149,7 +156,9 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
         toCallbackFunction(::removeTag)(tag, callback)
 
     override suspend fun removeTags(tags: List<String>): Unit = withContext(Dispatchers.IO) {
-        val device = checkNotificareReady()
+        checkPrerequisites()
+
+        val device = checkNotNull(currentDevice)
         NotificareRequest.Builder()
             .put("/device/${device.id}/removetags", DeviceTagsPayload(tags))
             .response()
@@ -159,7 +168,9 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
         toCallbackFunction(::removeTags)(tags, callback)
 
     override suspend fun clearTags(): Unit = withContext(Dispatchers.IO) {
-        val device = checkNotificareReady()
+        checkPrerequisites()
+
+        val device = checkNotNull(currentDevice)
         NotificareRequest.Builder()
             .put("/device/${device.id}/cleartags", null)
             .response()
@@ -169,7 +180,9 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
         toCallbackFunction(::clearTags)(callback)
 
     override suspend fun fetchDoNotDisturb(): NotificareDoNotDisturb? = withContext(Dispatchers.IO) {
-        val device = checkNotificareReady()
+        checkPrerequisites()
+
+        val device = checkNotNull(currentDevice)
         val dnd = NotificareRequest.Builder()
             .get("/device/${device.id}/dnd")
             .responseDecodable(DeviceDoNotDisturbResponse::class)
@@ -185,7 +198,9 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
         toCallbackFunction(::fetchDoNotDisturb)(callback)
 
     override suspend fun updateDoNotDisturb(dnd: NotificareDoNotDisturb): Unit = withContext(Dispatchers.IO) {
-        val device = checkNotificareReady()
+        checkPrerequisites()
+
+        val device = checkNotNull(currentDevice)
         NotificareRequest.Builder()
             .put("/device/${device.id}/dnd", dnd)
             .response()
@@ -198,7 +213,9 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
         toCallbackFunction(::updateDoNotDisturb)(dnd, callback)
 
     override suspend fun clearDoNotDisturb(): Unit = withContext(Dispatchers.IO) {
-        val device = checkNotificareReady()
+        checkPrerequisites()
+
+        val device = checkNotNull(currentDevice)
         NotificareRequest.Builder()
             .put("/device/${device.id}/cleardnd", null)
             .response()
@@ -211,7 +228,9 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
         toCallbackFunction(::clearDoNotDisturb)(callback)
 
     override suspend fun fetchUserData(): NotificareUserData = withContext(Dispatchers.IO) {
-        val device = checkNotificareReady()
+        checkPrerequisites()
+
+        val device = checkNotNull(currentDevice)
         val userData = NotificareRequest.Builder()
             .get("/device/${device.id}/userdata")
             .responseDecodable(DeviceUserDataResponse::class)
@@ -228,7 +247,9 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
         toCallbackFunction(::fetchUserData)(callback)
 
     override suspend fun updateUserData(userData: NotificareUserData): Unit = withContext(Dispatchers.IO) {
-        val device = checkNotificareReady()
+        checkPrerequisites()
+
+        val device = checkNotNull(currentDevice)
         NotificareRequest.Builder()
             .put("/device/${device.id}/userdata", userData)
             .response()
@@ -280,7 +301,9 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
     // endregion
 
     internal suspend fun delete(): Unit = withContext(Dispatchers.IO) {
-        val device = checkNotificareReady()
+        checkPrerequisites()
+
+        val device = checkNotNull(currentDevice)
 
         NotificareRequest.Builder()
             .delete(
@@ -293,14 +316,12 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
         currentDevice = null
     }
 
-    private fun checkNotificareReady(): NotificareDevice {
-        val device = currentDevice
-
-        if (!Notificare.isReady || device == null) {
-            throw NotificareException.NotReady()
+    @Throws
+    private fun checkPrerequisites() {
+        if (!Notificare.isReady) {
+            NotificareLogger.warning("Notificare is not ready yet.")
+            throw NotificareNotReadyException()
         }
-
-        return device
     }
 
     private suspend fun register(transport: NotificareTransport, token: String, userId: String?, userName: String?) {
@@ -451,7 +472,9 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
     }
 
     internal suspend fun updateLanguage() {
-        val device = checkNotificareReady()
+        checkPrerequisites()
+
+        val device = checkNotNull(currentDevice)
 
         NotificareRequest.Builder()
             .put(
@@ -465,7 +488,9 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
     }
 
     internal suspend fun updateTimeZone() {
-        val device = checkNotificareReady()
+        checkPrerequisites()
+
+        val device = checkNotNull(currentDevice)
 
         NotificareRequest.Builder()
             .put(

@@ -12,11 +12,10 @@ import androidx.core.content.ContextCompat
 import androidx.core.os.BuildCompat
 import kotlinx.coroutines.*
 import okhttp3.Response
-import re.notifica.Notificare
-import re.notifica.NotificareCallback
-import re.notifica.NotificareException
+import re.notifica.*
 import re.notifica.geo.NotificareGeo
 import re.notifica.geo.NotificareInternalGeo
+import re.notifica.geo.NotificareLocationHardwareUnavailableException
 import re.notifica.geo.internal.network.push.*
 import re.notifica.geo.internal.storage.LocalStorage
 import re.notifica.geo.ktx.logBeaconSession
@@ -513,22 +512,22 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
     private fun checkPrerequisites() {
         if (!Notificare.isReady) {
             NotificareLogger.warning("Notificare is not ready yet.")
-            throw NotificareException.NotReady()
+            throw NotificareNotReadyException()
         }
 
         val application = Notificare.application ?: run {
             NotificareLogger.warning("Notificare application is not yet available.")
-            throw NotificareException.NotReady()
+            throw NotificareApplicationUnavailableException()
         }
 
         if (application.services[NotificareApplication.ServiceKeys.LOCATION_SERVICES] != true) {
             NotificareLogger.warning("Notificare location functionality is not enabled.")
-            throw NotificareException.NotReady()
+            throw NotificareServiceUnavailableException(service = NotificareApplication.ServiceKeys.LOCATION_SERVICES)
         }
 
         if (!Notificare.requireContext().packageManager.hasSystemFeature(PackageManager.FEATURE_LOCATION)) {
             NotificareLogger.warning("Location functionality requires location hardware.")
-            throw NotificareException.NotReady()
+            throw NotificareLocationHardwareUnavailableException()
         }
     }
 

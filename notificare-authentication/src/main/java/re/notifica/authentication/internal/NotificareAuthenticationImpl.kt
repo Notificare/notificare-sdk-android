@@ -22,6 +22,7 @@ import re.notifica.internal.ktx.toCallbackFunction
 import re.notifica.internal.network.request.NotificareRequest
 import re.notifica.ktx.device
 import re.notifica.ktx.events
+import re.notifica.models.NotificareApplication
 
 internal object NotificareAuthenticationImpl : NotificareModule(), NotificareAuthentication {
 
@@ -432,17 +433,17 @@ internal object NotificareAuthenticationImpl : NotificareModule(), NotificareAut
     private fun checkPrerequisites() {
         if (!Notificare.isReady) {
             NotificareLogger.warning("Notificare is not ready yet.")
-            throw NotificareException.NotReady()
+            throw NotificareNotReadyException()
         }
 
         val application = Notificare.application ?: run {
             NotificareLogger.warning("Notificare application is not yet available.")
-            throw NotificareException.NotReady()
+            throw NotificareApplicationUnavailableException()
         }
 
-        if (application.services["oauth2"] != true) {
+        if (application.services[NotificareApplication.ServiceKeys.OAUTH2] != true) {
             NotificareLogger.warning("Notificare authentication functionality is not enabled.")
-            throw NotificareException.NotReady()
+            throw NotificareServiceUnavailableException(service = NotificareApplication.ServiceKeys.OAUTH2)
         }
     }
 

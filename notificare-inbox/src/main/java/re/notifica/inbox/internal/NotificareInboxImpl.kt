@@ -8,24 +8,22 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.work.*
 import kotlinx.coroutines.*
-import re.notifica.Notificare
-import re.notifica.NotificareCallback
-import re.notifica.NotificareException
+import re.notifica.*
 import re.notifica.inbox.NotificareInbox
-import re.notifica.inbox.NotificareInboxException
 import re.notifica.inbox.internal.database.InboxDatabase
 import re.notifica.inbox.internal.database.entities.InboxItemEntity
 import re.notifica.inbox.internal.network.push.InboxResponse
 import re.notifica.inbox.internal.workers.ExpireItemWorker
 import re.notifica.inbox.models.NotificareInboxItem
 import re.notifica.internal.NotificareLogger
+import re.notifica.internal.NotificareModule
 import re.notifica.internal.ktx.toCallbackFunction
 import re.notifica.internal.network.NetworkException
 import re.notifica.internal.network.request.NotificareRequest
-import re.notifica.models.NotificareNotification
-import re.notifica.internal.NotificareModule
 import re.notifica.ktx.device
 import re.notifica.ktx.events
+import re.notifica.models.NotificareApplication
+import re.notifica.models.NotificareNotification
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -154,15 +152,7 @@ internal object NotificareInboxImpl : NotificareModule(), NotificareInbox {
     }
 
     override suspend fun open(item: NotificareInboxItem): NotificareNotification = withContext(Dispatchers.IO) {
-        val application = Notificare.application ?: run {
-            NotificareLogger.warning("Notificare application not yet available.")
-            throw NotificareException.NotReady()
-        }
-
-        if (application.inboxConfig?.useInbox != true) {
-            NotificareLogger.warning("Notificare inbox functionality is not enabled.")
-            throw NotificareInboxException.InboxUnavailable()
-        }
+        checkPrerequisites()
 
         // Remove the item from the notification center.
         Notificare.removeNotificationFromNotificationCenter(item.notification)
@@ -188,15 +178,7 @@ internal object NotificareInboxImpl : NotificareModule(), NotificareInbox {
         toCallbackFunction(NotificareInboxImpl::open)(item, callback)
 
     override suspend fun markAsRead(item: NotificareInboxItem): Unit = withContext(Dispatchers.IO) {
-        val application = Notificare.application ?: run {
-            NotificareLogger.warning("Notificare application not yet available.")
-            throw NotificareException.NotReady()
-        }
-
-        if (application.inboxConfig?.useInbox != true) {
-            NotificareLogger.warning("Notificare inbox functionality is not enabled.")
-            throw NotificareInboxException.InboxUnavailable()
-        }
+        checkPrerequisites()
 
         // Send an event to mark the notification as read in the remote inbox.
         Notificare.events().logNotificationOpen(item.notification.id)
@@ -213,20 +195,9 @@ internal object NotificareInboxImpl : NotificareModule(), NotificareInbox {
         toCallbackFunction(NotificareInboxImpl::markAsRead)(item, callback)
 
     override suspend fun markAllAsRead(): Unit = withContext(Dispatchers.IO) {
-        val application = Notificare.application ?: run {
-            NotificareLogger.warning("Notificare application not yet available.")
-            throw NotificareException.NotReady()
-        }
+        checkPrerequisites()
 
-        val device = Notificare.device().currentDevice ?: run {
-            NotificareLogger.warning("No device registered yet.")
-            throw NotificareException.NotReady()
-        }
-
-        if (application.inboxConfig?.useInbox != true) {
-            NotificareLogger.warning("Notificare inbox functionality is not enabled.")
-            throw NotificareInboxException.InboxUnavailable()
-        }
+        val device = checkNotNull(Notificare.device().currentDevice)
 
         // Mark all the items in the remote inbox.
         NotificareRequest.Builder()
@@ -244,15 +215,7 @@ internal object NotificareInboxImpl : NotificareModule(), NotificareInbox {
         toCallbackFunction(NotificareInboxImpl::markAllAsRead)(callback)
 
     override suspend fun remove(item: NotificareInboxItem): Unit = withContext(Dispatchers.IO) {
-        val application = Notificare.application ?: run {
-            NotificareLogger.warning("Notificare application not yet available.")
-            throw NotificareException.NotReady()
-        }
-
-        if (application.inboxConfig?.useInbox != true) {
-            NotificareLogger.warning("Notificare inbox functionality is not enabled.")
-            throw NotificareInboxException.InboxUnavailable()
-        }
+        checkPrerequisites()
 
         // Remove the item from the API.
         NotificareRequest.Builder()
@@ -270,20 +233,9 @@ internal object NotificareInboxImpl : NotificareModule(), NotificareInbox {
         toCallbackFunction(NotificareInboxImpl::remove)(item, callback)
 
     override suspend fun clear(): Unit = withContext(Dispatchers.IO) {
-        val application = Notificare.application ?: run {
-            NotificareLogger.warning("Notificare application not yet available.")
-            throw NotificareException.NotReady()
-        }
+        checkPrerequisites()
 
-        val device = Notificare.device().currentDevice ?: run {
-            NotificareLogger.warning("No device registered yet.")
-            throw NotificareException.NotReady()
-        }
-
-        if (application.inboxConfig?.useInbox != true) {
-            NotificareLogger.warning("Notificare inbox functionality is not enabled.")
-            throw NotificareInboxException.InboxUnavailable()
-        }
+        val device = checkNotNull(Notificare.device().currentDevice)
 
         NotificareRequest.Builder()
             .delete("/notification/inbox/fordevice/${device.id}", null)
@@ -297,6 +249,29 @@ internal object NotificareInboxImpl : NotificareModule(), NotificareInbox {
         toCallbackFunction(NotificareInboxImpl::clear)(callback)
 
     // endregion
+
+    @Throws
+    private fun checkPrerequisites() {
+        if (!Notificare.isReady) {
+            NotificareLogger.warning("Notificare is not ready yet.")
+            throw NotificareNotReadyException()
+        }
+
+        val application = Notificare.application ?: run {
+            NotificareLogger.warning("Notificare application is not yet available.")
+            throw NotificareApplicationUnavailableException()
+        }
+
+        if (application.services[NotificareApplication.ServiceKeys.INBOX] != true) {
+            NotificareLogger.warning("Notificare inbox functionality is not enabled.")
+            throw NotificareServiceUnavailableException(service = NotificareApplication.ServiceKeys.INBOX)
+        }
+
+        if (application.inboxConfig?.useInbox != true) {
+            NotificareLogger.warning("Notificare inbox functionality is not enabled.")
+            throw NotificareServiceUnavailableException(service = NotificareApplication.ServiceKeys.INBOX)
+        }
+    }
 
     internal suspend fun addItem(item: NotificareInboxItem): Unit = withContext(Dispatchers.IO) {
         val entity = InboxItemEntity.from(item)
