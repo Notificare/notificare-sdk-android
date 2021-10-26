@@ -11,6 +11,8 @@ public interface NotificareGeo {
 
     public val hasLocationServicesEnabled: Boolean
 
+    public val hasBluetoothEnabled: Boolean
+
     public fun enableLocationUpdates()
 
     public fun disableLocationUpdates()

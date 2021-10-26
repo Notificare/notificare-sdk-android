@@ -58,8 +58,8 @@ public object NotificareLogger {
         get() = Throwable().stackTrace
             .first { it.className !in IGNORE_FQDN }
             .let(::createStackElementTag)
-            .removeSuffix("ModuleImpl")
-            .removeSuffix("Impl")
+            .replace("ModuleImpl", "")
+            .replace("Impl", "")
 
     private fun createStackElementTag(element: StackTraceElement): String {
         var tag = element.className.substringAfterLast('.')

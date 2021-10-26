@@ -1,9 +1,11 @@
 package re.notifica.geo.beacons.internal
 
+import androidx.core.app.NotificationCompat
 import org.altbeacon.beacon.*
 import org.altbeacon.beacon.service.RangedBeacon
 import re.notifica.InternalNotificareApi
 import re.notifica.Notificare
+import re.notifica.geo.beacons.*
 import re.notifica.geo.beacons.ktx.geoInternal
 import re.notifica.geo.internal.BeaconServiceManager
 import re.notifica.geo.models.NotificareBeacon
@@ -11,8 +13,6 @@ import re.notifica.geo.models.NotificareRegion
 import re.notifica.internal.NotificareLogger
 
 private const val BEACON_LAYOUT_APPLE = "m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24"
-private const val DEFAULT_SCAN_INTERVAL: Long = 30000L
-private const val DEFAULT_SAMPLE_EXPIRATION: Long = 10000L
 
 // AltBeacon.uniqueId   = NotificareRegion.id / NotificareBeacon.id
 // AltBeacon.id1        = Proximity UUID
@@ -28,33 +28,19 @@ public class BeaconServiceManager(
 
     init {
         val context = Notificare.requireContext()
+        val options = checkNotNull(Notificare.options)
 
         beaconManager = BeaconManager.getInstanceForApplication(context)
         beaconManager.beaconParsers.clear()
         beaconManager.beaconParsers.add(BeaconParser().setBeaconLayout(BEACON_LAYOUT_APPLE))
-        beaconManager.backgroundBetweenScanPeriod = DEFAULT_SCAN_INTERVAL
+        beaconManager.foregroundBetweenScanPeriod = options.beaconForegroundScanInterval
+        beaconManager.backgroundBetweenScanPeriod = options.beaconBackgroundScanInterval
 
-        RangedBeacon.setSampleExpirationMilliseconds(DEFAULT_SAMPLE_EXPIRATION)
+        RangedBeacon.setSampleExpirationMilliseconds(options.beaconSampleExpiration)
 
-//        if (scanInterval > 0) {
-//            beaconManager.backgroundBetweenScanPeriod = scanInterval
-//        }
-//
-//        if (sampleExpiration > 0) {
-//            RangedBeacon.setSampleExpirationMilliseconds(sampleExpiration)
-//        } else {
-//            RangedBeacon.setSampleExpirationMilliseconds(DEFAULT_SAMPLE_EXPIRATION)
-//        }
-//
-//        if (useForegroundServiceScanning) {
-//            startForegroundServiceScanning()
-//        } else {
-//            beaconManager.removeAllMonitorNotifiers()
-//            beaconManager.removeAllRangeNotifiers()
-//            beaconManager.addMonitorNotifier(this)
-//            beaconManager.addRangeNotifier(this)
-//            loadEnteredRegions()
-//        }
+        if (options.beaconForegroundServiceEnabled) {
+            enableForegroundService()
+        }
 
         beaconManager.addMonitorNotifier(this)
         beaconManager.addRangeNotifier(this)
@@ -62,7 +48,7 @@ public class BeaconServiceManager(
 
     override fun startMonitoring(region: NotificareRegion, beacons: List<NotificareBeacon>) {
         // Start monitoring the main region.
-        val mainBeacon = NotificareBeacon(region.id, region.name, requireNotNull(region.major), null, false, null)
+        val mainBeacon = NotificareBeacon(region.id, region.name, requireNotNull(region.major), null)
         startMonitoring(mainBeacon)
 
         // Start monitoring every beacon.
@@ -96,7 +82,10 @@ public class BeaconServiceManager(
         // Stop monitoring the main region.
         beaconManager.monitoredRegions
             .filter { it.uniqueId == region.id }
-            .forEach { beaconManager.stopMonitoring(it) }
+            .forEach {
+                beaconManager.stopRangingBeacons(it)
+                beaconManager.stopMonitoring(it)
+            }
 
         // Stop monitoring the individual beacons.
         val beacons = beaconManager.monitoredRegions
@@ -108,32 +97,63 @@ public class BeaconServiceManager(
         }
     }
 
+    override fun clearMonitoring() {
+        beaconManager.monitoredRegions.forEach {
+            beaconManager.stopRangingBeacons(it)
+            beaconManager.stopMonitoring(it)
+        }
+    }
+
+    private fun enableForegroundService() {
+        val options = checkNotNull(Notificare.options)
+        val channel = options.beaconServiceNotificationChannel
+
+        val notification = NotificationCompat.Builder(Notificare.requireContext(), channel)
+            .setSmallIcon(options.beaconServiceNotificationSmallIcon)
+            .setContentTitle(options.beaconServiceNotificationContentTitle)
+            .setContentText(options.beaconServiceNotificationContentText)
+            .apply {
+                if (options.beaconServiceNotificationProgress) {
+                    setProgress(100, 0, true)
+                }
+            }
+            .build()
+
+        beaconManager.enableForegroundServiceScanning(notification, 456)
+    }
+
     // region MonitorNotifier
 
     override fun didEnterRegion(region: Region) {
         NotificareLogger.debug("Entered beacon region ${region.id1} / ${region.id2} / ${region.id3}")
-
-        if (region.id3 == null) {
-            // This is the main region. There's no minor.
-            beaconManager.startRangingBeacons(region)
-        }
-
         Notificare.geoInternal().handleBeaconEnter(region.uniqueId, region.id2.toInt(), region.id3?.toInt())
+
+//        if (region.id3 == null) {
+//            // This is the main region. There's no minor.
+//            beaconManager.startRangingBeacons(region)
+//        }
     }
 
     override fun didExitRegion(region: Region) {
         NotificareLogger.debug("Exited beacon region ${region.id1} / ${region.id2} / ${region.id3}")
+        Notificare.geoInternal().handleBeaconExit(region.uniqueId, region.id2.toInt(), region.id3?.toInt())
 
-        if (region.id3 == null) {
-            // This is the main region. There's no minor.
-            beaconManager.stopRangingBeacons(region)
-        }
-
-        Notificare.geoInternal().handleBeaconExit(region.uniqueId, region.id2.toInt(), region.id3.toInt())
+//        if (region.id3 == null) {
+//            // This is the main region. There's no minor.
+//            beaconManager.stopRangingBeacons(region)
+//        }
     }
 
     override fun didDetermineStateForRegion(state: Int, region: Region) {
         NotificareLogger.debug("State $state for region ${region.id1} / ${region.id2} / ${region.id3}")
+
+        if (region.id3 == null) {
+            // This is the main region. There's no minor.
+            when (state) {
+                MonitorNotifier.INSIDE -> beaconManager.startRangingBeacons(region)
+                MonitorNotifier.OUTSIDE -> beaconManager.stopRangingBeacons(region)
+            }
+        }
     }
 
     // endregion

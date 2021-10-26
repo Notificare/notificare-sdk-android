@@ -15,6 +15,8 @@ public abstract class BeaconServiceManager(
 
     public abstract fun stopMonitoring(region: NotificareRegion)
 
+    public abstract fun clearMonitoring()
+
     public companion object {
         private const val FQN = "re.notifica.geo.beacons.internal.BeaconServiceManager"
 

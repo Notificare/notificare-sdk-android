@@ -96,7 +96,6 @@ internal data class FetchBeaconsResponse(
                 major = major,
                 minor = minor,
                 triggers = triggers,
-                proximity = null,
             )
         }
     }

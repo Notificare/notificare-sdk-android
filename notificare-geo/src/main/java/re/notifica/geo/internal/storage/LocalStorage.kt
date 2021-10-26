@@ -1,15 +1,18 @@
 package re.notifica.geo.internal.storage
 
 import android.content.Context
+import android.location.Location
 import androidx.core.content.edit
 import com.squareup.moshi.Types
 import re.notifica.Notificare
 import re.notifica.geo.models.*
 import re.notifica.internal.NotificareLogger
 import re.notifica.internal.moshi
+import java.util.*
 
 private const val PREFERENCES_FILE_NAME = "re.notifica.geo.preferences"
 private const val PREFERENCE_LOCATION_SERVICES_ENABLED = "re.notifica.geo.preferences.location_services_enabled"
+private const val PREFERENCE_BLUETOOTH_ENABLED = "re.notifica.geo.preferences.bluetooth_enabled"
 private const val PREFERENCE_MONITORED_REGIONS = "re.notifica.geo.preferences.monitored_regions"
 private const val PREFERENCE_MONITORED_BEACONS = "re.notifica.geo.preferences.monitored_beacons"
 private const val PREFERENCE_ENTERED_REGIONS = "re.notifica.geo.preferences.entered_regions"
@@ -27,32 +30,39 @@ internal class LocalStorage(context: Context) {
         get() = sharedPreferences.getBoolean(PREFERENCE_LOCATION_SERVICES_ENABLED, false)
         set(value) = sharedPreferences.edit { putBoolean(PREFERENCE_LOCATION_SERVICES_ENABLED, value) }
 
-    var monitoredRegions: List<NotificareRegion>
+    var bluetoothEnabled: Boolean
+        get() = sharedPreferences.getBoolean(PREFERENCE_BLUETOOTH_ENABLED, false)
+        set(value) = sharedPreferences.edit { putBoolean(PREFERENCE_BLUETOOTH_ENABLED, value) }
+
+    var monitoredRegions: Map<String, NotificareRegion>
         get() {
             val jsonStr = sharedPreferences.getString(PREFERENCE_MONITORED_REGIONS, null)
-                ?: return emptyList()
+                ?: return emptyMap()
 
             try {
                 val type = Types.newParameterizedType(List::class.java, NotificareRegion::class.java)
                 val adapter = Notificare.moshi.adapter<List<NotificareRegion>>(type)
+                val regions = adapter.fromJson(jsonStr) ?: return emptyMap()
 
-                return adapter.fromJson(jsonStr) ?: emptyList()
+                return regions.associateBy { it.id }
             } catch (e: Exception) {
                 NotificareLogger.warning("Failed to decode the monitored regions.", e)
 
                 // remove the corrupted data.
-                monitoredRegions = emptyList()
+                monitoredRegions = emptyMap()
             }
 
-            return emptyList()
+            return emptyMap()
         }
         set(value) {
             try {
+                val regions = value.values.toList()
+
                 val type = Types.newParameterizedType(List::class.java, NotificareRegion::class.java)
                 val adapter = Notificare.moshi.adapter<List<NotificareRegion>>(type)
 
                 sharedPreferences.edit {
-                    putString(PREFERENCE_MONITORED_REGIONS, adapter.toJson(value))
+                    putString(PREFERENCE_MONITORED_REGIONS, adapter.toJson(regions))
                 }
             } catch (e: Exception) {
                 NotificareLogger.warning("Failed to encode the monitored regions.", e)
@@ -170,6 +180,10 @@ internal class LocalStorage(context: Context) {
         }
     }
 
+    fun clearRegionSessions() {
+        regionSessions = emptyMap()
+    }
+
     // endregion
 
     // region Beacon sessions
@@ -217,17 +231,87 @@ internal class LocalStorage(context: Context) {
         }
     }
 
-    fun updateBeaconSession(beacon: NotificareBeacon) {
-        // TODO
-//        beaconSessions = beaconSessions.toMutableMap().onEach { entry ->
-//            entry.value.beacons.add(beacon)
-//        }
+    fun updateBeaconSession(beacons: List<NotificareBeacon>, location: Location?) {
+        if (beacons.isEmpty()) {
+            NotificareLogger.debug("Cannot update beacon session without at least one ranged beacon.")
+            return
+        }
+
+        // This groups the beacons based on their major, converts the keys (major) to its corresponding regions,
+        // fetches the corresponding session for each region and filters out any missing regions and sessions.
+        // Lastly, updates each session with the corresponding beacons unless said beacon already exists, taking into
+        // consideration the proximity. A beacon is unique based on the combination of major, minor and proximity.
+        beacons
+            .groupBy { it.major }
+            .mapKeys { entry ->
+                val region = monitoredRegions.values.firstOrNull { it.major == entry.key } ?: run {
+                    NotificareLogger.warning("Cannot update the beacon session for region with major '${entry.key}' since the corresponding region is not being monitored.")
+                    return@mapKeys null
+                }
+
+                return@mapKeys region
+            }
+            .mapNotNull { entry ->
+                val region = entry.key ?: return@mapNotNull null
+
+                return@mapNotNull region to entry.value
+            }
+            .toMap()
+            .map { entry ->
+                val region = entry.key
+                val session = beaconSessions[region.id] ?: run {
+                    NotificareLogger.warning("Cannot update the beacon session for region with major '${entry.key}' since there's no ongoing session.")
+                    return@map null
+                }
+
+                entry.value.forEach { beacon ->
+                    if (session.beacons.any { it.major == beacon.major && it.minor == beacon.minor && it.proximity == beacon.proximity.ordinal }) {
+                        // Skip adding the beacon multiple times in the same session.
+                        return@forEach
+                    }
+
+                    session.beacons.add(
+                        NotificareBeaconSession.Beacon(
+                            proximity = beacon.proximity.ordinal,
+                            major = beacon.major,
+                            minor = checkNotNull(beacon.minor),
+                            location = location?.let {
+                                NotificareBeaconSession.Beacon.Location(
+                                    latitude = it.latitude,
+                                    longitude = it.longitude,
+                                )
+                            },
+                            timestamp = Date(),
+                        )
+                    )
+                }
+
+                return@map region to session
+            }
+            .mapNotNull { entry ->
+                val region = entry?.first ?: return@mapNotNull null
+                val session = entry.second
+
+                return@mapNotNull region to session
+            }
+            .toMap()
+            .also { changes ->
+                beaconSessions = beaconSessions.toMutableMap().apply {
+                    changes.forEach {
+                        put(it.key.id, it.value)
+                    }
+                }
+            }
     }
 
     fun removeBeaconSession(session: NotificareBeaconSession) {
         beaconSessions = beaconSessions.toMutableMap().apply {
             remove(session.regionId)
         }
+    }
+
+    fun clearBeaconSessions() {
+        beaconSessions = emptyMap()
     }
 
     // endregion

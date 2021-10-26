@@ -12,8 +12,8 @@ public data class NotificareBeacon(
     val name: String,
     val major: Int,
     val minor: Int?,
-    val triggers: Boolean,
-    var proximity: Proximity?,
+    val triggers: Boolean = false,
+    var proximity: Proximity = Proximity.UNKNOWN,
 ) : Parcelable {
     public companion object {
         internal const val PROXIMITY_NEAR_DISTANCE = 0.2
@@ -22,6 +22,9 @@ public data class NotificareBeacon(
 
     @Parcelize
     public enum class Proximity : Parcelable {
+        @Json(name = "unknown")
+        UNKNOWN,
+
         @Json(name = "immediate")
         IMMEDIATE,
 

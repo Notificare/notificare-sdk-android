@@ -17,6 +17,11 @@ internal data class UpdateDeviceLocationPayload(
 )
 
 @JsonClass(generateAdapter = true)
+internal data class UpdateBluetoothPayload(
+    val bluetoothEnabled: Boolean,
+)
+
+@JsonClass(generateAdapter = true)
 internal data class RegionTriggerPayload(
     val deviceID: String,
     val region: String,
