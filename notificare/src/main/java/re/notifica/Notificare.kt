@@ -95,21 +95,26 @@ public object Notificare {
     }
 
     public fun configure(context: Context, applicationKey: String, applicationSecret: String) {
-        val services = try {
-            val useTestApi = context.resources.getBoolean(R.bool.notificare_services_use_test_api)
-            if (useTestApi) {
-                NotificareServicesInfo.Environment.TEST
-            } else {
-                NotificareServicesInfo.Environment.PRODUCTION
+        val environment: NotificareServicesInfo.Environment = run {
+            try {
+                val useTestApi = context.resources.getBoolean(R.bool.notificare_services_use_test_api)
+                if (useTestApi) return@run NotificareServicesInfo.Environment.TEST
+            } catch (e: Resources.NotFoundException) {
             }
-        } catch (e: Resources.NotFoundException) {
-            NotificareServicesInfo.Environment.PRODUCTION
+
+            try {
+                val str = context.resources.getString(R.string.notificare_services_use_test_api)
+                if (str.toBoolean()) return@run NotificareServicesInfo.Environment.TEST
+            } catch (e: Resources.NotFoundException) {
+            }
+
+            return@run NotificareServicesInfo.Environment.PRODUCTION
         }
 
         val servicesInfo = NotificareServicesInfo(
             applicationKey = applicationKey,
             applicationSecret = applicationSecret,
-            environment = services
+            environment = environment,
         )
 
         configure(context, servicesInfo)
