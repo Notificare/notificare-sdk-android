@@ -64,6 +64,7 @@ dependencies {
     implementation project(':notificare-assets')
     implementation project(':notificare-authentication')
     implementation project(':notificare-inbox')
+    implementation project(':notificare-loyalty')
 
     implementation project(':notificare-geo')
     implementation project(':notificare-geo-fcm')

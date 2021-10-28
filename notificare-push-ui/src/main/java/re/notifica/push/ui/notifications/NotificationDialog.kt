@@ -69,9 +69,6 @@ public class NotificationDialog : DialogFragment() {
 
             builder.setView(binding.root)
             builder.setNeutralButton(R.string.notificare_dialog_cancel_button) { _, _ -> callback?.onNotificationDialogCancelClick() }
-        } else if (type == NotificareNotification.NotificationType.PASSBOOK) {
-            builder.setMessage(notification.message)
-            builder.setNeutralButton(R.string.notificare_dialog_open_pass_button) { _, _ -> callback?.onNotificationDialogOpenPassbookClick() }
         } else {
             builder.setMessage(notification.message)
             builder.setNeutralButton(R.string.notificare_dialog_ok_button) { _, _ -> callback?.onNotificationDialogOkClick() }
