@@ -497,7 +497,7 @@ public object Notificare {
             return null
         }
 
-        if (!Pattern.matches("^([a-z0-9-])+\\.${Pattern.quote(servicesInfo.environment.dynamicLinkDomain)}$", host)) {
+        if (!Pattern.matches("^([a-z0-9-])+\\.${Pattern.quote(servicesInfo.dynamicLinkDomain)}$", host)) {
             NotificareLogger.debug("Domain pattern wasn't a match.")
             return null
         }

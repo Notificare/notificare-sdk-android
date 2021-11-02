@@ -136,7 +136,7 @@ public class NotificareWebPassFragment : NotificationFragment() {
         val content = notification.content.firstOrNull()
         val passUrlStr = content?.data as? String
         val application = Notificare.application
-        val host = Notificare.servicesInfo?.environment?.pushHost
+        val host = Notificare.servicesInfo?.pushHost
 
         if (content?.type != NotificareNotification.Content.TYPE_PK_PASS || passUrlStr == null || application == null || host == null) {
             Notificare.pushUIInternal().lifecycleListeners.forEach { it.onNotificationFailedToPresent(notification) }
