@@ -8,3 +8,7 @@ import re.notifica.loyalty.internal.NotificareLoyaltyImpl
 public fun Notificare.loyalty(): NotificareLoyalty {
     return NotificareLoyaltyImpl
 }
+
+internal fun Notificare.loyaltyImplementation(): NotificareLoyaltyImpl {
+    return loyalty() as NotificareLoyaltyImpl
+}

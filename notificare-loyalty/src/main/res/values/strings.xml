@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="notificare_dialog_ok_button">OK</string>
+
+    <string name="notificare_action_add_pass_to_wallet">Add to wallet</string>
+    <string name="notificare_action_remove_pass_from_wallet">Remove from wallet</string>
+    <string name="notificare_passbook_error_loading_pass">There was an error while opening the pass.</string>
+</resources>

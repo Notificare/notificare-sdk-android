@@ -6,6 +6,10 @@ android {
         minSdkVersion min_sdk_version
         targetSdkVersion target_sdk_version
 
+        manifestPlaceholders = [
+                notificareApplicationId: '${notificareApplicationId}',
+        ]
+
         javaCompileOptions {
             annotationProcessorOptions {
                 arguments = [
@@ -45,6 +49,7 @@ dependencies {
     implementation project(':notificare')
 
     // Android
+    implementation "androidx.appcompat:appcompat:$androidx_app_compat_version"
     implementation "androidx.core:core-ktx:$androidx_core_version"
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:$androidx_lifecycle_version"
     implementation "androidx.work:work-runtime-ktx:$androidx_work_version"

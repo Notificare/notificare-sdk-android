@@ -43,8 +43,6 @@ internal object NotificareLoyaltyImpl : NotificareModule(), NotificareLoyalty, N
             .responseDecodable(FetchPassResponse::class)
             .pass
             .toModel()
-
-
     }
 
     override fun fetchPassByBarcode(barcode: String, callback: NotificareCallback<NotificarePass>): Unit =
@@ -140,7 +138,7 @@ internal object NotificareLoyaltyImpl : NotificareModule(), NotificareLoyalty, N
         return parts.last()
     }
 
-    private suspend fun fetchGooglePaySaveLink(serial: String): String? = withContext(Dispatchers.IO) {
+    internal suspend fun fetchGooglePaySaveLink(serial: String): String? = withContext(Dispatchers.IO) {
         NotificareRequest.Builder()
             .get("/pass/savelinks/$serial")
             .responseDecodable(FetchSaveLinksResponse::class)

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/notificare_action_add_pass_to_wallet"
+        android:title="@string/notificare_action_add_pass_to_wallet"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/notificare_action_remove_pass_from_wallet"
+        android:title="@string/notificare_action_remove_pass_from_wallet"
+        app:showAsAction="ifRoom" />
+
+</menu>
