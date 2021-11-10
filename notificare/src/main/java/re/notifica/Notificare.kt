@@ -64,12 +64,6 @@ public object Notificare {
     public val isReady: Boolean
         get() = state == NotificareLaunchState.READY
 
-    public var useAdvancedLogging: Boolean
-        get() = NotificareLogger.useAdvancedLogging
-        set(value) {
-            NotificareLogger.useAdvancedLogging = value
-        }
-
     public var application: NotificareApplication?
         get() {
             return if (::sharedPreferences.isInitialized) {
