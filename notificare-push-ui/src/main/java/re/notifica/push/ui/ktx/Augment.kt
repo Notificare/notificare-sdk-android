@@ -3,7 +3,7 @@ package re.notifica.push.ui.ktx
 import re.notifica.Notificare
 import re.notifica.internal.NotificareLogger
 import re.notifica.internal.NotificareModule
-import re.notifica.internal.modules.NotificareLoyaltyIntegration
+import re.notifica.internal.modules.integrations.NotificareLoyaltyIntegration
 import re.notifica.push.ui.NotificareInternalPushUI
 import re.notifica.push.ui.NotificarePushUI
 import re.notifica.push.ui.internal.NotificarePushUIImpl

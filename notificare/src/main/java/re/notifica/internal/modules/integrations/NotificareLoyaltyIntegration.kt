@@ -1,4 +1,4 @@
-package re.notifica.internal.modules
+package re.notifica.internal.modules.integrations
 
 import re.notifica.InternalNotificareApi
 import re.notifica.NotificareCallback
@@ -17,6 +17,10 @@ public interface NotificareLoyaltyIntegration {
         includeInWallet: Boolean,
         callback: NotificareCallback<Unit>,
     )
+
+    public fun onPassbookSystemNotificationReceived()
+
+    public fun onPassbookLocationRelevanceChanged()
 
 
     public interface PresentationDecisionCallback {

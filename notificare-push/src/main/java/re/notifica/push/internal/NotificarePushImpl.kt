@@ -36,6 +36,7 @@ import re.notifica.push.*
 import re.notifica.push.internal.network.push.DeviceUpdateNotificationSettingsPayload
 import re.notifica.push.ktx.deviceInternal
 import re.notifica.push.ktx.logNotificationReceived
+import re.notifica.push.ktx.loyaltyIntegration
 import re.notifica.push.models.*
 import java.util.concurrent.atomic.AtomicInteger
 
@@ -363,8 +364,8 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
                         }
                     })
                 }
-                "re.notifica.notification.system.Wallet" -> {
-                    // TODO: handle Wallet system notifications
+                "re.notifica.notification.system.Passbook" -> {
+                    Notificare.loyaltyIntegration()?.onPassbookSystemNotificationReceived()
                 }
                 "re.notifica.notification.system.Products" -> {
                     // TODO: handle Products system notifications

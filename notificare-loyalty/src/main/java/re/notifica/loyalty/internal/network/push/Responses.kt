@@ -14,16 +14,29 @@ internal data class FetchPassResponse(
     internal data class Pass(
         val _id: String,
         val version: Int,
-        val active: Boolean,
         val passbook: String?,
+        val template: String?,
         val barcode: String,
         val serial: String,
         val redeem: NotificarePass.Redeem,
+        val redeemHistory: List<NotificarePass.Redemption>,
         val limit: Int,
         val token: String,
         val data: Map<String, Any>?,
         val date: Date,
-        val redeemHistory: List<NotificarePass.Redemption>,
+        val lastUpdated: Date?,
+    )
+}
+
+@JsonClass(generateAdapter = true)
+internal data class FetchPassbookTemplateResponse(
+    val passbook: Passbook,
+) {
+
+    @UseDefaultsWhenNull
+    @JsonClass(generateAdapter = true)
+    internal data class Passbook(
+        val passStyle: NotificarePass.PassType,
     )
 }
 
@@ -38,19 +51,8 @@ internal data class FetchSaveLinksResponse(
     )
 }
 
-internal fun FetchPassResponse.Pass.toModel(): NotificarePass {
-    return NotificarePass(
-        id = _id,
-        version = version,
-        active = active,
-        passbook = passbook,
-        barcode = barcode,
-        serial = serial,
-        redeem = redeem,
-        limit = limit,
-        token = token,
-        data = data ?: mapOf(),
-        date = date,
-        redeemHistory = redeemHistory,
-    )
-}
+@JsonClass(generateAdapter = true)
+internal data class FetchUpdatedSerialsResponse(
+    val serialNumbers: List<String>,
+    val lastUpdated: String,
+)

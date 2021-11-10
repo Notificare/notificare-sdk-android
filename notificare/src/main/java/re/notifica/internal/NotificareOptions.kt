@@ -3,6 +3,8 @@ package re.notifica.internal
 import android.content.Context
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
+import android.os.Bundle
+import androidx.core.os.bundleOf
 import re.notifica.InternalNotificareApi
 
 public class NotificareOptions internal constructor(context: Context) {
@@ -12,6 +14,9 @@ public class NotificareOptions internal constructor(context: Context) {
         context.packageName,
         PackageManager.GET_META_DATA
     )
+
+    @InternalNotificareApi
+    public val metadata: Bundle = info.metaData ?: bundleOf()
 
     public val crashReportsEnabled: Boolean
         get() {

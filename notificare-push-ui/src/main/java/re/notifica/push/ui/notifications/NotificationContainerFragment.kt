@@ -406,10 +406,6 @@ public class NotificationContainerFragment
         }
     }
 
-    override fun onNotificationDialogOpenPassbookClick() {
-        // TODO
-    }
-
     // endregion
 
     // region NotificationActionsDialog.Callback

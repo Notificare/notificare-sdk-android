@@ -1,6 +1,7 @@
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
+    id 'kotlin-kapt'
     id 're.notifica.gradle.notificare-services'
     id 'com.google.gms.google-services'
     id 'com.huawei.agconnect'
@@ -59,6 +60,10 @@ dependencies {
     implementation "androidx.core:core-ktx:$androidx_core_version"
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:$androidx_lifecycle_version"
     implementation 'com.google.android.material:material:1.4.0'
+
+    // Glide
+    implementation "com.github.bumptech.glide:glide:$glide_version"
+    kapt "com.github.bumptech.glide:compiler:$glide_version"
 
     implementation project(':notificare')
     implementation project(':notificare-assets')

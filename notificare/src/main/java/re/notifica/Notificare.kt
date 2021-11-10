@@ -359,13 +359,17 @@ public object Notificare {
 
     @InternalNotificareApi
     public fun removeNotificationFromNotificationCenter(notification: NotificareNotification) {
+        cancelNotification(notification.id)
+    }
+
+    public fun cancelNotification(id: String) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             val notificationManager =
                 requireContext().getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager
 
             if (notificationManager != null) {
                 val groupKey = notificationManager.activeNotifications.find {
-                    it != null && it.tag != null && it.tag == notification.id
+                    it != null && it.tag != null && it.tag == id
                 }?.groupKey
 
                 if (groupKey != null) {
@@ -375,7 +379,7 @@ public object Notificare {
 
                     for (statusBarNotification in notificationManager.activeNotifications) {
                         if (statusBarNotification != null && statusBarNotification.groupKey != null && statusBarNotification.groupKey == groupKey) {
-                            if ((statusBarNotification.tag == null || statusBarNotification.tag != notification.id) && statusBarNotification.id == 0) {
+                            if ((statusBarNotification.tag == null || statusBarNotification.tag != id) && statusBarNotification.id == 0) {
                                 hasMore = true
                             } else if (statusBarNotification.id == 1) {
                                 summaryTag = statusBarNotification.tag
@@ -384,19 +388,19 @@ public object Notificare {
                     }
 
                     if (!hasMore && summaryTag != null) {
-                        notificationManager.cancel(notification.id, 0)
+                        notificationManager.cancel(id, 0)
                         notificationManager.cancel(summaryTag, 1)
                     } else {
-                        notificationManager.cancel(notification.id, 0)
+                        notificationManager.cancel(id, 0)
                     }
                 } else {
-                    notificationManager.cancel(notification.id, 0)
+                    notificationManager.cancel(id, 0)
                 }
             } else {
-                NotificationManagerCompat.from(requireContext()).cancel(notification.id, 0)
+                NotificationManagerCompat.from(requireContext()).cancel(id, 0)
             }
         } else {
-            NotificationManagerCompat.from(requireContext()).cancel(notification.id, 0)
+            NotificationManagerCompat.from(requireContext()).cancel(id, 0)
         }
     }
 

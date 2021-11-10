@@ -10,7 +10,7 @@ import re.notifica.internal.moshi
 @Parcelize
 @JsonClass(generateAdapter = true)
 public data class NotificareSystemNotification(
-    val id: String,
+    val id: String?,
     val type: String,
     val extra: Map<String, String?>,
 ) : Parcelable {

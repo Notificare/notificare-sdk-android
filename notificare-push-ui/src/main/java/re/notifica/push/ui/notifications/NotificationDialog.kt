@@ -117,7 +117,5 @@ public class NotificationDialog : DialogFragment() {
         public fun onNotificationDialogDismiss()
 
         public fun onNotificationDialogActionClick(position: Int)
-
-        public fun onNotificationDialogOpenPassbookClick()
     }
 }

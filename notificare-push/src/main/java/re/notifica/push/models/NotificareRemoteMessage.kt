@@ -51,7 +51,7 @@ public data class NotificareSystemRemoteMessage(
     override val ttl: Long,
 
     // Specific properties
-    val id: String,
+    val id: String?,
     val type: String,
     val extra: Map<String, String>,
 ) : NotificareRemoteMessage
