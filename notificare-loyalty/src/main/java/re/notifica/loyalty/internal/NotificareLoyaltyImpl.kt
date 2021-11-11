@@ -50,7 +50,6 @@ internal object NotificareLoyaltyImpl : NotificareModule(), NotificareLoyalty, N
 
     private lateinit var database: LoyaltyDatabase
     private lateinit var localStorage: LocalStorage
-    private lateinit var workManager: WorkManager
     private val notificationSequence = AtomicInteger()
     private val passesBySerial = mutableMapOf<String, NotificarePass>()
     private val _observablePasses = MutableLiveData<List<NotificarePass>>(listOf())
@@ -82,7 +81,6 @@ internal object NotificareLoyaltyImpl : NotificareModule(), NotificareLoyalty, N
 
         database = LoyaltyDatabase.create(context)
         localStorage = LocalStorage(context)
-        workManager = WorkManager.getInstance(context)
 
         Handler(Looper.getMainLooper()).post {
             database.passes().getObservablePasses().observeForever(livePassEntitiesObserver)
@@ -730,7 +728,8 @@ internal object NotificareLoyaltyImpl : NotificareModule(), NotificareLoyalty, N
             .setInitialDelay(start, TimeUnit.SECONDS)
             .build()
 
-        workManager.enqueueUniqueWork("re.notifica.loyalty.tasks.PassRelevanceUpdate", ExistingWorkPolicy.REPLACE, task)
+        WorkManager.getInstance(Notificare.requireContext())
+            .enqueueUniqueWork("re.notifica.loyalty.tasks.PassRelevanceUpdate", ExistingWorkPolicy.REPLACE, task)
     }
 
     internal fun handleScheduledPassRelevanceUpdate() {
