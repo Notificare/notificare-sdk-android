@@ -20,19 +20,16 @@ public class NotificareOptions internal constructor(context: Context) {
 
     public val crashReportsEnabled: Boolean
         get() {
-            return info.metaData?.getBoolean("re.notifica.crash_reports_enabled", true) ?: true
+            return metadata.getBoolean("re.notifica.crash_reports_enabled", true)
         }
 
     public val notificationActionLabelPrefix: String?
         get() {
-            return info.metaData?.getString("re.notifica.action_label_prefix", null)
+            return metadata.getString("re.notifica.action_label_prefix", null)
         }
 
     public val preferredMobileServices: String?
         get() {
-            return info.metaData?.getString(
-                "re.notifica.preferred_mobile_services",
-                null,
-            )
+            return metadata.getString("re.notifica.preferred_mobile_services", null)
         }
 }
