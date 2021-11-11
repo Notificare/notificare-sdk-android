@@ -160,8 +160,10 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
         localStorage = LocalStorage(context)
         geocoder = if (Geocoder.isPresent()) Geocoder(context) else null
         serviceManager = ServiceManager.create()
+    }
+
+    override suspend fun launch() {
         beaconServiceManager = BeaconServiceManager.create()
-        // TODO cannot create this during configuration as the application may not be available yet.
 
         if (beaconServiceManager == null) {
             NotificareLogger.info("To enable beacon support, include the notificare-geo-beacons peer dependency.")
