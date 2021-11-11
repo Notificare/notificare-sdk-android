@@ -15,25 +15,58 @@ android {
     buildToolsVersion build_tools_version
 
     defaultConfig {
-        applicationId "re.notifica.sample"
+        applicationId "re.notifica.demo"
         minSdkVersion min_sdk_version
         targetSdkVersion target_sdk_version
         versionCode 30000
         versionName "3.0.0"
 
         manifestPlaceholders = [
-                notificareApplicationId: properties.getProperty('notificare.development.application.id'),
-                googleMapsApiKey       : properties.getProperty('google.maps.key'),
+                googleMapsApiKey: properties.getProperty('google.maps.key'),
         ]
     }
 
+    signingConfigs {
+        debug {
+            storeFile file('debug.keystore')
+            storePassword properties.getProperty('keystore.debug.store.password')
+            keyAlias properties.getProperty('keystore.debug.key.alias')
+            keyPassword properties.getProperty('keystore.debug.key.password')
+        }
+        release {
+            storeFile file('release.keystore')
+            storePassword properties.getProperty('keystore.release.store.password')
+            keyAlias properties.getProperty('keystore.release.key.alias')
+            keyPassword properties.getProperty('keystore.release.key.password')
+        }
+    }
+
     buildTypes {
+        debug {
+            signingConfig signingConfigs.debug
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
+        }
+    }
+
+    flavorDimensions 'api'
+    productFlavors {
+        apiTest {
+            dimension 'api'
+            applicationIdSuffix '.test'
 
             manifestPlaceholders = [
-                    notificareApplicationId: properties.getProperty('notificare.production.application.id'),
+                    notificareApplicationId: properties.getProperty('notificare.test.application.id')
+            ]
+        }
+        apiProduction {
+            dimension 'api'
+
+            manifestPlaceholders = [
+                    notificareApplicationId: properties.getProperty('notificare.production.application.id')
             ]
         }
     }
