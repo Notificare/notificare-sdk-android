@@ -376,7 +376,7 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
         } else {
             NotificareLogger.info("Processing custom system notification.")
             val notification = NotificareSystemNotification(
-                id = message.id,
+                id = requireNotNull(message.id),
                 type = message.type,
                 extra = message.extra,
             )
