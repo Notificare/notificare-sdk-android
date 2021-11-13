@@ -13,7 +13,7 @@ public data class NotificareTime(
 
     init {
         if (hours !in 0..23 || minutes !in 0..59) {
-            throw IllegalArgumentException("Invalid time.")
+            throw IllegalArgumentException("Invalid time '$hours:$minutes'.")
         }
     }
 
