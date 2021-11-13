@@ -20,16 +20,18 @@ import re.notifica.geo.internal.network.push.*
 import re.notifica.geo.internal.storage.LocalStorage
 import re.notifica.geo.ktx.logBeaconSession
 import re.notifica.geo.ktx.logRegionSession
+import re.notifica.geo.ktx.loyaltyIntegration
 import re.notifica.geo.models.*
 import re.notifica.internal.NotificareLogger
 import re.notifica.internal.NotificareModule
+import re.notifica.internal.modules.integrations.NotificareGeoIntegration
 import re.notifica.internal.network.request.NotificareRequest
 import re.notifica.ktx.device
 import re.notifica.ktx.events
 import re.notifica.models.NotificareApplication
 import java.util.*
 
-internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, NotificareInternalGeo {
+internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, NotificareInternalGeo, NotificareGeoIntegration {
 
     private lateinit var localStorage: LocalStorage
     private var geocoder: Geocoder? = null
@@ -158,8 +160,10 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
         localStorage = LocalStorage(context)
         geocoder = if (Geocoder.isPresent()) Geocoder(context) else null
         serviceManager = ServiceManager.create()
+    }
+
+    override suspend fun launch() {
         beaconServiceManager = BeaconServiceManager.create()
-        // TODO cannot create this during configuration as the application may not be available yet.
 
         if (beaconServiceManager == null) {
             NotificareLogger.info("To enable beacon support, include the notificare-geo-beacons peer dependency.")
@@ -353,9 +357,9 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
             }
         }
 
-        // TODO emit a location broadcast so the loyalty module can pick it up for relevance notifications.
-
         listeners.forEach { it.onLocationUpdated(NotificareLocation(location)) }
+
+        Notificare.loyaltyIntegration()?.onPassbookLocationRelevanceChanged()
     }
 
     override fun handleRegionEnter(identifiers: List<String>) {
@@ -449,6 +453,8 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
         }
 
         listeners.forEach { it.onEnterBeacon(beacon) }
+
+        Notificare.loyaltyIntegration()?.onPassbookLocationRelevanceChanged()
     }
 
     override fun handleBeaconExit(uniqueId: String, major: Int, minor: Int?) {
@@ -469,6 +475,8 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
         }
 
         listeners.forEach { it.onEnterBeacon(beacon) }
+
+        Notificare.loyaltyIntegration()?.onPassbookLocationRelevanceChanged()
     }
 
     override fun handleRangingBeacons(regionId: String, beacons: List<BeaconServiceManager.Beacon>) {
@@ -505,6 +513,22 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
                 listeners.forEach { it.onBeaconsRanged(region, ncBeacons) }
             }
     }
+
+    // endregion
+
+    // region Notificare Geo Integration
+
+    override val geoLastKnownLocation: Location?
+        get() = lastKnownLocation
+
+    override val geoEnteredBeacons: List<NotificareGeoIntegration.Beacon>
+        get() {
+            if (!::localStorage.isInitialized) return emptyList()
+
+            return localStorage.enteredBeacons
+                .mapNotNull { id -> localStorage.monitoredBeacons.firstOrNull { it.id == id } }
+                .map { beacon -> NotificareGeoIntegration.Beacon(beacon.major, beacon.minor) }
+        }
 
     // endregion
 

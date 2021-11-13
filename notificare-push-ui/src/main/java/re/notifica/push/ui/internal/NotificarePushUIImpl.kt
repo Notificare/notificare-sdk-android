@@ -1,18 +1,23 @@
 package re.notifica.push.ui.internal
 
 import android.app.Activity
+import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
+import android.os.Bundle
+import androidx.core.os.bundleOf
 import kotlinx.coroutines.*
 import re.notifica.Notificare
 import re.notifica.internal.NotificareLogger
 import re.notifica.internal.NotificareModule
+import re.notifica.internal.modules.integrations.NotificareLoyaltyIntegration
 import re.notifica.models.NotificareNotification
 import re.notifica.push.ui.NotificareInternalPushUI
 import re.notifica.push.ui.NotificarePushUI
 import re.notifica.push.ui.NotificationActivity
 import re.notifica.push.ui.actions.*
 import re.notifica.push.ui.actions.base.NotificationAction
+import re.notifica.push.ui.ktx.loyaltyIntegration
 import re.notifica.push.ui.notifications.fragments.*
 
 internal object NotificarePushUIImpl : NotificareModule(), NotificarePushUI, NotificareInternalPushUI {
@@ -60,17 +65,15 @@ internal object NotificarePushUIImpl : NotificareModule(), NotificarePushUI, Not
             }
             NotificareNotification.NotificationType.URL_SCHEME -> {
                 lifecycleListeners.forEach { it.onNotificationWillPresent(notification) }
-                presentUrlScheme(activity, notification)
+                handleUrlScheme(activity, notification)
+            }
+            NotificareNotification.NotificationType.PASSBOOK -> {
+                lifecycleListeners.forEach { it.onNotificationWillPresent(notification) }
+                handlePassbook(activity, notification)
             }
             else -> {
                 lifecycleListeners.forEach { it.onNotificationWillPresent(notification) }
-
-                val intent = Intent(Notificare.requireContext(), notificationActivity)
-                    .putExtra(Notificare.INTENT_EXTRA_NOTIFICATION, notification)
-                    .setPackage(Notificare.requireContext().packageName)
-
-                activity.startActivity(intent)
-                activity.overridePendingTransition(0, 0)
+                openNotificationActivity(activity, notification)
             }
         }
     }
@@ -148,10 +151,7 @@ internal object NotificarePushUIImpl : NotificareModule(), NotificarePushUI, Not
                 return null
             }
             NotificareNotification.NotificationType.IMAGE -> NotificareImageFragment::class.java.canonicalName
-            NotificareNotification.NotificationType.PASSBOOK -> {
-                // TODO: handle passbook notification
-                return null
-            }
+            NotificareNotification.NotificationType.PASSBOOK -> NotificareWebPassFragment::class.java.canonicalName
             NotificareNotification.NotificationType.VIDEO -> NotificareVideoFragment::class.java.canonicalName
             NotificareNotification.NotificationType.MAP,
             NotificareNotification.NotificationType.RATE,
@@ -166,7 +166,7 @@ internal object NotificarePushUIImpl : NotificareModule(), NotificarePushUI, Not
         }
     }
 
-    private fun presentUrlScheme(activity: Activity, notification: NotificareNotification) {
+    private fun handleUrlScheme(activity: Activity, notification: NotificareNotification) {
         val content = notification.content.firstOrNull { it.type == "re.notifica.content.URL" } ?: run {
             lifecycleListeners.forEach { it.onNotificationFailedToPresent(notification) }
             return
@@ -185,6 +185,57 @@ internal object NotificarePushUIImpl : NotificareModule(), NotificarePushUI, Not
             NotificareLogger.warning("Cannot open a deep link that's not supported by the application.")
             lifecycleListeners.forEach { it.onNotificationFailedToPresent(notification) }
         }
+    }
+
+    private fun handlePassbook(activity: Activity, notification: NotificareNotification) {
+        val integration = Notificare.loyaltyIntegration() ?: run {
+            openNotificationActivity(activity, notification)
+            return
+        }
+
+        integration.handlePresentationDecision(
+            notification = notification,
+            callback = object : NotificareLoyaltyIntegration.PresentationDecisionCallback {
+                override fun presentGooglePass(url: String) {
+                    try {
+                        val intent = Intent().setAction(Intent.ACTION_VIEW)
+                            .setData(Uri.parse(url))
+                            .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+
+                        activity.startActivity(intent)
+                        lifecycleListeners.forEach { it.onNotificationPresented(notification) }
+                    } catch (e: ActivityNotFoundException) {
+                        lifecycleListeners.forEach { it.onNotificationFailedToPresent(notification) }
+                    }
+                }
+
+                override fun presentPKPass(includedInWallet: Boolean) {
+                    val extras = bundleOf(
+                        NotificationActivity.INTENT_EXTRA_PASSBOOK_IN_WALLET to includedInWallet
+                    )
+
+                    openNotificationActivity(activity, notification, extras)
+                }
+
+                override fun onFailure(e: Exception) {
+                    lifecycleListeners.forEach { it.onNotificationFailedToPresent(notification) }
+                }
+            }
+        )
+    }
+
+    private fun openNotificationActivity(
+        activity: Activity,
+        notification: NotificareNotification,
+        extras: Bundle = bundleOf(),
+    ) {
+        val intent = Intent(Notificare.requireContext(), notificationActivity)
+            .putExtras(extras)
+            .putExtra(Notificare.INTENT_EXTRA_NOTIFICATION, notification)
+            .setPackage(Notificare.requireContext().packageName)
+
+        activity.startActivity(intent)
+        activity.overridePendingTransition(0, 0)
     }
 
     internal fun createActionHandler(

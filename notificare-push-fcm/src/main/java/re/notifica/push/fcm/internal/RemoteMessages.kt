@@ -36,7 +36,7 @@ internal fun NotificareSystemRemoteMessage(message: RemoteMessage): NotificareSy
         sentTime = message.sentTime,
         collapseKey = message.collapseKey,
         ttl = message.ttl.toLong(),
-        id = requireNotNull(message.data["id"]),
+        id = message.data["id"],
         type = requireNotNull(message.data["systemType"]),
         extra = message.data.filterKeys { !ignoreKeys.contains(it) },
     )

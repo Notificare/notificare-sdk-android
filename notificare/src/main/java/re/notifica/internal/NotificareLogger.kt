@@ -21,7 +21,11 @@ public object NotificareLogger {
         NotificareConfigurationProvider::class.java.name
     )
 
-    internal var useAdvancedLogging = false
+    private val hasDebugLoggingEnabled: Boolean
+        get() {
+            val options = Notificare.options ?: return false
+            return options.metadata.getBoolean("re.notifica.debug_logging_enabled", false)
+        }
 
     public fun debug(message: String, t: Throwable? = null): Unit = log(Log.DEBUG, message, t)
 
@@ -32,7 +36,7 @@ public object NotificareLogger {
     public fun error(message: String, t: Throwable? = null): Unit = log(Log.ERROR, message, t)
 
     private fun log(priority: Int, message: String, t: Throwable?) {
-        val canLog = useAdvancedLogging || priority >= Log.INFO
+        val canLog = hasDebugLoggingEnabled || priority >= Log.INFO
         if (!canLog) return
 
         @Suppress("NAME_SHADOWING") val message = message
@@ -44,7 +48,7 @@ public object NotificareLogger {
                 }
             }
             .let { // transform with internal tag
-                if (useAdvancedLogging) {
+                if (hasDebugLoggingEnabled) {
                     "[$internalTag] $it"
                 } else {
                     it

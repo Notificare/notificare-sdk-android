@@ -44,7 +44,7 @@
 
                 <data android:scheme="re.notifica" />
             </intent-filter>
-            <intent-filter>
+            <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
 
                 <category android:name="android.intent.category.DEFAULT" />
@@ -62,7 +62,7 @@
 
                 <data android:scheme="test.nc${notificareApplicationId}" />
             </intent-filter>
-            <intent-filter>
+            <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
 
                 <category android:name="android.intent.category.DEFAULT" />
@@ -73,7 +73,7 @@
                     android:pathPrefix="/oauth/validate"
                     android:scheme="https" />
             </intent-filter>
-            <intent-filter>
+            <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
 
                 <category android:name="android.intent.category.DEFAULT" />
@@ -88,7 +88,6 @@
         <activity
             android:name=".ui.inbox.InboxActivity"
             android:exported="false" />
-
         <activity
             android:name=".ui.beacons.BeaconsActivity"
             android:exported="false" />
@@ -98,6 +97,24 @@
             android:hardwareAccelerated="true"
             android:parentActivityName=".MainActivity"
             android:theme="@style/Theme.Notificare.Translucent" />
+        <activity
+            android:name="re.notifica.loyalty.PassbookActivity"
+            android:exported="true">
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="${notificareApplicationId}.applinks.notifica.re"
+                    android:pathPrefix="/pass"
+                    android:scheme="https" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".ui.wallet.WalletActivity"
+            android:exported="false" />
 
         <receiver
             android:name="re.notifica.NotificareIntentReceiver"
@@ -106,6 +123,10 @@
         <receiver
             android:name="re.notifica.push.NotificarePushIntentReceiver"
             android:exported="false" />
+
+        <meta-data
+            android:name="re.notifica.debug_logging_enabled"
+            android:value="true" />
 
         <!--        <meta-data-->
         <!--            android:name="re.notifica.push.automatic_default_channel_enabled"-->
@@ -137,6 +158,14 @@
 
         <!--        <meta-data-->
         <!--            android:name="re.notifica.geo.beacons.service_notification_progress"-->
+        <!--            android:value="true" />-->
+
+        <meta-data
+            android:name="re.notifica.loyalty.pass_notification_small_icon"
+            android:resource="@drawable/ic_baseline_style_24" />
+
+        <!--        <meta-data-->
+        <!--            android:name="re.notifica.loyalty.pass_notification_ongoing"-->
         <!--            android:value="true" />-->
 
         <meta-data

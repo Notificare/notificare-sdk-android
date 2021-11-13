@@ -286,7 +286,7 @@ public class NotificareRequest private constructor(
             var url = requireNotNull(url) { "Please provide the URL for the request." }
 
             if (!url.startsWith("http://") && !url.startsWith("https://")) {
-                val baseUrl = requireNotNull(baseUrl ?: Notificare.servicesInfo?.environment?.pushHost) {
+                val baseUrl = requireNotNull(baseUrl ?: Notificare.servicesInfo?.pushHost) {
                     "Unable to determine the base url for the request."
                 }
 

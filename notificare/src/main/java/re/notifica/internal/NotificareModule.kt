@@ -15,7 +15,8 @@ public abstract class NotificareModule {
     public open suspend fun unlaunch() {}
 
 
-    internal enum class Module(val fqn: String) {
+    @InternalNotificareApi
+    public enum class Module(private val fqn: String) {
         // Default modules
         DEVICE(fqn = "re.notifica.internal.modules.NotificareDeviceModuleImpl"),
         EVENTS(fqn = "re.notifica.internal.modules.NotificareEventsModuleImpl"),
@@ -29,9 +30,11 @@ public abstract class NotificareModule {
         ASSETS(fqn = "re.notifica.assets.internal.NotificareAssetsImpl"),
         SCANNABLES(fqn = "re.notifica.scannables.internal.NotificareScannablesImpl"),
         AUTHENTICATION(fqn = "re.notifica.authentication.internal.NotificareAuthenticationImpl"),
-        GEO(fqn = "re.notifica.geo.internal.NotificareGeoImpl");
+        GEO(fqn = "re.notifica.geo.internal.NotificareGeoImpl"),
+        LOYALTY(fqn = "re.notifica.loyalty.internal.NotificareLoyaltyImpl");
 
-        val isAvailable: Boolean
+        @InternalNotificareApi
+        public val isAvailable: Boolean
             get() {
                 return try {
                     // Will throw unless the class can be found.
@@ -43,7 +46,8 @@ public abstract class NotificareModule {
                 }
             }
 
-        val instance: NotificareModule?
+        @InternalNotificareApi
+        public val instance: NotificareModule?
             get() {
                 return try {
                     // Will throw unless the class can be found.

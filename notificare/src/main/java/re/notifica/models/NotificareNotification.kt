@@ -68,6 +68,7 @@ public data class NotificareNotification(
 
         public companion object {
             public const val TYPE_HTML: String = "re.notifica.content.HTML"
+            public const val TYPE_PK_PASS: String = "re.notifica.content.PKPass"
             public const val TYPE_GOOGLE_PLAY_DETAILS: String = "re.notifica.content.GooglePlayDetails"
             public const val TYPE_GOOGLE_PLAY_DEVELOPER: String = "re.notifica.content.GooglePlayDeveloper"
             public const val TYPE_GOOGLE_PLAY_SEARCH: String = "re.notifica.content.GooglePlaySearch"
@@ -90,8 +91,9 @@ public data class NotificareNotification(
         val type: String,
         val label: String,
         val target: String?,
-        val keyboard: Boolean,
         val camera: Boolean,
+        val keyboard: Boolean,
+        val destructive: Boolean,
     ) : Parcelable {
 
         public fun getLocalizedLabel(context: Context): String {

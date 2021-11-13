@@ -35,6 +35,7 @@ import re.notifica.push.ui.ktx.pushUI
 import re.notifica.sample.databinding.ActivityMainBinding
 import re.notifica.sample.ui.beacons.BeaconsActivity
 import re.notifica.sample.ui.inbox.InboxActivity
+import re.notifica.sample.ui.wallet.WalletActivity
 import re.notifica.scannables.NotificareScannables
 import re.notifica.scannables.NotificareUserCancelledScannableSessionException
 import re.notifica.scannables.ktx.scannables
@@ -653,6 +654,10 @@ class MainActivity : AppCompatActivity(), Notificare.OnReadyListener, Notificare
 
     fun onRangingBeaconsClicked(@Suppress("UNUSED_PARAMETER") view: View) {
         startActivity(Intent(this, BeaconsActivity::class.java))
+    }
+
+    fun onOpenWalletClicked(@Suppress("UNUSED_PARAMETER") view: View) {
+        startActivity(Intent(this, WalletActivity::class.java))
     }
 
     // region Notificare.OnReadyListener

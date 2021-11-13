@@ -5,10 +5,10 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import re.notifica.inbox.internal.database.converters.DateConverter
-import re.notifica.inbox.internal.database.converters.NotificationConverter
 import re.notifica.inbox.internal.database.dao.InboxDao
 import re.notifica.inbox.internal.database.entities.InboxItemEntity
+import re.notifica.internal.room.NotificareDateTypeConverter
+import re.notifica.internal.room.NotificareNotificationConverter
 
 @Database(
     version = 1,
@@ -17,8 +17,8 @@ import re.notifica.inbox.internal.database.entities.InboxItemEntity
     ],
 )
 @TypeConverters(
-    DateConverter::class,
-    NotificationConverter::class,
+    NotificareDateTypeConverter::class,
+    NotificareNotificationConverter::class,
 )
 internal abstract class InboxDatabase : RoomDatabase() {
 

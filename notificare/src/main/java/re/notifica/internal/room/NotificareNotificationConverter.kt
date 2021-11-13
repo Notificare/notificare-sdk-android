@@ -1,14 +1,16 @@
-package re.notifica.inbox.internal.database.converters
+package re.notifica.internal.room
 
 import androidx.room.TypeConverter
+import re.notifica.InternalNotificareApi
 import re.notifica.Notificare
 import re.notifica.internal.moshi
 import re.notifica.models.NotificareNotification
 
-internal class NotificationConverter {
+@InternalNotificareApi
+public class NotificareNotificationConverter {
 
     @TypeConverter
-    fun fromJson(str: String?): NotificareNotification? {
+    public fun fromJson(str: String?): NotificareNotification? {
         if (str == null) return null
 
         val adapter = Notificare.moshi.adapter(NotificareNotification::class.java)
@@ -16,7 +18,7 @@ internal class NotificationConverter {
     }
 
     @TypeConverter
-    fun toJson(notification: NotificareNotification?): String? {
+    public fun toJson(notification: NotificareNotification?): String? {
         if (notification == null) return null
 
         val adapter = Notificare.moshi.adapter(NotificareNotification::class.java)

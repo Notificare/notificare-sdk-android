@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:keepScreenOn="true"
     tools:context=".MainActivity">
 
     <ScrollView
@@ -323,6 +324,21 @@
                 android:layout_height="wrap_content"
                 android:onClick="onRemoveUserSegmentFromPreferenceClicked"
                 android:text="Remove user segment from preference" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:gravity="center"
+                android:text="Loyalty"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6" />
+
+            <Button
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="onOpenWalletClicked"
+                android:text="Open wallet" />
 
         </LinearLayout>
 

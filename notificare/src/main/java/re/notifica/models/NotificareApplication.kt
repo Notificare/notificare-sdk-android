@@ -105,6 +105,7 @@ public data class NotificareApplication(
     public data class ActionCategory(
         val type: String,
         val name: String,
+        val description: String?,
         val actions: List<NotificareNotification.Action>
     ) : Parcelable {
 
@@ -123,7 +124,6 @@ public data class NotificareApplication(
         }
     }
 
-    @Suppress("unused")
     public object ServiceKeys {
         public const val OAUTH2: String = "oauth2"
         public const val RICH_PUSH: String = "richPush"

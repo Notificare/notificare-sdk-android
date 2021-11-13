@@ -31,18 +31,11 @@ internal object NotificareAuthenticationImpl : NotificareModule(), NotificareAut
 
     // region Notificare Module
 
-    override fun configure() {
-        sharedPreferences = NotificareSharedPreferences(Notificare.requireContext())
-    }
-
-    override suspend fun launch() {}
-
-    override suspend fun unlaunch() {}
-
     override fun migrate(savedState: SharedPreferences, settings: SharedPreferences) {
         val storage = GoogleStorageUtils(Notificare.requireContext())
         val storedCredential = storage.loadStoredCredential() ?: return
 
+        val sharedPreferences = NotificareSharedPreferences(Notificare.requireContext())
         sharedPreferences.credentials = Credentials(
             accessToken = storedCredential.accessToken,
             refreshToken = storedCredential.refreshToken,
@@ -50,6 +43,10 @@ internal object NotificareAuthenticationImpl : NotificareModule(), NotificareAut
         )
 
         storage.removeStoredCredential()
+    }
+
+    override fun configure() {
+        sharedPreferences = NotificareSharedPreferences(Notificare.requireContext())
     }
 
     // endregion

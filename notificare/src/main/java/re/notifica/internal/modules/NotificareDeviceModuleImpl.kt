@@ -347,8 +347,6 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
                 deviceString = NotificareUtils.deviceString,
                 timeZoneOffset = NotificareUtils.timeZoneOffset,
                 backgroundAppRefresh = true,
-                locationServicesAuthStatus = "none", // TODO me
-                bluetoothEnabled = false, // TODO me
             )
 
             NotificareRequest.Builder()

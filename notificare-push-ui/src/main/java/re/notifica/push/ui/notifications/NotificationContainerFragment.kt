@@ -15,7 +15,6 @@ import kotlinx.coroutines.launch
 import re.notifica.Notificare
 import re.notifica.internal.NotificareLogger
 import re.notifica.models.NotificareNotification
-import re.notifica.push.ui.NotificarePushUI
 import re.notifica.push.ui.R
 import re.notifica.push.ui.databinding.NotificareNotificationContainerFragmentBinding
 import re.notifica.push.ui.ktx.pushUIImplementation
@@ -108,7 +107,7 @@ public class NotificationContainerFragment
                 .commit()
         }
 
-        if (action == null && (type == NotificareNotification.NotificationType.ALERT || type == NotificareNotification.NotificationType.PASSBOOK)) {
+        if (action == null && type == NotificareNotification.NotificationType.ALERT) {
             callback.onNotificationFragmentCanHideActionBar(notification)
             NotificationDialog.newInstance(notification)
                 .also { notificationDialog = it }
@@ -405,10 +404,6 @@ public class NotificationContainerFragment
             // Perform the action
             handleAction(notification.actions[position])
         }
-    }
-
-    override fun onNotificationDialogOpenPassbookClick() {
-        // TODO
     }
 
     // endregion

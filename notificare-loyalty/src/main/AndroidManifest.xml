@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="re.notifica.loyalty">
+
+    <application>
+
+        <activity
+            android:name=".PassbookActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:exported="true"
+            android:screenOrientation="portrait" />
+
+        <receiver
+            android:name=".NotificareLoyaltyIntentReceiver"
+            android:exported="false" />
+
+    </application>
+
+</manifest>
