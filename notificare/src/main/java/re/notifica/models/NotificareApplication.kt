@@ -123,7 +123,6 @@ public data class NotificareApplication(
         }
     }
 
-    @Suppress("unused")
     public object ServiceKeys {
         public const val OAUTH2: String = "oauth2"
         public const val RICH_PUSH: String = "richPush"
