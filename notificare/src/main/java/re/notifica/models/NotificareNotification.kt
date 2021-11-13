@@ -91,8 +91,9 @@ public data class NotificareNotification(
         val type: String,
         val label: String,
         val target: String?,
-        val keyboard: Boolean,
         val camera: Boolean,
+        val keyboard: Boolean,
+        val destructive: Boolean,
     ) : Parcelable {
 
         public fun getLocalizedLabel(context: Context): String {

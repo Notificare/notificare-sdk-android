@@ -105,6 +105,7 @@ public data class NotificareApplication(
     public data class ActionCategory(
         val type: String,
         val name: String,
+        val description: String?,
         val actions: List<NotificareNotification.Action>
     ) : Parcelable {
 
