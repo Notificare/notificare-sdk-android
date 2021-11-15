@@ -433,7 +433,7 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
             createUniqueNotificationId(),
             Intent().apply {
                 action = NotificarePushIntentReceiver.INTENT_ACTION_REMOTE_MESSAGE_OPENED
-
+                setPackage(Notificare.requireContext().packageName)
                 putExtras(extras)
             },
             PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE
