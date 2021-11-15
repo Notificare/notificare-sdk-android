@@ -534,6 +534,7 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
                 val actionIntent = if (useQuickResponse) {
                     Intent(Notificare.requireContext(), NotificarePushSystemIntentReceiver::class.java).apply {
                         setAction(NotificarePushSystemIntentReceiver.INTENT_ACTION_QUICK_RESPONSE)
+                        setPackage(Notificare.requireContext().packageName)
 
                         putExtras(extras)
                         putExtra(Notificare.INTENT_EXTRA_ACTION, action)
@@ -541,6 +542,7 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
                 } else {
                     Intent().apply {
                         setAction(NotificarePushIntentReceiver.INTENT_ACTION_REMOTE_MESSAGE_OPENED)
+                        setPackage(Notificare.requireContext().packageName)
 
                         putExtras(extras)
                         putExtra(Notificare.INTENT_EXTRA_ACTION, action)
