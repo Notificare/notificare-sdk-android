@@ -551,7 +551,7 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
 
                 builder.addAction(
                     NotificationCompat.Action.Builder(
-                        0,
+                        action.getIconResource(Notificare.requireContext()),
                         action.getLocalizedLabel(Notificare.requireContext()),
                         if (useQuickResponse) {
                             PendingIntent.getBroadcast(
@@ -590,7 +590,7 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
 
                 wearableExtender.addAction(
                     NotificationCompat.Action.Builder(
-                        0,
+                        action.getIconResource(Notificare.requireContext()),
                         action.getLocalizedLabel(Notificare.requireContext()),
                         PendingIntent.getBroadcast(
                             Notificare.requireContext(),
