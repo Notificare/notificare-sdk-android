@@ -105,19 +105,19 @@ dependencies {
     implementation project(':notificare-loyalty')
 
     implementation project(':notificare-geo')
-    implementation project(':notificare-geo-fcm')
+    implementation project(':notificare-geo-gms')
     implementation project(':notificare-geo-hms')
     implementation project(':notificare-geo-beacons')
 
     implementation project(':notificare-push')
-    implementation project(':notificare-push-fcm')
+    implementation project(':notificare-push-gms')
     implementation project(':notificare-push-hms')
 
     implementation project(':notificare-push-ui')
-    implementation project(':notificare-push-ui-fcm')
+    implementation project(':notificare-push-ui-gms')
     implementation project(':notificare-push-ui-hms')
 
     implementation project(':notificare-scannables')
-    implementation project(':notificare-scannables-fcm')
+    implementation project(':notificare-scannables-gms')
     implementation project(':notificare-scannables-hms')
 }
