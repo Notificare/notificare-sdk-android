@@ -374,7 +374,7 @@ class MainActivity : AppCompatActivity(), Notificare.OnReadyListener, Notificare
     }
 
     fun onFetchAssetsClicked(@Suppress("UNUSED_PARAMETER") view: View) {
-        Notificare.assets().fetchAssets("test_helder", object : NotificareCallback<List<NotificareAsset>> {
+        Notificare.assets().fetch("test_helder", object : NotificareCallback<List<NotificareAsset>> {
             override fun onSuccess(result: List<NotificareAsset>) {
                 Log.i(TAG, "Assets: $result")
                 Snackbar.make(binding.root, "$result", Snackbar.LENGTH_SHORT).show()
