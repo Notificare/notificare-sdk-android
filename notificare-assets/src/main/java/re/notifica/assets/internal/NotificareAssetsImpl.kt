@@ -15,7 +15,7 @@ import re.notifica.models.NotificareApplication
 
 internal object NotificareAssetsImpl : NotificareModule(), NotificareAssets {
 
-    override suspend fun fetchAssets(group: String): List<NotificareAsset> = withContext(Dispatchers.IO) {
+    override suspend fun fetch(group: String): List<NotificareAsset> = withContext(Dispatchers.IO) {
         checkPrerequisites()
 
         NotificareRequest.Builder()
@@ -27,8 +27,8 @@ internal object NotificareAssetsImpl : NotificareModule(), NotificareAssets {
             .map { it.toModel() }
     }
 
-    override fun fetchAssets(group: String, callback: NotificareCallback<List<NotificareAsset>>): Unit =
-        toCallbackFunction(NotificareAssetsImpl::fetchAssets)(group, callback)
+    override fun fetch(group: String, callback: NotificareCallback<List<NotificareAsset>>): Unit =
+        toCallbackFunction(NotificareAssetsImpl::fetch)(group, callback)
 
     @Throws
     private fun checkPrerequisites() {

@@ -5,7 +5,7 @@ import re.notifica.assets.models.NotificareAsset
 
 public interface NotificareAssets {
 
-    public suspend fun fetchAssets(group: String): List<NotificareAsset>
+    public suspend fun fetch(group: String): List<NotificareAsset>
 
-    public fun fetchAssets(group: String, callback: NotificareCallback<List<NotificareAsset>>)
+    public fun fetch(group: String, callback: NotificareCallback<List<NotificareAsset>>)
 }
