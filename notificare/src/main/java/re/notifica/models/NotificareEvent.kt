@@ -4,6 +4,7 @@ import com.squareup.moshi.Json
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.JsonClass
 import com.squareup.moshi.Types
+import org.json.JSONObject
 import re.notifica.Notificare
 import re.notifica.internal.moshi
 
@@ -20,7 +21,7 @@ public data class NotificareEvent(
     val data: NotificareEventData?
 ) {
 
-    internal companion object {
+    public companion object {
         internal val dataAdapter: JsonAdapter<NotificareEventData> by lazy {
             Notificare.moshi.adapter(
                 Types.newParameterizedType(
@@ -29,6 +30,10 @@ public data class NotificareEvent(
                     Any::class.java
                 )
             )
+        }
+
+        public fun createData(json: JSONObject): NotificareEventData {
+            return requireNotNull(dataAdapter.fromJson(json.toString()))
         }
     }
 }
