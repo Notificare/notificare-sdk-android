@@ -24,13 +24,13 @@ public interface NotificareGeo {
     public interface Listener {
         public fun onLocationUpdated(location: NotificareLocation) {}
 
-        public fun onEnterRegion(region: NotificareRegion) {}
+        public fun onRegionEntered(region: NotificareRegion) {}
 
-        public fun onExitRegion(region: NotificareRegion) {}
+        public fun onRegionExited(region: NotificareRegion) {}
 
-        public fun onEnterBeacon(beacon: NotificareBeacon) {}
+        public fun onBeaconEntered(beacon: NotificareBeacon) {}
 
-        public fun onExitBeacon(beacon: NotificareBeacon) {}
+        public fun onBeaconExited(beacon: NotificareBeacon) {}
 
         public fun onBeaconsRanged(region: NotificareRegion, beacons: List<NotificareBeacon>) {}
     }

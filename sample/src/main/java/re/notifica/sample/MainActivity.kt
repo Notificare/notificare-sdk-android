@@ -763,19 +763,19 @@ class MainActivity : AppCompatActivity(), Notificare.OnReadyListener, Notificare
         Log.w(TAG, "---> onLocationUpdated = $location")
     }
 
-    override fun onEnterRegion(region: NotificareRegion) {
+    override fun onRegionEntered(region: NotificareRegion) {
         Log.w(TAG, "---> onEnterRegion = $region")
     }
 
-    override fun onExitRegion(region: NotificareRegion) {
+    override fun onRegionExited(region: NotificareRegion) {
         Log.w(TAG, "---> onExitRegion = $region")
     }
 
-    override fun onEnterBeacon(beacon: NotificareBeacon) {
+    override fun onBeaconEntered(beacon: NotificareBeacon) {
         Log.w(TAG, "---> onEnterBeacon = $beacon")
     }
 
-    override fun onExitBeacon(beacon: NotificareBeacon) {
+    override fun onBeaconExited(beacon: NotificareBeacon) {
         Log.w(TAG, "---> onExitBeacon = $beacon")
     }
 

@@ -317,12 +317,12 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
                     triggerRegionEnter(region)
                     startRegionSession(region)
 
-                    listeners.forEach { it.onEnterRegion(region) }
+                    listeners.forEach { it.onRegionEntered(region) }
                 } else if (entered && !inside) {
                     triggerRegionExit(region)
                     stopRegionSession(region)
 
-                    listeners.forEach { it.onExitRegion(region) }
+                    listeners.forEach { it.onRegionExited(region) }
                 }
 
                 if (inside) {
@@ -388,7 +388,7 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
                                 // Start monitoring for beacons in this region.
                                 startMonitoringBeacons(region)
 
-                                listeners.forEach { it.onEnterRegion(region) }
+                                listeners.forEach { it.onRegionEntered(region) }
                             }
                         } catch (e: Exception) {
                             NotificareLogger.warning("Failed to determine the current location.", e)
@@ -407,7 +407,7 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
                 triggerRegionEnter(region)
                 startRegionSession(region)
 
-                listeners.forEach { it.onEnterRegion(region) }
+                listeners.forEach { it.onRegionEntered(region) }
             }
 
             // Start monitoring for beacons in this region.
@@ -427,7 +427,7 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
                 triggerRegionExit(region)
                 stopRegionSession(region)
 
-                listeners.forEach { it.onExitRegion(region) }
+                listeners.forEach { it.onRegionExited(region) }
             }
 
             // Stop monitoring for beacons in this region.
@@ -452,7 +452,7 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
             }
         }
 
-        listeners.forEach { it.onEnterBeacon(beacon) }
+        listeners.forEach { it.onBeaconEntered(beacon) }
 
         Notificare.loyaltyIntegration()?.onPassbookLocationRelevanceChanged()
     }
@@ -474,7 +474,7 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
             }
         }
 
-        listeners.forEach { it.onEnterBeacon(beacon) }
+        listeners.forEach { it.onBeaconEntered(beacon) }
 
         Notificare.loyaltyIntegration()?.onPassbookLocationRelevanceChanged()
     }
