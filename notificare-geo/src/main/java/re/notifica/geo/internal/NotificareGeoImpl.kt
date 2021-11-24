@@ -474,7 +474,7 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
             }
         }
 
-        listeners.forEach { it.onBeaconEntered(beacon) }
+        listeners.forEach { it.onBeaconExited(beacon) }
 
         Notificare.loyaltyIntegration()?.onPassbookLocationRelevanceChanged()
     }
