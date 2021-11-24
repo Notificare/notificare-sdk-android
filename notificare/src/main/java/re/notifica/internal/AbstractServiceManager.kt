@@ -37,7 +37,7 @@ public abstract class AbstractServiceManager {
                 implementation = implementation(gms)
 
                 if (implementation != null && implementation.available) {
-                    NotificareLogger.debug("Detected FCM peer dependency. Setting it as the target platform.")
+                    NotificareLogger.debug("Detected GMS peer dependency. Setting it as the target platform.")
                     return implementation
                 }
             }
@@ -51,8 +51,8 @@ public abstract class AbstractServiceManager {
                 }
             }
 
-            NotificareLogger.warning("No push dependencies have been detected. Please include one of the platform-specific push packages.")
-            throw IllegalStateException("No push dependencies have been detected. Please include one of the platform-specific push packages.")
+            NotificareLogger.warning("No platform dependencies have been detected. Please include one of the platform-specific packages.")
+            throw IllegalStateException("No platform dependencies have been detected. Please include one of the platform-specific packages.")
         }
 
         @PublishedApi
