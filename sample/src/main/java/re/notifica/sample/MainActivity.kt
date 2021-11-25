@@ -744,7 +744,7 @@ class MainActivity : AppCompatActivity(), Notificare.OnReadyListener, Notificare
         }.show()
     }
 
-    override fun onScannerSessionError(error: Exception) {
+    override fun onScannableSessionError(error: Exception) {
         if (error is NotificareUserCancelledScannableSessionException) {
             return
         }
