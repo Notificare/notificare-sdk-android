@@ -17,13 +17,13 @@ public interface NotificareScannables {
 
     public fun startQrCodeScannableSession(activity: Activity)
 
-    public suspend fun fetchScannable(tag: String): NotificareScannable
+    public suspend fun fetch(tag: String): NotificareScannable
 
-    public fun fetchScannable(tag: String, callback: NotificareCallback<NotificareScannable>)
+    public fun fetch(tag: String, callback: NotificareCallback<NotificareScannable>)
 
     public interface ScannableSessionListener {
         public fun onScannableDetected(scannable: NotificareScannable)
 
-        public fun onScannerSessionError(error: Exception)
+        public fun onScannableSessionError(error: Exception)
     }
 }

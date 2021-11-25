@@ -150,7 +150,7 @@ public class ScannableActivity : AppCompatActivity() {
         if (handlingScannable) return
         handlingScannable = true
 
-        Notificare.scannables().fetchScannable(tag, object : NotificareCallback<NotificareScannable> {
+        Notificare.scannables().fetch(tag, object : NotificareCallback<NotificareScannable> {
             override fun onSuccess(result: NotificareScannable) {
                 Notificare.scannablesImplementation().notifyListeners(result)
                 finish()

@@ -79,7 +79,7 @@ internal object NotificareScannablesImpl : NotificareModule(), NotificareScannab
         activity.startActivity(intent)
     }
 
-    override suspend fun fetchScannable(tag: String): NotificareScannable = withContext(Dispatchers.IO) {
+    override suspend fun fetch(tag: String): NotificareScannable = withContext(Dispatchers.IO) {
         NotificareRequest.Builder()
             .get("/scannable/tag/${Uri.encode(tag)}")
             .query("deviceID", Notificare.device().currentDevice?.id)
@@ -89,8 +89,8 @@ internal object NotificareScannablesImpl : NotificareModule(), NotificareScannab
             .toModel()
     }
 
-    override fun fetchScannable(tag: String, callback: NotificareCallback<NotificareScannable>): Unit =
-        toCallbackFunction(::fetchScannable)(tag, callback)
+    override fun fetch(tag: String, callback: NotificareCallback<NotificareScannable>): Unit =
+        toCallbackFunction(::fetch)(tag, callback)
 
     // endregion
 
@@ -102,7 +102,7 @@ internal object NotificareScannablesImpl : NotificareModule(), NotificareScannab
 
     internal fun notifyListeners(error: Exception) {
         listeners.forEach {
-            it.onScannerSessionError(error)
+            it.onScannableSessionError(error)
         }
     }
 }
