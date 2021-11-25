@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.nfc.NfcAdapter
 import android.nfc.NfcManager
+import android.os.Build
 import android.os.Bundle
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
@@ -126,9 +127,27 @@ public class ScannableActivity : AppCompatActivity() {
 
     private fun enableForegroundDispatch() {
         try {
-            val intent = Intent(this, this::class.java).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
-            val pendingIntent = PendingIntent.getActivity(this, 0, intent, 0)
+            val intent = Intent(this, this::class.java)
+                .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
+
+            val pendingIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                PendingIntent.getActivity(
+                    this,
+                    0,
+                    intent,
+                    Intent.FILL_IN_DATA or PendingIntent.FLAG_MUTABLE
+                )
+            } else {
+                PendingIntent.getActivity(
+                    this,
+                    0,
+                    intent,
+                    Intent.FILL_IN_DATA
+                )
+            }
+
             // val intentFilters = arrayOf(IntentFilter(NfcAdapter.ACTION_NDEF_DISCOVERED))
+
             nfcAdapter?.enableForegroundDispatch(this, pendingIntent, null, null)
         } catch (e: Exception) {
             NotificareLogger.error("Error enabling NFC foreground dispatch.", e)
