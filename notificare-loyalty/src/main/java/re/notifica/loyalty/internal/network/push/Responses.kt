@@ -24,7 +24,6 @@ internal data class FetchPassResponse(
         val token: String,
         val data: Map<String, Any>?,
         val date: Date,
-        val lastUpdated: Date?,
     )
 }
 

@@ -169,19 +169,19 @@ public data class NotificarePass(
 
     public enum class PassType {
         @Json(name = "boarding")
-        BOARDING_PASS,
+        BOARDING,
 
         @Json(name = "coupon")
         COUPON,
 
         @Json(name = "ticket")
-        EVENT_TICKET,
+        TICKET,
 
         @Json(name = "generic")
         GENERIC,
 
         @Json(name = "card")
-        STORE_CARD;
+        CARD;
     }
 
     @Parcelize

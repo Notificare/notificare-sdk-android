@@ -2,9 +2,11 @@ package re.notifica.loyalty.internal
 
 import android.app.Activity
 import android.app.PendingIntent
+import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.graphics.Bitmap
 import android.location.Location
+import android.net.Uri
 import android.os.Handler
 import android.os.Looper
 import androidx.core.app.NotificationCompat
@@ -200,10 +202,7 @@ internal object NotificareLoyaltyImpl : NotificareModule(), NotificareLoyalty, N
         toCallbackFunction(::removePass)(pass, callback)
 
     override fun present(activity: Activity, pass: NotificarePass) {
-        activity.startActivity(
-            Intent(activity, passbookActivity)
-                .putExtra(Notificare.INTENT_EXTRA_PASSBOOK, pass)
-        )
+        present(activity, pass, null)
     }
 
     // endregion
@@ -226,9 +225,10 @@ internal object NotificareLoyaltyImpl : NotificareModule(), NotificareLoyalty, N
         updateRelevantPasses()
     }
 
-    override fun handlePresentationDecision(
+    override fun handlePassPresentation(
+        activity: Activity,
         notification: NotificareNotification,
-        callback: NotificareLoyaltyIntegration.PresentationDecisionCallback
+        callback: NotificareCallback<Unit>,
     ) {
         val serial = extractPassSerial(notification) ?: run {
             NotificareLogger.warning("Unable to extract the pass' serial from the notification.")
@@ -241,42 +241,14 @@ internal object NotificareLoyaltyImpl : NotificareModule(), NotificareLoyalty, N
 
         fetchPassBySerial(serial, object : NotificareCallback<NotificarePass> {
             override fun onSuccess(result: NotificarePass) {
-                when (result.version) {
-                    1 -> callback.presentPKPass(isInWallet(result))
-                    2 -> {
-                        val url = result.googlePaySaveLink ?: run {
-                            val error = IllegalArgumentException("Pass v2 doesn't contain a Google Pay link.")
-                            callback.onFailure(error)
-
-                            return
-                        }
-
-                        callback.presentGooglePass(url)
-                    }
-                    else -> {
-                        val error = IllegalArgumentException("Unsupported pass version: ${result.version}")
-                        callback.onFailure(error)
-                    }
-                }
+                present(activity, result, callback)
             }
 
             override fun onFailure(e: Exception) {
+                NotificareLogger.error("Failed to fetch the pass with serial '$serial'.", e)
                 callback.onFailure(e)
             }
         })
-    }
-
-    override fun handleStorageUpdate(
-        notification: NotificareNotification,
-        includeInWallet: Boolean,
-        callback: NotificareCallback<Unit>
-    ) {
-//        runBlocking {
-//            val serial = extractPassSerial(notification)!!
-//            val pass = fetchPassBySerial(serial)
-//
-//            addPass(pass)
-//        }
     }
 
     // endregion
@@ -480,6 +452,47 @@ internal object NotificareLoyaltyImpl : NotificareModule(), NotificareLoyalty, N
         }
     }
 
+    private fun present(activity: Activity, pass: NotificarePass, callback: NotificareCallback<Unit>?) {
+        when (pass.version) {
+            1 -> {
+                activity.startActivity(
+                    Intent(activity, passbookActivity)
+                        .putExtra(Notificare.INTENT_EXTRA_PASSBOOK, pass)
+                )
+
+                callback?.onSuccess(Unit)
+            }
+            2 -> {
+                val url = pass.googlePaySaveLink ?: run {
+                    NotificareLogger.warning("Cannot present the pass without a Google Pay link.")
+
+                    val error = IllegalArgumentException("Cannot present the pass without a Google Pay link.")
+                    callback?.onFailure(error)
+
+                    return
+                }
+
+                try {
+                    val intent = Intent().setAction(Intent.ACTION_VIEW)
+                        .setData(Uri.parse(url))
+                        .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+
+                    activity.startActivity(intent)
+                    callback?.onSuccess(Unit)
+                } catch (e: ActivityNotFoundException) {
+                    NotificareLogger.error("Failed to present the pass.", e)
+                    callback?.onFailure(e)
+                }
+            }
+            else -> {
+                NotificareLogger.error("Unsupported pass version: ${pass.version}")
+
+                val error = IllegalArgumentException("Unsupported pass version: ${pass.version}")
+                callback?.onFailure(error)
+            }
+        }
+    }
+
     // region Pass relevance
 
     private fun updateRelevantPasses() {
@@ -631,8 +644,8 @@ internal object NotificareLoyaltyImpl : NotificareModule(), NotificareLoyalty, N
         }
 
         var maxDistance: Double = when (pass.type) {
-            NotificarePass.PassType.BOARDING_PASS,
-            NotificarePass.PassType.EVENT_TICKET -> checkNotNull(Notificare.options).passRelevanceLargeRadius
+            NotificarePass.PassType.BOARDING,
+            NotificarePass.PassType.TICKET -> checkNotNull(Notificare.options).passRelevanceLargeRadius
             else -> checkNotNull(Notificare.options).passRelevanceSmallRadius
         }
 

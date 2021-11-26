@@ -1,16 +1,15 @@
 package re.notifica.push.ui.internal
 
 import android.app.Activity
-import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import androidx.core.os.bundleOf
 import kotlinx.coroutines.*
 import re.notifica.Notificare
+import re.notifica.NotificareCallback
 import re.notifica.internal.NotificareLogger
 import re.notifica.internal.NotificareModule
-import re.notifica.internal.modules.integrations.NotificareLoyaltyIntegration
 import re.notifica.models.NotificareNotification
 import re.notifica.push.ui.NotificareInternalPushUI
 import re.notifica.push.ui.NotificarePushUI
@@ -193,35 +192,15 @@ internal object NotificarePushUIImpl : NotificareModule(), NotificarePushUI, Not
             return
         }
 
-        integration.handlePresentationDecision(
-            notification = notification,
-            callback = object : NotificareLoyaltyIntegration.PresentationDecisionCallback {
-                override fun presentGooglePass(url: String) {
-                    try {
-                        val intent = Intent().setAction(Intent.ACTION_VIEW)
-                            .setData(Uri.parse(url))
-                            .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-
-                        activity.startActivity(intent)
-                        lifecycleListeners.forEach { it.onNotificationPresented(notification) }
-                    } catch (e: ActivityNotFoundException) {
-                        lifecycleListeners.forEach { it.onNotificationFailedToPresent(notification) }
-                    }
-                }
-
-                override fun presentPKPass(includedInWallet: Boolean) {
-                    val extras = bundleOf(
-                        NotificationActivity.INTENT_EXTRA_PASSBOOK_IN_WALLET to includedInWallet
-                    )
-
-                    openNotificationActivity(activity, notification, extras)
-                }
-
-                override fun onFailure(e: Exception) {
-                    lifecycleListeners.forEach { it.onNotificationFailedToPresent(notification) }
-                }
+        integration.handlePassPresentation(activity, notification, object : NotificareCallback<Unit> {
+            override fun onSuccess(result: Unit) {
+                lifecycleListeners.forEach { it.onNotificationPresented(notification) }
             }
-        )
+
+            override fun onFailure(e: Exception) {
+                lifecycleListeners.forEach { it.onNotificationFailedToPresent(notification) }
+            }
+        })
     }
 
     private fun openNotificationActivity(
