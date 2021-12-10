@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="notificare_app_gallery_intent_failed">Kan de AppGallery app niet starten</string>
+</resources>

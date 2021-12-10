@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="notificare_dialog_ok_button">Oke</string>
+
+    <string name="notificare_action_add_pass_to_wallet">Voeg toe aan wallet</string>
+    <string name="notificare_action_remove_pass_from_wallet">Verwijder uit wallet</string>
+    <string name="notificare_passbook_error_loading_pass">Er is een fout opgetreden tijdens het openen van de kaart.</string>
+    <string name="notificare_passbook_error_adding_pass">Er is een fout opgetreden tijdens het toevoegen van de kaart aan de wallet.</string>
+    <string name="notificare_passbook_error_removing_pass">Er is een fout opgetreden tijdens het verwijderen van de kaart uit de wallet.</string>
+    <string name="notificare_passbook_absolute_date_relevance_text">Er is een kaart aanwezig in de wallet die relevant is om %1$s.</string>
+    <string name="notificare_passbook_location_relevance_text">Er is een relevante kaart aanwezig in de wallet voor de huidige locatie.</string>
+</resources>

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="notificare_scannable_title">Scan</string>
+    <string name="notificare_scannable_nfc_hint">tik een NFC tag aan om te scannen</string>
+    <string name="notificare_scannable_camera_hint">richt de camera op de streepjescode om te scannen</string>
+</resources>
