@@ -12,7 +12,7 @@ import re.notifica.geo.NotificareInternalGeo
 import re.notifica.geo.hms.ktx.geoInternal
 import re.notifica.internal.NotificareLogger
 
-public class LocationReceiver : BroadcastReceiver() {
+internal class LocationReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         when (intent.action) {
             NotificareInternalGeo.INTENT_ACTION_LOCATION_UPDATED -> {
