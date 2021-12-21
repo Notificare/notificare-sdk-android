@@ -1,4 +1,4 @@
-package re.notifica.push.ui.fcm.internal
+package re.notifica.push.ui.gms.internal
 
 import androidx.fragment.app.Fragment
 import com.google.android.gms.common.ConnectionResult
@@ -6,9 +6,9 @@ import com.google.android.gms.common.GoogleApiAvailability
 import re.notifica.InternalNotificareApi
 import re.notifica.Notificare
 import re.notifica.models.NotificareNotification
-import re.notifica.push.ui.fcm.NotificareMapFragment
-import re.notifica.push.ui.fcm.NotificareRateFragment
-import re.notifica.push.ui.fcm.NotificareStoreFragment
+import re.notifica.push.ui.gms.NotificareMapFragment
+import re.notifica.push.ui.gms.NotificareRateFragment
+import re.notifica.push.ui.gms.NotificareStoreFragment
 import re.notifica.push.ui.internal.ServiceManager
 
 @InternalNotificareApi

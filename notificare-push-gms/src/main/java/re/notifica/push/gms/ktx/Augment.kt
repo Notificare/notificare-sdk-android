@@ -1,4 +1,4 @@
-package re.notifica.push.fcm.ktx
+package re.notifica.push.gms.ktx
 
 import com.google.firebase.messaging.RemoteMessage
 import re.notifica.Notificare

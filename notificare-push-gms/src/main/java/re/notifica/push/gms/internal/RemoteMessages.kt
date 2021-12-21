@@ -1,4 +1,4 @@
-package re.notifica.push.fcm.internal
+package re.notifica.push.gms.internal
 
 import com.google.firebase.messaging.RemoteMessage
 import re.notifica.Notificare

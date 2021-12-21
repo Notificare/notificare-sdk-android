@@ -1,4 +1,4 @@
-package re.notifica.geo.fcm.internal
+package re.notifica.geo.gms.internal
 
 import android.annotation.SuppressLint
 import android.app.PendingIntent
@@ -13,7 +13,7 @@ import kotlinx.coroutines.tasks.asDeferred
 import re.notifica.InternalNotificareApi
 import re.notifica.Notificare
 import re.notifica.geo.NotificareInternalGeo
-import re.notifica.geo.fcm.LocationReceiver
+import re.notifica.geo.gms.LocationReceiver
 import re.notifica.geo.internal.ServiceManager
 import re.notifica.geo.models.NotificareRegion
 import re.notifica.internal.NotificareLogger

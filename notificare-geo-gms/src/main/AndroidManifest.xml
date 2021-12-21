@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="re.notifica.geo.fcm">
+    package="re.notifica.geo.gms">
 
     <application>
 
         <receiver
-            android:name="re.notifica.geo.fcm.LocationReceiver"
+            android:name="re.notifica.geo.gms.LocationReceiver"
             android:exported="false">
             <intent-filter>
                 <action android:name="re.notifica.intent.action.LocationUpdated" />

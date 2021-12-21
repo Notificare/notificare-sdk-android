@@ -1,4 +1,4 @@
-package re.notifica.push.fcm.internal
+package re.notifica.push.gms.internal
 
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
@@ -10,7 +10,7 @@ import re.notifica.InternalNotificareApi
 import re.notifica.Notificare
 import re.notifica.internal.NotificareLogger
 import re.notifica.models.NotificareTransport
-import re.notifica.push.fcm.ktx.pushInternal
+import re.notifica.push.gms.ktx.pushInternal
 import re.notifica.push.internal.ServiceManager
 
 @InternalNotificareApi

@@ -1,4 +1,4 @@
-package re.notifica.push.ui.fcm
+package re.notifica.push.ui.gms
 
 import android.os.Bundle
 import androidx.annotation.Keep
@@ -13,7 +13,7 @@ import com.google.android.gms.maps.model.MarkerOptions
 import re.notifica.Notificare
 import re.notifica.internal.common.waitForLayout
 import re.notifica.models.NotificareNotification
-import re.notifica.push.ui.fcm.ktx.pushUIInternal
+import re.notifica.push.ui.gms.ktx.pushUIInternal
 
 @Keep
 public class NotificareMapFragment : SupportMapFragment(), OnMapReadyCallback {

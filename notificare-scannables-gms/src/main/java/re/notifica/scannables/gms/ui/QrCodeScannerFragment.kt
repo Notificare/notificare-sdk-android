@@ -1,4 +1,4 @@
-package re.notifica.scannables.fcm.ui
+package re.notifica.scannables.gms.ui
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -18,7 +18,7 @@ import com.google.android.gms.vision.barcode.Barcode
 import com.google.android.gms.vision.barcode.BarcodeDetector
 import re.notifica.internal.NotificareLogger
 import re.notifica.scannables.ScannableActivity
-import re.notifica.scannables.fcm.R
+import re.notifica.scannables.gms.R
 
 public class QrCodeScannerFragment : Fragment(R.layout.notificare_scannable_qr_code_fcm_fragment) {
     private lateinit var surfaceView: SurfaceView

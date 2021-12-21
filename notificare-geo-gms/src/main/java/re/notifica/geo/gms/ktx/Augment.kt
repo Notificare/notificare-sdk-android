@@ -1,4 +1,4 @@
-package re.notifica.geo.fcm.ktx
+package re.notifica.geo.gms.ktx
 
 import re.notifica.Notificare
 import re.notifica.geo.NotificareInternalGeo

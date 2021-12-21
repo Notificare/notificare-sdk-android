@@ -1,4 +1,4 @@
-package re.notifica.push.ui.fcm.ktx
+package re.notifica.push.ui.gms.ktx
 
 import re.notifica.Notificare
 import re.notifica.push.ui.NotificareInternalPushUI

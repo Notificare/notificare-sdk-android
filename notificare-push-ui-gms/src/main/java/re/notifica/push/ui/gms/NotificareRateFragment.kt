@@ -1,4 +1,4 @@
-package re.notifica.push.ui.fcm
+package re.notifica.push.ui.gms
 
 import android.content.ActivityNotFoundException
 import android.content.Intent
@@ -9,7 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.Keep
 import re.notifica.Notificare
-import re.notifica.push.ui.fcm.ktx.pushUIInternal
+import re.notifica.push.ui.gms.ktx.pushUIInternal
 import re.notifica.push.ui.notifications.fragments.base.NotificationFragment
 
 @Keep

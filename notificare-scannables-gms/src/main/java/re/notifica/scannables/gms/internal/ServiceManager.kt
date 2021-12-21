@@ -1,11 +1,11 @@
-package re.notifica.scannables.fcm.internal
+package re.notifica.scannables.gms.internal
 
 import androidx.fragment.app.Fragment
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import re.notifica.InternalNotificareApi
 import re.notifica.Notificare
-import re.notifica.scannables.fcm.ui.QrCodeScannerFragment
+import re.notifica.scannables.gms.ui.QrCodeScannerFragment
 import re.notifica.scannables.internal.ServiceManager
 
 @InternalNotificareApi

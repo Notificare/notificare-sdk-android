@@ -1,4 +1,4 @@
-package re.notifica.geo.fcm
+package re.notifica.geo.gms
 
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -9,7 +9,7 @@ import com.google.android.gms.location.GeofencingEvent
 import com.google.android.gms.location.LocationResult
 import re.notifica.Notificare
 import re.notifica.geo.NotificareInternalGeo
-import re.notifica.geo.fcm.ktx.geoInternal
+import re.notifica.geo.gms.ktx.geoInternal
 import re.notifica.internal.NotificareLogger
 
 internal class LocationReceiver : BroadcastReceiver() {
