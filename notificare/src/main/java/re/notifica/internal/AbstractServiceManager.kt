@@ -27,9 +27,11 @@ public abstract class AbstractServiceManager {
                 else -> null
             }
 
-            if (implementation != null && implementation.available) {
-                return implementation
-            } else {
+            if (implementation != null) {
+                if (implementation.available) {
+                    return implementation
+                }
+
                 NotificareLogger.debug("Preferred peer dependency and its mobile services counterpart is not available.")
             }
 
