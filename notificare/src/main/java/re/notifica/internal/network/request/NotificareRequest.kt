@@ -49,7 +49,40 @@ public class NotificareRequest private constructor(
             .build()
     }
 
-    public suspend fun response(): Response = response(true)
+    public suspend fun response(closeResponse: Boolean): Response = suspendCoroutine { continuation ->
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                continuation.resumeWithException(e)
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                handleResponse(
+                    response = response,
+                    closeResponse = closeResponse,
+                    refreshAuthentication = true,
+                    continuation = continuation
+                )
+            }
+        })
+    }
+
+    public suspend fun responseString(): String {
+        val response = response(closeResponse = false)
+
+        val body = response.body
+            ?: throw IllegalArgumentException("The response contains an empty body. Cannot parse into 'String'.")
+
+        return withContext(Dispatchers.IO) {
+            try {
+                @Suppress("BlockingMethodInNonBlockingContext")
+                body.string()
+            } catch (e: Exception) {
+                throw NetworkException.ParsingException(cause = e)
+            } finally {
+                body.close()
+            }
+        }
+    }
 
     public suspend fun <T : Any> responseDecodable(klass: KClass<T>): T {
         val response = response(closeResponse = false)
@@ -70,23 +103,6 @@ public class NotificareRequest private constructor(
                 body.close()
             }
         }
-    }
-
-    private suspend fun response(closeResponse: Boolean = true): Response = suspendCoroutine { continuation ->
-        client.newCall(request).enqueue(object : Callback {
-            override fun onFailure(call: Call, e: IOException) {
-                continuation.resumeWithException(e)
-            }
-
-            override fun onResponse(call: Call, response: Response) {
-                handleResponse(
-                    response = response,
-                    closeResponse = closeResponse,
-                    refreshAuthentication = true,
-                    continuation = continuation
-                )
-            }
-        })
     }
 
     private fun handleResponse(
@@ -268,11 +284,18 @@ public class NotificareRequest private constructor(
         }
 
         public suspend fun response(): Response {
-            return build().response()
+            return build().response(true)
         }
 
         public fun response(callback: NotificareCallback<Response>): Unit =
             toCallbackFunction(::response)(callback)
+
+        public suspend fun responseString(): String {
+            return build().responseString()
+        }
+
+        public fun responseString(callback: NotificareCallback<String>): Unit =
+            toCallbackFunction(::responseString)(callback)
 
         public suspend fun <T : Any> responseDecodable(klass: KClass<T>): T {
             return build().responseDecodable(klass)
