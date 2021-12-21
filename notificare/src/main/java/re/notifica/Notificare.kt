@@ -348,7 +348,8 @@ public object Notificare {
             .post("/upload/reply", payload)
             .responseDecodable(NotificareUploadResponse::class)
 
-        "https://push.notifica.re/upload${response.filename}"
+        val host = checkNotNull(servicesInfo).pushHost
+        "$host/upload${response.filename}"
     }
 
     @InternalNotificareApi
