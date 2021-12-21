@@ -101,7 +101,7 @@ class BeaconsActivity : AppCompatActivity(), NotificareGeo.Listener {
                     NotificareBeacon.Proximity.IMMEDIATE -> binding.proximity.setImageResource(R.drawable.ic_signal_wifi_4_bar)
                     NotificareBeacon.Proximity.NEAR -> binding.proximity.setImageResource(R.drawable.ic_signal_wifi_3_bar)
                     NotificareBeacon.Proximity.FAR -> binding.proximity.setImageResource(R.drawable.ic_signal_wifi_1_bar)
-                    null -> binding.proximity.setImageDrawable(null)
+                    NotificareBeacon.Proximity.UNKNOWN -> binding.proximity.setImageDrawable(null)
                 }
             }
         }
