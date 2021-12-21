@@ -189,7 +189,7 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
             .dnd
 
         // Update current device properties.
-        currentDevice?.dnd = dnd
+        currentDevice = device.copy(dnd = dnd)
 
         return@withContext dnd
     }
@@ -206,7 +206,7 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
             .response()
 
         // Update current device properties.
-        currentDevice?.dnd = dnd
+        currentDevice = device.copy(dnd = dnd)
     }
 
     override fun updateDoNotDisturb(dnd: NotificareDoNotDisturb, callback: NotificareCallback<Unit>): Unit =
@@ -221,7 +221,7 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
             .response()
 
         // Update current device properties.
-        currentDevice?.dnd = null
+        currentDevice = device.copy(dnd = null)
     }
 
     override fun clearDoNotDisturb(callback: NotificareCallback<Unit>): Unit =
@@ -238,7 +238,7 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
             ?: mapOf()
 
         // Update current device properties.
-        currentDevice?.userData = userData
+        currentDevice = device.copy(userData = userData)
 
         return@withContext userData
     }
@@ -255,7 +255,7 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
             .response()
 
         // Update current device properties.
-        currentDevice?.userData = userData
+        currentDevice = device.copy(userData = userData)
     }
 
     override fun updateUserData(userData: NotificareUserData, callback: NotificareCallback<Unit>): Unit =

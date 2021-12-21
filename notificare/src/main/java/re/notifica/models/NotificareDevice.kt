@@ -24,8 +24,8 @@ public data class NotificareDevice internal constructor(
     val language: String,
     val region: String,
     val transport: NotificareTransport,
-    var dnd: NotificareDoNotDisturb?,
-    var userData: NotificareUserData,
+    val dnd: NotificareDoNotDisturb?,
+    val userData: NotificareUserData,
     val lastRegistered: Date,
 ) : Parcelable {
 
