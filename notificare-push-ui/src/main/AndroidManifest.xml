@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="re.notifica.push.ui">
 
+    <uses-permission android:name="android.permission.CAMERA" />
+
     <application>
 
         <activity
