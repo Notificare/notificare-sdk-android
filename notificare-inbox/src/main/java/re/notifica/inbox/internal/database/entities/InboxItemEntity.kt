@@ -26,7 +26,7 @@ internal data class InboxItemEntity(
             id = id,
             _notification = notification,
             time = time,
-            _opened = opened,
+            opened = opened,
             visible = visible,
             expires = expires,
         )

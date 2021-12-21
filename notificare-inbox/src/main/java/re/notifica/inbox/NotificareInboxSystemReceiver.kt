@@ -63,7 +63,7 @@ internal class NotificareInboxSystemReceiver : BroadcastReceiver() {
             id = inboxItemId,
             _notification = notification,
             time = Date(),
-            _opened = false,
+            opened = false,
             visible = inboxItemVisible,
             expires = inboxItemExpires,
         )
@@ -88,8 +88,7 @@ internal class NotificareInboxSystemReceiver : BroadcastReceiver() {
                     return@launch
                 }
 
-                val item = entity.toInboxItem()
-                item._opened = true
+                val item = entity.toInboxItem().copy(opened = true)
 
                 // Mark the item as read in the local inbox.
                 Notificare.inboxImplementation().database.inbox().update(InboxItemEntity.from(item))

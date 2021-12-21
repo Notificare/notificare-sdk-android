@@ -13,16 +13,13 @@ public data class NotificareInboxItem internal constructor(
     val id: String,
     @Json(name = "notification") internal var _notification: NotificareNotification,
     val time: Date,
-    @Json(name = "opened") internal var _opened: Boolean,
+    val opened: Boolean,
     internal val visible: Boolean,
     val expires: Date?,
 ) {
 
     val notification: NotificareNotification
         get() = _notification
-
-    val opened: Boolean
-        get() = _opened
 
     internal val expired: Boolean
         get() {

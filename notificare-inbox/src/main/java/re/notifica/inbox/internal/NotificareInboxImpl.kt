@@ -184,8 +184,7 @@ internal object NotificareInboxImpl : NotificareModule(), NotificareInbox {
         Notificare.events().logNotificationOpen(item.notification.id)
 
         // Mark the item as read in the local inbox.
-        item._opened = true
-        database.inbox().update(InboxItemEntity.from(item))
+        database.inbox().update(InboxItemEntity.from(item.copy(opened = true)))
 
         // No need to keep the item in the notification center.
         Notificare.removeNotificationFromNotificationCenter(item.notification)
