@@ -35,6 +35,8 @@ dependencies {
     implementation project(':notificare')
     implementation project(':notificare-push')
 
+    implementation "com.google.android.gms:play-services-base:$google_play_services_base_version"
+
     implementation platform("com.google.firebase:firebase-bom:$firebase_bom_version")
     implementation 'com.google.firebase:firebase-messaging-ktx'
 

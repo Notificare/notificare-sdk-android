@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     package="re.notifica.push.hms">
 
     <uses-permission android:name="android.permission.INTERNET" />
@@ -19,16 +18,6 @@
                 <action android:name="com.huawei.push.action.MESSAGING_EVENT" />
             </intent-filter>
         </service>
-
-        <!-- temp overwrites until HMS Core Push is updated -->
-        <receiver
-            android:name="com.huawei.hms.support.api.push.PushMsgReceiver"
-            android:exported="true"
-            tools:replace="exported" />
-        <receiver
-            android:name="com.huawei.hms.support.api.push.PushReceiver"
-            android:exported="true"
-            tools:replace="exported" />
     </application>
 
 </manifest>

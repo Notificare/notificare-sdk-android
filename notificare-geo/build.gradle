@@ -37,7 +37,6 @@ dependencies {
 
     // Android
     implementation "androidx.core:core-ktx:$androidx_core_version"
-    // implementation "androidx.lifecycle:lifecycle-livedata-ktx:$androidx_lifecycle_version"
 
     // OkHttp
     implementation "com.squareup.okhttp3:okhttp:$okhttp_version"
