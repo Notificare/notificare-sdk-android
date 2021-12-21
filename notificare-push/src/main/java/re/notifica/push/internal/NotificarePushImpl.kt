@@ -18,6 +18,8 @@ import androidx.core.app.RemoteInput
 import androidx.core.content.ContextCompat
 import androidx.core.os.BuildCompat
 import androidx.core.os.bundleOf
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import kotlinx.coroutines.*
 import org.json.JSONObject
 import re.notifica.Notificare
@@ -45,6 +47,7 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
     internal const val DEFAULT_NOTIFICATION_CHANNEL_ID: String = "notificare_channel_default"
 
     private val notificationSequence = AtomicInteger()
+    private val _observableAllowedUI = MutableLiveData<Boolean>()
 
     internal lateinit var sharedPreferences: NotificareSharedPreferences
         private set
@@ -86,6 +89,9 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
             NotificareLogger.debug("Creating the default notifications channel.")
             createDefaultChannel()
         }
+
+        // NOTE: The allowedUI is only gettable after the storage has been configured.
+        _observableAllowedUI.postValue(allowedUI)
     }
 
     override suspend fun launch() {
@@ -131,11 +137,15 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
         private set(value) {
             if (::sharedPreferences.isInitialized) {
                 sharedPreferences.allowedUI = value
+                _observableAllowedUI.postValue(value)
                 return
             }
 
             NotificareLogger.warning("Calling this method requires Notificare to have been configured.")
         }
+
+    override val observableAllowedUI: LiveData<Boolean>
+        get() = _observableAllowedUI
 
     override fun enableRemoteNotifications() {
         if (!Notificare.isReady) {

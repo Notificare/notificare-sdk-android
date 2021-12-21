@@ -1,6 +1,7 @@
 package re.notifica.push
 
 import android.content.Intent
+import androidx.lifecycle.LiveData
 import re.notifica.InternalNotificareApi
 import re.notifica.models.NotificareTransport
 import re.notifica.push.models.NotificareRemoteMessage
@@ -18,6 +19,8 @@ public interface NotificarePush {
     public val hasRemoteNotificationsEnabled: Boolean
 
     public val allowedUI: Boolean
+
+    public val observableAllowedUI: LiveData<Boolean>
 
     public fun enableRemoteNotifications()
 
