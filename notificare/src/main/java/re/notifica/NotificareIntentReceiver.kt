@@ -15,23 +15,23 @@ public open class NotificareIntentReceiver : BroadcastReceiver() {
                     intent.getParcelableExtra(INTENT_EXTRA_APPLICATION)
                 )
 
-                onReady(application)
+                onReady(context, application)
             }
             INTENT_ACTION_DEVICE_REGISTERED -> {
                 val device: NotificareDevice = requireNotNull(
                     intent.getParcelableExtra(INTENT_EXTRA_DEVICE)
                 )
 
-                onDeviceRegistered(device)
+                onDeviceRegistered(context, device)
             }
         }
     }
 
-    protected open fun onReady(application: NotificareApplication) {
+    protected open fun onReady(context: Context, application: NotificareApplication) {
         NotificareLogger.info("Notificare is ready, please override onReady if you want to receive these intents.")
     }
 
-    protected open fun onDeviceRegistered(device: NotificareDevice) {
+    protected open fun onDeviceRegistered(context: Context, device: NotificareDevice) {
         NotificareLogger.info("Device registered to Notificare, please override onDeviceRegistered if you want to receive these intents.")
     }
 

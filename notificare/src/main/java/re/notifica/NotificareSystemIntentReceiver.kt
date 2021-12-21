@@ -10,9 +10,7 @@ import re.notifica.ktx.deviceImplementation
 import java.util.*
 
 internal class NotificareSystemIntentReceiver : BroadcastReceiver() {
-    override fun onReceive(context: Context?, intent: Intent?) {
-        if (intent == null) return
-
+    override fun onReceive(context: Context, intent: Intent) {
         when (intent.action) {
             Intent.ACTION_TIMEZONE_CHANGED -> onTimeZoneChanged()
             Intent.ACTION_LOCALE_CHANGED -> onLocaleChanged()
