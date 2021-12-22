@@ -11,12 +11,12 @@ public abstract class ServiceManager : AbstractServiceManager() {
     public abstract fun getFragmentClass(notification: NotificareNotification): Class<out Fragment>
 
     internal companion object {
-        private const val FCM_FQN = "re.notifica.push.ui.fcm.internal.ServiceManager"
+        private const val GMS_FQN = "re.notifica.push.ui.gms.internal.ServiceManager"
         private const val HMS_FQN = "re.notifica.push.ui.hms.internal.ServiceManager"
 
         internal fun create(): ServiceManager {
             return Factory.create(
-                gms = FCM_FQN,
+                gms = GMS_FQN,
                 hms = HMS_FQN
             )
         }

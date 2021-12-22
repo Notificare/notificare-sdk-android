@@ -22,12 +22,12 @@ public abstract class ServiceManager : AbstractServiceManager() {
     public abstract fun clearMonitoringRegions()
 
     internal companion object {
-        private const val FCM_FQN = "re.notifica.geo.fcm.internal.ServiceManager"
+        private const val GMS_FQN = "re.notifica.geo.gms.internal.ServiceManager"
         private const val HMS_FQN = "re.notifica.geo.hms.internal.ServiceManager"
 
         internal fun create(): ServiceManager {
             return Factory.create(
-                gms = FCM_FQN,
+                gms = GMS_FQN,
                 hms = HMS_FQN
             )
         }

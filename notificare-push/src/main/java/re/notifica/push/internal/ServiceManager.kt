@@ -12,12 +12,12 @@ public abstract class ServiceManager : AbstractServiceManager() {
     public abstract fun requestPushToken()
 
     internal companion object {
-        private const val FCM_FQN = "re.notifica.push.fcm.internal.ServiceManager"
+        private const val GMS_FQN = "re.notifica.push.gms.internal.ServiceManager"
         private const val HMS_FQN = "re.notifica.push.hms.internal.ServiceManager"
 
         internal fun create(): ServiceManager {
             return Factory.create(
-                gms = FCM_FQN,
+                gms = GMS_FQN,
                 hms = HMS_FQN
             )
         }
