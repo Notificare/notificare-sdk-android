@@ -13,10 +13,6 @@ import re.notifica.push.ui.notifications.NotificationContainerFragment
 
 public open class NotificationActivity : AppCompatActivity(), NotificationContainerFragment.Callback {
 
-    public companion object {
-        public const val INTENT_EXTRA_PASSBOOK_IN_WALLET: String = "re.notifica.intent.extra.ui.PassbookInWallet"
-    }
-
     private lateinit var binding: NotificareNotificationActivityBinding
     private lateinit var notification: NotificareNotification
     private var action: NotificareNotification.Action? = null
@@ -35,6 +31,7 @@ public open class NotificationActivity : AppCompatActivity(), NotificationContai
         }
 
         supportActionBar?.hide()
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         val fragment = NotificationContainerFragment.newInstance(notification, action)
         supportFragmentManager
@@ -54,6 +51,9 @@ public open class NotificationActivity : AppCompatActivity(), NotificationContai
             Notificare.pushUIImplementation().lifecycleListeners.forEach {
                 it.onNotificationFinishedPresenting(notification)
             }
+
+            onBackPressed()
+            return true
         }
 
         return super.onOptionsItemSelected(item)
