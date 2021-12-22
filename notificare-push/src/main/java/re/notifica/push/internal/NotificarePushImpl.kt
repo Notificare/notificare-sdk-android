@@ -255,6 +255,9 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
             // Log the notification open event.
             Notificare.events().logNotificationOpen(notification.id)
 
+            // Notify the inbox to mark the item as read.
+            InboxIntegration.markItemAsRead(message)
+
             @Suppress("NAME_SHADOWING")
             val notification: NotificareNotification = try {
                 if (notification.partial) {
