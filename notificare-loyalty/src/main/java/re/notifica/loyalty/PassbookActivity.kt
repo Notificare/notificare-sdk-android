@@ -31,6 +31,8 @@ public open class PassbookActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.notificare_passbook_activity)
 
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
         // Configure the WebView.
         webView = findViewById(R.id.web_view)
         webView.settings.javaScriptEnabled = true
@@ -78,6 +80,10 @@ public open class PassbookActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
+            android.R.id.home -> {
+                onBackPressed()
+                return true
+            }
             R.id.notificare_action_add_pass_to_wallet -> {
                 Notificare.loyalty().addPass(checkNotNull(pass), object : NotificareCallback<Unit> {
                     override fun onSuccess(result: Unit) {
