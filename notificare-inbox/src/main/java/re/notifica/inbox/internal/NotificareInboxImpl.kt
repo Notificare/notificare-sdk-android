@@ -380,17 +380,13 @@ internal object NotificareInboxImpl : NotificareModule(), NotificareInbox {
         val earliestExpirationItem = items
             .filter { it.expires != null && it.expires.after(now) }
             .minByOrNull { checkNotNull(it.expires) }
+            ?: return
 
-        if (earliestExpirationItem == null) {
-            NotificareLogger.debug("Unable to determine the earliest item to expire. Skipping task...")
-            return
-        }
-
-        val initialDelaySeconds = (checkNotNull(earliestExpirationItem.expires).time - now.time) / 1000L
-        NotificareLogger.debug("Scheduling the next expiration in '$initialDelaySeconds' seconds.")
+        val initialDelayMilliseconds = checkNotNull(earliestExpirationItem.expires).time - now.time
+        NotificareLogger.debug("Scheduling the next expiration in '$initialDelayMilliseconds' milliseconds.")
 
         val task = OneTimeWorkRequestBuilder<ExpireItemWorker>()
-            .setInitialDelay(initialDelaySeconds, TimeUnit.SECONDS)
+            .setInitialDelay(initialDelayMilliseconds, TimeUnit.MILLISECONDS)
             .setConstraints(
                 Constraints.Builder()
                     .setRequiredNetworkType(NetworkType.CONNECTED)
