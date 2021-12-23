@@ -1,7 +1,6 @@
 package re.notifica.internal.modules.integrations
 
 import android.location.Location
-import kotlinx.coroutines.flow.StateFlow
 import re.notifica.InternalNotificareApi
 
 @InternalNotificareApi
