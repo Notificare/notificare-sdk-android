@@ -146,24 +146,30 @@ internal object NotificareInboxImpl : NotificareModule(), NotificareInbox {
     override suspend fun open(item: NotificareInboxItem): NotificareNotification = withContext(Dispatchers.IO) {
         checkPrerequisites()
 
-        // Remove the item from the notification center.
-        Notificare.removeNotificationFromNotificationCenter(item.notification)
+        val notification =
+            if (item.notification.partial) Notificare.fetchNotification(item.notification.id)
+            else item.notification
 
         if (item.notification.partial) {
-            item._notification = Notificare.fetchNotification(item.notification.id)
+            val entity = cachedEntities.find { it.id == item.id }
+            if (entity == null) {
+                NotificareLogger.warning("Unable to find item '${item.id}' in the local database.")
+            } else {
+                entity.notification = notification
 
-            try {
-                database.inbox().update(InboxItemEntity.from(item))
-            } catch (e: Exception) {
-                NotificareLogger.error("Failed to update the item in the local database.", e)
-                throw e
+                try {
+                    database.inbox().update(entity)
+                } catch (e: Exception) {
+                    NotificareLogger.error("Failed to update the item in the local database.", e)
+                    throw e
+                }
             }
         }
 
         // Mark the item as read & send a notification open event.
         markAsRead(item)
 
-        return@withContext item.notification
+        return@withContext notification
     }
 
     override fun open(item: NotificareInboxItem, callback: NotificareCallback<NotificareNotification>): Unit =
@@ -176,7 +182,13 @@ internal object NotificareInboxImpl : NotificareModule(), NotificareInbox {
         Notificare.events().logNotificationOpen(item.notification.id)
 
         // Mark the item as read in the local inbox.
-        database.inbox().update(InboxItemEntity.from(item.copy(opened = true)))
+        val entity = cachedEntities.find { it.id == item.id }
+        if (entity == null) {
+            NotificareLogger.warning("Unable to find item '${item.id}' in the local database.")
+        } else {
+            entity.opened = true
+            database.inbox().update(entity)
+        }
 
         // No need to keep the item in the notification center.
         Notificare.removeNotificationFromNotificationCenter(item.notification)
@@ -264,8 +276,8 @@ internal object NotificareInboxImpl : NotificareModule(), NotificareInbox {
         }
     }
 
-    internal suspend fun addItem(item: NotificareInboxItem): Unit = withContext(Dispatchers.IO) {
-        val entity = InboxItemEntity.from(item)
+    internal suspend fun addItem(item: NotificareInboxItem, visible: Boolean): Unit = withContext(Dispatchers.IO) {
+        val entity = InboxItemEntity.from(item, visible)
         addItem(entity)
     }
 

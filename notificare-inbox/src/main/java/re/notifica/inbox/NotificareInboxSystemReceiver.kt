@@ -8,7 +8,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import re.notifica.Notificare
-import re.notifica.inbox.internal.database.entities.InboxItemEntity
 import re.notifica.inbox.ktx.inboxImplementation
 import re.notifica.inbox.models.NotificareInboxItem
 import re.notifica.internal.NotificareLogger
@@ -61,17 +60,16 @@ internal class NotificareInboxSystemReceiver : BroadcastReceiver() {
 
         val item = NotificareInboxItem(
             id = inboxItemId,
-            _notification = notification,
+            notification = notification,
             time = Date(),
             opened = false,
-            visible = inboxItemVisible,
             expires = inboxItemExpires,
         )
 
         GlobalScope.launch {
             try {
                 NotificareLogger.debug("Adding inbox item to the database.")
-                Notificare.inboxImplementation().addItem(item)
+                Notificare.inboxImplementation().addItem(item, inboxItemVisible)
             } catch (e: Exception) {
                 NotificareLogger.error("Failed to save inbox item to the database.", e)
             }
@@ -88,10 +86,9 @@ internal class NotificareInboxSystemReceiver : BroadcastReceiver() {
                     return@launch
                 }
 
-                val item = entity.toInboxItem().copy(opened = true)
-
                 // Mark the item as read in the local inbox.
-                Notificare.inboxImplementation().database.inbox().update(InboxItemEntity.from(item))
+                entity.opened = true
+                Notificare.inboxImplementation().database.inbox().update(entity)
             } catch (e: Exception) {
                 NotificareLogger.error("Failed to mark item '$id' as read.", e)
             }
