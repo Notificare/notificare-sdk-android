@@ -1,6 +1,5 @@
 package re.notifica.models
 
-import android.content.Context
 import android.os.Parcelable
 import com.squareup.moshi.JsonClass
 import kotlinx.parcelize.Parcelize
@@ -107,7 +106,7 @@ public data class NotificareApplication(
         val type: String,
         val name: String,
         val description: String?,
-        val actions: List<Action>
+        val actions: List<NotificareNotification.Action>,
     ) : Parcelable {
 
         public fun toJson(): JSONObject {
@@ -121,70 +120,6 @@ public data class NotificareApplication(
             public fun fromJson(json: JSONObject): ActionCategory {
                 val jsonStr = json.toString()
                 return requireNotNull(adapter.fromJson(jsonStr))
-            }
-        }
-
-        @Parcelize
-        @JsonClass(generateAdapter = true)
-        public data class Action(
-            val type: String,
-            val label: String,
-            val target: String?,
-            val camera: Boolean,
-            val keyboard: Boolean,
-            val destructive: Boolean,
-            val icon: Icon?,
-        ) : Parcelable {
-
-            public fun getLocalizedLabel(context: Context): String {
-                val prefix = Notificare.options?.notificationActionLabelPrefix ?: ""
-                val resourceName = "$prefix$label"
-                val resource = context.resources.getIdentifier(resourceName, "string", context.packageName)
-
-                return if (resource == 0) label else context.getString(resource)
-            }
-
-            public fun getIconResource(context: Context): Int {
-                val icon = icon?.android ?: return 0
-
-                return context.resources.getIdentifier(icon, "drawable", "android")
-            }
-
-            public fun toJson(): JSONObject {
-                val jsonStr = adapter.toJson(this)
-                return JSONObject(jsonStr)
-            }
-
-            public companion object {
-                private val adapter = Notificare.moshi.adapter(Action::class.java)
-
-                public fun fromJson(json: JSONObject): Action {
-                    val jsonStr = json.toString()
-                    return requireNotNull(adapter.fromJson(jsonStr))
-                }
-            }
-
-            @Parcelize
-            @JsonClass(generateAdapter = true)
-            public data class Icon(
-                val android: String?,
-                val ios: String?,
-                val web: String?,
-            ) : Parcelable {
-
-                public fun toJson(): JSONObject {
-                    val jsonStr = adapter.toJson(this)
-                    return JSONObject(jsonStr)
-                }
-
-                public companion object {
-                    private val adapter = Notificare.moshi.adapter(Icon::class.java)
-
-                    public fun fromJson(json: JSONObject): Icon {
-                        val jsonStr = json.toString()
-                        return requireNotNull(adapter.fromJson(jsonStr))
-                    }
-                }
             }
         }
     }

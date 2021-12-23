@@ -93,6 +93,8 @@ public data class NotificareNotification(
         val target: String?,
         val camera: Boolean,
         val keyboard: Boolean,
+        val destructive: Boolean = false,
+        val icon: Icon?,
     ) : Parcelable {
 
         public fun getLocalizedLabel(context: Context): String {
@@ -101,6 +103,12 @@ public data class NotificareNotification(
             val resource = context.resources.getIdentifier(resourceName, "string", context.packageName)
 
             return if (resource == 0) label else context.getString(resource)
+        }
+
+        public fun getIconResource(context: Context): Int {
+            val icon = icon?.android ?: return 0
+
+            return context.resources.getIdentifier(icon, "drawable", "android")
         }
 
         public fun toJson(): JSONObject {
@@ -123,6 +131,29 @@ public data class NotificareNotification(
             public fun fromJson(json: JSONObject): Action {
                 val jsonStr = json.toString()
                 return requireNotNull(adapter.fromJson(jsonStr))
+            }
+        }
+
+        @Parcelize
+        @JsonClass(generateAdapter = true)
+        public data class Icon(
+            val android: String?,
+            val ios: String?,
+            val web: String?,
+        ) : Parcelable {
+
+            public fun toJson(): JSONObject {
+                val jsonStr = adapter.toJson(this)
+                return JSONObject(jsonStr)
+            }
+
+            public companion object {
+                private val adapter = Notificare.moshi.adapter(Icon::class.java)
+
+                public fun fromJson(json: JSONObject): Icon {
+                    val jsonStr = json.toString()
+                    return requireNotNull(adapter.fromJson(jsonStr))
+                }
             }
         }
     }
