@@ -176,9 +176,9 @@ public open class PassbookActivity : AppCompatActivity() {
         val pathSegments = uri.pathSegments ?: return null
 
         val application = Notificare.application ?: return null
-        val dynamicLinksHost = Notificare.servicesInfo?.appLinksDomain ?: return null
+        val appLinksDomain = Notificare.servicesInfo?.appLinksDomain ?: return null
 
-        if (uri.host == "${application.id}.${dynamicLinksHost}" && pathSegments.size >= 2 && pathSegments[0] == "pass") {
+        if (uri.host == "${application.id}.${appLinksDomain}" && pathSegments.size >= 2 && pathSegments[0] == "pass") {
             return pathSegments[1]
         }
 
