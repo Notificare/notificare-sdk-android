@@ -48,8 +48,8 @@ internal object NotificareInboxImpl : NotificareModule(), NotificareInbox {
         _observableItems.postValue(items)
 
         // Update (observable) badge.
-        _badge = visibleItems.count { !it.opened }
-        _observableBadge.postValue(_badge)
+        badge = items.count { !it.opened }
+        _observableBadge.postValue(badge)
 
         // Schedule the expiration task.
         scheduleExpirationTask(entities)
@@ -58,8 +58,6 @@ internal object NotificareInboxImpl : NotificareModule(), NotificareInbox {
     private val cachedEntities: SortedSet<InboxItemEntity> = sortedSetOf(
         Comparator { lhs, rhs -> rhs.time.compareTo(lhs.time) }
     )
-
-    private var _badge: Int = 0
 
     private val _observableItems = MutableLiveData<SortedSet<NotificareInboxItem>>(sortedSetOf())
     private val _observableBadge = MutableLiveData(0)
@@ -101,7 +99,7 @@ internal object NotificareInboxImpl : NotificareModule(), NotificareInbox {
                 .toSortedSet { lhs, rhs -> rhs.time.compareTo(lhs.time) }
         }
 
-    override val badge: Int
+    override var badge: Int = 0
         get() {
             val application = Notificare.application ?: run {
                 NotificareLogger.warning("Notificare application is not yet available.")
@@ -118,7 +116,7 @@ internal object NotificareInboxImpl : NotificareModule(), NotificareInbox {
                 return 0
             }
 
-            return _badge
+            return field
         }
 
     override val observableItems: LiveData<SortedSet<NotificareInboxItem>> = _observableItems
