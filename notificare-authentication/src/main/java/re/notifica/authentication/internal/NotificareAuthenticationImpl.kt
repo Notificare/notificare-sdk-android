@@ -392,35 +392,31 @@ internal object NotificareAuthenticationImpl : NotificareModule(), NotificareAut
     ): Unit = toCallbackFunction(suspend { removeUserSegmentFromPreference(option, preference) })(callback)
 
     override fun parsePasswordResetToken(intent: Intent): String? {
-        val application = Notificare.application ?: return null
         val uri = intent.data ?: return null
-        val host = uri.host ?: return null
         val pathSegments = uri.pathSegments ?: return null
 
-        if (
-            !host.startsWith(application.id) ||
-            pathSegments.size < 3 ||
-            pathSegments[0] != "oauth" ||
-            pathSegments[1] != "resetpassword"
-        ) return null
+        val application = Notificare.application ?: return null
+        val appLinksDomain = Notificare.servicesInfo?.appLinksDomain ?: return null
 
-        return pathSegments[2]
+        if (uri.host == "${application.id}.${appLinksDomain}" && pathSegments.size >= 3 && pathSegments[0] == "oauth" && pathSegments[1] == "resetpassword") {
+            return pathSegments[2]
+        }
+
+        return null
     }
 
     override fun parseValidateUserToken(intent: Intent): String? {
-        val application = Notificare.application ?: return null
         val uri = intent.data ?: return null
-        val host = uri.host ?: return null
         val pathSegments = uri.pathSegments ?: return null
 
-        if (
-            !host.startsWith(application.id) ||
-            pathSegments.size < 3 ||
-            pathSegments[0] != "oauth" ||
-            pathSegments[1] != "validate"
-        ) return null
+        val application = Notificare.application ?: return null
+        val appLinksDomain = Notificare.servicesInfo?.appLinksDomain ?: return null
 
-        return pathSegments[2]
+        if (uri.host == "${application.id}.${appLinksDomain}" && pathSegments.size >= 3 && pathSegments[0] == "oauth" && pathSegments[1] == "validate") {
+            return pathSegments[2]
+        }
+
+        return null
     }
 
     // endregion
