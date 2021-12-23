@@ -278,7 +278,7 @@ internal object NotificareInboxImpl : NotificareModule(), NotificareInbox {
     }
 
     internal fun handleExpiredItem(id: String) {
-        val item = items.find { it.id == id }
+        val item = cachedEntities.find { it.id == id }?.toInboxItem()
 
         if (item != null) {
             Notificare.removeNotificationFromNotificationCenter(item.notification)
