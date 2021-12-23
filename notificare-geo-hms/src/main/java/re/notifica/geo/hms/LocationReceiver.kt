@@ -8,14 +8,15 @@ import com.huawei.hms.location.Geofence
 import com.huawei.hms.location.GeofenceData
 import com.huawei.hms.location.LocationResult
 import re.notifica.Notificare
-import re.notifica.geo.NotificareInternalGeo
 import re.notifica.geo.hms.ktx.geoInternal
+import re.notifica.geo.ktx.INTENT_ACTION_GEOFENCE_TRANSITION
+import re.notifica.geo.ktx.INTENT_ACTION_LOCATION_UPDATED
 import re.notifica.internal.NotificareLogger
 
 internal class LocationReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         when (intent.action) {
-            NotificareInternalGeo.INTENT_ACTION_LOCATION_UPDATED -> {
+            Notificare.INTENT_ACTION_LOCATION_UPDATED -> {
                 if (LocationResult.hasResult(intent)) {
                     val result = LocationResult.extractResult(intent)
                     val location = result.lastLocation
@@ -23,7 +24,7 @@ internal class LocationReceiver : BroadcastReceiver() {
                     onLocationUpdated(location)
                 }
             }
-            NotificareInternalGeo.INTENT_ACTION_GEOFENCE_TRANSITION -> {
+            Notificare.INTENT_ACTION_GEOFENCE_TRANSITION -> {
                 val event = GeofenceData.getDataFromIntent(intent)
                 if (event.isFailure) {
                     NotificareLogger.warning("Geofencing error: ${event.errorCode}")

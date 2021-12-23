@@ -37,18 +37,6 @@ public interface NotificareGeo {
 }
 
 public interface NotificareInternalGeo {
-
-    @InternalNotificareApi
-    public companion object {
-        public const val INTENT_ACTION_LOCATION_UPDATED: String = "re.notifica.intent.action.LocationUpdated"
-        public const val INTENT_ACTION_GEOFENCE_TRANSITION: String = "re.notifica.intent.action.GeofenceTransition"
-
-        public const val DEFAULT_LOCATION_UPDATES_INTERVAL: Long = (60 * 1000).toLong()
-        public const val DEFAULT_LOCATION_UPDATES_FASTEST_INTERVAL: Long = (30 * 1000).toLong()
-        public const val DEFAULT_LOCATION_UPDATES_SMALLEST_DISPLACEMENT: Double = 10.0
-        public const val DEFAULT_GEOFENCE_RESPONSIVENESS: Int = 0
-    }
-
     @InternalNotificareApi
     public fun handleLocationUpdate(location: Location)
 

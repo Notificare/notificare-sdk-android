@@ -29,6 +29,8 @@ import re.notifica.geo.models.NotificareLocation
 import re.notifica.geo.models.NotificareRegion
 import re.notifica.ktx.device
 import re.notifica.models.*
+import re.notifica.push.ktx.INTENT_ACTION_ACTION_OPENED
+import re.notifica.push.ktx.INTENT_ACTION_NOTIFICATION_OPENED
 import re.notifica.push.ktx.push
 import re.notifica.push.ui.NotificarePushUI
 import re.notifica.push.ui.ktx.pushUI
@@ -115,7 +117,7 @@ class MainActivity : AppCompatActivity(), Notificare.OnReadyListener, Notificare
         if (Notificare.handleDynamicLinkIntent(this, intent)) return
 
         when (intent.action) {
-            Notificare.push().INTENT_ACTION_NOTIFICATION_OPENED -> {
+            Notificare.INTENT_ACTION_NOTIFICATION_OPENED -> {
                 val notification: NotificareNotification = requireNotNull(
                     intent.getParcelableExtra(Notificare.INTENT_EXTRA_NOTIFICATION)
                 )
@@ -129,7 +131,7 @@ class MainActivity : AppCompatActivity(), Notificare.OnReadyListener, Notificare
 
                 return
             }
-            Notificare.push().INTENT_ACTION_ACTION_OPENED -> {
+            Notificare.INTENT_ACTION_ACTION_OPENED -> {
                 val notification: NotificareNotification = requireNotNull(
                     intent.getParcelableExtra(Notificare.INTENT_EXTRA_NOTIFICATION)
                 )

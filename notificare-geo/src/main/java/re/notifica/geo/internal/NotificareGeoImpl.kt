@@ -18,6 +18,7 @@ import re.notifica.geo.NotificareInternalGeo
 import re.notifica.geo.NotificareLocationHardwareUnavailableException
 import re.notifica.geo.internal.network.push.*
 import re.notifica.geo.internal.storage.LocalStorage
+import re.notifica.geo.ktx.DEFAULT_LOCATION_UPDATES_SMALLEST_DISPLACEMENT
 import re.notifica.geo.ktx.logBeaconSession
 import re.notifica.geo.ktx.logRegionSession
 import re.notifica.geo.ktx.loyaltyIntegration
@@ -557,7 +558,7 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
 
     private fun shouldUpdateLocation(location: Location): Boolean {
         if (lastKnownLocation == null) return true
-        return location.distanceTo(lastKnownLocation) > NotificareInternalGeo.DEFAULT_LOCATION_UPDATES_SMALLEST_DISPLACEMENT
+        return location.distanceTo(lastKnownLocation) > Notificare.DEFAULT_LOCATION_UPDATES_SMALLEST_DISPLACEMENT
     }
 
     private suspend fun updateLocation(location: Location, country: String?): Unit = withContext(Dispatchers.IO) {

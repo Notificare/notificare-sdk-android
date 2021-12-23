@@ -35,10 +35,7 @@ import re.notifica.loyalty.internal.storage.LocalStorage
 import re.notifica.loyalty.internal.storage.database.LoyaltyDatabase
 import re.notifica.loyalty.internal.storage.database.entities.PassEntity
 import re.notifica.loyalty.internal.workers.PassRelevanceUpdateWorker
-import re.notifica.loyalty.ktx.INTENT_ACTION_PASSBOOK_OPENED
-import re.notifica.loyalty.ktx.INTENT_EXTRA_PASSBOOK
-import re.notifica.loyalty.ktx.geoIntegration
-import re.notifica.loyalty.ktx.loyalty
+import re.notifica.loyalty.ktx.*
 import re.notifica.loyalty.models.NotificarePass
 import re.notifica.models.NotificareApplication
 import re.notifica.models.NotificareNotification
@@ -779,7 +776,7 @@ internal object NotificareLoyaltyImpl : NotificareModule(), NotificareLoyalty, N
 
         // Create an intent for notification delete
         val deleteIntent = Intent(Notificare.requireContext(), NotificareLoyaltyIntentReceiver::class.java)
-            .setAction(NotificareLoyaltyIntentReceiver.INTENT_ACTION_RELEVANCE_NOTIFICATION_DELETED)
+            .setAction(Notificare.INTENT_ACTION_RELEVANCE_NOTIFICATION_DELETED)
             .putExtras(notificationIntent.extras ?: bundleOf())
 
         val deletePendingIntent = PendingIntent.getBroadcast(

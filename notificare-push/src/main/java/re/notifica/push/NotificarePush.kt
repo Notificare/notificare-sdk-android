@@ -8,12 +8,6 @@ import re.notifica.push.models.NotificareRemoteMessage
 
 public interface NotificarePush {
 
-    public val INTENT_ACTION_NOTIFICATION_OPENED: String
-        get() = "re.notifica.intent.action.NotificationOpened"
-
-    public val INTENT_ACTION_ACTION_OPENED: String
-        get() = "re.notifica.intent.action.ActionOpened"
-
     public var intentReceiver: Class<out NotificarePushIntentReceiver>
 
     public val hasRemoteNotificationsEnabled: Boolean

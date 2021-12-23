@@ -29,6 +29,13 @@ public object Notificare {
 
     public const val SDK_VERSION: String = BuildConfig.SDK_VERSION
 
+    // Intent actions
+    internal const val INTENT_ACTION_READY = "re.notifica.intent.action.Ready"
+    internal const val INTENT_ACTION_DEVICE_REGISTERED = "re.notifica.intent.action.DeviceRegistered"
+
+    // Intent extras
+    public const val INTENT_EXTRA_APPLICATION: String = "re.notifica.intent.extra.Application"
+    public const val INTENT_EXTRA_DEVICE: String = "re.notifica.intent.extra.Device"
     public const val INTENT_EXTRA_NOTIFICATION: String = "re.notifica.intent.extra.Notification"
     public const val INTENT_EXTRA_ACTION: String = "re.notifica.intent.extra.Action"
 
@@ -168,8 +175,8 @@ public object Notificare {
                 // We're done launching. Send a broadcast.
                 requireContext().sendBroadcast(
                     Intent(requireContext(), intentReceiver)
-                        .setAction(NotificareIntentReceiver.INTENT_ACTION_READY)
-                        .putExtra(NotificareIntentReceiver.INTENT_EXTRA_APPLICATION, application)
+                        .setAction(INTENT_ACTION_READY)
+                        .putExtra(INTENT_EXTRA_APPLICATION, application)
                 )
 
                 // Notify the listeners.

@@ -36,9 +36,7 @@ import re.notifica.models.NotificareNotification
 import re.notifica.models.NotificareTransport
 import re.notifica.push.*
 import re.notifica.push.internal.network.push.DeviceUpdateNotificationSettingsPayload
-import re.notifica.push.ktx.deviceInternal
-import re.notifica.push.ktx.logNotificationReceived
-import re.notifica.push.ktx.loyaltyIntegration
+import re.notifica.push.ktx.*
 import re.notifica.push.models.*
 import java.util.concurrent.atomic.AtomicInteger
 
@@ -193,12 +191,12 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
     }
 
     override fun handleTrampolineIntent(intent: Intent): Boolean {
-        if (intent.action != NotificarePushIntentReceiver.INTENT_ACTION_REMOTE_MESSAGE_OPENED) {
+        if (intent.action != Notificare.INTENT_ACTION_REMOTE_MESSAGE_OPENED) {
             return false
         }
 
         handleTrampolineMessage(
-            message = requireNotNull(intent.getParcelableExtra(NotificarePushIntentReceiver.INTENT_EXTRA_REMOTE_MESSAGE)),
+            message = requireNotNull(intent.getParcelableExtra(Notificare.INTENT_EXTRA_REMOTE_MESSAGE)),
             notification = requireNotNull(intent.getParcelableExtra(Notificare.INTENT_EXTRA_NOTIFICATION)),
             action = intent.getParcelableExtra(Notificare.INTENT_EXTRA_ACTION)
         )
@@ -236,7 +234,7 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
 
                 Notificare.requireContext().sendBroadcast(
                     Intent(Notificare.requireContext(), intentReceiver)
-                        .setAction(NotificarePushIntentReceiver.INTENT_ACTION_UNKNOWN_NOTIFICATION_RECEIVED)
+                        .setAction(Notificare.INTENT_ACTION_UNKNOWN_NOTIFICATION_RECEIVED)
                         .putExtra(Notificare.INTENT_EXTRA_NOTIFICATION, notification)
                 )
             }
@@ -274,13 +272,13 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
             if (action == null) {
                 Notificare.requireContext().sendBroadcast(
                     Intent(Notificare.requireContext(), intentReceiver)
-                        .setAction(INTENT_ACTION_NOTIFICATION_OPENED)
+                        .setAction(Notificare.INTENT_ACTION_NOTIFICATION_OPENED)
                         .putExtra(Notificare.INTENT_EXTRA_NOTIFICATION, notification)
                 )
             } else {
                 Notificare.requireContext().sendBroadcast(
                     Intent(Notificare.requireContext(), intentReceiver)
-                        .setAction(INTENT_ACTION_ACTION_OPENED)
+                        .setAction(Notificare.INTENT_ACTION_ACTION_OPENED)
                         .putExtra(Notificare.INTENT_EXTRA_NOTIFICATION, notification)
                         .putExtra(Notificare.INTENT_EXTRA_ACTION, action)
                 )
@@ -289,8 +287,8 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
             // Notify the consumer's custom activity about the notification open event.
             val notificationIntent = Intent()
                 .setAction(
-                    if (action == null) INTENT_ACTION_NOTIFICATION_OPENED
-                    else INTENT_ACTION_ACTION_OPENED
+                    if (action == null) Notificare.INTENT_ACTION_NOTIFICATION_OPENED
+                    else Notificare.INTENT_ACTION_ACTION_OPENED
                 )
                 .putExtra(Notificare.INTENT_EXTRA_NOTIFICATION, notification)
                 .putExtra(Notificare.INTENT_EXTRA_ACTION, action)
@@ -396,7 +394,7 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
 
             Notificare.requireContext().sendBroadcast(
                 Intent(Notificare.requireContext(), intentReceiver)
-                    .setAction(NotificarePushIntentReceiver.INTENT_ACTION_SYSTEM_NOTIFICATION_RECEIVED)
+                    .setAction(Notificare.INTENT_ACTION_SYSTEM_NOTIFICATION_RECEIVED)
                     .putExtra(Notificare.INTENT_EXTRA_NOTIFICATION, notification)
             )
         }
@@ -426,7 +424,7 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
 
             Notificare.requireContext().sendBroadcast(
                 Intent(Notificare.requireContext(), intentReceiver)
-                    .setAction(NotificarePushIntentReceiver.INTENT_ACTION_NOTIFICATION_RECEIVED)
+                    .setAction(Notificare.INTENT_ACTION_NOTIFICATION_RECEIVED)
                     .putExtra(Notificare.INTENT_EXTRA_NOTIFICATION, notification)
             )
         }
@@ -437,7 +435,7 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
         notification: NotificareNotification
     ) {
         val extras = bundleOf(
-            NotificarePushIntentReceiver.INTENT_EXTRA_REMOTE_MESSAGE to message,
+            Notificare.INTENT_EXTRA_REMOTE_MESSAGE to message,
             Notificare.INTENT_EXTRA_NOTIFICATION to notification,
         )
 
@@ -445,7 +443,7 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
             Notificare.requireContext(),
             createUniqueNotificationId(),
             Intent().apply {
-                action = NotificarePushIntentReceiver.INTENT_ACTION_REMOTE_MESSAGE_OPENED
+                action = Notificare.INTENT_ACTION_REMOTE_MESSAGE_OPENED
                 setPackage(Notificare.requireContext().packageName)
                 putExtras(extras)
             },
@@ -546,7 +544,7 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
 
                 val actionIntent = if (useQuickResponse) {
                     Intent(Notificare.requireContext(), NotificarePushSystemIntentReceiver::class.java).apply {
-                        setAction(NotificarePushSystemIntentReceiver.INTENT_ACTION_QUICK_RESPONSE)
+                        setAction(Notificare.INTENT_ACTION_QUICK_RESPONSE)
                         setPackage(Notificare.requireContext().packageName)
 
                         putExtras(extras)
@@ -554,7 +552,7 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
                     }
                 } else {
                     Intent().apply {
-                        setAction(NotificarePushIntentReceiver.INTENT_ACTION_REMOTE_MESSAGE_OPENED)
+                        setAction(Notificare.INTENT_ACTION_REMOTE_MESSAGE_OPENED)
                         setPackage(Notificare.requireContext().packageName)
 
                         putExtras(extras)
@@ -593,7 +591,7 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
                     ).apply {
                         if (useRemoteInput) {
                             addRemoteInput(
-                                RemoteInput.Builder(NotificarePushIntentReceiver.INTENT_EXTRA_TEXT_RESPONSE)
+                                RemoteInput.Builder(Notificare.INTENT_EXTRA_TEXT_RESPONSE)
                                     .setLabel(action.getLocalizedLabel(Notificare.requireContext()))
                                     .build()
                             )

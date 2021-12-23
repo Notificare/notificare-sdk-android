@@ -12,20 +12,17 @@ import re.notifica.Notificare
 import re.notifica.internal.NotificareLogger
 import re.notifica.ktx.events
 import re.notifica.models.NotificareNotification
-import re.notifica.push.NotificarePushIntentReceiver
+import re.notifica.push.ktx.INTENT_ACTION_QUICK_RESPONSE
+import re.notifica.push.ktx.INTENT_EXTRA_REMOTE_MESSAGE
+import re.notifica.push.ktx.INTENT_EXTRA_TEXT_RESPONSE
 import re.notifica.push.models.NotificareNotificationRemoteMessage
 
 internal class NotificarePushSystemIntentReceiver : BroadcastReceiver() {
-
-    companion object {
-        const val INTENT_ACTION_QUICK_RESPONSE = "re.notifica.intent.action.NotificationQuickResponse"
-    }
-
     override fun onReceive(context: Context, intent: Intent) {
         when (intent.action) {
-            INTENT_ACTION_QUICK_RESPONSE -> {
+            Notificare.INTENT_ACTION_QUICK_RESPONSE -> {
                 val message: NotificareNotificationRemoteMessage = requireNotNull(
-                    intent.getParcelableExtra(NotificarePushIntentReceiver.INTENT_EXTRA_REMOTE_MESSAGE)
+                    intent.getParcelableExtra(Notificare.INTENT_EXTRA_REMOTE_MESSAGE)
                 )
 
                 val notification: NotificareNotification = requireNotNull(
@@ -37,7 +34,7 @@ internal class NotificarePushSystemIntentReceiver : BroadcastReceiver() {
                 )
 
                 val responseText = RemoteInput.getResultsFromIntent(intent)
-                    ?.getCharSequence(NotificarePushIntentReceiver.INTENT_EXTRA_TEXT_RESPONSE)
+                    ?.getCharSequence(Notificare.INTENT_EXTRA_TEXT_RESPONSE)
                     ?.toString()
 
                 onQuickResponse(message, notification, action, responseText)

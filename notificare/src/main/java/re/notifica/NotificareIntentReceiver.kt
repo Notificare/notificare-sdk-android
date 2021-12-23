@@ -10,16 +10,16 @@ import re.notifica.models.NotificareDevice
 public open class NotificareIntentReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         when (intent.action) {
-            INTENT_ACTION_READY -> {
+            Notificare.INTENT_ACTION_READY -> {
                 val application: NotificareApplication = requireNotNull(
-                    intent.getParcelableExtra(INTENT_EXTRA_APPLICATION)
+                    intent.getParcelableExtra(Notificare.INTENT_EXTRA_APPLICATION)
                 )
 
                 onReady(context, application)
             }
-            INTENT_ACTION_DEVICE_REGISTERED -> {
+            Notificare.INTENT_ACTION_DEVICE_REGISTERED -> {
                 val device: NotificareDevice = requireNotNull(
-                    intent.getParcelableExtra(INTENT_EXTRA_DEVICE)
+                    intent.getParcelableExtra(Notificare.INTENT_EXTRA_DEVICE)
                 )
 
                 onDeviceRegistered(context, device)
@@ -33,13 +33,5 @@ public open class NotificareIntentReceiver : BroadcastReceiver() {
 
     protected open fun onDeviceRegistered(context: Context, device: NotificareDevice) {
         NotificareLogger.info("Device registered to Notificare, please override onDeviceRegistered if you want to receive these intents.")
-    }
-
-    public companion object {
-        internal const val INTENT_ACTION_READY = "re.notifica.intent.action.Ready"
-        internal const val INTENT_ACTION_DEVICE_REGISTERED = "re.notifica.intent.action.DeviceRegistered"
-
-        internal const val INTENT_EXTRA_APPLICATION = "re.notifica.intent.extra.Application"
-        internal const val INTENT_EXTRA_DEVICE = "re.notifica.intent.extra.Device"
     }
 }

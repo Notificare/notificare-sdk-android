@@ -10,11 +10,11 @@ import com.huawei.hms.location.*
 import kotlinx.coroutines.Deferred
 import re.notifica.InternalNotificareApi
 import re.notifica.Notificare
-import re.notifica.geo.NotificareInternalGeo
 import re.notifica.geo.hms.LocationReceiver
 import re.notifica.geo.hms.internal.ktx.asDeferred
 import re.notifica.geo.hms.ktx.geoInternal
 import re.notifica.geo.internal.ServiceManager
+import re.notifica.geo.ktx.*
 import re.notifica.geo.models.NotificareRegion
 import re.notifica.internal.NotificareLogger
 
@@ -42,7 +42,7 @@ public class ServiceManager : ServiceManager() {
         // region Setup location pending intent
 
         val locationIntent = Intent(context, LocationReceiver::class.java)
-            .setAction(NotificareInternalGeo.INTENT_ACTION_LOCATION_UPDATED)
+            .setAction(Notificare.INTENT_ACTION_LOCATION_UPDATED)
 
         locationPendingIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             PendingIntent.getBroadcast(
@@ -65,7 +65,7 @@ public class ServiceManager : ServiceManager() {
         // region Setup geofencing pending intent
 
         val geofencingIntent = Intent(context, LocationReceiver::class.java)
-            .setAction(NotificareInternalGeo.INTENT_ACTION_GEOFENCE_TRANSITION)
+            .setAction(Notificare.INTENT_ACTION_GEOFENCE_TRANSITION)
 
         geofencingPendingIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             PendingIntent.getBroadcast(
@@ -101,10 +101,10 @@ public class ServiceManager : ServiceManager() {
             }
 
             val request = LocationRequest.create()
-                .setInterval(NotificareInternalGeo.DEFAULT_LOCATION_UPDATES_INTERVAL)
-                .setFastestInterval(NotificareInternalGeo.DEFAULT_LOCATION_UPDATES_FASTEST_INTERVAL)
+                .setInterval(Notificare.DEFAULT_LOCATION_UPDATES_INTERVAL)
+                .setFastestInterval(Notificare.DEFAULT_LOCATION_UPDATES_FASTEST_INTERVAL)
                 .setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY)
-                .setSmallestDisplacement(NotificareInternalGeo.DEFAULT_LOCATION_UPDATES_SMALLEST_DISPLACEMENT.toFloat())
+                .setSmallestDisplacement(Notificare.DEFAULT_LOCATION_UPDATES_SMALLEST_DISPLACEMENT.toFloat())
 
             fusedLocationClient.requestLocationUpdates(request, locationPendingIntent)
                 .addOnSuccessListener {
@@ -144,7 +144,7 @@ public class ServiceManager : ServiceManager() {
                 )
                 .setConversions(Geofence.ENTER_GEOFENCE_CONVERSION or Geofence.EXIT_GEOFENCE_CONVERSION)
                 .setValidContinueTime(Geofence.GEOFENCE_NEVER_EXPIRE)
-                .setNotificationInterval(NotificareInternalGeo.DEFAULT_GEOFENCE_RESPONSIVENESS)
+                .setNotificationInterval(Notificare.DEFAULT_GEOFENCE_RESPONSIVENESS)
                 .build()
         }
 

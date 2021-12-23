@@ -363,8 +363,8 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
         // Send a device registered broadcast.
         Notificare.requireContext().sendBroadcast(
             Intent(Notificare.requireContext(), Notificare.intentReceiver)
-                .setAction(NotificareIntentReceiver.INTENT_ACTION_DEVICE_REGISTERED)
-                .putExtra(NotificareIntentReceiver.INTENT_EXTRA_DEVICE, checkNotNull(currentDevice))
+                .setAction(Notificare.INTENT_ACTION_DEVICE_REGISTERED)
+                .putExtra(Notificare.INTENT_EXTRA_DEVICE, checkNotNull(currentDevice))
         )
     }
 
