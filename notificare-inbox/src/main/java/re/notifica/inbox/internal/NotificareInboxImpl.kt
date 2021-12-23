@@ -43,9 +43,9 @@ internal object NotificareInboxImpl : NotificareModule(), NotificareInbox {
         cachedEntities.clear()
         cachedEntities.addAll(entities)
 
-        // Update observable items.
-        val visibleItems = visibleItems
-        _observableItems.postValue(visibleItems)
+        // Update (observable) items.
+        val items = items
+        _observableItems.postValue(items)
 
         // Update (observable) badge.
         _badge = visibleItems.count { !it.opened }
@@ -63,14 +63,6 @@ internal object NotificareInboxImpl : NotificareModule(), NotificareInbox {
 
     private val _observableItems = MutableLiveData<SortedSet<NotificareInboxItem>>(sortedSetOf())
     private val _observableBadge = MutableLiveData(0)
-
-    private val visibleItems: SortedSet<NotificareInboxItem>
-        get() {
-            return cachedEntities
-                .map { it.toInboxItem() }
-                .filter { it.visible && !it.expired }
-                .toSortedSet { lhs, rhs -> rhs.time.compareTo(lhs.time) }
-        }
 
     // region Notificare Module
 
@@ -104,7 +96,9 @@ internal object NotificareInboxImpl : NotificareModule(), NotificareInbox {
                 return sortedSetOf()
             }
 
-            return visibleItems
+            return cachedEntities
+                .map { it.toInboxItem() }
+                .toSortedSet { lhs, rhs -> rhs.time.compareTo(lhs.time) }
         }
 
     override val badge: Int

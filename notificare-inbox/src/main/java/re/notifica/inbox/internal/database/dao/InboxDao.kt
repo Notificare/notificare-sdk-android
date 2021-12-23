@@ -7,7 +7,7 @@ import re.notifica.inbox.internal.database.entities.InboxItemEntity
 @Dao
 internal interface InboxDao {
 
-    @Query("SELECT * FROM inbox")
+    @Query("SELECT * FROM inbox WHERE (visible IS NULL OR visible == 1) AND (expires IS NULL OR expires > strftime('%s', 'now') || substr(strftime('%f', 'now'), 4))")
     fun getLiveItems(): LiveData<List<InboxItemEntity>>
 
     @Query("SELECT * FROM inbox WHERE id = :id LIMIT 1")

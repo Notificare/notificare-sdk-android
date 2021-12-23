@@ -21,12 +21,6 @@ public data class NotificareInboxItem internal constructor(
     val notification: NotificareNotification
         get() = _notification
 
-    internal val expired: Boolean
-        get() {
-            val expiresAt = expires ?: return false
-            return expiresAt.before(Date())
-        }
-
     public fun toJson(): JSONObject {
         val jsonStr = adapter.toJson(this)
         return JSONObject(jsonStr)
