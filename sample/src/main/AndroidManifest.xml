@@ -95,7 +95,6 @@
             android:name="re.notifica.push.ui.NotificationActivity"
             android:exported="false"
             android:hardwareAccelerated="true"
-            android:parentActivityName=".MainActivity"
             android:theme="@style/Theme.Notificare.Translucent" />
         <activity
             android:name="re.notifica.loyalty.PassbookActivity"
