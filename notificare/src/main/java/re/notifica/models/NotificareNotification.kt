@@ -93,7 +93,7 @@ public data class NotificareNotification(
         val target: String?,
         val camera: Boolean,
         val keyboard: Boolean,
-        val destructive: Boolean = false,
+        val destructive: Boolean?,
         val icon: Icon?,
     ) : Parcelable {
 
