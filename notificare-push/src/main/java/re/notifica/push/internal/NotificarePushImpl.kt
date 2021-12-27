@@ -252,6 +252,7 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
         GlobalScope.launch(Dispatchers.IO) {
             // Log the notification open event.
             Notificare.events().logNotificationOpen(notification.id)
+            Notificare.events().logNotificationInfluenced(notification.id)
 
             // Notify the inbox to mark the item as read.
             InboxIntegration.markItemAsRead(message)

@@ -18,3 +18,15 @@ public suspend fun NotificareEventsModule.logNotificationReceived(id: String): U
 
 public fun NotificareEventsModule.logNotificationReceived(id: String, callback: NotificareCallback<Unit>): Unit =
     toCallbackFunction(::logNotificationReceived)(id, callback)
+
+@Suppress("unused")
+public suspend fun NotificareEventsModule.logNotificationInfluenced(id: String): Unit = withContext(Dispatchers.IO) {
+    Notificare.eventsInternal().log(
+        event = "re.notifica.event.notification.Influenced",
+        data = null,
+        notificationId = id,
+    )
+}
+
+public fun NotificareEventsModule.logNotificationInfluenced(id: String, callback: NotificareCallback<Unit>): Unit =
+    toCallbackFunction(::logNotificationInfluenced)(id, callback)
