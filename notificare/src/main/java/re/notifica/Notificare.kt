@@ -103,12 +103,6 @@ public object Notificare {
             } catch (e: Resources.NotFoundException) {
             }
 
-            try {
-                val str = context.resources.getString(R.string.notificare_services_use_test_api)
-                if (str.toBoolean()) return@run NotificareServicesInfo.Environment.TEST
-            } catch (e: Resources.NotFoundException) {
-            }
-
             return@run NotificareServicesInfo.Environment.PRODUCTION
         }
 
