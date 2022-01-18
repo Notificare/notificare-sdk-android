@@ -44,7 +44,7 @@ import re.notifica.scannables.ktx.scannables
 import re.notifica.scannables.models.NotificareScannable
 import java.util.*
 
-class MainActivity : AppCompatActivity(), Notificare.OnReadyListener, NotificarePushUI.NotificationLifecycleListener,
+class MainActivity : AppCompatActivity(), Notificare.Listener, NotificarePushUI.NotificationLifecycleListener,
     NotificareScannables.ScannableSessionListener, NotificareGeo.Listener {
 
     private lateinit var binding: ActivityMainBinding
@@ -90,7 +90,7 @@ class MainActivity : AppCompatActivity(), Notificare.OnReadyListener, Notificare
 
         if (intent != null) handleIntent(intent)
 
-        Notificare.addOnReadyListener(this)
+        Notificare.addListener(this)
         Notificare.pushUI().addLifecycleListener(this)
         Notificare.scannables().addListener(this)
         Notificare.geo().addListener(this)
@@ -99,7 +99,7 @@ class MainActivity : AppCompatActivity(), Notificare.OnReadyListener, Notificare
     override fun onDestroy() {
         super.onDestroy()
 
-        Notificare.addOnReadyListener(this)
+        Notificare.removeListener(this)
         Notificare.pushUI().removeLifecycleListener(this)
         Notificare.scannables().removeListener(this)
         Notificare.geo().removeListener(this)
@@ -662,7 +662,7 @@ class MainActivity : AppCompatActivity(), Notificare.OnReadyListener, Notificare
         startActivity(Intent(this, WalletActivity::class.java))
     }
 
-    // region Notificare.OnReadyListener
+    // region Notificare.Listener
 
     override fun onReady(application: NotificareApplication) {
         if (Notificare.push().hasRemoteNotificationsEnabled) {
@@ -672,6 +672,12 @@ class MainActivity : AppCompatActivity(), Notificare.OnReadyListener, Notificare
         if (Notificare.geo().hasLocationServicesEnabled) {
             Notificare.geo().enableLocationUpdates()
         }
+
+        Snackbar.make(binding.root, "Notificare finished launching.", Snackbar.LENGTH_SHORT).show()
+    }
+
+    override fun onUnlaunched() {
+        Snackbar.make(binding.root, "Notificare finished un-launching.", Snackbar.LENGTH_SHORT).show()
     }
 
     // endregion
