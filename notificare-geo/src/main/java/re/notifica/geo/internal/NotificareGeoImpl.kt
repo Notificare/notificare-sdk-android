@@ -7,7 +7,6 @@ import android.content.pm.PackageManager
 import android.location.Geocoder
 import android.location.Location
 import android.os.Build
-import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.os.BuildCompat
 import kotlinx.coroutines.*
@@ -337,8 +336,6 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
         // Handle location updates & loading new geofences.
         //
         if (shouldUpdateLocation(location)) {
-            Toast.makeText(Notificare.requireContext(), "location updated", Toast.LENGTH_SHORT).show()
-
             // Keep a reference to the last known location.
             lastKnownLocation = location
 
