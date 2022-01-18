@@ -31,6 +31,7 @@ public object Notificare {
 
     // Intent actions
     internal const val INTENT_ACTION_READY = "re.notifica.intent.action.Ready"
+    internal const val INTENT_ACTION_UNLAUNCHED = "re.notifica.intent.action.Unlaunched"
     internal const val INTENT_ACTION_DEVICE_REGISTERED = "re.notifica.intent.action.DeviceRegistered"
 
     // Intent extras
@@ -59,7 +60,7 @@ public object Notificare {
     private var state: NotificareLaunchState = NotificareLaunchState.NONE
 
     // Listeners
-    private val readyListeners = hashSetOf<OnReadyListener>()
+    private val listeners = hashSetOf<Listener>()
 
     // region Public API
 
@@ -174,7 +175,7 @@ public object Notificare {
                 )
 
                 // Notify the listeners.
-                readyListeners.forEach { it.onReady(application) }
+                listeners.forEach { it.onReady(application) }
             } catch (e: Exception) {
                 NotificareLogger.error("Failed to launch Notificare.", e)
                 state = NotificareLaunchState.CONFIGURED
@@ -218,24 +219,49 @@ public object Notificare {
 
                 NotificareLogger.info("Un-launched Notificare.")
                 state = NotificareLaunchState.CONFIGURED
+
+                // We're done un-launching. Send a broadcast.
+                requireContext().sendBroadcast(
+                    Intent(requireContext(), intentReceiver)
+                        .setAction(INTENT_ACTION_UNLAUNCHED)
+                )
+
+                // Notify the listeners.
+                listeners.forEach { it.onUnlaunched() }
             } catch (e: Exception) {
                 NotificareLogger.error("Failed to un-launch Notificare.", e)
             }
         }
     }
 
-    public fun addOnReadyListener(listener: OnReadyListener) {
-        readyListeners.add(listener)
-        NotificareLogger.debug("Added a new OnReadyListener (${readyListeners.size} in total).")
+    @Deprecated(
+        message = "Use addListener() instead.",
+        replaceWith = ReplaceWith("Notificare.addListener(listener)")
+    )
+    public fun addOnReadyListener(@Suppress("DEPRECATION") listener: OnReadyListener) {
+        addListener(listener)
+    }
+
+    public fun addListener(listener: Listener) {
+        listeners.add(listener)
+        NotificareLogger.debug("Added a new Notificare.Listener (${listeners.size} in total).")
 
         if (isReady) {
             listener.onReady(checkNotNull(application))
         }
     }
 
-    public fun removeOnReadyListener(listener: OnReadyListener) {
-        readyListeners.remove(listener)
-        NotificareLogger.debug("Removed an OnReadyListener (${readyListeners.size} in total).")
+    @Deprecated(
+        message = "Use removeListener() instead.",
+        replaceWith = ReplaceWith("Notificare.removeListener(listener)")
+    )
+    public fun removeOnReadyListener(@Suppress("DEPRECATION") listener: OnReadyListener) {
+        removeListener(listener)
+    }
+
+    public fun removeListener(listener: Listener) {
+        listeners.remove(listener)
+        NotificareLogger.debug("Removed a Notificare.Listener (${listeners.size} in total).")
     }
 
     public suspend fun fetchApplication(): NotificareApplication = withContext(Dispatchers.IO) {
@@ -516,7 +542,17 @@ public object Notificare {
         return uri
     }
 
-    public interface OnReadyListener {
-        public fun onReady(application: NotificareApplication)
+    @Deprecated(
+        message = "Use the more complete Notificare.Listener instead.",
+        replaceWith = ReplaceWith("Notificare.Listener")
+    )
+    public interface OnReadyListener : Listener {
+        public override fun onReady(application: NotificareApplication)
+    }
+
+    public interface Listener {
+        public fun onReady(application: NotificareApplication) {}
+
+        public fun onUnlaunched() {}
     }
 }
