@@ -54,13 +54,16 @@
                     android:host="hallo.ntc.re"
                     android:scheme="https" />
             </intent-filter>
-            <intent-filter>
+            <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
 
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
 
-                <data android:scheme="test.nc${notificareApplicationId}" />
+                <data
+                    android:host="${notificareApplicationId}.applinks.notifica.re"
+                    android:pathPrefix="/testdevice"
+                    android:scheme="https" />
             </intent-filter>
             <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
