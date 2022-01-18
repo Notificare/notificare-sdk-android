@@ -4,9 +4,9 @@ import com.squareup.moshi.*
 import re.notifica.InternalNotificareApi
 import java.lang.reflect.Type
 
-@Retention(AnnotationRetention.RUNTIME)
-@Target(AnnotationTarget.CLASS)
 @InternalNotificareApi
+@Target(AnnotationTarget.CLASS)
+@Retention(AnnotationRetention.RUNTIME)
 public annotation class UseDefaultsWhenNull
 
 internal class UseDefaultsWhenNullFactory : JsonAdapter.Factory {

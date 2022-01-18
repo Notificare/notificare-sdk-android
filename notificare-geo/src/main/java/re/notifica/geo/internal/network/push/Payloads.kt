@@ -1,7 +1,9 @@
 package re.notifica.geo.internal.network.push
 
 import com.squareup.moshi.JsonClass
+import re.notifica.internal.moshi.EncodeNulls
 
+@EncodeNulls
 @JsonClass(generateAdapter = true)
 internal data class UpdateDeviceLocationPayload(
     val latitude: Double?,
