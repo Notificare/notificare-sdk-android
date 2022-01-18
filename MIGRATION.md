@@ -47,7 +47,7 @@ We have made some changes to existing packages, removed a few and added several 
 
 ```gradle
 dependencies {
-    def notificare_version = '3.0.0-beta.1'
+    def notificare_version = '3.0.0-beta.2'
     implementation "re.notifica:notificare:$notificare_version"
 
     //
@@ -88,7 +88,7 @@ In the hypothetical scenario where you have an app that wants to add push notifi
 
 ```gradle
 dependencies {
-    def notificare_version = '3.0.0-beta.1'
+    def notificare_version = '3.0.0-beta.2'
     implementation "re.notifica:notificare:$notificare_version"
 
     implementation "re.notifica:notificare-inbox:$notificare_version"

@@ -76,7 +76,7 @@ Apply the plugin and add the following dependencies to your app's `build.gradle`
 apply plugin: 're.notifica.gradle.notificare-services'
 
 dependencies {
-    def notificare_version = '3.0.0-beta.1'
+    def notificare_version = '3.0.0-beta.2'
     implementation "re.notifica:notificare:$notificare_version"
 
     // Optional modules
