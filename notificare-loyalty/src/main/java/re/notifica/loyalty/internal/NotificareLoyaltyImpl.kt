@@ -45,7 +45,7 @@ import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
 
 internal object NotificareLoyaltyImpl : NotificareModule(), NotificareLoyalty, NotificareLoyaltyIntegration,
-    Notificare.OnReadyListener {
+    Notificare.Listener {
 
     private lateinit var database: LoyaltyDatabase
     private lateinit var localStorage: LocalStorage
@@ -99,11 +99,11 @@ internal object NotificareLoyaltyImpl : NotificareModule(), NotificareLoyalty, N
             )
         }
 
-        Notificare.addOnReadyListener(this@NotificareLoyaltyImpl)
+        Notificare.addListener(this@NotificareLoyaltyImpl)
     }
 
     override suspend fun unlaunch() {
-        Notificare.removeOnReadyListener(this)
+        Notificare.removeListener(this)
     }
 
     // endregion
