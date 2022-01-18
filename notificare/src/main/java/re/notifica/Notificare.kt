@@ -502,6 +502,23 @@ public object Notificare {
     }
 
     private fun parseTestDeviceNonce(intent: Intent): String? {
+        val nonce = parseTestDeviceNonceLegacy(intent)
+        if (nonce != null) return nonce
+
+        val uri = intent.data ?: return null
+        val pathSegments = uri.pathSegments ?: return null
+
+        val application = Notificare.application ?: return null
+        val appLinksDomain = servicesInfo?.appLinksDomain ?: return null
+
+        if (uri.host == "${application.id}.${appLinksDomain}" && pathSegments.size >= 2 && pathSegments[0] == "testdevice") {
+            return pathSegments[1]
+        }
+
+        return null
+    }
+
+    private fun parseTestDeviceNonceLegacy(intent: Intent): String? {
         val application = application ?: return null
         val scheme = intent.data?.scheme ?: return null
         val pathSegments = intent.data?.pathSegments ?: return null
