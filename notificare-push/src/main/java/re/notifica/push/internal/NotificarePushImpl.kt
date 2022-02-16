@@ -217,9 +217,13 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
         Notificare.deviceInternal().registerPushToken(transport, token)
 
         try {
-            updateNotificationSettings(
-                allowedUI = NotificationManagerCompat.from(Notificare.requireContext()).areNotificationsEnabled()
-            )
+            val allowedUI = NotificationManagerCompat.from(Notificare.requireContext()).areNotificationsEnabled()
+            updateNotificationSettings(allowedUI)
+
+            if (allowedUI && sharedPreferences.firstRegistration) {
+                Notificare.events().logPushRegistration()
+                sharedPreferences.firstRegistration = false
+            }
         } catch (e: Exception) {
             NotificareLogger.warning("Failed to update the device's notification settings.", e)
         }
