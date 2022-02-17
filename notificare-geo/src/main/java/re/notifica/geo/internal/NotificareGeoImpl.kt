@@ -3,6 +3,7 @@ package re.notifica.geo.internal
 import android.Manifest
 import android.bluetooth.BluetoothManager
 import android.content.Context
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.location.Geocoder
 import android.location.Location
@@ -153,6 +154,11 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
         }
 
     // region Notificare Module
+
+    override fun migrate(savedState: SharedPreferences, settings: SharedPreferences) {
+        val localStorage = LocalStorage(Notificare.requireContext())
+        localStorage.locationServicesEnabled = settings.getBoolean("locationUpdates", false)
+    }
 
     override fun configure() {
         val context = Notificare.requireContext()
