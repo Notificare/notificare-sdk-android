@@ -30,3 +30,15 @@ public suspend fun NotificareEventsModule.logNotificationInfluenced(id: String):
 
 public fun NotificareEventsModule.logNotificationInfluenced(id: String, callback: NotificareCallback<Unit>): Unit =
     toCallbackFunction(::logNotificationInfluenced)(id, callback)
+
+@Suppress("unused")
+public suspend fun NotificareEventsModule.logPushRegistration(): Unit = withContext(Dispatchers.IO) {
+    Notificare.eventsInternal().log(
+        event = "re.notifica.event.push.Registration",
+        data = null,
+        notificationId = null,
+    )
+}
+
+public fun NotificareEventsModule.logPushRegistration(callback: NotificareCallback<Unit>): Unit =
+    toCallbackFunction(::logPushRegistration)(callback)
