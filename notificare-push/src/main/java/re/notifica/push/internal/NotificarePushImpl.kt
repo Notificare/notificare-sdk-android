@@ -73,7 +73,13 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
         }
 
         if (settings.contains("notifications")) {
-            sharedPreferences.remoteNotificationsEnabled = settings.getBoolean("notifications", false)
+            val enabled = settings.getBoolean("notifications", false)
+            sharedPreferences.remoteNotificationsEnabled = enabled
+
+            if (enabled) {
+                // Prevent the lib from sending the push registration event for existing devices.
+                sharedPreferences.firstRegistration = false
+            }
         }
     }
 
