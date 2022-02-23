@@ -14,7 +14,6 @@ Table of contents
 =================
 
 * [Features](#features)
-* [Releases](#releases)
 * [Installation](#installation)
   * [Requirements](#requirements)
   * [Configuration](#configuration)
