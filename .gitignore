@@ -1,4 +1,3 @@
-.DS_Store
 # built application files
 *.apk
 *.ap_
@@ -16,6 +15,9 @@ gen/
 # Local configuration file (sdk path, etc)
 local.properties
 
+# OSX files
+.DS_Store
+
 # Eclipse project files
 #.classpath
 .settings
@@ -24,9 +26,10 @@ local.properties
 /**/build
 /dist
 /.gradle
+
+# Android Studio
 /.idea
 gradle.properties
-
 
 # Sample configurations
 sample/**/notificare.xml
