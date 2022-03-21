@@ -8,7 +8,6 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.internal.EMPTY_REQUEST
 import okhttp3.logging.HttpLoggingInterceptor
-import re.notifica.BuildConfig
 import re.notifica.InternalNotificareApi
 import re.notifica.Notificare
 import re.notifica.NotificareCallback
@@ -40,7 +39,7 @@ public class NotificareRequest private constructor(
             // .authenticator(NotificareBasicAuthenticator())
             .addInterceptor(NotificareHeadersInterceptor())
             .addInterceptor(HttpLoggingInterceptor().apply {
-                level = if (BuildConfig.DEBUG) {
+                level = if (Notificare.options?.debugLoggingEnabled == true) {
                     HttpLoggingInterceptor.Level.BASIC
                 } else {
                     HttpLoggingInterceptor.Level.NONE

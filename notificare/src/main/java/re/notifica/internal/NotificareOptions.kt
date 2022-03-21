@@ -18,6 +18,11 @@ public class NotificareOptions internal constructor(context: Context) {
     @InternalNotificareApi
     public val metadata: Bundle = info.metaData ?: bundleOf()
 
+    public val debugLoggingEnabled: Boolean
+        get() {
+            return metadata.getBoolean("re.notifica.debug_logging_enabled", false)
+        }
+
     public val crashReportsEnabled: Boolean
         get() {
             return metadata.getBoolean("re.notifica.crash_reports_enabled", true)
