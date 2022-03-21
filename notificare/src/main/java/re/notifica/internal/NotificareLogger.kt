@@ -22,10 +22,7 @@ public object NotificareLogger {
     )
 
     private val hasDebugLoggingEnabled: Boolean
-        get() {
-            val options = Notificare.options ?: return false
-            return options.metadata.getBoolean("re.notifica.debug_logging_enabled", false)
-        }
+        get() = Notificare.options?.debugLoggingEnabled ?: false
 
     public fun debug(message: String, t: Throwable? = null): Unit = log(Log.DEBUG, message, t)
 
