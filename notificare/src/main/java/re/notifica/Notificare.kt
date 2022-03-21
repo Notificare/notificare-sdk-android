@@ -27,7 +27,7 @@ import java.util.regex.Pattern
 
 public object Notificare {
 
-    public const val SDK_VERSION: String = BuildConfig.SDK_VERSION
+    public const val SDK_VERSION: String = NOTIFICARE_VERSION
 
     // Intent actions
     internal const val INTENT_ACTION_READY = "re.notifica.intent.action.Ready"
