@@ -29,7 +29,6 @@ local.properties
 
 # Android Studio
 /.idea
-gradle.properties
 
 # Sample configurations
 sample/**/notificare.xml
