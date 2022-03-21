@@ -1,6 +1,6 @@
 # CHANGELOG
 
-##
+## 3.0.1
 
 - Update Gradle build tools
 - Use compile-time constant for the SDK version 
