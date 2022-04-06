@@ -8,6 +8,7 @@ import re.notifica.internal.NotificareUtils
 internal class NotificareHeadersInterceptor : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         val request = chain.request().newBuilder()
+            .header("User-Agent", NotificareUtils.userAgent)
             .header("X-Notificare-SDK-Version", Notificare.SDK_VERSION)
             .header("X-Notificare-App-Version", NotificareUtils.applicationVersion)
             .build()
