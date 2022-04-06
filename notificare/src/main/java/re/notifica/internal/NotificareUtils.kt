@@ -58,6 +58,9 @@ public object NotificareUtils {
             return timeZone.getOffset(calendar.timeInMillis) / 3600000.toDouble()
         }
 
+    public val userAgent: String
+        get() = "$applicationName/$applicationVersion Notificare/${Notificare.SDK_VERSION} Android/${Build.VERSION.RELEASE}"
+
     internal fun getEnabledPeerModules(): List<String> {
         return NotificareModule.Module.values()
             .filter { it.isPeer && it.isAvailable }
