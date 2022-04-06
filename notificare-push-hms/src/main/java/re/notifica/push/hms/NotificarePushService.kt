@@ -16,7 +16,7 @@ import re.notifica.push.hms.ktx.isNotificareNotification
 import re.notifica.push.hms.ktx.pushInternal
 import re.notifica.push.ktx.push
 
-public class NotificarePushService : HmsMessageService() {
+public open class NotificarePushService : HmsMessageService() {
 
     override fun onNewToken(token: String) {
         NotificareLogger.info("Received a new HMS token.")

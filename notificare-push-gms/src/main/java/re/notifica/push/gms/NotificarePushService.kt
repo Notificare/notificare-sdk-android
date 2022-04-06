@@ -16,7 +16,7 @@ import re.notifica.push.gms.ktx.isNotificareNotification
 import re.notifica.push.gms.ktx.pushInternal
 import re.notifica.push.ktx.push
 
-public class NotificarePushService : FirebaseMessagingService() {
+public open class NotificarePushService : FirebaseMessagingService() {
 
     override fun onNewToken(token: String) {
         NotificareLogger.info("Received a new FCM token.")
