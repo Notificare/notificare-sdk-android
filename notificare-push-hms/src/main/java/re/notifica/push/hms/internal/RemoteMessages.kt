@@ -7,6 +7,7 @@ import re.notifica.internal.moshi
 import re.notifica.models.NotificareNotification
 import re.notifica.push.models.NotificareNotificationRemoteMessage
 import re.notifica.push.models.NotificareSystemRemoteMessage
+import re.notifica.push.models.NotificareUnknownNotification
 import re.notifica.push.models.NotificareUnknownRemoteMessage
 
 internal fun NotificareUnknownRemoteMessage(message: RemoteMessage): NotificareUnknownRemoteMessage {
@@ -21,6 +22,36 @@ internal fun NotificareUnknownRemoteMessage(message: RemoteMessage): NotificareU
         to = message.to,
         priority = message.urgency,
         originalPriority = message.originalUrgency,
+        notification = message.notification?.let {
+            NotificareUnknownNotification.Notification(
+                title = it.title,
+                titleLocalizationKey = it.titleLocalizationKey,
+                titleLocalizationArgs = it.titleLocalizationArgs?.toList(),
+                body = it.body,
+                bodyLocalizationKey = it.bodyLocalizationKey,
+                bodyLocalizationArgs = it.bodyLocalizationArgs?.toList(),
+                icon = it.icon,
+                imageUrl = it.imageUrl,
+                sound = it.sound,
+                tag = it.tag,
+                color = it.color,
+                clickAction = it.clickAction,
+                channelId = it.channelId,
+                link = it.link,
+                ticker = it.ticker,
+                sticky = it.isAutoCancel,
+                localOnly = it.isLocalOnly,
+                defaultSound = it.isDefaultSound,
+                defaultVibrateSettings = it.isDefaultVibrate,
+                defaultLightSettings = it.isDefaultLight,
+                notificationPriority = it.importance,
+                visibility = it.visibility,
+                notificationCount = it.badgeNumber,
+                eventTime = it.`when`,
+                lightSettings = it.lightSettings?.toList(),
+                vibrateSettings = it.vibrateConfig?.toList(),
+            )
+        },
         data = message.dataOfMap,
     )
 }

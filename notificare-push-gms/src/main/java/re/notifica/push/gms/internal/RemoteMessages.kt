@@ -7,6 +7,7 @@ import re.notifica.internal.moshi
 import re.notifica.models.NotificareNotification
 import re.notifica.push.models.NotificareNotificationRemoteMessage
 import re.notifica.push.models.NotificareSystemRemoteMessage
+import re.notifica.push.models.NotificareUnknownNotification
 import re.notifica.push.models.NotificareUnknownRemoteMessage
 
 internal fun NotificareUnknownRemoteMessage(message: RemoteMessage): NotificareUnknownRemoteMessage {
@@ -21,6 +22,36 @@ internal fun NotificareUnknownRemoteMessage(message: RemoteMessage): NotificareU
         to = message.to,
         priority = message.priority,
         originalPriority = message.originalPriority,
+        notification = message.notification?.let {
+            NotificareUnknownNotification.Notification(
+                title = it.title,
+                titleLocalizationKey = it.titleLocalizationKey,
+                titleLocalizationArgs = it.titleLocalizationArgs?.toList(),
+                body = it.body,
+                bodyLocalizationKey = it.bodyLocalizationKey,
+                bodyLocalizationArgs = it.bodyLocalizationArgs?.toList(),
+                icon = it.icon,
+                imageUrl = it.imageUrl,
+                sound = it.sound,
+                tag = it.tag,
+                color = it.color,
+                clickAction = it.clickAction,
+                channelId = it.channelId,
+                link = it.link,
+                ticker = it.ticker,
+                sticky = it.sticky,
+                localOnly = it.localOnly,
+                defaultSound = it.defaultSound,
+                defaultVibrateSettings = it.defaultVibrateSettings,
+                defaultLightSettings = it.defaultLightSettings,
+                notificationPriority = it.notificationPriority,
+                visibility = it.visibility,
+                notificationCount = it.notificationCount,
+                eventTime = it.eventTime,
+                lightSettings = it.lightSettings?.toList(),
+                vibrateSettings = it.vibrateTimings?.toList(),
+            )
+        },
         data = message.data,
     )
 }
