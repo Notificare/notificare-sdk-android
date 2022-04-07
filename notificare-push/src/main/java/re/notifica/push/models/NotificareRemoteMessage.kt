@@ -24,6 +24,7 @@ public data class NotificareUnknownRemoteMessage(
     val to: String?,
     val priority: Int,
     val originalPriority: Int,
+    val notification: NotificareUnknownNotification.Notification?,
     val data: Map<String, String?>,
 ) : NotificareRemoteMessage {
 
@@ -39,6 +40,7 @@ public data class NotificareUnknownRemoteMessage(
             ttl = ttl,
             priority = priority,
             originalPriority = originalPriority,
+            notification = notification,
             data = data,
         )
     }
