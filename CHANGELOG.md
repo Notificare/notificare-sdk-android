@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## Upcoming release
+
+- Include `Accept-Language` and custom `User-Agent` headers
+- Allow notification push services to be subclassed
+- Add notification attributes to unknown notifications 
+
 ## 3.0.1
 
 - Update Gradle build tools
