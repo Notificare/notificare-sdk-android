@@ -347,6 +347,10 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
                 deviceString = NotificareUtils.deviceString,
                 timeZoneOffset = NotificareUtils.timeZoneOffset,
                 backgroundAppRefresh = true,
+
+                // Submit a value when registering a temporary to prevent
+                // otherwise let the push module take over and update the setting accordingly.
+                allowedUI = if (transport == NotificareTransport.NOTIFICARE) false else null
             )
 
             NotificareRequest.Builder()
