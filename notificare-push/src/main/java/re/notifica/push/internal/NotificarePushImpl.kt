@@ -18,13 +18,13 @@ import androidx.core.app.RemoteInput
 import androidx.core.content.ContextCompat
 import androidx.core.os.BuildCompat
 import androidx.core.os.bundleOf
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.*
 import kotlinx.coroutines.*
 import org.json.JSONObject
 import re.notifica.Notificare
 import re.notifica.NotificareCallback
 import re.notifica.NotificareDeviceUnavailableException
+import re.notifica.NotificareNotConfiguredException
 import re.notifica.internal.NotificareLogger
 import re.notifica.internal.NotificareModule
 import re.notifica.internal.NotificareUtils
@@ -96,17 +96,32 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
 
         // NOTE: The allowedUI is only gettable after the storage has been configured.
         _observableAllowedUI.postValue(allowedUI)
+
+        ProcessLifecycleOwner.get().lifecycle.addObserver(object : DefaultLifecycleObserver {
+            override fun onStart(owner: LifecycleOwner) {
+                onApplicationForeground()
+            }
+        })
     }
 
     override suspend fun launch() {
-        val token = postponedDeviceToken ?: return
-        val manager = serviceManager ?: run {
-            NotificareLogger.debug("Found a postponed registration token but no service manager.")
-            return
+        val token = postponedDeviceToken
+        val manager = serviceManager
+
+        if (token != null) {
+            if (manager != null) {
+                NotificareLogger.info("Found a postponed registration token. Performing a device registration.")
+                registerPushToken(manager.transport, token)
+
+                // NOTE: the notification settings are updated after a push token registration.
+                return
+            } else {
+                NotificareLogger.debug("Found a postponed registration token but no service manager.")
+            }
         }
 
-        NotificareLogger.info("Found a postponed registration token. Performing a device registration.")
-        registerPushToken(manager.transport, token)
+        // Ensure the definitive allowedUI value has been communicated to the API.
+        updateNotificationSettings()
     }
 
     override suspend fun unlaunch() {
@@ -187,7 +202,10 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
                 sharedPreferences.remoteNotificationsEnabled = false
 
                 Notificare.deviceInternal().registerTemporary()
-                updateNotificationSettings(allowedUI = false)
+
+                // Update the local notification settings.
+                // Registering a temporary device automatically reports the allowedUI to the API.
+                allowedUI = false
 
                 NotificareLogger.info("Unregistered from push provider.")
             } catch (e: Exception) {
@@ -223,8 +241,7 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
         Notificare.deviceInternal().registerPushToken(transport, token)
 
         try {
-            val allowedUI = NotificationManagerCompat.from(Notificare.requireContext()).areNotificationsEnabled()
-            updateNotificationSettings(allowedUI)
+            updateNotificationSettings()
 
             if (allowedUI && sharedPreferences.firstRegistration) {
                 Notificare.events().logPushRegistration()
@@ -670,9 +687,37 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
         notificationManager.notify(message.notificationId, 0, builder.build())
     }
 
-    private suspend fun updateNotificationSettings(allowedUI: Boolean): Unit = withContext(Dispatchers.IO) {
+    private fun onApplicationForeground() {
+        if (!Notificare.isReady) return
+
+        @Suppress("OPT_IN_USAGE")
+        GlobalScope.launch {
+            try {
+                updateNotificationSettings()
+            } catch (e: Exception) {
+                // Silent failure.
+            }
+        }
+    }
+
+    private suspend fun updateNotificationSettings(): Unit = withContext(Dispatchers.IO) {
+        val granted = NotificationManagerCompat.from(Notificare.requireContext()).areNotificationsEnabled()
+        updateNotificationSettings(granted)
+    }
+
+    private suspend fun updateNotificationSettings(granted: Boolean): Unit = withContext(Dispatchers.IO) {
+        if (!Notificare.isConfigured) throw NotificareNotConfiguredException()
+
         val device = Notificare.device().currentDevice
             ?: throw NotificareDeviceUnavailableException()
+
+        // The allowedUI is only true when the device has push capabilities and the user accepted the permission.
+        val allowedUI = device.transport != NotificareTransport.NOTIFICARE && granted
+
+        if (this@NotificarePushImpl.allowedUI == allowedUI) {
+            NotificareLogger.debug("User notification settings update skipped, nothing changed.")
+            return@withContext
+        }
 
         NotificareRequest.Builder()
             .put(
@@ -682,6 +727,8 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
                 ),
             )
             .response()
+
+        NotificareLogger.debug("User notification settings updated.")
 
         // Update current device properties.
         this@NotificarePushImpl.allowedUI = allowedUI
