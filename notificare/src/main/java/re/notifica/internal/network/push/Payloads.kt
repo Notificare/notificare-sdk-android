@@ -20,6 +20,7 @@ internal data class DeviceRegistrationPayload(
     val deviceString: String,
     val timeZoneOffset: Double,
     val backgroundAppRefresh: Boolean,
+    val allowedUI: Boolean?,
 )
 
 @JsonClass(generateAdapter = true)
