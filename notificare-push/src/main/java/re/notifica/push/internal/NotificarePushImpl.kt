@@ -109,14 +109,18 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
         val manager = serviceManager
 
         if (token != null) {
-            if (manager != null) {
-                NotificareLogger.info("Found a postponed registration token. Performing a device registration.")
-                registerPushToken(manager.transport, token)
+            if (sharedPreferences.remoteNotificationsEnabled) {
+                if (manager != null) {
+                    NotificareLogger.info("Found a postponed registration token. Performing a device registration.")
+                    registerPushToken(manager.transport, token)
 
-                // NOTE: the notification settings are updated after a push token registration.
-                return
+                    // NOTE: the notification settings are updated after a push token registration.
+                    return
+                } else {
+                    NotificareLogger.debug("Found a postponed registration token but no service manager.")
+                }
             } else {
-                NotificareLogger.debug("Found a postponed registration token but no service manager.")
+                NotificareLogger.debug("Processing a postponed push token before enableRemoteNotifications() has been called.")
             }
         }
 
@@ -238,6 +242,11 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
         transport: NotificareTransport,
         token: String
     ): Unit = withContext(Dispatchers.IO) {
+        if (!sharedPreferences.remoteNotificationsEnabled) {
+            NotificareLogger.debug("Received a push token before enableRemoteNotifications() has been called.")
+            return@withContext
+        }
+
         Notificare.deviceInternal().registerPushToken(transport, token)
 
         try {
