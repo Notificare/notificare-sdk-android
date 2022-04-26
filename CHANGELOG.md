@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## Upcoming release
+## 3.1.0
 
 - Include `Accept-Language` and custom `User-Agent` headers
 - Allow notification push services to be subclassed
