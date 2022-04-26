@@ -4,7 +4,9 @@
 
 - Include `Accept-Language` and custom `User-Agent` headers
 - Allow notification push services to be subclassed
-- Add notification attributes to unknown notifications 
+- Add notification attributes to unknown notifications
+- Improve `allowedUI` to accurately reflect push capabilities
+- Prevent push tokens from being registered immediately after an install
 
 ## 3.0.1
 
