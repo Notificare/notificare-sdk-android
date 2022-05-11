@@ -2,15 +2,19 @@ package re.notifica.internal
 
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.graphics.drawable.Drawable
 import android.os.Build
 import android.util.Log
 import android.widget.ImageView
 import com.bumptech.glide.Glide
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import com.bumptech.glide.request.target.CustomTarget
+import com.bumptech.glide.request.transition.Transition
+import kotlinx.coroutines.suspendCancellableCoroutine
 import re.notifica.InternalNotificareApi
 import re.notifica.Notificare
 import java.util.*
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 
 @InternalNotificareApi
 public object NotificareUtils {
@@ -67,15 +71,21 @@ public object NotificareUtils {
             .map { it.name.lowercase() }
     }
 
-    public suspend fun loadBitmap(url: String): Bitmap = withContext(Dispatchers.IO) {
-        @Suppress("BlockingMethodInNonBlockingContext")
-        val bitmap = Glide.with(Notificare.requireContext())
+    public suspend fun loadBitmap(url: String): Bitmap = suspendCancellableCoroutine { continuation ->
+        Glide.with(Notificare.requireContext())
             .asBitmap()
             .load(url)
-            .submit()
-            .get()
+            .into(object : CustomTarget<Bitmap>() {
+                override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
+                    continuation.resume(resource)
+                }
 
-        withContext(Dispatchers.Main) { bitmap }
+                override fun onLoadFailed(errorDrawable: Drawable?) {
+                    continuation.resumeWithException(RuntimeException("Failed to load the bit at $url"))
+                }
+
+                override fun onLoadCleared(placeholder: Drawable?) {}
+            })
     }
 
     public fun loadImage(url: String, view: ImageView) {

@@ -539,8 +539,13 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
             builder.color = ContextCompat.getColor(Notificare.requireContext(), notificationAccentColor)
         }
 
-        val attachmentImage = runBlocking {
-            message.attachment?.uri?.let { NotificareUtils.loadBitmap(it) }
+        val attachmentImage = try {
+            runBlocking {
+                message.attachment?.uri?.let { NotificareUtils.getBitmap(it) }
+            }
+        } catch (e: Exception) {
+            NotificareLogger.warning("Failed to load the attachment image.", e)
+            null
         }
 
         if (attachmentImage != null) {
