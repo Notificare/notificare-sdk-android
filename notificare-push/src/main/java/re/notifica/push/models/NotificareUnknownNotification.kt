@@ -2,9 +2,14 @@ package re.notifica.push.models
 
 import android.net.Uri
 import android.os.Parcelable
+import com.squareup.moshi.JsonClass
 import kotlinx.parcelize.Parcelize
+import org.json.JSONObject
+import re.notifica.Notificare
+import re.notifica.internal.moshi
 
 @Parcelize
+@JsonClass(generateAdapter = true)
 public data class NotificareUnknownNotification(
     val messageId: String?,
     val messageType: String?,
@@ -20,7 +25,22 @@ public data class NotificareUnknownNotification(
     val data: Map<String, String?>,
 ) : Parcelable {
 
+    public fun toJson(): JSONObject {
+        val jsonStr = adapter.toJson(this)
+        return JSONObject(jsonStr)
+    }
+
+    public companion object {
+        private val adapter = Notificare.moshi.adapter(NotificareUnknownNotification::class.java)
+
+        public fun fromJson(json: JSONObject): NotificareUnknownNotification {
+            val jsonStr = json.toString()
+            return requireNotNull(adapter.fromJson(jsonStr))
+        }
+    }
+
     @Parcelize
+    @JsonClass(generateAdapter = true)
     public data class Notification(
         val title: String?,
         val titleLocalizationKey: String?,
@@ -48,5 +68,20 @@ public data class NotificareUnknownNotification(
         val eventTime: Long?,
         val lightSettings: List<Int>?,
         val vibrateSettings: List<Long>?,
-    ) : Parcelable
+    ) : Parcelable {
+
+        public fun toJson(): JSONObject {
+            val jsonStr = adapter.toJson(this)
+            return JSONObject(jsonStr)
+        }
+
+        public companion object {
+            private val adapter = Notificare.moshi.adapter(Notification::class.java)
+
+            public fun fromJson(json: JSONObject): Notification {
+                val jsonStr = json.toString()
+                return requireNotNull(adapter.fromJson(jsonStr))
+            }
+        }
+    }
 }
