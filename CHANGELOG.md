@@ -4,6 +4,7 @@
 
 - Improve bitmap loading
 - Prevent crashing when generating notifications with invalid attachments
+- Include JSON serialisation methods for unknown notifications
 
 ## 3.1.0
 

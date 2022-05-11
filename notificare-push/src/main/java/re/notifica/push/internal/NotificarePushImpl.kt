@@ -541,7 +541,7 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
 
         val attachmentImage = try {
             runBlocking {
-                message.attachment?.uri?.let { NotificareUtils.getBitmap(it) }
+                message.attachment?.uri?.let { NotificareUtils.loadBitmap(it) }
             }
         } catch (e: Exception) {
             NotificareLogger.warning("Failed to load the attachment image.", e)
