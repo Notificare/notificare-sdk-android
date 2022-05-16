@@ -147,7 +147,7 @@ internal object NotificareInboxImpl : NotificareModule(), NotificareInbox {
         checkPrerequisites()
 
         val notification =
-            if (item.notification.partial) Notificare.fetchNotification(item.notification.id)
+            if (item.notification.partial) Notificare.fetchNotification(item.id)
             else item.notification
 
         if (item.notification.partial) {
