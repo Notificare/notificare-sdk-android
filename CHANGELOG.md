@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## Upcoming release
+
+- Fix notification content when opening partial inbox items
+
 ## 3.1.1
 
 - Improve bitmap loading

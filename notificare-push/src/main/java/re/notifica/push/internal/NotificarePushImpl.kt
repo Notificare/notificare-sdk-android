@@ -440,7 +440,7 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
     private fun handleNotification(message: NotificareNotificationRemoteMessage) {
         @OptIn(DelicateCoroutinesApi::class)
         GlobalScope.launch {
-            Notificare.events().logNotificationReceived(message.id)
+            Notificare.events().logNotificationReceived(message.notificationId)
 
             val notification = try {
                 Notificare.fetchNotification(message.id)
