@@ -149,9 +149,14 @@ internal object NotificareEventsModuleImpl : NotificareModule(), NotificareEvent
 
             if (!discardableEvents.contains(event.type) && e.recoverable) {
                 NotificareLogger.info("Queuing event to be sent whenever possible.")
+
                 Notificare.database.events().insert(event.toEntity())
                 scheduleUploadWorker()
+
+                return@withContext
             }
+
+            throw e
         }
     }
 
