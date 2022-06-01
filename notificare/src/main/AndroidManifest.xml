@@ -11,6 +11,12 @@
             android:authorities="${applicationId}.NotificareConfigurationProvider"
             android:exported="false" />
 
+        <!-- Provider to auto configure the session module -->
+        <provider
+            android:name="re.notifica.NotificareSessionConfigurationProvider"
+            android:authorities="${applicationId}.NotificareSessionConfigurationProvider"
+            android:exported="false" />
+
         <!-- Receiver for locale and timezone changes -->
         <receiver
             android:name="re.notifica.NotificareSystemIntentReceiver"
