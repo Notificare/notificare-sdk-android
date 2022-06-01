@@ -12,7 +12,7 @@ import re.notifica.internal.common.toHex
 import re.notifica.internal.ktx.toCallbackFunction
 import re.notifica.internal.network.push.*
 import re.notifica.internal.network.request.NotificareRequest
-import re.notifica.ktx.events
+import re.notifica.ktx.eventsImplementation
 import re.notifica.models.NotificareDevice
 import re.notifica.models.NotificareDoNotDisturb
 import re.notifica.models.NotificareTransport
@@ -31,7 +31,7 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
             if (device.appVersion != NotificareUtils.applicationVersion) {
                 // It's not the same version, let's log it as an upgrade.
                 NotificareLogger.debug("New version detected")
-                Notificare.events().logApplicationUpgrade()
+                Notificare.eventsImplementation().logApplicationUpgrade()
             }
 
             register(
@@ -50,8 +50,8 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
                 registerTemporary()
 
                 // We will log the Install & Registration events here since this will execute only one time at the start.
-                Notificare.events().logApplicationInstall()
-                Notificare.events().logApplicationRegistration()
+                Notificare.eventsImplementation().logApplicationInstall()
+                Notificare.eventsImplementation().logApplicationRegistration()
             } catch (e: Exception) {
                 NotificareLogger.warning("Failed to register temporary device.", e)
                 throw e

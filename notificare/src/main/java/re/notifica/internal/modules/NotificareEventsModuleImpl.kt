@@ -1,7 +1,8 @@
 package re.notifica.internal.modules
 
 import androidx.work.*
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import re.notifica.Notificare
 import re.notifica.NotificareCallback
 import re.notifica.NotificareEventsModule
@@ -48,51 +49,12 @@ internal object NotificareEventsModuleImpl : NotificareModule(), NotificareEvent
 
     // region Notificare Events Module
 
-    override suspend fun logApplicationInstall() {
-        log(EVENT_APPLICATION_INSTALL)
-    }
-
-    override fun logApplicationInstall(callback: NotificareCallback<Unit>): Unit =
-        toCallbackFunction(::logApplicationInstall)(callback)
-
-    override suspend fun logApplicationRegistration() {
-        log(EVENT_APPLICATION_REGISTRATION)
-    }
-
-    override fun logApplicationRegistration(callback: NotificareCallback<Unit>): Unit =
-        toCallbackFunction(::logApplicationRegistration)(callback)
-
-    override suspend fun logApplicationUpgrade() {
-        log(EVENT_APPLICATION_UPGRADE)
-    }
-
-    override fun logApplicationUpgrade(callback: NotificareCallback<Unit>): Unit =
-        toCallbackFunction(::logApplicationUpgrade)(callback)
-
-    override suspend fun logApplicationOpen() {
-        log(EVENT_APPLICATION_OPEN)
-    }
-
-    override fun logApplicationOpen(callback: NotificareCallback<Unit>): Unit =
-        toCallbackFunction(::logApplicationOpen)(callback)
-
     override suspend fun logApplicationException(throwable: Throwable) {
         log(throwable.toEvent())
     }
 
     override fun logApplicationException(throwable: Throwable, callback: NotificareCallback<Unit>): Unit =
         toCallbackFunction(::logApplicationException)(throwable, callback)
-
-    override suspend fun logApplicationClose(sessionLength: Double) {
-        log(
-            EVENT_APPLICATION_CLOSE, mapOf(
-                "length" to sessionLength.toString()
-            )
-        )
-    }
-
-    override fun logApplicationClose(sessionLength: Double, callback: NotificareCallback<Unit>): Unit =
-        toCallbackFunction(::logApplicationClose)(sessionLength, callback)
 
     override suspend fun logNotificationOpen(id: String) {
         log(
@@ -116,13 +78,13 @@ internal object NotificareEventsModuleImpl : NotificareModule(), NotificareEvent
 
     // region Notificare Internal Events Module
 
-    override suspend fun log(event: String, data: NotificareEventData?, notificationId: String?) {
+    override suspend fun log(event: String, data: NotificareEventData?, sessionId: String?, notificationId: String?) {
         log(
             NotificareEvent(
                 type = event,
                 timestamp = System.currentTimeMillis(),
                 deviceId = Notificare.device().currentDevice?.id,
-                sessionId = Notificare.session().sessionId,
+                sessionId = sessionId ?: Notificare.session().sessionId,
                 notificationId = notificationId,
                 userId = Notificare.device().currentDevice?.userId,
                 data = data
@@ -131,6 +93,33 @@ internal object NotificareEventsModuleImpl : NotificareModule(), NotificareEvent
     }
 
     // endregion
+
+    internal suspend fun logApplicationInstall() {
+        log(EVENT_APPLICATION_INSTALL)
+    }
+
+    internal suspend fun logApplicationRegistration() {
+        log(EVENT_APPLICATION_REGISTRATION)
+    }
+
+    internal suspend fun logApplicationUpgrade() {
+        log(EVENT_APPLICATION_UPGRADE)
+    }
+
+    internal suspend fun logApplicationOpen(sessionId: String) {
+        log(
+            event = EVENT_APPLICATION_OPEN,
+            sessionId = sessionId
+        )
+    }
+
+    internal suspend fun logApplicationClose(sessionId: String, sessionLength: Double) {
+        log(
+            event = EVENT_APPLICATION_CLOSE,
+            data = mapOf("length" to sessionLength.toString()),
+            sessionId = sessionId,
+        )
+    }
 
     internal suspend fun log(event: NotificareEvent): Unit = withContext(Dispatchers.IO) {
         if (!Notificare.isConfigured) {
@@ -149,9 +138,14 @@ internal object NotificareEventsModuleImpl : NotificareModule(), NotificareEvent
 
             if (!discardableEvents.contains(event.type) && e.recoverable) {
                 NotificareLogger.info("Queuing event to be sent whenever possible.")
+
                 Notificare.database.events().insert(event.toEntity())
                 scheduleUploadWorker()
+
+                return@withContext
             }
+
+            throw e
         }
     }
 
