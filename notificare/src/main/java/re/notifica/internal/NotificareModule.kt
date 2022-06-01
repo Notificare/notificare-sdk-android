@@ -18,9 +18,9 @@ public abstract class NotificareModule {
     @InternalNotificareApi
     public enum class Module(private val fqn: String) {
         // Default modules
-        DEVICE(fqn = "re.notifica.internal.modules.NotificareDeviceModuleImpl"),
         EVENTS(fqn = "re.notifica.internal.modules.NotificareEventsModuleImpl"),
         SESSION(fqn = "re.notifica.internal.modules.NotificareSessionModuleImpl"),
+        DEVICE(fqn = "re.notifica.internal.modules.NotificareDeviceModuleImpl"),
         CRASH_REPORTER(fqn = "re.notifica.internal.modules.NotificareCrashReporterModuleImpl"),
 
         // Peer modules
