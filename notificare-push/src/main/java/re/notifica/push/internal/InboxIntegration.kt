@@ -52,6 +52,7 @@ internal object InboxIntegration {
                     INTENT_EXTRA_INBOX_NOTIFICATION_RECEIVED_BUNDLE,
                     bundleOf(
                         "inboxItemId" to message.inboxItemId,
+                        "inboxItemTime" to message.sentTime,
                         "inboxItemVisible" to message.inboxItemVisible,
                         "inboxItemExpires" to message.inboxItemExpires
                     )

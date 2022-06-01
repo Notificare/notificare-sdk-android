@@ -53,6 +53,12 @@ internal class NotificareInboxSystemReceiver : BroadcastReceiver() {
             return
         }
 
+        val inboxItemTime = bundle.getLong("inboxItemTime", -1)
+        if (inboxItemTime <= 0) {
+            NotificareLogger.warning("Cannot create inbox item. Invalid time.")
+            return
+        }
+
         val inboxItemVisible = bundle.getBoolean("inboxItemVisible", true)
         val inboxItemExpires = bundle.getLong("inboxItemExpires", -1).let {
             if (it > 0) Date(it) else null
@@ -61,7 +67,7 @@ internal class NotificareInboxSystemReceiver : BroadcastReceiver() {
         val item = NotificareInboxItem(
             id = inboxItemId,
             notification = notification,
-            time = Date(),
+            time = Date(inboxItemTime),
             opened = false,
             expires = inboxItemExpires,
         )
