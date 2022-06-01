@@ -33,7 +33,7 @@ public open class NotificareIntentReceiver : BroadcastReceiver() {
     }
 
     protected open fun onUnlaunched(context: Context) {
-        NotificareLogger.info("Notificare has finished un-launching, please override onReady if you want to receive these intents.")
+        NotificareLogger.info("Notificare has finished un-launching, please override onUnlaunched if you want to receive these intents.")
     }
 
     protected open fun onDeviceRegistered(context: Context, device: NotificareDevice) {
