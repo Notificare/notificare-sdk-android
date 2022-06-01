@@ -19,7 +19,15 @@ import java.util.*
 internal object NotificareSessionModuleImpl : NotificareModule() {
 
     private val handler = Handler(Looper.getMainLooper())
-    private val runnable = Runnable(::stopSession)
+    private val runnable = Runnable {
+        GlobalScope.launch {
+            try {
+                stopSession()
+            } catch (e: Exception) {
+                // Silent.
+            }
+        }
+    }
 
     private var activityCounter = 0
     private var sessionStart: Date? = null
@@ -49,29 +57,27 @@ internal object NotificareSessionModuleImpl : NotificareModule() {
         }
     }
 
-    private fun stopSession() {
+    private suspend fun stopSession() = withContext(Dispatchers.IO) {
         // Skip when no session has started. Should never happen.
-        val sessionId = sessionId ?: return
-        val sessionStart = sessionStart ?: return
-        val sessionEnd = sessionEnd ?: return
+        val sessionId = sessionId ?: return@withContext
+        val sessionStart = sessionStart ?: return@withContext
+        val sessionEnd = sessionEnd ?: return@withContext
+
+        this@NotificareSessionModuleImpl.sessionId = null
+        this@NotificareSessionModuleImpl.sessionStart = null
+        this@NotificareSessionModuleImpl.sessionEnd = null
 
         val format = SimpleDateFormat("HH:mm:ss", Locale.getDefault())
         NotificareLogger.debug("Session '$sessionId' stopped at ${format.format(sessionEnd)}")
 
-        GlobalScope.launch {
-            try {
-                Notificare.eventsImplementation().logApplicationClose(
-                    sessionId = sessionId,
-                    sessionLength = sessionEnd.time - sessionStart.time / 1000.toDouble(),
-                )
-            } catch (e: Exception) {
-                NotificareLogger.warning("Failed to process an application session stop.")
-            }
+        try {
+            Notificare.eventsImplementation().logApplicationClose(
+                sessionId = sessionId,
+                sessionLength = sessionEnd.time - sessionStart.time / 1000.toDouble(),
+            )
+        } catch (e: Exception) {
+            NotificareLogger.warning("Failed to process an application session stop.")
         }
-
-        this.sessionId = null
-        this.sessionStart = null
-        this.sessionEnd = null
     }
 
     internal fun setupLifecycleListeners(application: Application) {
@@ -79,17 +85,17 @@ internal object NotificareSessionModuleImpl : NotificareModule() {
             override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {}
 
             override fun onActivityStarted(activity: Activity) {
-                activityCounter++.also {
-                    if (it == 1) {
-                        NotificareLogger.debug("Resuming previous session.")
-                    }
+                if (activityCounter == 0) {
+                    NotificareLogger.debug("Resuming previous session.")
                 }
+
+                activityCounter++
 
                 // Cancel any session timeout.
                 handler.removeCallbacks(runnable)
 
                 // Prevent multiple session starts.
-                if (sessionId != null || sessionStart != null) return
+                if (sessionId != null) return
 
                 if (!Notificare.isReady) {
                     NotificareLogger.debug("Postponing session start until Notificare is launched.")
@@ -131,9 +137,16 @@ internal object NotificareSessionModuleImpl : NotificareModule() {
     // region Notificare Module
 
     override suspend fun launch() {
-        if (activityCounter > 0 && sessionId == null && sessionStart == null) {
+        if (sessionId == null) {
+            // Launch is taking place after the first activity has been created.
+            // Start the application session.
             startSession()
         }
+    }
+
+    override suspend fun unlaunch() {
+        sessionEnd = Date()
+        stopSession()
     }
 
     // endregion
