@@ -22,9 +22,9 @@ public open class NotificarePushService : HmsMessageService() {
         GlobalScope.launch {
             try {
                 Notificare.pushInternal().registerPushToken(NotificareTransport.HMS, token)
-                NotificareLogger.debug("Registered the device with a HMS token.")
+                NotificareLogger.info("Registered the device with a HMS token.")
             } catch (e: Exception) {
-                NotificareLogger.debug("Failed to register the device with a HMS token.", e)
+                NotificareLogger.info("Failed to register the device with a HMS token.", e)
             }
         }
     }

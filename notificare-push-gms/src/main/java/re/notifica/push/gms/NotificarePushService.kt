@@ -22,9 +22,9 @@ public open class NotificarePushService : FirebaseMessagingService() {
         GlobalScope.launch {
             try {
                 Notificare.pushInternal().registerPushToken(NotificareTransport.GCM, token)
-                NotificareLogger.debug("Registered the device with a FCM token.")
+                NotificareLogger.info("Registered the device with a FCM token.")
             } catch (e: Exception) {
-                NotificareLogger.debug("Failed to register the device with a FCM token.", e)
+                NotificareLogger.info("Failed to register the device with a FCM token.", e)
             }
         }
     }
