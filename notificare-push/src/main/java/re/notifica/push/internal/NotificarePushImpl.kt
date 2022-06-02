@@ -105,8 +105,11 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
     }
 
     override suspend fun launch() {
-        val token = postponedDeviceToken
         val manager = serviceManager
+        val token = postponedDeviceToken?.also {
+            NotificareLogger.debug("Processing postponed push token during launch.")
+            postponedDeviceToken = null
+        }
 
         if (token != null) {
             if (sharedPreferences.remoteNotificationsEnabled) {
