@@ -44,6 +44,7 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
 
     internal const val DEFAULT_NOTIFICATION_CHANNEL_ID: String = "notificare_channel_default"
 
+    private var postponedDeviceToken: String? = null
     private val notificationSequence = AtomicInteger()
     private val _observableAllowedUI = MutableLiveData<Boolean>()
 
@@ -105,14 +106,17 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
     }
 
     override suspend fun launch() {
-        val token = postponedDeviceToken
         val manager = serviceManager
+        val token = postponedDeviceToken?.also {
+            NotificareLogger.debug("Processing postponed push token during launch.")
+            postponedDeviceToken = null
+        }
 
-        if (token != null) {
+        if (token != null && token != Notificare.device().currentDevice?.id) {
             if (sharedPreferences.remoteNotificationsEnabled) {
                 if (manager != null) {
                     NotificareLogger.info("Found a postponed registration token. Performing a device registration.")
-                    registerPushToken(manager.transport, token)
+                    registerPushToken(manager.transport, token, performReadinessCheck = false)
 
                     // NOTE: the notification settings are updated after a push token registration.
                     return
@@ -236,18 +240,28 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
 
     // region Notificare Push Internal
 
-    override var postponedDeviceToken: String? = null
-
     override suspend fun registerPushToken(
         transport: NotificareTransport,
-        token: String
+        token: String,
+        performReadinessCheck: Boolean,
     ): Unit = withContext(Dispatchers.IO) {
+        if (!Notificare.isReady && performReadinessCheck) {
+            NotificareLogger.warning("Notificare is not ready. Postponing token registration...")
+            postponedDeviceToken = token
+
+            return@withContext
+        }
+
         if (!sharedPreferences.remoteNotificationsEnabled) {
             NotificareLogger.debug("Received a push token before enableRemoteNotifications() has been called.")
             return@withContext
         }
 
-        Notificare.deviceInternal().registerPushToken(transport, token)
+        if (token != Notificare.device().currentDevice?.id) {
+            Notificare.deviceInternal().registerPushToken(transport, token)
+        } else {
+            NotificareLogger.debug("Received token has already been registered. Skipping the registration...")
+        }
 
         try {
             updateNotificationSettings()

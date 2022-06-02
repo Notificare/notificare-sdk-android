@@ -28,10 +28,11 @@ public interface NotificarePush {
 
 public interface NotificareInternalPush {
     @InternalNotificareApi
-    public var postponedDeviceToken: String?
-
-    @InternalNotificareApi
-    public suspend fun registerPushToken(transport: NotificareTransport, token: String)
+    public suspend fun registerPushToken(
+        transport: NotificareTransport,
+        token: String,
+        performReadinessCheck: Boolean = true,
+    )
 
     @InternalNotificareApi
     public fun handleRemoteMessage(message: NotificareRemoteMessage)
