@@ -4,6 +4,8 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import androidx.browser.customtabs.CustomTabColorSchemeParams
+import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.os.bundleOf
 import kotlinx.coroutines.*
 import re.notifica.Notificare
@@ -11,9 +13,7 @@ import re.notifica.NotificareCallback
 import re.notifica.internal.NotificareLogger
 import re.notifica.internal.NotificareModule
 import re.notifica.models.NotificareNotification
-import re.notifica.push.ui.NotificareInternalPushUI
-import re.notifica.push.ui.NotificarePushUI
-import re.notifica.push.ui.NotificationActivity
+import re.notifica.push.ui.*
 import re.notifica.push.ui.actions.*
 import re.notifica.push.ui.actions.base.NotificationAction
 import re.notifica.push.ui.ktx.loyaltyIntegration
@@ -69,6 +69,10 @@ internal object NotificarePushUIImpl : NotificareModule(), NotificarePushUI, Not
             NotificareNotification.NotificationType.PASSBOOK -> {
                 lifecycleListeners.forEach { it.onNotificationWillPresent(notification) }
                 handlePassbook(activity, notification)
+            }
+            NotificareNotification.NotificationType.IN_APP_BROWSER -> {
+                lifecycleListeners.forEach { it.onNotificationWillPresent(notification) }
+                handleInAppBrowser(activity, notification)
             }
             else -> {
                 lifecycleListeners.forEach { it.onNotificationWillPresent(notification) }
@@ -143,10 +147,14 @@ internal object NotificarePushUIImpl : NotificareModule(), NotificarePushUI, Not
                 return null
             }
             NotificareNotification.NotificationType.ALERT -> NotificareAlertFragment::class.java.canonicalName
+            NotificareNotification.NotificationType.IN_APP_BROWSER -> {
+                NotificareLogger.debug("Attempting to create a fragment for a notification of type 'InAppBrowser'. This type contains no visual interface.")
+                return null
+            }
             NotificareNotification.NotificationType.WEB_VIEW -> NotificareWebViewFragment::class.java.canonicalName
             NotificareNotification.NotificationType.URL -> NotificareUrlFragment::class.java.canonicalName
             NotificareNotification.NotificationType.URL_SCHEME -> {
-                NotificareLogger.debug("Attempting to create a fragment for a notification of type 'urlScheme'. This type contains to visual interface.")
+                NotificareLogger.debug("Attempting to create a fragment for a notification of type 'UrlScheme'. This type contains no visual interface.")
                 return null
             }
             NotificareNotification.NotificationType.IMAGE -> NotificareImageFragment::class.java.canonicalName
@@ -203,6 +211,16 @@ internal object NotificarePushUIImpl : NotificareModule(), NotificarePushUI, Not
         })
     }
 
+    private fun handleInAppBrowser(activity: Activity, notification: NotificareNotification) {
+        val content = notification.content.firstOrNull { it.type == "re.notifica.content.URL" } ?: run {
+            lifecycleListeners.forEach { it.onNotificationFailedToPresent(notification) }
+            return
+        }
+
+        createInAppBrowser().launchUrl(activity, Uri.parse(content.data as String))
+        lifecycleListeners.forEach { it.onNotificationPresented(notification) }
+    }
+
     private fun openNotificationActivity(
         activity: Activity,
         notification: NotificareNotification,
@@ -230,11 +248,42 @@ internal object NotificarePushUIImpl : NotificareModule(), NotificarePushUI, Not
             NotificareNotification.Action.TYPE_MAIL -> NotificationMailAction(activity, notification, action)
             NotificareNotification.Action.TYPE_SMS -> NotificationSmsAction(activity, notification, action)
             NotificareNotification.Action.TYPE_TELEPHONE -> NotificationTelephoneAction(activity, notification, action)
-            NotificareNotification.Action.TYPE_WEB_VIEW -> NotificationWebViewAction(activity, notification, action)
+            @Suppress("DEPRECATION")
+            NotificareNotification.Action.TYPE_WEB_VIEW,
+            NotificareNotification.Action.TYPE_IN_APP_BROWSER ->
+                NotificationInAppBrowserAction(activity, notification, action)
             else -> {
                 NotificareLogger.warning("Unhandled action type '${action.type}'.")
                 null
             }
         }
+    }
+
+    internal fun createInAppBrowser(): CustomTabsIntent {
+        val colorScheme = when (Notificare.options?.customTabsColorScheme) {
+            "light" -> CustomTabsIntent.COLOR_SCHEME_LIGHT
+            "dark" -> CustomTabsIntent.COLOR_SCHEME_DARK
+            else -> CustomTabsIntent.COLOR_SCHEME_SYSTEM
+        }
+
+        val colorSchemeParams = CustomTabColorSchemeParams.Builder()
+            .apply {
+                val toolbarColor = Notificare.options?.customTabsToolbarColor
+                if (toolbarColor != null) setToolbarColor(toolbarColor)
+
+                val navigationBarColor = Notificare.options?.customTabsNavigationBarColor
+                if (navigationBarColor != null) setNavigationBarColor(navigationBarColor)
+
+                val navigationBarDividerColor = Notificare.options?.customTabsNavigationBarDividerColor
+                if (navigationBarDividerColor != null) setNavigationBarDividerColor(navigationBarDividerColor)
+            }
+            .build()
+
+        return CustomTabsIntent.Builder()
+            .setShowTitle(checkNotNull(Notificare.options).customTabsShowTitle)
+            .setColorScheme(colorScheme)
+            .setColorSchemeParams(CustomTabsIntent.COLOR_SCHEME_LIGHT, colorSchemeParams)
+            .setColorSchemeParams(CustomTabsIntent.COLOR_SCHEME_DARK, colorSchemeParams)
+            .build()
     }
 }

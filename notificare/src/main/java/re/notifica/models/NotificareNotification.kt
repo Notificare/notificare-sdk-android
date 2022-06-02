@@ -8,8 +8,8 @@ import kotlinx.parcelize.WriteWith
 import org.json.JSONObject
 import re.notifica.Notificare
 import re.notifica.internal.moshi
-import re.notifica.internal.parcelize.NotificationContentDataParceler
 import re.notifica.internal.parcelize.NotificareExtraParceler
+import re.notifica.internal.parcelize.NotificationContentDataParceler
 import java.util.*
 
 @Parcelize
@@ -36,6 +36,7 @@ public data class NotificareNotification(
     public companion object {
         public const val TYPE_NONE: String = "re.notifica.notification.None"
         public const val TYPE_ALERT: String = "re.notifica.notification.Alert"
+        public const val TYPE_IN_APP_BROWSER: String = "re.notifica.notification.InAppBrowser"
         public const val TYPE_WEB_VIEW: String = "re.notifica.notification.WebView"
         public const val TYPE_URL: String = "re.notifica.notification.URL"
         public const val TYPE_URL_SCHEME: String = "re.notifica.notification.URLScheme"
@@ -124,6 +125,12 @@ public data class NotificareNotification(
             public const val TYPE_MAIL: String = "re.notifica.action.Mail"
             public const val TYPE_SMS: String = "re.notifica.action.SMS"
             public const val TYPE_TELEPHONE: String = "re.notifica.action.Telephone"
+            public const val TYPE_IN_APP_BROWSER: String = "re.notifica.action.InAppBrowser"
+
+            @Deprecated(
+                message = "The WebView action type becomes a backwards compatible alias. Use the InAppBrowser action type instead.",
+                replaceWith = ReplaceWith("NotificareNotification.Action.TYPE_IN_APP_BROWSER"),
+            )
             public const val TYPE_WEB_VIEW: String = "re.notifica.action.WebView"
 
             private val adapter = Notificare.moshi.adapter(Action::class.java)
@@ -183,6 +190,7 @@ public data class NotificareNotification(
     public enum class NotificationType {
         NONE,
         ALERT,
+        IN_APP_BROWSER,
         WEB_VIEW,
         URL,
         URL_SCHEME,
@@ -198,6 +206,7 @@ public data class NotificareNotification(
                 return when (type) {
                     TYPE_NONE -> NONE
                     TYPE_ALERT -> ALERT
+                    TYPE_IN_APP_BROWSER -> IN_APP_BROWSER
                     TYPE_WEB_VIEW -> WEB_VIEW
                     TYPE_URL -> URL
                     TYPE_URL_SCHEME -> URL_SCHEME
