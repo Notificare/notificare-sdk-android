@@ -8,8 +8,8 @@ import kotlinx.parcelize.WriteWith
 import org.json.JSONObject
 import re.notifica.Notificare
 import re.notifica.internal.moshi
-import re.notifica.internal.parcelize.NotificationContentDataParceler
 import re.notifica.internal.parcelize.NotificareExtraParceler
+import re.notifica.internal.parcelize.NotificationContentDataParceler
 import java.util.*
 
 @Parcelize
@@ -124,6 +124,12 @@ public data class NotificareNotification(
             public const val TYPE_MAIL: String = "re.notifica.action.Mail"
             public const val TYPE_SMS: String = "re.notifica.action.SMS"
             public const val TYPE_TELEPHONE: String = "re.notifica.action.Telephone"
+            public const val TYPE_IN_APP_BROWSER: String = "re.notifica.action.InAppBrowser"
+
+            @Deprecated(
+                message = "The WebView action type becomes a backwards compatible alias. Use the InAppBrowser action type instead.",
+                replaceWith = ReplaceWith("NotificareNotification.Action.TYPE_IN_APP_BROWSER"),
+            )
             public const val TYPE_WEB_VIEW: String = "re.notifica.action.WebView"
 
             private val adapter = Notificare.moshi.adapter(Action::class.java)

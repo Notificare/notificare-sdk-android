@@ -12,7 +12,7 @@ import re.notifica.push.ui.ktx.pushUIImplementation
 import re.notifica.push.ui.ktx.pushUIInternal
 import re.notifica.push.ui.models.NotificarePendingResult
 
-internal class NotificationWebViewAction(
+internal class NotificationInAppBrowserAction(
     context: Context,
     notification: NotificareNotification,
     action: NotificareNotification.Action
