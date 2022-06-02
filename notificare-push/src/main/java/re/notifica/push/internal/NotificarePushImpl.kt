@@ -116,7 +116,7 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
             if (sharedPreferences.remoteNotificationsEnabled) {
                 if (manager != null) {
                     NotificareLogger.info("Found a postponed registration token. Performing a device registration.")
-                    registerPushToken(manager.transport, token)
+                    registerPushToken(manager.transport, token, performReadinessCheck = false)
 
                     // NOTE: the notification settings are updated after a push token registration.
                     return
@@ -242,9 +242,10 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
 
     override suspend fun registerPushToken(
         transport: NotificareTransport,
-        token: String
+        token: String,
+        performReadinessCheck: Boolean,
     ): Unit = withContext(Dispatchers.IO) {
-        if (!Notificare.isReady) {
+        if (!Notificare.isReady && performReadinessCheck) {
             NotificareLogger.warning("Notificare is not ready. Postponing token registration...")
             postponedDeviceToken = token
 
