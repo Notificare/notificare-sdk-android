@@ -111,7 +111,7 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
             postponedDeviceToken = null
         }
 
-        if (token != null) {
+        if (token != null && token != Notificare.device().currentDevice?.id) {
             if (sharedPreferences.remoteNotificationsEnabled) {
                 if (manager != null) {
                     NotificareLogger.info("Found a postponed registration token. Performing a device registration.")
