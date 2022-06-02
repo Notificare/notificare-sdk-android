@@ -70,6 +70,10 @@ internal object NotificarePushUIImpl : NotificareModule(), NotificarePushUI, Not
                 lifecycleListeners.forEach { it.onNotificationWillPresent(notification) }
                 handlePassbook(activity, notification)
             }
+            NotificareNotification.NotificationType.IN_APP_BROWSER -> {
+                lifecycleListeners.forEach { it.onNotificationWillPresent(notification) }
+                handleInAppBrowser(activity, notification)
+            }
             else -> {
                 lifecycleListeners.forEach { it.onNotificationWillPresent(notification) }
                 openNotificationActivity(activity, notification)
@@ -143,10 +147,14 @@ internal object NotificarePushUIImpl : NotificareModule(), NotificarePushUI, Not
                 return null
             }
             NotificareNotification.NotificationType.ALERT -> NotificareAlertFragment::class.java.canonicalName
+            NotificareNotification.NotificationType.IN_APP_BROWSER -> {
+                NotificareLogger.debug("Attempting to create a fragment for a notification of type 'InAppBrowser'. This type contains no visual interface.")
+                return null
+            }
             NotificareNotification.NotificationType.WEB_VIEW -> NotificareWebViewFragment::class.java.canonicalName
             NotificareNotification.NotificationType.URL -> NotificareUrlFragment::class.java.canonicalName
             NotificareNotification.NotificationType.URL_SCHEME -> {
-                NotificareLogger.debug("Attempting to create a fragment for a notification of type 'urlScheme'. This type contains to visual interface.")
+                NotificareLogger.debug("Attempting to create a fragment for a notification of type 'UrlScheme'. This type contains no visual interface.")
                 return null
             }
             NotificareNotification.NotificationType.IMAGE -> NotificareImageFragment::class.java.canonicalName
@@ -201,6 +209,16 @@ internal object NotificarePushUIImpl : NotificareModule(), NotificarePushUI, Not
                 lifecycleListeners.forEach { it.onNotificationFailedToPresent(notification) }
             }
         })
+    }
+
+    private fun handleInAppBrowser(activity: Activity, notification: NotificareNotification) {
+        val content = notification.content.firstOrNull { it.type == "re.notifica.content.URL" } ?: run {
+            lifecycleListeners.forEach { it.onNotificationFailedToPresent(notification) }
+            return
+        }
+
+        createInAppBrowser().launchUrl(activity, Uri.parse(content.data as String))
+        lifecycleListeners.forEach { it.onNotificationPresented(notification) }
     }
 
     private fun openNotificationActivity(
