@@ -73,7 +73,7 @@ internal object NotificareSessionModuleImpl : NotificareModule() {
         try {
             Notificare.eventsImplementation().logApplicationClose(
                 sessionId = sessionId,
-                sessionLength = sessionEnd.time - sessionStart.time / 1000.toDouble(),
+                sessionLength = (sessionEnd.time - sessionStart.time) / 1000.toDouble(),
             )
         } catch (e: Exception) {
             NotificareLogger.warning("Failed to process an application session stop.")
