@@ -4,6 +4,8 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import androidx.browser.customtabs.CustomTabColorSchemeParams
+import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.os.bundleOf
 import kotlinx.coroutines.*
 import re.notifica.Notificare
@@ -11,9 +13,7 @@ import re.notifica.NotificareCallback
 import re.notifica.internal.NotificareLogger
 import re.notifica.internal.NotificareModule
 import re.notifica.models.NotificareNotification
-import re.notifica.push.ui.NotificareInternalPushUI
-import re.notifica.push.ui.NotificarePushUI
-import re.notifica.push.ui.NotificationActivity
+import re.notifica.push.ui.*
 import re.notifica.push.ui.actions.*
 import re.notifica.push.ui.actions.base.NotificationAction
 import re.notifica.push.ui.ktx.loyaltyIntegration
@@ -236,5 +236,33 @@ internal object NotificarePushUIImpl : NotificareModule(), NotificarePushUI, Not
                 null
             }
         }
+    }
+
+    internal fun createInAppBrowser(): CustomTabsIntent {
+        val colorScheme = when (Notificare.options?.customTabsColorScheme) {
+            "light" -> CustomTabsIntent.COLOR_SCHEME_LIGHT
+            "dark" -> CustomTabsIntent.COLOR_SCHEME_DARK
+            else -> CustomTabsIntent.COLOR_SCHEME_SYSTEM
+        }
+
+        val colorSchemeParams = CustomTabColorSchemeParams.Builder()
+            .apply {
+                val toolbarColor = Notificare.options?.customTabsToolbarColor
+                if (toolbarColor != null) setToolbarColor(toolbarColor)
+
+                val navigationBarColor = Notificare.options?.customTabsNavigationBarColor
+                if (navigationBarColor != null) setNavigationBarColor(navigationBarColor)
+
+                val navigationBarDividerColor = Notificare.options?.customTabsNavigationBarDividerColor
+                if (navigationBarDividerColor != null) setNavigationBarDividerColor(navigationBarDividerColor)
+            }
+            .build()
+
+        return CustomTabsIntent.Builder()
+            .setShowTitle(checkNotNull(Notificare.options).customTabsShowTitle)
+            .setColorScheme(colorScheme)
+            .setColorSchemeParams(CustomTabsIntent.COLOR_SCHEME_LIGHT, colorSchemeParams)
+            .setColorSchemeParams(CustomTabsIntent.COLOR_SCHEME_DARK, colorSchemeParams)
+            .build()
     }
 }
