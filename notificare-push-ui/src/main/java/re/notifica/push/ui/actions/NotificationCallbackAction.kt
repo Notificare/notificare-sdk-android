@@ -10,6 +10,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import re.notifica.Notificare
 import re.notifica.internal.NotificareLogger
+import re.notifica.internal.common.onMainThread
 import re.notifica.models.NotificareNotification
 import re.notifica.push.ui.R
 import re.notifica.push.ui.actions.base.NotificationAction
@@ -127,7 +128,7 @@ internal class NotificationCallbackAction(
                     mimeType = mimeType
                 )
 
-                withContext(Dispatchers.Main) {
+                onMainThread {
                     Notificare.pushUIInternal().lifecycleListeners.forEach { it.onActionExecuted(notification, action) }
                 }
 
@@ -145,7 +146,7 @@ internal class NotificationCallbackAction(
                 try {
                     Notificare.callNotificationReplyWebhook(targetUri, params)
 
-                    withContext(Dispatchers.Main) {
+                    onMainThread {
                         Notificare.pushUIInternal().lifecycleListeners.forEach {
                             it.onActionExecuted(
                                 notification,
@@ -154,7 +155,7 @@ internal class NotificationCallbackAction(
                         }
                     }
                 } catch (e: Exception) {
-                    withContext(Dispatchers.Main) {
+                    onMainThread {
                         Notificare.pushUIInternal().lifecycleListeners.forEach {
                             it.onActionFailedToExecute(
                                 notification,

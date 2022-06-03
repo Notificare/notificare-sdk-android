@@ -9,6 +9,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import re.notifica.Notificare
 import re.notifica.internal.NotificareLogger
+import re.notifica.internal.common.onMainThread
 import re.notifica.models.NotificareNotification
 import re.notifica.push.ui.R
 import re.notifica.push.ui.actions.base.NotificationAction
@@ -40,7 +41,7 @@ internal class NotificationAppAction(
 
             Notificare.createNotificationReply(notification, action)
 
-            withContext(Dispatchers.Main) {
+            onMainThread {
                 Notificare.pushUIInternal().lifecycleListeners.forEach {
                     it.onActionExecuted(
                         notification,

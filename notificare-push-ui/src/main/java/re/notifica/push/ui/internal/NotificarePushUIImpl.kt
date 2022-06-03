@@ -7,11 +7,15 @@ import android.os.Bundle
 import androidx.browser.customtabs.CustomTabColorSchemeParams
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.os.bundleOf
-import kotlinx.coroutines.*
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import re.notifica.Notificare
 import re.notifica.NotificareCallback
 import re.notifica.internal.NotificareLogger
 import re.notifica.internal.NotificareModule
+import re.notifica.internal.common.onMainThread
 import re.notifica.models.NotificareNotification
 import re.notifica.push.ui.*
 import re.notifica.push.ui.actions.*
@@ -63,19 +67,31 @@ internal object NotificarePushUIImpl : NotificareModule(), NotificarePushUI, Not
                 NotificareLogger.debug("Attempting to present a notification of type 'none'. These should be handled by the application instead.")
             }
             NotificareNotification.NotificationType.URL_SCHEME -> {
-                lifecycleListeners.forEach { it.onNotificationWillPresent(notification) }
+                onMainThread {
+                    lifecycleListeners.forEach { it.onNotificationWillPresent(notification) }
+                }
+
                 handleUrlScheme(activity, notification)
             }
             NotificareNotification.NotificationType.PASSBOOK -> {
-                lifecycleListeners.forEach { it.onNotificationWillPresent(notification) }
+                onMainThread {
+                    lifecycleListeners.forEach { it.onNotificationWillPresent(notification) }
+                }
+
                 handlePassbook(activity, notification)
             }
             NotificareNotification.NotificationType.IN_APP_BROWSER -> {
-                lifecycleListeners.forEach { it.onNotificationWillPresent(notification) }
+                onMainThread {
+                    lifecycleListeners.forEach { it.onNotificationWillPresent(notification) }
+                }
+
                 handleInAppBrowser(activity, notification)
             }
             else -> {
-                lifecycleListeners.forEach { it.onNotificationWillPresent(notification) }
+                onMainThread {
+                    lifecycleListeners.forEach { it.onNotificationWillPresent(notification) }
+                }
+
                 openNotificationActivity(activity, notification)
             }
         }
@@ -91,7 +107,7 @@ internal object NotificarePushUIImpl : NotificareModule(), NotificarePushUI, Not
         @OptIn(DelicateCoroutinesApi::class)
         GlobalScope.launch(Dispatchers.IO) {
             try {
-                withContext(Dispatchers.Main) {
+                onMainThread {
                     lifecycleListeners.forEach { it.onActionWillExecute(notification, action) }
                 }
 
@@ -110,7 +126,7 @@ internal object NotificarePushUIImpl : NotificareModule(), NotificarePushUI, Not
                 val handler = createActionHandler(activity, notification, action) ?: run {
                     NotificareLogger.debug("Unable to create an action handler for '${action.type}'.")
 
-                    withContext(Dispatchers.Main) {
+                    onMainThread {
                         val error = Exception("Unable to create an action handler for '${action.type}'.")
                         lifecycleListeners.forEach { it.onActionFailedToExecute(notification, action, error) }
                     }
@@ -120,7 +136,7 @@ internal object NotificarePushUIImpl : NotificareModule(), NotificarePushUI, Not
 
                 handler.execute()
             } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
+                onMainThread {
                     lifecycleListeners.forEach { it.onActionFailedToExecute(notification, action, e) }
                 }
             }
@@ -175,7 +191,10 @@ internal object NotificarePushUIImpl : NotificareModule(), NotificarePushUI, Not
 
     private fun handleUrlScheme(activity: Activity, notification: NotificareNotification) {
         val content = notification.content.firstOrNull { it.type == "re.notifica.content.URL" } ?: run {
-            lifecycleListeners.forEach { it.onNotificationFailedToPresent(notification) }
+            onMainThread {
+                lifecycleListeners.forEach { it.onNotificationFailedToPresent(notification) }
+            }
+
             return
         }
 
@@ -187,10 +206,16 @@ internal object NotificarePushUIImpl : NotificareModule(), NotificarePushUI, Not
         // Check if the application can handle the intent itself.
         if (intent.resolveActivity(activity.applicationContext.packageManager) != null) {
             activity.startActivity(intent)
-            lifecycleListeners.forEach { it.onNotificationPresented(notification) }
+
+            onMainThread {
+                lifecycleListeners.forEach { it.onNotificationPresented(notification) }
+            }
         } else {
             NotificareLogger.warning("Cannot open a deep link that's not supported by the application.")
-            lifecycleListeners.forEach { it.onNotificationFailedToPresent(notification) }
+
+            onMainThread {
+                lifecycleListeners.forEach { it.onNotificationFailedToPresent(notification) }
+            }
         }
     }
 
@@ -202,23 +227,33 @@ internal object NotificarePushUIImpl : NotificareModule(), NotificarePushUI, Not
 
         integration.handlePassPresentation(activity, notification, object : NotificareCallback<Unit> {
             override fun onSuccess(result: Unit) {
-                lifecycleListeners.forEach { it.onNotificationPresented(notification) }
+                onMainThread {
+                    lifecycleListeners.forEach { it.onNotificationPresented(notification) }
+                }
             }
 
             override fun onFailure(e: Exception) {
-                lifecycleListeners.forEach { it.onNotificationFailedToPresent(notification) }
+                onMainThread {
+                    lifecycleListeners.forEach { it.onNotificationFailedToPresent(notification) }
+                }
             }
         })
     }
 
     private fun handleInAppBrowser(activity: Activity, notification: NotificareNotification) {
         val content = notification.content.firstOrNull { it.type == "re.notifica.content.URL" } ?: run {
-            lifecycleListeners.forEach { it.onNotificationFailedToPresent(notification) }
+            onMainThread {
+                lifecycleListeners.forEach { it.onNotificationFailedToPresent(notification) }
+            }
+
             return
         }
 
         createInAppBrowser().launchUrl(activity, Uri.parse(content.data as String))
-        lifecycleListeners.forEach { it.onNotificationPresented(notification) }
+
+        onMainThread {
+            lifecycleListeners.forEach { it.onNotificationPresented(notification) }
+        }
     }
 
     private fun openNotificationActivity(
