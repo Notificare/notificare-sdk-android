@@ -25,6 +25,7 @@ import re.notifica.geo.ktx.loyaltyIntegration
 import re.notifica.geo.models.*
 import re.notifica.internal.NotificareLogger
 import re.notifica.internal.NotificareModule
+import re.notifica.internal.common.onMainThread
 import re.notifica.internal.modules.integrations.NotificareGeoIntegration
 import re.notifica.internal.network.request.NotificareRequest
 import re.notifica.ktx.device
@@ -323,12 +324,16 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
                     triggerRegionEnter(region)
                     startRegionSession(region)
 
-                    listeners.forEach { it.onRegionEntered(region) }
+                    onMainThread {
+                        listeners.forEach { it.onRegionEntered(region) }
+                    }
                 } else if (entered && !inside) {
                     triggerRegionExit(region)
                     stopRegionSession(region)
 
-                    listeners.forEach { it.onRegionExited(region) }
+                    onMainThread {
+                        listeners.forEach { it.onRegionExited(region) }
+                    }
                 }
 
                 if (inside) {
@@ -361,7 +366,9 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
             }
         }
 
-        listeners.forEach { it.onLocationUpdated(NotificareLocation(location)) }
+        onMainThread {
+            listeners.forEach { it.onLocationUpdated(NotificareLocation(location)) }
+        }
 
         Notificare.loyaltyIntegration()?.onPassbookLocationRelevanceChanged()
     }
@@ -392,7 +399,9 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
                                 // Start monitoring for beacons in this region.
                                 startMonitoringBeacons(region)
 
-                                listeners.forEach { it.onRegionEntered(region) }
+                                onMainThread {
+                                    listeners.forEach { it.onRegionEntered(region) }
+                                }
                             }
                         } catch (e: Exception) {
                             NotificareLogger.warning("Failed to determine the current location.", e)
@@ -411,7 +420,9 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
                 triggerRegionEnter(region)
                 startRegionSession(region)
 
-                listeners.forEach { it.onRegionEntered(region) }
+                onMainThread {
+                    listeners.forEach { it.onRegionEntered(region) }
+                }
             }
 
             // Start monitoring for beacons in this region.
@@ -431,7 +442,9 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
                 triggerRegionExit(region)
                 stopRegionSession(region)
 
-                listeners.forEach { it.onRegionExited(region) }
+                onMainThread {
+                    listeners.forEach { it.onRegionExited(region) }
+                }
             }
 
             // Stop monitoring for beacons in this region.
@@ -456,7 +469,9 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
             }
         }
 
-        listeners.forEach { it.onBeaconEntered(beacon) }
+        onMainThread {
+            listeners.forEach { it.onBeaconEntered(beacon) }
+        }
 
         Notificare.loyaltyIntegration()?.onPassbookLocationRelevanceChanged()
     }
@@ -478,7 +493,9 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
             }
         }
 
-        listeners.forEach { it.onBeaconExited(beacon) }
+        onMainThread {
+            listeners.forEach { it.onBeaconExited(beacon) }
+        }
 
         Notificare.loyaltyIntegration()?.onPassbookLocationRelevanceChanged()
     }
@@ -514,7 +531,9 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
             .also { ncBeacons ->
                 updateBeaconSessions(ncBeacons)
 
-                listeners.forEach { it.onBeaconsRanged(region, ncBeacons) }
+                onMainThread {
+                    listeners.forEach { it.onBeaconsRanged(region, ncBeacons) }
+                }
             }
     }
 
