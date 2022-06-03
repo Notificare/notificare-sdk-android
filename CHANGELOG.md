@@ -3,6 +3,14 @@
 ## Upcoming release
 
 - Fix notification content when opening partial inbox items
+- Use GMS/HMS `message.sentTime` when creating inbox items
+- Log events methods correctly throw when failures are not recoverable
+- Improve session control mechanism
+- Fix session length
+- Fix GMS/HMS token refresh race condition for late configured apps
+- Add `InAppBrowser` notification type
+- Aliased `WebView` action into `InAppBrowser`, aligning with the notification type 
+- Ensure listeners are called on the main thread
 
 ## 3.1.1
 
