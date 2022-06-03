@@ -1,6 +1,7 @@
 package re.notifica.geo
 
 import android.location.Location
+import androidx.annotation.MainThread
 import re.notifica.InternalNotificareApi
 import re.notifica.geo.internal.BeaconServiceManager
 import re.notifica.geo.models.NotificareBeacon
@@ -22,17 +23,29 @@ public interface NotificareGeo {
     public fun removeListener(listener: Listener)
 
     public interface Listener {
-        public fun onLocationUpdated(location: NotificareLocation) {}
+        @MainThread
+        public fun onLocationUpdated(location: NotificareLocation) {
+        }
 
-        public fun onRegionEntered(region: NotificareRegion) {}
+        @MainThread
+        public fun onRegionEntered(region: NotificareRegion) {
+        }
 
-        public fun onRegionExited(region: NotificareRegion) {}
+        @MainThread
+        public fun onRegionExited(region: NotificareRegion) {
+        }
 
-        public fun onBeaconEntered(beacon: NotificareBeacon) {}
+        @MainThread
+        public fun onBeaconEntered(beacon: NotificareBeacon) {
+        }
 
-        public fun onBeaconExited(beacon: NotificareBeacon) {}
+        @MainThread
+        public fun onBeaconExited(beacon: NotificareBeacon) {
+        }
 
-        public fun onBeaconsRanged(region: NotificareRegion, beacons: List<NotificareBeacon>) {}
+        @MainThread
+        public fun onBeaconsRanged(region: NotificareRegion, beacons: List<NotificareBeacon>) {
+        }
     }
 }
 

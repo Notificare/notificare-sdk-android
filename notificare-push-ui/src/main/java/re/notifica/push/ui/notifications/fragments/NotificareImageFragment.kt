@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import re.notifica.Notificare
 import re.notifica.internal.NotificareUtils
+import re.notifica.internal.common.onMainThread
 import re.notifica.models.NotificareNotification
 import re.notifica.push.ui.databinding.NotificareNotificationImageFragmentBinding
 import re.notifica.push.ui.ktx.pushUIInternal
@@ -39,9 +40,13 @@ public class NotificareImageFragment : NotificationFragment() {
         super.onActivityCreated(savedInstanceState)
 
         if (notification.content.isEmpty()) {
-            Notificare.pushUIInternal().lifecycleListeners.forEach { it.onNotificationFailedToPresent(notification) }
+            onMainThread {
+                Notificare.pushUIInternal().lifecycleListeners.forEach { it.onNotificationFailedToPresent(notification) }
+            }
         } else {
-            Notificare.pushUIInternal().lifecycleListeners.forEach { it.onNotificationPresented(notification) }
+            onMainThread {
+                Notificare.pushUIInternal().lifecycleListeners.forEach { it.onNotificationPresented(notification) }
+            }
         }
     }
 

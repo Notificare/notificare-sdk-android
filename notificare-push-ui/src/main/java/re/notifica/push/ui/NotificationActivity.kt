@@ -6,6 +6,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import re.notifica.Notificare
+import re.notifica.internal.common.onMainThread
 import re.notifica.models.NotificareNotification
 import re.notifica.push.ui.databinding.NotificareNotificationActivityBinding
 import re.notifica.push.ui.ktx.pushUIImplementation
@@ -48,8 +49,10 @@ public open class NotificationActivity : AppCompatActivity(), NotificationContai
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == android.R.id.home) {
-            Notificare.pushUIImplementation().lifecycleListeners.forEach {
-                it.onNotificationFinishedPresenting(notification)
+            onMainThread {
+                Notificare.pushUIImplementation().lifecycleListeners.forEach {
+                    it.onNotificationFinishedPresenting(notification)
+                }
             }
 
             onBackPressed()
@@ -62,8 +65,10 @@ public open class NotificationActivity : AppCompatActivity(), NotificationContai
     override fun finish() {
         super.finish()
 
-        Notificare.pushUIImplementation().lifecycleListeners.forEach {
-            it.onNotificationFinishedPresenting(notification)
+        onMainThread {
+            Notificare.pushUIImplementation().lifecycleListeners.forEach {
+                it.onNotificationFinishedPresenting(notification)
+            }
         }
     }
 

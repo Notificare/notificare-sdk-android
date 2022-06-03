@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.webkit.WebChromeClient
 import re.notifica.Notificare
+import re.notifica.internal.common.onMainThread
 import re.notifica.models.NotificareNotification
 import re.notifica.push.ui.databinding.NotificareNotificationWebViewFragmentBinding
 import re.notifica.push.ui.ktx.pushUIInternal
@@ -43,7 +44,10 @@ public class NotificareWebViewFragment : NotificationFragment() {
     private fun setupContent() {
         val content = notification.content.firstOrNull { it.type == NotificareNotification.Content.TYPE_HTML }
         val html = content?.data as? String ?: run {
-            Notificare.pushUIInternal().lifecycleListeners.forEach { it.onNotificationFailedToPresent(notification) }
+            onMainThread {
+                Notificare.pushUIInternal().lifecycleListeners.forEach { it.onNotificationFailedToPresent(notification) }
+            }
+
             return
         }
 

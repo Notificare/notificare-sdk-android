@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.webkit.WebChromeClient
 import re.notifica.Notificare
+import re.notifica.internal.common.onMainThread
 import re.notifica.models.NotificareNotification
 import re.notifica.push.ui.databinding.NotificareNotificationWebPassFragmentBinding
 import re.notifica.push.ui.ktx.pushUIInternal
@@ -48,7 +49,10 @@ public class NotificareWebPassFragment : NotificationFragment() {
         val host = Notificare.servicesInfo?.pushHost
 
         if (content?.type != NotificareNotification.Content.TYPE_PK_PASS || passUrlStr == null || application == null || host == null) {
-            Notificare.pushUIInternal().lifecycleListeners.forEach { it.onNotificationFailedToPresent(notification) }
+            onMainThread {
+                Notificare.pushUIInternal().lifecycleListeners.forEach { it.onNotificationFailedToPresent(notification) }
+            }
+
             return
         }
 

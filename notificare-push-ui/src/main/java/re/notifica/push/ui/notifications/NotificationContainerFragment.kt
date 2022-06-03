@@ -14,6 +14,7 @@ import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
 import re.notifica.Notificare
 import re.notifica.internal.NotificareLogger
+import re.notifica.internal.common.onMainThread
 import re.notifica.models.NotificareNotification
 import re.notifica.push.ui.R
 import re.notifica.push.ui.databinding.NotificareNotificationContainerFragmentBinding
@@ -224,7 +225,11 @@ public class NotificationContainerFragment
             try {
                 callback.onNotificationFragmentStartProgress(notification)
 
-                Notificare.pushUIInternal().lifecycleListeners.forEach { it.onActionWillExecute(notification, action) }
+                onMainThread {
+                    Notificare.pushUIInternal().lifecycleListeners.forEach {
+                        it.onActionWillExecute(notification, action)
+                    }
+                }
 
                 val result = actionHandler.execute()
                 pendingResult = result
@@ -244,13 +249,15 @@ public class NotificationContainerFragment
                             requireContext().getString(R.string.notificare_action_camera_failed)
                         )
 
-                        val error = Exception(requireContext().getString(R.string.notificare_action_camera_failed))
-                        Notificare.pushUIInternal().lifecycleListeners.forEach {
-                            it.onActionFailedToExecute(
-                                notification,
-                                action,
-                                error
-                            )
+                        onMainThread {
+                            val error = Exception(requireContext().getString(R.string.notificare_action_camera_failed))
+                            Notificare.pushUIInternal().lifecycleListeners.forEach {
+                                it.onActionFailedToExecute(
+                                    notification,
+                                    action,
+                                    error
+                                )
+                            }
                         }
                     }
                 } else if (result?.requestCode == NotificarePendingResult.KEYBOARD_REQUEST_CODE) {
@@ -271,8 +278,10 @@ public class NotificationContainerFragment
                 callback.onNotificationFragmentEndProgress(notification)
                 callback.onNotificationFragmentActionFailed(notification, e.localizedMessage)
 
-                Notificare.pushUIInternal().lifecycleListeners.forEach {
-                    it.onActionFailedToExecute(notification, action, e)
+                onMainThread {
+                    Notificare.pushUIInternal().lifecycleListeners.forEach {
+                        it.onActionFailedToExecute(notification, action, e)
+                    }
                 }
             }
         }

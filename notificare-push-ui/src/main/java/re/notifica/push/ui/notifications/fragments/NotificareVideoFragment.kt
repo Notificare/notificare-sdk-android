@@ -9,6 +9,7 @@ import android.webkit.WebChromeClient
 import android.widget.FrameLayout
 import androidx.core.view.isVisible
 import re.notifica.Notificare
+import re.notifica.internal.common.onMainThread
 import re.notifica.push.ui.databinding.NotificareNotificationVideoFragmentBinding
 import re.notifica.push.ui.ktx.pushUIInternal
 import re.notifica.push.ui.notifications.fragments.base.NotificationFragment
@@ -47,7 +48,14 @@ public class NotificareVideoFragment : NotificationFragment() {
             "re.notifica.content.Vimeo" -> String.format(vimeoVideoHTML, content.data)
             "re.notifica.content.HTML5Video" -> String.format(html5Video, content.data)
             else -> {
-                Notificare.pushUIInternal().lifecycleListeners.forEach { it.onNotificationFailedToPresent(notification) }
+                onMainThread {
+                    Notificare.pushUIInternal().lifecycleListeners.forEach {
+                        it.onNotificationFailedToPresent(
+                            notification
+                        )
+                    }
+                }
+
                 return
             }
         }

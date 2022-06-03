@@ -11,6 +11,7 @@ import com.huawei.hms.maps.model.LatLngBounds
 import com.huawei.hms.maps.model.Marker
 import com.huawei.hms.maps.model.MarkerOptions
 import re.notifica.Notificare
+import re.notifica.internal.common.onMainThread
 import re.notifica.internal.common.waitForLayout
 import re.notifica.models.NotificareNotification
 import re.notifica.push.ui.hms.ktx.pushUIInternal
@@ -81,11 +82,12 @@ public class NotificareMapFragment : SupportMapFragment(), OnMapReadyCallback {
             }
         }
 
-        Notificare.pushUIInternal().lifecycleListeners.forEach {
-            it.onNotificationPresented(notification)
+        onMainThread {
+            Notificare.pushUIInternal().lifecycleListeners.forEach {
+                it.onNotificationPresented(notification)
+            }
         }
     }
 
     // endregion
 }
-

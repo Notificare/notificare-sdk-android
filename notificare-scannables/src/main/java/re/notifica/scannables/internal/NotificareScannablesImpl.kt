@@ -11,6 +11,7 @@ import re.notifica.Notificare
 import re.notifica.NotificareCallback
 import re.notifica.internal.NotificareLogger
 import re.notifica.internal.NotificareModule
+import re.notifica.internal.common.onMainThread
 import re.notifica.internal.common.putEnumExtra
 import re.notifica.internal.ktx.toCallbackFunction
 import re.notifica.internal.network.request.NotificareRequest
@@ -95,14 +96,18 @@ internal object NotificareScannablesImpl : NotificareModule(), NotificareScannab
     // endregion
 
     internal fun notifyListeners(scannable: NotificareScannable) {
-        listeners.forEach {
-            it.onScannableDetected(scannable)
+        onMainThread {
+            listeners.forEach {
+                it.onScannableDetected(scannable)
+            }
         }
     }
 
     internal fun notifyListeners(error: Exception) {
-        listeners.forEach {
-            it.onScannableSessionError(error)
+        onMainThread {
+            listeners.forEach {
+                it.onScannableSessionError(error)
+            }
         }
     }
 }

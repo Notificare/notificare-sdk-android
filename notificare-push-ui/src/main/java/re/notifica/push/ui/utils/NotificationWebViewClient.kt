@@ -12,6 +12,7 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import re.notifica.Notificare
 import re.notifica.internal.NotificareLogger
+import re.notifica.internal.common.onMainThread
 import re.notifica.models.NotificareNotification
 import re.notifica.push.ui.closeWindowQueryParameter
 import re.notifica.push.ui.ktx.pushUIInternal
@@ -57,7 +58,9 @@ internal open class NotificationWebViewClient(
         }
 
         if (loadingError == null) {
-            Notificare.pushUIInternal().lifecycleListeners.forEach { it.onNotificationPresented(notification) }
+            onMainThread {
+                Notificare.pushUIInternal().lifecycleListeners.forEach { it.onNotificationPresented(notification) }
+            }
         }
     }
 
@@ -68,7 +71,9 @@ internal open class NotificationWebViewClient(
         // The onPageFinished is triggered even when the loading fails.
         loadingError = error
 
-        Notificare.pushUIInternal().lifecycleListeners.forEach { it.onNotificationFailedToPresent(notification) }
+        onMainThread {
+            Notificare.pushUIInternal().lifecycleListeners.forEach { it.onNotificationFailedToPresent(notification) }
+        }
     }
 
     private fun shouldCloseWindow(uri: Uri?): Boolean {
@@ -125,7 +130,11 @@ internal open class NotificationWebViewClient(
 
         val options = checkNotNull(Notificare.options)
         if (options.urlSchemes.contains(uri.scheme)) {
-            Notificare.pushUIInternal().lifecycleListeners.forEach { it.onNotificationUrlClicked(notification, uri) }
+            onMainThread {
+                Notificare.pushUIInternal().lifecycleListeners.forEach {
+                    it.onNotificationUrlClicked(notification, uri)
+                }
+            }
 
             if (shouldCloseWindow(uri)) {
                 callback.onNotificationFragmentFinished()

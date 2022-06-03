@@ -7,9 +7,11 @@ import android.content.Intent
 import android.content.res.Resources
 import android.net.Uri
 import android.os.Build
+import androidx.annotation.MainThread
 import androidx.core.app.NotificationManagerCompat
 import kotlinx.coroutines.*
 import re.notifica.internal.*
+import re.notifica.internal.common.onMainThread
 import re.notifica.internal.ktx.toCallbackFunction
 import re.notifica.internal.network.push.*
 import re.notifica.internal.network.request.NotificareRequest
@@ -174,8 +176,10 @@ public object Notificare {
                         .putExtra(INTENT_EXTRA_APPLICATION, application)
                 )
 
-                // Notify the listeners.
-                listeners.forEach { it.onReady(application) }
+                onMainThread {
+                    // Notify the listeners.
+                    listeners.forEach { it.onReady(application) }
+                }
             } catch (e: Exception) {
                 NotificareLogger.error("Failed to launch Notificare.", e)
                 state = NotificareLaunchState.CONFIGURED
@@ -226,8 +230,10 @@ public object Notificare {
                         .setAction(INTENT_ACTION_UNLAUNCHED)
                 )
 
-                // Notify the listeners.
-                listeners.forEach { it.onUnlaunched() }
+                onMainThread {
+                    // Notify the listeners.
+                    listeners.forEach { it.onUnlaunched() }
+                }
             } catch (e: Exception) {
                 NotificareLogger.error("Failed to un-launch Notificare.", e)
             }
@@ -247,7 +253,9 @@ public object Notificare {
         NotificareLogger.debug("Added a new Notificare.Listener (${listeners.size} in total).")
 
         if (isReady) {
-            listener.onReady(checkNotNull(application))
+            onMainThread {
+                listener.onReady(checkNotNull(application))
+            }
         }
     }
 
@@ -568,8 +576,12 @@ public object Notificare {
     }
 
     public interface Listener {
-        public fun onReady(application: NotificareApplication) {}
+        @MainThread
+        public fun onReady(application: NotificareApplication) {
+        }
 
-        public fun onUnlaunched() {}
+        @MainThread
+        public fun onUnlaunched() {
+        }
     }
 }
