@@ -4,6 +4,7 @@ import okhttp3.Interceptor
 import okhttp3.Response
 import re.notifica.Notificare
 import re.notifica.internal.NotificareUtils
+import re.notifica.internal.ktx.unsafeHeader
 import re.notifica.ktx.device
 
 internal class NotificareHeadersInterceptor : Interceptor {
@@ -14,7 +15,7 @@ internal class NotificareHeadersInterceptor : Interceptor {
                 Notificare.device().preferredLanguage
                     ?: "${NotificareUtils.deviceLanguage}-${NotificareUtils.deviceRegion}"
             )
-            .header("User-Agent", NotificareUtils.userAgent)
+            .unsafeHeader("User-Agent", NotificareUtils.userAgent)
             .header("X-Notificare-SDK-Version", Notificare.SDK_VERSION)
             .header("X-Notificare-App-Version", NotificareUtils.applicationVersion)
             .build()
