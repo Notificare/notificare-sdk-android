@@ -9,8 +9,9 @@
 - Fix session length
 - Fix GMS/HMS token refresh race condition for late configured apps
 - Add `InAppBrowser` notification type
-- Aliased `WebView` action into `InAppBrowser`, aligning with the notification type 
+- Aliased `WebView` action into `InAppBrowser`, aligning with the notification type
 - Ensure listeners are called on the main thread
+- Allow non-ASCII header values
 
 ## 3.1.1
 
@@ -29,7 +30,7 @@
 ## 3.0.1
 
 - Update Gradle build tools
-- Use compile-time constant for the SDK version 
+- Use compile-time constant for the SDK version
 - Remove unnecessary `BuildConfig` files
 - Update dependencies
 
