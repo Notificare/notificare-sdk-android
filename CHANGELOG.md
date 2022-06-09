@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## Upcoming release
+## 3.2.0
 
 - Fix notification content when opening partial inbox items
 - Use GMS/HMS `message.sentTime` when creating inbox items
