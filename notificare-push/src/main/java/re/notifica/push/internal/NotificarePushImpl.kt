@@ -276,6 +276,11 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
     }
 
     override fun handleRemoteMessage(message: NotificareRemoteMessage) {
+        if (!Notificare.isConfigured) {
+            NotificareLogger.warning("Cannot process remote messages before Notificare is configured. Invoke Notificare.configure() when the application starts.")
+            return
+        }
+
         when (message) {
             is NotificareSystemRemoteMessage -> handleSystemNotification(message)
             is NotificareNotificationRemoteMessage -> handleNotification(message)
