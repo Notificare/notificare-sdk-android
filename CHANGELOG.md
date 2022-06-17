@@ -3,6 +3,7 @@
 ## Upcoming release
 
 - Add opt-in intent when opening a beacon foreground service notification
+- Fix GMS/HMS notification race condition for late configured apps 
 
 ## 3.2.0
 
