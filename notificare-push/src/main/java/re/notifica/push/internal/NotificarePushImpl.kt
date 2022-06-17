@@ -454,30 +454,34 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
     private fun handleNotification(message: NotificareNotificationRemoteMessage) {
         @OptIn(DelicateCoroutinesApi::class)
         GlobalScope.launch {
-            Notificare.events().logNotificationReceived(message.notificationId)
+            try {
+                Notificare.events().logNotificationReceived(message.notificationId)
 
-            val notification = try {
-                Notificare.fetchNotification(message.id)
-            } catch (e: Exception) {
-                NotificareLogger.error("Failed to fetch notification.", e)
-                message.toNotification()
-            }
+                val notification = try {
+                    Notificare.fetchNotification(message.id)
+                } catch (e: Exception) {
+                    NotificareLogger.error("Failed to fetch notification.", e)
+                    message.toNotification()
+                }
 
-            if (message.notify) {
-                generateNotification(
-                    message = message,
-                    notification = notification,
+                if (message.notify) {
+                    generateNotification(
+                        message = message,
+                        notification = notification,
+                    )
+                }
+
+                // Attempt to place the item in the inbox.
+                InboxIntegration.addItemToInbox(message, notification)
+
+                Notificare.requireContext().sendBroadcast(
+                    Intent(Notificare.requireContext(), intentReceiver)
+                        .setAction(Notificare.INTENT_ACTION_NOTIFICATION_RECEIVED)
+                        .putExtra(Notificare.INTENT_EXTRA_NOTIFICATION, notification)
                 )
+            } catch (e: Exception) {
+                NotificareLogger.error("Unable to process remote notification.", e)
             }
-
-            // Attempt to place the item in the inbox.
-            InboxIntegration.addItemToInbox(message, notification)
-
-            Notificare.requireContext().sendBroadcast(
-                Intent(Notificare.requireContext(), intentReceiver)
-                    .setAction(Notificare.INTENT_ACTION_NOTIFICATION_RECEIVED)
-                    .putExtra(Notificare.INTENT_EXTRA_NOTIFICATION, notification)
-            )
         }
     }
 
