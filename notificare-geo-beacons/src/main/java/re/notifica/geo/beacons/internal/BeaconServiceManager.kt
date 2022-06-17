@@ -1,16 +1,20 @@
 package re.notifica.geo.beacons.internal
 
+import android.app.PendingIntent
+import android.content.Intent
 import androidx.core.app.NotificationCompat
 import org.altbeacon.beacon.*
 import org.altbeacon.beacon.service.RangedBeacon
 import re.notifica.InternalNotificareApi
 import re.notifica.Notificare
 import re.notifica.geo.beacons.*
+import re.notifica.geo.beacons.ktx.INTENT_ACTION_BEACON_NOTIFICATION_OPENED
 import re.notifica.geo.beacons.ktx.geoInternal
 import re.notifica.geo.internal.BeaconServiceManager
 import re.notifica.geo.models.NotificareBeacon
 import re.notifica.geo.models.NotificareRegion
 import re.notifica.internal.NotificareLogger
+import java.util.concurrent.atomic.AtomicInteger
 
 private const val BEACON_LAYOUT_APPLE = "m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24"
 
@@ -25,6 +29,7 @@ public class BeaconServiceManager(
 ) : BeaconServiceManager(proximityUUID), MonitorNotifier, RangeNotifier {
 
     private val beaconManager: BeaconManager
+    private val notificationSequence = AtomicInteger()
 
     init {
         val context = Notificare.requireContext()
@@ -108,7 +113,30 @@ public class BeaconServiceManager(
         val options = checkNotNull(Notificare.options)
         val channel = options.beaconServiceNotificationChannel
 
+        val openIntent = Intent().apply {
+            action = Notificare.INTENT_ACTION_BEACON_NOTIFICATION_OPENED
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+            setPackage(Notificare.requireContext().packageName)
+        }
+
+        val openPendingIntent: PendingIntent? =
+            if (openIntent.resolveActivity(Notificare.requireContext().packageManager) != null) {
+                PendingIntent.getActivity(
+                    Notificare.requireContext(),
+                    createUniqueNotificationId(),
+                    Intent().apply {
+                        action = Notificare.INTENT_ACTION_BEACON_NOTIFICATION_OPENED
+                        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                        setPackage(Notificare.requireContext().packageName)
+                    },
+                    PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                )
+            } else {
+                null
+            }
+
         val notification = NotificationCompat.Builder(Notificare.requireContext(), channel)
+            .setContentIntent(openPendingIntent)
             .setSmallIcon(options.beaconServiceNotificationSmallIcon)
             .setContentTitle(options.beaconServiceNotificationContentTitle)
             .setContentText(options.beaconServiceNotificationContentText)
@@ -120,6 +148,10 @@ public class BeaconServiceManager(
             .build()
 
         beaconManager.enableForegroundServiceScanning(notification, 456)
+    }
+
+    private fun createUniqueNotificationId(): Int {
+        return notificationSequence.incrementAndGet()
     }
 
     // region MonitorNotifier

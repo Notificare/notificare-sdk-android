@@ -23,6 +23,7 @@ import re.notifica.authentication.models.NotificareUser
 import re.notifica.authentication.models.NotificareUserPreference
 import re.notifica.authentication.models.NotificareUserSegment
 import re.notifica.geo.NotificareGeo
+import re.notifica.geo.beacons.ktx.INTENT_ACTION_BEACON_NOTIFICATION_OPENED
 import re.notifica.geo.ktx.geo
 import re.notifica.geo.models.NotificareBeacon
 import re.notifica.geo.models.NotificareLocation
@@ -141,6 +142,10 @@ class MainActivity : AppCompatActivity(), Notificare.Listener, NotificarePushUI.
                 )
 
                 Notificare.pushUI().presentAction(this, notification, action)
+                return
+            }
+            Notificare.INTENT_ACTION_BEACON_NOTIFICATION_OPENED -> {
+                Snackbar.make(binding.root, "Beacon notification opened.", Snackbar.LENGTH_SHORT).show()
                 return
             }
         }
