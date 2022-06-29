@@ -340,6 +340,28 @@
                 android:onClick="onOpenWalletClicked"
                 android:text="Open wallet" />
 
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:gravity="center"
+                android:text="Monetize"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6" />
+
+            <Button
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="onRefreshClicked"
+                android:text="Refresh" />
+
+            <Button
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="onOpenPurchasesClicked"
+                android:text="Open purchases" />
+
         </LinearLayout>
 
     </ScrollView>

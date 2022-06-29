@@ -30,6 +30,7 @@ import re.notifica.geo.models.NotificareLocation
 import re.notifica.geo.models.NotificareRegion
 import re.notifica.ktx.device
 import re.notifica.models.*
+import re.notifica.monetize.ktx.monetize
 import re.notifica.push.ktx.INTENT_ACTION_ACTION_OPENED
 import re.notifica.push.ktx.INTENT_ACTION_NOTIFICATION_OPENED
 import re.notifica.push.ktx.push
@@ -37,6 +38,7 @@ import re.notifica.push.ui.NotificarePushUI
 import re.notifica.push.ui.ktx.pushUI
 import re.notifica.sample.databinding.ActivityMainBinding
 import re.notifica.sample.ui.beacons.BeaconsActivity
+import re.notifica.sample.ui.iap.InAppPurchasesActivity
 import re.notifica.sample.ui.inbox.InboxActivity
 import re.notifica.sample.ui.wallet.WalletActivity
 import re.notifica.scannables.NotificareScannables
@@ -665,6 +667,22 @@ class MainActivity : AppCompatActivity(), Notificare.Listener, NotificarePushUI.
 
     fun onOpenWalletClicked(@Suppress("UNUSED_PARAMETER") view: View) {
         startActivity(Intent(this, WalletActivity::class.java))
+    }
+
+    fun onRefreshClicked(@Suppress("UNUSED_PARAMETER") view: View) {
+        Notificare.monetize().refresh(object : NotificareCallback<Unit> {
+            override fun onSuccess(result: Unit) {
+                Snackbar.make(binding.root, "Done.", Snackbar.LENGTH_SHORT).show()
+            }
+
+            override fun onFailure(e: Exception) {
+                Snackbar.make(binding.root, "Error: ${e.message}", Snackbar.LENGTH_SHORT).show()
+            }
+        })
+    }
+
+    fun onOpenPurchasesClicked(@Suppress("UNUSED_PARAMETER") view: View) {
+        startActivity(Intent(this, InAppPurchasesActivity::class.java))
     }
 
     // region Notificare.Listener

@@ -100,6 +100,13 @@
             android:name=".ui.beacons.BeaconsActivity"
             android:exported="false" />
         <activity
+            android:name=".ui.iap.InAppPurchasesActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.wallet.WalletActivity"
+            android:exported="false" />
+
+        <activity
             android:name="re.notifica.push.ui.NotificationActivity"
             android:exported="false"
             android:hardwareAccelerated="true"
@@ -119,9 +126,6 @@
                     android:scheme="https" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".ui.wallet.WalletActivity"
-            android:exported="false" />
 
         <receiver
             android:name="re.notifica.NotificareIntentReceiver"
