@@ -1,0 +1,38 @@
+android {
+    compileSdkVersion compile_sdk_version
+    buildToolsVersion build_tools_version
+
+    defaultConfig {
+        minSdkVersion min_sdk_version
+        targetSdkVersion target_sdk_version
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = '1.8'
+        freeCompilerArgs = [
+                '-Xexplicit-api=strict',
+                '-Xopt-in=re.notifica.InternalNotificareApi',
+        ]
+    }
+}
+
+dependencies {
+    // Notificare
+    implementation project(':notificare')
+    implementation project(':notificare-monetize')
+
+    implementation "com.android.billingclient:billing-ktx:$google_android_billing_client_version"
+    implementation "com.google.android.gms:play-services-base:$google_play_services_base_version"
+}
