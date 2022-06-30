@@ -9,11 +9,15 @@ import re.notifica.*
 import re.notifica.internal.NotificareLogger
 import re.notifica.internal.NotificareModule
 import re.notifica.internal.ktx.toCallbackFunction
+import re.notifica.internal.network.request.NotificareRequest
+import re.notifica.ktx.device
 import re.notifica.models.NotificareApplication
+import re.notifica.monetize.NotificareInternalMonetize
 import re.notifica.monetize.NotificareMonetize
 import re.notifica.monetize.models.NotificareProduct
+import re.notifica.monetize.models.NotificarePurchaseVerification
 
-internal object NotificareMonetizeImpl : NotificareModule(), NotificareMonetize {
+internal object NotificareMonetizeImpl : NotificareModule(), NotificareMonetize, NotificareInternalMonetize {
 
     private var serviceManager: ServiceManager? = null
     private val _observableProducts = MutableLiveData<List<NotificareProduct>>()
@@ -62,6 +66,18 @@ internal object NotificareMonetizeImpl : NotificareModule(), NotificareMonetize 
 
         checkNotNull(serviceManager) { "No monetize dependencies have been detected. Please include one of the platform-specific monetize packages." }
             .startPurchaseFlow(activity, product)
+    }
+
+    // endregion
+
+    // region Notificare Internal Monetize
+
+    override suspend fun verifyPurchase(purchase: NotificarePurchaseVerification): Unit = withContext(Dispatchers.IO) {
+        val device = Notificare.device().currentDevice ?: throw NotificareDeviceUnavailableException()
+
+        NotificareRequest.Builder()
+            .post("/purchase/fordevice/${device.id}", purchase)
+            .response()
     }
 
     // endregion

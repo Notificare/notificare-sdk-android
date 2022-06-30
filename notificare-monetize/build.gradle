@@ -38,6 +38,9 @@ dependencies {
     // Android
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:$androidx_lifecycle_version"
 
+    // OkHttp
+    implementation "com.squareup.okhttp3:okhttp:$okhttp_version"
+
     // Moshi
     implementation "com.squareup.moshi:moshi:$moshi_version"
     kapt "com.squareup.moshi:moshi-kotlin-codegen:$moshi_version"

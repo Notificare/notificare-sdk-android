@@ -15,10 +15,13 @@ import re.notifica.Notificare
 import re.notifica.internal.NotificareLogger
 import re.notifica.internal.network.request.NotificareRequest
 import re.notifica.monetize.gms.internal.ktx.isGooglePlay
+import re.notifica.monetize.gms.internal.ktx.priceAmount
 import re.notifica.monetize.gms.internal.ktx.toModel
+import re.notifica.monetize.gms.ktx.monetizeInternal
 import re.notifica.monetize.internal.ServiceManager
 import re.notifica.monetize.internal.network.push.FetchProductsResponse
 import re.notifica.monetize.models.NotificareProduct
+import re.notifica.monetize.models.NotificarePurchaseVerification
 
 @InternalNotificareApi
 public class ServiceManager : ServiceManager(), BillingClientStateListener, PurchasesUpdatedListener {
@@ -212,7 +215,19 @@ public class ServiceManager : ServiceManager(), BillingClientStateListener, Purc
             return@withContext
         }
 
-        // TODO: verify the purchase
+        val oneTimePurchaseOfferDetails = productDetails.oneTimePurchaseOfferDetails ?: run {
+            NotificareLogger.warning("Only one time purchases are supported.")
+            return@withContext
+        }
+
+        Notificare.monetizeInternal().verifyPurchase(
+            NotificarePurchaseVerification(
+                receipt = purchase.originalJson,
+                signature = purchase.signature,
+                price = oneTimePurchaseOfferDetails.priceAmount,
+                currency = oneTimePurchaseOfferDetails.priceCurrencyCode,
+            )
+        )
 
         if (product.type == NotificareProduct.TYPE_CONSUMABLE) {
             val params = ConsumeParams.newBuilder()
