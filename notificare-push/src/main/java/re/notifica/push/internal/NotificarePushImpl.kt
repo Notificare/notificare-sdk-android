@@ -171,8 +171,7 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
             NotificareLogger.warning("Calling this method requires Notificare to have been configured.")
         }
 
-    override val observableAllowedUI: LiveData<Boolean>
-        get() = _observableAllowedUI
+    override val observableAllowedUI: LiveData<Boolean> = _observableAllowedUI
 
     override fun enableRemoteNotifications() {
         if (!Notificare.isReady) {
