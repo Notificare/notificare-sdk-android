@@ -115,8 +115,7 @@ internal object NotificareLoyaltyImpl : NotificareModule(), NotificareLoyalty, N
     override val passes: List<NotificarePass>
         get() = passesBySerial.values.toList()
 
-    override val observablePasses: LiveData<List<NotificarePass>>
-        get() = _observablePasses
+    override val observablePasses: LiveData<List<NotificarePass>> = _observablePasses
 
     override suspend fun fetchPassBySerial(serial: String): NotificarePass = withContext(Dispatchers.IO) {
         checkPrerequisites()
