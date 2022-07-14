@@ -40,6 +40,7 @@ buildscript {
 
         // Firebase & Google Services
         firebase_bom_version = '29.2.1'
+        google_android_billing_client_version = '5.0.0'
         google_play_services_base_version = '18.0.1'
         google_play_services_location_version = '19.0.1'
         google_play_services_maps_version = '18.0.2'
