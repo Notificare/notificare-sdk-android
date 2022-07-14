@@ -4,31 +4,144 @@ import android.app.Activity
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import re.notifica.*
 import re.notifica.internal.NotificareLogger
 import re.notifica.internal.NotificareModule
+import re.notifica.internal.common.onMainThread
 import re.notifica.internal.ktx.toCallbackFunction
+import re.notifica.internal.moshi
 import re.notifica.internal.network.request.NotificareRequest
 import re.notifica.ktx.device
 import re.notifica.models.NotificareApplication
 import re.notifica.monetize.NotificareInternalMonetize
 import re.notifica.monetize.NotificareMonetize
+import re.notifica.monetize.internal.database.MonetizeDatabase
+import re.notifica.monetize.internal.database.entities.PurchaseEntity
 import re.notifica.monetize.models.NotificareProduct
+import re.notifica.monetize.models.NotificarePurchase
 import re.notifica.monetize.models.NotificarePurchaseVerification
 
 internal object NotificareMonetizeImpl : NotificareModule(), NotificareMonetize, NotificareInternalMonetize {
 
+    private lateinit var database: MonetizeDatabase
     private var serviceManager: ServiceManager? = null
-    private val _observableProducts = MutableLiveData<List<NotificareProduct>>()
+    private val _observableProducts = MutableLiveData<List<NotificareProduct>>(listOf())
+    private val _observablePurchases = MutableLiveData<List<NotificarePurchase>>(listOf())
+
+    private val listeners = mutableListOf<NotificareMonetize.Listener>()
 
     // region Notificare Module
 
     override fun configure() {
-        serviceManager = ServiceManager.create()
+        val context = Notificare.requireContext()
 
-        serviceManager?.observableProducts?.observeForever {
-            _observableProducts.postValue(it)
+        database = MonetizeDatabase.create(context)
+
+        serviceManager = ServiceManager.create(
+            onBillingSetupFinished = {
+                onMainThread {
+                    listeners.forEach { it.onBillingSetupFinished() }
+
+                    GlobalScope.launch {
+                        try {
+                            val adapter = Notificare.moshi.adapter(NotificarePurchase::class.java)
+                            val purchases = checkNotNull(serviceManager).fetchPurchases()
+
+                            for (purchase in purchases) {
+                                try {
+                                    val exists = database.purchases().getPurchaseByOrderId(purchase.orderId) != null
+
+                                    val entity = PurchaseEntity(
+                                        orderId = purchase.orderId,
+                                        productIdentifier = purchase.productIdentifier,
+                                        time = purchase.time,
+                                        originalJson = purchase.originalJson,
+                                        purchaseJson = adapter.toJson(purchase),
+                                    )
+
+                                    database.purchases().insert(entity)
+
+                                    if (exists) {
+                                        NotificareLogger.debug("Purchase '${purchase.orderId}' already exists. Skipping...")
+                                    } else {
+                                        NotificareLogger.debug("Restoring purchase '${purchase.orderId}'.")
+                                        onMainThread {
+                                            listeners.forEach { it.onPurchaseRestored(purchase) }
+                                        }
+                                    }
+                                } catch (e: Exception) {
+                                    NotificareLogger.error("Failed to restore purchase '${purchase.orderId}'.", e)
+                                }
+                            }
+                        } catch (e: Exception) {
+                            NotificareLogger.error("Failed to restore previous purchases.", e)
+                        }
+                    }
+                }
+            },
+            onBillingSetupFailed = { code, message ->
+                onMainThread {
+                    listeners.forEach { it.onBillingSetupFailed(code, message) }
+                }
+            },
+            onProductsUpdated = {
+                _observableProducts.postValue(it)
+            },
+            onPurchaseFinished = { purchase ->
+                onMainThread {
+                    listeners.forEach { it.onPurchaseFinished(purchase) }
+
+                    GlobalScope.launch {
+                        try {
+                            val adapter = Notificare.moshi.adapter(NotificarePurchase::class.java)
+
+                            val entity = PurchaseEntity(
+                                orderId = purchase.orderId,
+                                productIdentifier = purchase.productIdentifier,
+                                time = purchase.time,
+                                originalJson = purchase.originalJson,
+                                purchaseJson = adapter.toJson(purchase),
+                            )
+
+                            database.purchases().insert(entity)
+                        } catch (e: Exception) {
+                            NotificareLogger.error("Failed to store purchase on the database.", e)
+                        }
+                    }
+                }
+            },
+            onPurchaseCanceled = {
+                onMainThread {
+                    listeners.forEach { it.onPurchaseCanceled() }
+                }
+            },
+            onPurchaseFailed = { code, message ->
+                onMainThread {
+                    listeners.forEach { it.onPurchaseFailed(code, message) }
+                }
+            },
+        )
+
+        database.purchases().getObservablePurchases().observeForever { purchases ->
+            if (purchases == null) {
+                _observablePurchases.postValue(listOf())
+                return@observeForever
+            }
+
+            val adapter = Notificare.moshi.adapter(NotificarePurchase::class.java)
+            _observablePurchases.postValue(
+                purchases.mapNotNull { entity ->
+                    try {
+                        adapter.fromJson(entity.purchaseJson)
+                    } catch (e: Exception) {
+                        NotificareLogger.warning("Failed to decode stored purchase '${entity.orderId}'.", e)
+                        null
+                    }
+                }
+            )
         }
     }
 
@@ -50,6 +163,19 @@ internal object NotificareMonetizeImpl : NotificareModule(), NotificareMonetize,
         get() = _observableProducts.value ?: listOf()
 
     override val observableProducts: LiveData<List<NotificareProduct>> = _observableProducts
+
+    override val purchases: List<NotificarePurchase>
+        get() = _observablePurchases.value ?: listOf()
+
+    override val observablePurchases: LiveData<List<NotificarePurchase>> = _observablePurchases
+
+    override fun addListener(listener: NotificareMonetize.Listener) {
+        listeners.add(listener)
+    }
+
+    override fun removeListener(listener: NotificareMonetize.Listener) {
+        listeners.remove(listener)
+    }
 
     override suspend fun refresh(): Unit = withContext(Dispatchers.IO) {
         checkPrerequisites()

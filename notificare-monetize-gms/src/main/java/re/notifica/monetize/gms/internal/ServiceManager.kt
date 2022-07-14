@@ -1,8 +1,6 @@
 package re.notifica.monetize.gms.internal
 
 import android.app.Activity
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import com.android.billingclient.api.*
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
@@ -14,6 +12,8 @@ import re.notifica.InternalNotificareApi
 import re.notifica.Notificare
 import re.notifica.internal.NotificareLogger
 import re.notifica.internal.network.request.NotificareRequest
+import re.notifica.monetize.BillingException
+import re.notifica.monetize.gms.internal.ktx.from
 import re.notifica.monetize.gms.internal.ktx.isGooglePlay
 import re.notifica.monetize.gms.internal.ktx.priceAmount
 import re.notifica.monetize.gms.internal.ktx.toModel
@@ -21,6 +21,7 @@ import re.notifica.monetize.gms.ktx.monetizeInternal
 import re.notifica.monetize.internal.ServiceManager
 import re.notifica.monetize.internal.network.push.FetchProductsResponse
 import re.notifica.monetize.models.NotificareProduct
+import re.notifica.monetize.models.NotificarePurchase
 import re.notifica.monetize.models.NotificarePurchaseVerification
 
 @InternalNotificareApi
@@ -35,7 +36,6 @@ public class ServiceManager : ServiceManager(), BillingClientStateListener, Purc
             .build()
     }
 
-    private val _observableProducts = MutableLiveData<List<NotificareProduct>>()
     private var products = mapOf<String, NotificareProduct>()       // where K is the Google product identifier
     private var productDetails = mapOf<String, ProductDetails>()    // where K is the Google product identifier
 
@@ -43,8 +43,6 @@ public class ServiceManager : ServiceManager(), BillingClientStateListener, Purc
     override val available: Boolean
         get() = GoogleApiAvailability.getInstance()
             .isGooglePlayServicesAvailable(Notificare.requireContext()) == ConnectionResult.SUCCESS
-
-    override val observableProducts: LiveData<List<NotificareProduct>> = _observableProducts
 
     override fun startConnection() {
         billingClient.startConnection(this)
@@ -66,7 +64,7 @@ public class ServiceManager : ServiceManager(), BillingClientStateListener, Purc
         this@ServiceManager.products = models.associateBy { it.identifier }
         this@ServiceManager.productDetails = productDetails.associateBy { it.productId }
 
-        this@ServiceManager._observableProducts.postValue(models)
+        onProductsUpdated(models)
     }
 
     override fun startPurchaseFlow(activity: Activity, product: NotificareProduct) {
@@ -96,6 +94,20 @@ public class ServiceManager : ServiceManager(), BillingClientStateListener, Purc
         }
     }
 
+    override suspend fun fetchPurchases(): List<NotificarePurchase> = withContext(Dispatchers.IO) {
+        val params = QueryPurchasesParams.newBuilder()
+            .setProductType(BillingClient.ProductType.INAPP)
+            .build()
+
+        val result = billingClient.queryPurchasesAsync(params)
+        if (result.billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
+            return@withContext result.purchasesList.map { NotificarePurchase.from(it) }
+        } else {
+            NotificareLogger.error("Failed to query purchases with error code '${result.billingResult.responseCode}': ${result.billingResult.debugMessage}")
+            throw Exception("Failed to query purchases.")
+        }
+    }
+
     // region BillingClientStateListener
 
     override fun onBillingServiceDisconnected() {
@@ -108,7 +120,7 @@ public class ServiceManager : ServiceManager(), BillingClientStateListener, Purc
         NotificareLogger.debug("$result")
 
         if (result.responseCode != BillingClient.BillingResponseCode.OK) {
-            // TODO: listeners.onBillingSetupFailed(result.responseCode)
+            onBillingSetupFailed(result.responseCode, result.debugMessage)
             return
         }
 
@@ -118,6 +130,8 @@ public class ServiceManager : ServiceManager(), BillingClientStateListener, Purc
             } catch (e: Exception) {
                 NotificareLogger.error("Failed to refresh the products cache.", e)
             }
+
+            onBillingSetupFinished()
         }
     }
 
@@ -144,8 +158,10 @@ public class ServiceManager : ServiceManager(), BillingClientStateListener, Purc
                             try {
                                 NotificareLogger.debug("Verifying purchase order '${purchase.orderId}'.")
                                 processPurchase(purchase)
+
+                                onPurchaseFinished(NotificarePurchase.from(purchase))
                             } catch (e: Exception) {
-                                NotificareLogger.error("Failed to process purchase order '${purchase.orderId}'.")
+                                NotificareLogger.error("Failed to process purchase order '${purchase.orderId}'.", e)
                             }
                         }
                     } catch (e: Exception) {
@@ -153,12 +169,8 @@ public class ServiceManager : ServiceManager(), BillingClientStateListener, Purc
                     }
                 }
             }
-            BillingClient.BillingResponseCode.USER_CANCELED -> {
-                // TODO listeners.onPurchaseCancelled()
-            }
-            else -> {
-                // TODO listeners.onPurchaseFailure()
-            }
+            BillingClient.BillingResponseCode.USER_CANCELED -> onPurchaseCanceled()
+            else -> onPurchaseFailed(result.responseCode, result.debugMessage)
         }
     }
 
@@ -190,12 +202,10 @@ public class ServiceManager : ServiceManager(), BillingClientStateListener, Purc
         val result = billingClient.queryProductDetails(params)
 
         if (result.billingResult.responseCode != BillingClient.BillingResponseCode.OK) {
-            // TODO: throw exception?
-            throw RuntimeException("Failed to fetch the product details from Google Play.")
+            throw BillingException(result.billingResult.responseCode, result.billingResult.debugMessage)
         }
 
         val productDetailsList = result.productDetailsList ?: run {
-            // TODO: throw exception?
             throw RuntimeException("Fetch product details succeeded with an undefined list.")
         }
 
@@ -203,6 +213,10 @@ public class ServiceManager : ServiceManager(), BillingClientStateListener, Purc
     }
 
     private suspend fun processPurchase(purchase: Purchase): Unit = withContext(Dispatchers.IO) {
+        if (purchase.products.size > 1) {
+            NotificareLogger.warning("Detected a purchase with multiple products. Notificare only supports single-product purchases.")
+        }
+
         val identifier = purchase.products.firstOrNull() ?: run {
             NotificareLogger.warning("Unable to process a purchase with no products.")
             return@withContext
@@ -211,13 +225,11 @@ public class ServiceManager : ServiceManager(), BillingClientStateListener, Purc
         val product = products[identifier]
         val productDetails = productDetails[identifier]
         if (product == null || productDetails == null) {
-            NotificareLogger.warning("Unable to process a purchase when the product is not cached.")
-            return@withContext
+            throw RuntimeException("Unable to process a purchase when the product is not cached.")
         }
 
         val oneTimePurchaseOfferDetails = productDetails.oneTimePurchaseOfferDetails ?: run {
-            NotificareLogger.warning("Only one time purchases are supported.")
-            return@withContext
+            throw RuntimeException("Only one time purchases are supported.")
         }
 
         Notificare.monetizeInternal().verifyPurchase(
@@ -239,13 +251,11 @@ public class ServiceManager : ServiceManager(), BillingClientStateListener, Purc
             if (result.billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
                 NotificareLogger.info("Purchase successfully consumed.")
                 NotificareLogger.debug("$result")
-
-                // TODO: notify the listeners.
             } else {
                 NotificareLogger.warning("Something went wrong while consuming the purchase.")
                 NotificareLogger.debug("$result")
 
-                // TODO: notify the listeners.
+                throw BillingException(result.billingResult.responseCode, result.billingResult.debugMessage)
             }
 
             return@withContext
@@ -261,13 +271,11 @@ public class ServiceManager : ServiceManager(), BillingClientStateListener, Purc
             if (result.responseCode == BillingClient.BillingResponseCode.OK) {
                 NotificareLogger.info("Purchase successfully acknowledged.")
                 NotificareLogger.debug("$result")
-
-                // TODO: notify the listeners.
             } else {
                 NotificareLogger.warning("Something went wrong while acknowledging the purchase.")
                 NotificareLogger.debug("$result")
 
-                // TODO: notify the listeners.
+                throw BillingException(result.responseCode, result.debugMessage)
             }
 
             return@withContext

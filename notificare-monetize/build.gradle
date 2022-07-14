@@ -38,6 +38,11 @@ dependencies {
     // Android
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:$androidx_lifecycle_version"
 
+    // Android: Room
+    implementation "androidx.room:room-runtime:$androidx_room_version"
+    implementation "androidx.room:room-ktx:$androidx_room_version"
+    kapt "androidx.room:room-compiler:$androidx_room_version"
+
     // OkHttp
     implementation "com.squareup.okhttp3:okhttp:$okhttp_version"
 
