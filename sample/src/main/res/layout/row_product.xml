@@ -42,4 +42,15 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:text="1,00€" />
 
+    <ImageView
+        android:id="@+id/purchased_image"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:layout_marginTop="4dp"
+        android:src="@drawable/ic_baseline_check_circle_24"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/price_label"
+        tools:ignore="ContentDescription" />
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>

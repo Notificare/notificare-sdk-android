@@ -30,7 +30,9 @@ import re.notifica.geo.models.NotificareLocation
 import re.notifica.geo.models.NotificareRegion
 import re.notifica.ktx.device
 import re.notifica.models.*
+import re.notifica.monetize.NotificareMonetize
 import re.notifica.monetize.ktx.monetize
+import re.notifica.monetize.models.NotificarePurchase
 import re.notifica.push.ktx.INTENT_ACTION_ACTION_OPENED
 import re.notifica.push.ktx.INTENT_ACTION_NOTIFICATION_OPENED
 import re.notifica.push.ktx.push
@@ -48,7 +50,7 @@ import re.notifica.scannables.models.NotificareScannable
 import java.util.*
 
 class MainActivity : AppCompatActivity(), Notificare.Listener, NotificarePushUI.NotificationLifecycleListener,
-    NotificareScannables.ScannableSessionListener, NotificareGeo.Listener {
+    NotificareScannables.ScannableSessionListener, NotificareGeo.Listener, NotificareMonetize.Listener {
 
     private lateinit var binding: ActivityMainBinding
 
@@ -97,6 +99,7 @@ class MainActivity : AppCompatActivity(), Notificare.Listener, NotificarePushUI.
         Notificare.pushUI().addLifecycleListener(this)
         Notificare.scannables().addListener(this)
         Notificare.geo().addListener(this)
+        Notificare.monetize().addListener(this)
     }
 
     override fun onDestroy() {
@@ -106,6 +109,7 @@ class MainActivity : AppCompatActivity(), Notificare.Listener, NotificarePushUI.
         Notificare.pushUI().removeLifecycleListener(this)
         Notificare.scannables().removeListener(this)
         Notificare.geo().removeListener(this)
+        Notificare.monetize().removeListener(this)
     }
 
     override fun onNewIntent(intent: Intent?) {
@@ -814,6 +818,34 @@ class MainActivity : AppCompatActivity(), Notificare.Listener, NotificarePushUI.
 //        Log.w(TAG, "---> onBeaconsRanged")
 //        Log.w(TAG, "---> region = $region")
 //        Log.w(TAG, "---> beacons = $beacons")
+    }
+
+    // endregion
+
+    // region NotificareMonetize.Listener
+
+    override fun onBillingSetupFinished() {
+        Log.i(TAG, "---> billing setup finished")
+    }
+
+    override fun onBillingSetupFailed(code: Int, message: String) {
+        Log.i(TAG, "---> billing setup failed with code '$code': $message")
+    }
+
+    override fun onPurchaseFinished(purchase: NotificarePurchase) {
+        Log.i(TAG, "---> purchase finished: $purchase")
+    }
+
+    override fun onPurchaseRestored(purchase: NotificarePurchase) {
+        Log.i(TAG, "---> purchase restored: $purchase")
+    }
+
+    override fun onPurchaseCanceled() {
+        Log.i(TAG, "---> purchase canceled")
+    }
+
+    override fun onPurchaseFailed(code: Int, message: String) {
+        Log.w(TAG, "---> purchase failed with code '$code': $message")
     }
 
     // endregion
