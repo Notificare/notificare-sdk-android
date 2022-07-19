@@ -48,7 +48,7 @@ buildscript {
 
         // Huawei
         huawei_base_version = '6.3.0.303'
-        huawei_location_version = '6.3.0.300'
+        huawei_location_version = '6.4.0.300'
         huawei_push_version = '6.3.0.302'
         huawei_maps_version = '6.3.1.300'
         huawei_scan_version = '2.4.0.301'
