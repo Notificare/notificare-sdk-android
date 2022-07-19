@@ -41,8 +41,8 @@ public data class NotificareProduct(
         val name: String,
         val title: String,
         val description: String,
-        val oneTimePurchaseOfferDetails: OneTimePurchaseOfferDetails?,
-        // val subscriptionOfferDetails: SubscriptionOfferDetails?,
+        val price: Double,
+        val currencyCode: String,
     ) : Parcelable {
 
         public fun toJson(): JSONObject {
@@ -56,30 +56,6 @@ public data class NotificareProduct(
             public fun fromJson(json: JSONObject): StoreDetails {
                 val jsonStr = json.toString()
                 return requireNotNull(adapter.fromJson(jsonStr))
-            }
-        }
-
-
-        @Parcelize
-        @JsonClass(generateAdapter = true)
-        public data class OneTimePurchaseOfferDetails(
-            val formattedPrice: String,
-            val priceAmountMicros: Long,
-            val priceCurrencyCode: String,
-        ) : Parcelable {
-
-            public fun toJson(): JSONObject {
-                val jsonStr = adapter.toJson(this)
-                return JSONObject(jsonStr)
-            }
-
-            public companion object {
-                private val adapter = Notificare.moshi.adapter(OneTimePurchaseOfferDetails::class.java)
-
-                public fun fromJson(json: JSONObject): OneTimePurchaseOfferDetails {
-                    val jsonStr = json.toString()
-                    return requireNotNull(adapter.fromJson(jsonStr))
-                }
             }
         }
     }

@@ -6,7 +6,7 @@ import java.util.*
 
 internal fun NotificarePurchase.Companion.from(purchase: Purchase): NotificarePurchase {
     return NotificarePurchase(
-        orderId = purchase.orderId,
+        id = purchase.orderId,
         productIdentifier = purchase.products.first(),
         originalJson = purchase.originalJson,
         packageName = purchase.packageName,

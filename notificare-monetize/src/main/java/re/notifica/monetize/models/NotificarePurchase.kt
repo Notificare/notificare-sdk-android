@@ -11,7 +11,7 @@ import java.util.*
 @Parcelize
 @JsonClass(generateAdapter = true)
 public data class NotificarePurchase(
-    val orderId: String,
+    val id: String,
     val productIdentifier: String,
     val originalJson: String,
     val packageName: String?,

@@ -13,8 +13,8 @@ internal interface PurchasesDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(purchase: PurchaseEntity)
 
-    @Query("SELECT * FROM purchases WHERE order_id = :orderId LIMIT 1")
-    suspend fun getPurchaseByOrderId(orderId: String): PurchaseEntity?
+    @Query("SELECT * FROM purchases WHERE id = :id LIMIT 1")
+    suspend fun getPurchaseByOrderId(id: String): PurchaseEntity?
 
     @Query("SELECT * FROM purchases")
     fun getObservablePurchases(): LiveData<List<PurchaseEntity>>

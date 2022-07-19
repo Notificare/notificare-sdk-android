@@ -9,7 +9,7 @@ import java.util.*
     tableName = "purchases"
 )
 internal data class PurchaseEntity(
-    @PrimaryKey @ColumnInfo(name = "order_id") val orderId: String,
+    @PrimaryKey @ColumnInfo(name = "id") val id: String,
     @ColumnInfo(name = "product_identifier") val productIdentifier: String,
     @ColumnInfo(name = "time") val time: Date,
     @ColumnInfo(name = "original_json") val originalJson: String,
