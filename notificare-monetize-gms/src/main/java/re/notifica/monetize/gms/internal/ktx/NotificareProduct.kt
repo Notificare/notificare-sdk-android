@@ -14,17 +14,14 @@ internal fun FetchProductsResponse.Product.toModel(details: ProductDetails?): No
         name = name,
         type = type,
         storeDetails = details?.let {
+            val oneTimePurchaseDetails = it.oneTimePurchaseOfferDetails ?: return@let null
+
             NotificareProduct.StoreDetails(
                 name = it.name,
                 title = it.title,
                 description = it.description,
-                oneTimePurchaseOfferDetails = it.oneTimePurchaseOfferDetails?.let { purchaseDetails ->
-                    NotificareProduct.StoreDetails.OneTimePurchaseOfferDetails(
-                        formattedPrice = purchaseDetails.formattedPrice,
-                        priceAmountMicros = purchaseDetails.priceAmountMicros,
-                        priceCurrencyCode = purchaseDetails.priceCurrencyCode,
-                    )
-                },
+                price = oneTimePurchaseDetails.priceAmount,
+                currencyCode = oneTimePurchaseDetails.priceCurrencyCode,
             )
         }
     )

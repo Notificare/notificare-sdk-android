@@ -96,7 +96,14 @@ class InAppPurchasesActivity : AppCompatActivity() {
             binding.nameLabel.text = product.name
             binding.identifierLabel.text = product.identifier
             binding.descriptionLabel.text = product.storeDetails?.description ?: "---"
-            binding.priceLabel.text = product.storeDetails?.oneTimePurchaseOfferDetails?.formattedPrice ?: "---"
+
+            val details = product.storeDetails
+            if (details != null) {
+                binding.priceLabel.text = "${details.currencyCode} ${details.price}"
+            } else {
+                binding.priceLabel.text = "---"
+            }
+
             binding.purchasedImage.isVisible = purchased
 
             binding.root.setOnClickListener {

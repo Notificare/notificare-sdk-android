@@ -52,10 +52,10 @@ internal object NotificareMonetizeImpl : NotificareModule(), NotificareMonetize,
 
                             for (purchase in purchases) {
                                 try {
-                                    val exists = database.purchases().getPurchaseByOrderId(purchase.orderId) != null
+                                    val exists = database.purchases().getPurchaseByOrderId(purchase.id) != null
 
                                     val entity = PurchaseEntity(
-                                        orderId = purchase.orderId,
+                                        id = purchase.id,
                                         productIdentifier = purchase.productIdentifier,
                                         time = purchase.time,
                                         originalJson = purchase.originalJson,
@@ -65,15 +65,15 @@ internal object NotificareMonetizeImpl : NotificareModule(), NotificareMonetize,
                                     database.purchases().insert(entity)
 
                                     if (exists) {
-                                        NotificareLogger.debug("Purchase '${purchase.orderId}' already exists. Skipping...")
+                                        NotificareLogger.debug("Purchase '${purchase.id}' already exists. Skipping...")
                                     } else {
-                                        NotificareLogger.debug("Restoring purchase '${purchase.orderId}'.")
+                                        NotificareLogger.debug("Restoring purchase '${purchase.id}'.")
                                         onMainThread {
                                             listeners.forEach { it.onPurchaseRestored(purchase) }
                                         }
                                     }
                                 } catch (e: Exception) {
-                                    NotificareLogger.error("Failed to restore purchase '${purchase.orderId}'.", e)
+                                    NotificareLogger.error("Failed to restore purchase '${purchase.id}'.", e)
                                 }
                             }
                         } catch (e: Exception) {
@@ -99,7 +99,7 @@ internal object NotificareMonetizeImpl : NotificareModule(), NotificareMonetize,
                             val adapter = Notificare.moshi.adapter(NotificarePurchase::class.java)
 
                             val entity = PurchaseEntity(
-                                orderId = purchase.orderId,
+                                id = purchase.id,
                                 productIdentifier = purchase.productIdentifier,
                                 time = purchase.time,
                                 originalJson = purchase.originalJson,
@@ -108,7 +108,7 @@ internal object NotificareMonetizeImpl : NotificareModule(), NotificareMonetize,
 
                             database.purchases().insert(entity)
                         } catch (e: Exception) {
-                            NotificareLogger.error("Failed to store purchase on the database.", e)
+                            NotificareLogger.error("Failed to store purchase '${purchase.id}' on the database.", e)
                         }
                     }
                 }
@@ -137,7 +137,7 @@ internal object NotificareMonetizeImpl : NotificareModule(), NotificareMonetize,
                     try {
                         adapter.fromJson(entity.purchaseJson)
                     } catch (e: Exception) {
-                        NotificareLogger.warning("Failed to decode stored purchase '${entity.orderId}'.", e)
+                        NotificareLogger.warning("Failed to decode stored purchase '${entity.id}'.", e)
                         null
                     }
                 }
