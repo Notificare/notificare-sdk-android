@@ -752,7 +752,6 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
                 override fun onSuccess(result: FetchBeaconsResponse) {
                     val beacons = result.beacons
                         .map { it.toModel() }
-                        .filter { it.triggers }
 
                     val mainBeacon = NotificareBeacon(
                         id = region.id,
