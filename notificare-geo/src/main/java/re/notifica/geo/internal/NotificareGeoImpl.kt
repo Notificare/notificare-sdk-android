@@ -467,10 +467,10 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
             if (!localStorage.enteredBeacons.contains(beacon.id)) {
                 triggerBeaconEnter(beacon)
             }
-        }
 
-        onMainThread {
-            listeners.forEach { it.onBeaconEntered(beacon) }
+            onMainThread {
+                listeners.forEach { it.onBeaconEntered(beacon) }
+            }
         }
 
         Notificare.loyaltyIntegration()?.onPassbookLocationRelevanceChanged()
@@ -491,10 +491,10 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
             if (localStorage.enteredBeacons.contains(beacon.id)) {
                 triggerBeaconExit(beacon)
             }
-        }
 
-        onMainThread {
-            listeners.forEach { it.onBeaconExited(beacon) }
+            onMainThread {
+                listeners.forEach { it.onBeaconExited(beacon) }
+            }
         }
 
         Notificare.loyaltyIntegration()?.onPassbookLocationRelevanceChanged()
