@@ -506,35 +506,32 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
             return
         }
 
-        beacons
-            .map { b ->
-                val beacon = localStorage.monitoredBeacons.firstOrNull { it.major == b.major && it.minor == b.minor }
-                    ?: run {
-                        NotificareLogger.warning("Received a ranging beacons event for non-cached beacon '${b.major}:${b.minor}'.")
-                        return@map null
-                    }
-
-                if (b.proximity == null || b.proximity < 0) {
-                    // Ignore invalid proximity values.
-                    return@map null
+        val cachedBeacons = beacons.mapNotNull { b ->
+            val beacon = localStorage.monitoredBeacons.firstOrNull { it.major == b.major && it.minor == b.minor }
+                ?: run {
+                    NotificareLogger.warning("Received a ranging beacons event for non-cached beacon '${b.major}:${b.minor}'.")
+                    return@mapNotNull null
                 }
 
-                beacon.proximity = when {
-                    b.proximity < NotificareBeacon.PROXIMITY_NEAR_DISTANCE -> NotificareBeacon.Proximity.IMMEDIATE
-                    b.proximity < NotificareBeacon.PROXIMITY_FAR_DISTANCE -> NotificareBeacon.Proximity.NEAR
-                    else -> NotificareBeacon.Proximity.FAR
-                }
-
-                beacon
+            if (b.proximity == null || b.proximity < 0) {
+                // Ignore invalid proximity values.
+                return@mapNotNull null
             }
-            .filterNotNull()
-            .also { ncBeacons ->
-                updateBeaconSessions(ncBeacons)
 
-                onMainThread {
-                    listeners.forEach { it.onBeaconsRanged(region, ncBeacons) }
-                }
+            beacon.proximity = when {
+                b.proximity < NotificareBeacon.PROXIMITY_NEAR_DISTANCE -> NotificareBeacon.Proximity.IMMEDIATE
+                b.proximity < NotificareBeacon.PROXIMITY_FAR_DISTANCE -> NotificareBeacon.Proximity.NEAR
+                else -> NotificareBeacon.Proximity.FAR
             }
+
+            beacon
+        }
+
+        updateBeaconSessions(cachedBeacons)
+
+        onMainThread {
+            listeners.forEach { it.onBeaconsRanged(region, cachedBeacons) }
+        }
     }
 
     // endregion
