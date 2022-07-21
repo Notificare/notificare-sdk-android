@@ -17,7 +17,6 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.RemoteInput
 import androidx.core.content.ContextCompat
-import androidx.core.os.BuildCompat
 import androidx.core.os.bundleOf
 import androidx.lifecycle.*
 import kotlinx.coroutines.*
@@ -635,8 +634,7 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
                                 Notificare.requireContext(),
                                 createUniqueNotificationId(),
                                 actionIntent,
-                                // Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
-                                if (BuildCompat.isAtLeastS()) {
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                                     if (useRemoteInput) {
                                         PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_MUTABLE
                                     } else {
