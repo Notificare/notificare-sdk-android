@@ -1,8 +1,13 @@
 package re.notifica.models
 
+import android.os.Parcelable
 import com.squareup.moshi.Json
+import com.squareup.moshi.JsonClass
+import kotlinx.parcelize.Parcelize
 
-public enum class NotificareTransport {
+@Parcelize
+@JsonClass(generateAdapter = false)
+public enum class NotificareTransport : Parcelable {
     @Json(name = "Notificare")
     NOTIFICARE,
 

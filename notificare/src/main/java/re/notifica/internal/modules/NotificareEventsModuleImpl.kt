@@ -1,5 +1,6 @@
 package re.notifica.internal.modules
 
+import androidx.annotation.Keep
 import androidx.work.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -29,6 +30,7 @@ private const val EVENT_APPLICATION_EXCEPTION = "re.notifica.event.application.E
 private const val EVENT_NOTIFICATION_OPEN = "re.notifica.event.notification.Open"
 private const val TASK_UPLOAD_EVENTS = "re.notifica.tasks.events.Upload"
 
+@Keep
 internal object NotificareEventsModuleImpl : NotificareModule(), NotificareEventsModule,
     NotificareInternalEventsModule {
 
