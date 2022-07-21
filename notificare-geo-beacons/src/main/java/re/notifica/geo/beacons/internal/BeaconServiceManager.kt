@@ -2,6 +2,7 @@ package re.notifica.geo.beacons.internal
 
 import android.app.PendingIntent
 import android.content.Intent
+import androidx.annotation.Keep
 import androidx.core.app.NotificationCompat
 import org.altbeacon.beacon.*
 import org.altbeacon.beacon.service.RangedBeacon
@@ -23,6 +24,7 @@ private const val BEACON_LAYOUT_APPLE = "m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-
 // AltBeacon.id2        = Major
 // AltBeacon.id3        = Minor
 
+@Keep
 @InternalNotificareApi
 public class BeaconServiceManager(
     proximityUUID: String,
