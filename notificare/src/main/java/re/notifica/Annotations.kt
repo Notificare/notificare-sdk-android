@@ -2,7 +2,7 @@ package re.notifica
 
 /**
  * Marks declarations that are **internal** in the Notificare API, which means that should not be used outside of
- * `re.notifica`, because their signatures and semantics will change between future releases without any
+ * `re.notifica` packages, because their signatures and semantics will change between future releases without any
  * warnings and without providing any migration aids.
  */
 @Retention(value = AnnotationRetention.BINARY)
