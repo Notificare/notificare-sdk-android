@@ -10,7 +10,6 @@ import android.location.Location
 import android.os.Build
 import androidx.annotation.Keep
 import androidx.core.content.ContextCompat
-import androidx.core.os.BuildCompat
 import kotlinx.coroutines.*
 import okhttp3.Response
 import re.notifica.*
@@ -46,7 +45,7 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
 
     private val hasForegroundLocationPermission: Boolean
         get() {
-            return if (BuildCompat.isAtLeastS()) {
+            return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 ContextCompat.checkSelfPermission(
                     Notificare.requireContext(),
                     Manifest.permission.ACCESS_COARSE_LOCATION
