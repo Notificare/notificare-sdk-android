@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.nfc.NfcManager
+import androidx.annotation.Keep
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import re.notifica.Notificare
@@ -21,6 +22,7 @@ import re.notifica.scannables.ScannableActivity
 import re.notifica.scannables.internal.network.push.FetchScannableResponse
 import re.notifica.scannables.models.NotificareScannable
 
+@Keep
 internal object NotificareScannablesImpl : NotificareModule(), NotificareScannables {
     internal var serviceManager: ServiceManager? = null
         private set
