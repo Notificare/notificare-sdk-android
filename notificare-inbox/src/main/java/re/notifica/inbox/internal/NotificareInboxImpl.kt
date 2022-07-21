@@ -2,6 +2,7 @@ package re.notifica.inbox.internal
 
 import android.os.Handler
 import android.os.Looper
+import androidx.annotation.Keep
 import androidx.core.app.NotificationManagerCompat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -27,6 +28,7 @@ import re.notifica.models.NotificareNotification
 import java.util.*
 import java.util.concurrent.TimeUnit
 
+@Keep
 internal object NotificareInboxImpl : NotificareModule(), NotificareInbox {
 
     internal lateinit var database: InboxDatabase
