@@ -119,7 +119,7 @@ public class ServiceManager : ServiceManager() {
             val request = LocationRequest.create()
                 .setInterval(Notificare.DEFAULT_LOCATION_UPDATES_INTERVAL)
                 .setFastestInterval(Notificare.DEFAULT_LOCATION_UPDATES_FASTEST_INTERVAL)
-                .setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY)
+                .setPriority(Priority.PRIORITY_BALANCED_POWER_ACCURACY)
                 .setSmallestDisplacement(Notificare.DEFAULT_LOCATION_UPDATES_SMALLEST_DISPLACEMENT.toFloat())
 
             fusedLocationClient.requestLocationUpdates(request, locationPendingIntent)
