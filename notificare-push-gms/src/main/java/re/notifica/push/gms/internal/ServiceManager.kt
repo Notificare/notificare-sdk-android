@@ -1,5 +1,6 @@
 package re.notifica.push.gms.internal
 
+import androidx.annotation.Keep
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.firebase.ktx.Firebase
@@ -13,6 +14,7 @@ import re.notifica.models.NotificareTransport
 import re.notifica.push.gms.ktx.pushInternal
 import re.notifica.push.internal.ServiceManager
 
+@Keep
 @InternalNotificareApi
 public class ServiceManager : ServiceManager() {
 

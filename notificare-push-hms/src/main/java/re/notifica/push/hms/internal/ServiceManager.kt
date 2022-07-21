@@ -1,5 +1,6 @@
 package re.notifica.push.hms.internal
 
+import androidx.annotation.Keep
 import com.huawei.agconnect.AGConnectOptionsBuilder
 import com.huawei.hms.aaid.HmsInstanceId
 import com.huawei.hms.api.ConnectionResult
@@ -15,6 +16,7 @@ import re.notifica.models.NotificareTransport
 import re.notifica.push.hms.ktx.pushInternal
 import re.notifica.push.internal.ServiceManager
 
+@Keep
 @InternalNotificareApi
 public class ServiceManager : ServiceManager() {
 

@@ -12,6 +12,7 @@ import android.content.pm.PackageManager
 import android.graphics.Color
 import android.net.Uri
 import android.os.Build
+import androidx.annotation.Keep
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.RemoteInput
@@ -40,6 +41,7 @@ import re.notifica.push.ktx.*
 import re.notifica.push.models.*
 import java.util.concurrent.atomic.AtomicInteger
 
+@Keep
 internal object NotificarePushImpl : NotificareModule(), NotificarePush, NotificareInternalPush {
 
     internal const val DEFAULT_NOTIFICATION_CHANNEL_ID: String = "notificare_channel_default"
