@@ -33,6 +33,7 @@ public data class NotificareUserPreference(
     }
 
     @Parcelize
+    @JsonClass(generateAdapter = false)
     public enum class Type : Parcelable {
         @Json(name = "single")
         SINGLE,
