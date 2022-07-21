@@ -156,7 +156,9 @@ public data class NotificarePass(
         }
     }
 
-    public enum class Redeem {
+    @Parcelize
+    @JsonClass(generateAdapter = false)
+    public enum class Redeem : Parcelable {
         @Json(name = "once")
         ONCE,
 
@@ -167,7 +169,9 @@ public data class NotificarePass(
         ALWAYS;
     }
 
-    public enum class PassType {
+    @Parcelize
+    @JsonClass(generateAdapter = false)
+    public enum class PassType : Parcelable {
         @Json(name = "boarding")
         BOARDING,
 

@@ -1,5 +1,6 @@
 package re.notifica.push.ui.hms.internal
 
+import androidx.annotation.Keep
 import androidx.fragment.app.Fragment
 import com.huawei.hms.api.ConnectionResult
 import com.huawei.hms.api.HuaweiApiAvailability
@@ -11,6 +12,7 @@ import re.notifica.push.ui.hms.NotificareRateFragment
 import re.notifica.push.ui.hms.NotificareStoreFragment
 import re.notifica.push.ui.internal.ServiceManager
 
+@Keep
 @InternalNotificareApi
 public class ServiceManager : ServiceManager() {
 

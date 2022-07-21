@@ -8,6 +8,7 @@ import android.content.pm.PackageManager
 import android.location.Geocoder
 import android.location.Location
 import android.os.Build
+import androidx.annotation.Keep
 import androidx.core.content.ContextCompat
 import androidx.core.os.BuildCompat
 import kotlinx.coroutines.*
@@ -33,6 +34,7 @@ import re.notifica.ktx.events
 import re.notifica.models.NotificareApplication
 import java.util.*
 
+@Keep
 internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, NotificareInternalGeo, NotificareGeoIntegration {
 
     private lateinit var localStorage: LocalStorage

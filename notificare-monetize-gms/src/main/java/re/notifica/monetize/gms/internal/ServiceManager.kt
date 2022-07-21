@@ -1,6 +1,7 @@
 package re.notifica.monetize.gms.internal
 
 import android.app.Activity
+import androidx.annotation.Keep
 import com.android.billingclient.api.*
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
@@ -24,6 +25,7 @@ import re.notifica.monetize.models.NotificareProduct
 import re.notifica.monetize.models.NotificarePurchase
 import re.notifica.monetize.models.NotificarePurchaseVerification
 
+@Keep
 @InternalNotificareApi
 public class ServiceManager : ServiceManager(), BillingClientStateListener, PurchasesUpdatedListener {
 

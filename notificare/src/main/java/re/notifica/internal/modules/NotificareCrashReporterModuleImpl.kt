@@ -1,10 +1,12 @@
 package re.notifica.internal.modules
 
+import androidx.annotation.Keep
 import re.notifica.Notificare
 import re.notifica.internal.NotificareLogger
 import re.notifica.internal.NotificareModule
 import re.notifica.ktx.eventsImplementation
 
+@Keep
 internal object NotificareCrashReporterModuleImpl : NotificareModule() {
 
     private var defaultUncaughtExceptionHandler: Thread.UncaughtExceptionHandler? = null

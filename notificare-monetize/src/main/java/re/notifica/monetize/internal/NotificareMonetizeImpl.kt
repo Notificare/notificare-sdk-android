@@ -1,6 +1,7 @@
 package re.notifica.monetize.internal
 
 import android.app.Activity
+import androidx.annotation.Keep
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import kotlinx.coroutines.Dispatchers
@@ -24,6 +25,7 @@ import re.notifica.monetize.models.NotificareProduct
 import re.notifica.monetize.models.NotificarePurchase
 import re.notifica.monetize.models.NotificarePurchaseVerification
 
+@Keep
 internal object NotificareMonetizeImpl : NotificareModule(), NotificareMonetize, NotificareInternalMonetize {
 
     private lateinit var database: MonetizeDatabase

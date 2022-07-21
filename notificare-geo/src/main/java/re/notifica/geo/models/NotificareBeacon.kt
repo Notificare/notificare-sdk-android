@@ -25,6 +25,7 @@ public data class NotificareBeacon(
     }
 
     @Parcelize
+    @JsonClass(generateAdapter = false)
     public enum class Proximity : Parcelable {
         @Json(name = "unknown")
         UNKNOWN,
