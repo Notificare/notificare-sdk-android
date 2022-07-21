@@ -1,5 +1,6 @@
 package re.notifica.push.ui.gms.internal
 
+import androidx.annotation.Keep
 import androidx.fragment.app.Fragment
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
@@ -11,6 +12,7 @@ import re.notifica.push.ui.gms.NotificareRateFragment
 import re.notifica.push.ui.gms.NotificareStoreFragment
 import re.notifica.push.ui.internal.ServiceManager
 
+@Keep
 @InternalNotificareApi
 public class ServiceManager : ServiceManager() {
 
