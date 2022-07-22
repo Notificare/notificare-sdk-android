@@ -1,5 +1,17 @@
 # CHANGELOG
 
+## 3.3.0
+
+- Add opt-in intent when opening a beacon foreground service notification
+- Fix GMS/HMS notification race condition for late configured apps
+- Monetise module for Google Play
+- Prevent unnecessary copies of `LiveData` from being created
+- Update HMS libraries, fixing Google Play compliance warnings
+- Monitor and range non-triggering beacons
+- Prevent internal _main beacon region_ from triggering events
+- Fix R8/ProGuard minification issues
+- Add Java-friendly wrappers
+
 ## 3.2.0
 
 - Fix notification content when opening partial inbox items

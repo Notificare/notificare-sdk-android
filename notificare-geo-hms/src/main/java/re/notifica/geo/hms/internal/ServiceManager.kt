@@ -4,6 +4,7 @@ import android.app.PendingIntent
 import android.content.Intent
 import android.location.Location
 import android.os.Build
+import androidx.annotation.Keep
 import com.huawei.hms.api.ConnectionResult
 import com.huawei.hms.api.HuaweiApiAvailability
 import com.huawei.hms.location.*
@@ -18,6 +19,7 @@ import re.notifica.geo.ktx.*
 import re.notifica.geo.models.NotificareRegion
 import re.notifica.internal.NotificareLogger
 
+@Keep
 @InternalNotificareApi
 public class ServiceManager : ServiceManager() {
 

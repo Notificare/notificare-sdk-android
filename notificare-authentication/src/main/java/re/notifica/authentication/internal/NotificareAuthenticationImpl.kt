@@ -2,6 +2,7 @@ package re.notifica.authentication.internal
 
 import android.content.Intent
 import android.content.SharedPreferences
+import androidx.annotation.Keep
 import com.google.api.client.auth.oauth2.GoogleStorageUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -24,6 +25,7 @@ import re.notifica.ktx.device
 import re.notifica.ktx.events
 import re.notifica.models.NotificareApplication
 
+@Keep
 internal object NotificareAuthenticationImpl : NotificareModule(), NotificareAuthentication {
 
     internal lateinit var sharedPreferences: NotificareSharedPreferences

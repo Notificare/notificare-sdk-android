@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import androidx.annotation.Keep
 import androidx.browser.customtabs.CustomTabColorSchemeParams
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.os.bundleOf
@@ -23,6 +24,7 @@ import re.notifica.push.ui.actions.base.NotificationAction
 import re.notifica.push.ui.ktx.loyaltyIntegration
 import re.notifica.push.ui.notifications.fragments.*
 
+@Keep
 internal object NotificarePushUIImpl : NotificareModule(), NotificarePushUI, NotificareInternalPushUI {
 
     private const val CONTENT_FILE_PROVIDER_AUTHORITY_SUFFIX = ".notificare.fileprovider"

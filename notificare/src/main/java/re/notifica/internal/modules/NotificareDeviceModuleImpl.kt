@@ -1,6 +1,7 @@
 package re.notifica.internal.modules
 
 import android.content.Intent
+import androidx.annotation.Keep
 import kotlinx.coroutines.*
 import re.notifica.*
 import re.notifica.internal.NotificareLogger
@@ -19,6 +20,7 @@ import re.notifica.models.NotificareTransport
 import re.notifica.models.NotificareUserData
 import java.util.*
 
+@Keep
 internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDeviceModule,
     NotificareInternalDeviceModule {
 

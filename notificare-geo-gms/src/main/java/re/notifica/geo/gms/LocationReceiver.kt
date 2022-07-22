@@ -18,22 +18,24 @@ internal class LocationReceiver : BroadcastReceiver() {
         when (intent.action) {
             Notificare.INTENT_ACTION_LOCATION_UPDATED -> {
                 if (LocationResult.hasResult(intent)) {
-                    val result = LocationResult.extractResult(intent)
-                    val location = result.lastLocation
+                    val result = LocationResult.extractResult(intent) ?: return
+                    val location = result.lastLocation ?: return
 
                     onLocationUpdated(location)
                 }
             }
             Notificare.INTENT_ACTION_GEOFENCE_TRANSITION -> {
-                val event = GeofencingEvent.fromIntent(intent)
+                val event = GeofencingEvent.fromIntent(intent) ?: return
                 if (event.hasError()) {
                     NotificareLogger.warning("Geofencing error: ${event.errorCode}")
                     return
                 }
 
+                val geofences = event.triggeringGeofences ?: return
+
                 when (event.geofenceTransition) {
-                    Geofence.GEOFENCE_TRANSITION_ENTER -> onRegionEnter(event.triggeringGeofences)
-                    Geofence.GEOFENCE_TRANSITION_EXIT -> onRegionExit(event.triggeringGeofences)
+                    Geofence.GEOFENCE_TRANSITION_ENTER -> onRegionEnter(geofences)
+                    Geofence.GEOFENCE_TRANSITION_EXIT -> onRegionExit(geofences)
                 }
             }
         }

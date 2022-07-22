@@ -9,6 +9,7 @@ import android.location.Location
 import android.net.Uri
 import android.os.Handler
 import android.os.Looper
+import androidx.annotation.Keep
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.os.bundleOf
@@ -44,6 +45,7 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
 
+@Keep
 internal object NotificareLoyaltyImpl : NotificareModule(), NotificareLoyalty, NotificareLoyaltyIntegration,
     Notificare.Listener {
 
@@ -115,8 +117,7 @@ internal object NotificareLoyaltyImpl : NotificareModule(), NotificareLoyalty, N
     override val passes: List<NotificarePass>
         get() = passesBySerial.values.toList()
 
-    override val observablePasses: LiveData<List<NotificarePass>>
-        get() = _observablePasses
+    override val observablePasses: LiveData<List<NotificarePass>> = _observablePasses
 
     override suspend fun fetchPassBySerial(serial: String): NotificarePass = withContext(Dispatchers.IO) {
         checkPrerequisites()

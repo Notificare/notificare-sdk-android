@@ -21,7 +21,7 @@ public data class NotificareTime(
 
     public fun format(): String = "%02d:%02d".format(hours, minutes)
 
-    private companion object {
+    public companion object {
         private fun parse(timeStr: String): Pair<Int, Int> {
             val parts = timeStr.split(":")
             if (parts.size != 2) throw IllegalArgumentException("Invalid time string.")

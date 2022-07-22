@@ -15,10 +15,10 @@ android {
     buildToolsVersion build_tools_version
 
     defaultConfig {
-        applicationId "re.notifica.demo"
+        applicationId "re.notifica.sample.app"
         minSdkVersion min_sdk_version
         targetSdkVersion target_sdk_version
-        versionCode 30000
+        versionCode 1
         versionName "3.0.0"
 
         manifestPlaceholders = [
@@ -109,6 +109,9 @@ dependencies {
     implementation project(':notificare-geo-gms')
     implementation project(':notificare-geo-hms')
     implementation project(':notificare-geo-beacons')
+
+    implementation project(':notificare-monetize')
+    implementation project(':notificare-monetize-gms')
 
     implementation project(':notificare-push')
     implementation project(':notificare-push-gms')

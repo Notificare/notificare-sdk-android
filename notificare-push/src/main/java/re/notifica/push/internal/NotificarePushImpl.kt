@@ -12,11 +12,11 @@ import android.content.pm.PackageManager
 import android.graphics.Color
 import android.net.Uri
 import android.os.Build
+import androidx.annotation.Keep
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.RemoteInput
 import androidx.core.content.ContextCompat
-import androidx.core.os.BuildCompat
 import androidx.core.os.bundleOf
 import androidx.lifecycle.*
 import kotlinx.coroutines.*
@@ -40,6 +40,7 @@ import re.notifica.push.ktx.*
 import re.notifica.push.models.*
 import java.util.concurrent.atomic.AtomicInteger
 
+@Keep
 internal object NotificarePushImpl : NotificareModule(), NotificarePush, NotificareInternalPush {
 
     internal const val DEFAULT_NOTIFICATION_CHANNEL_ID: String = "notificare_channel_default"
@@ -171,8 +172,7 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
             NotificareLogger.warning("Calling this method requires Notificare to have been configured.")
         }
 
-    override val observableAllowedUI: LiveData<Boolean>
-        get() = _observableAllowedUI
+    override val observableAllowedUI: LiveData<Boolean> = _observableAllowedUI
 
     override fun enableRemoteNotifications() {
         if (!Notificare.isReady) {
@@ -276,6 +276,11 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
     }
 
     override fun handleRemoteMessage(message: NotificareRemoteMessage) {
+        if (!Notificare.isConfigured) {
+            NotificareLogger.warning("Cannot process remote messages before Notificare is configured. Invoke Notificare.configure() when the application starts.")
+            return
+        }
+
         when (message) {
             is NotificareSystemRemoteMessage -> handleSystemNotification(message)
             is NotificareNotificationRemoteMessage -> handleNotification(message)
@@ -454,30 +459,34 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
     private fun handleNotification(message: NotificareNotificationRemoteMessage) {
         @OptIn(DelicateCoroutinesApi::class)
         GlobalScope.launch {
-            Notificare.events().logNotificationReceived(message.notificationId)
+            try {
+                Notificare.events().logNotificationReceived(message.notificationId)
 
-            val notification = try {
-                Notificare.fetchNotification(message.id)
-            } catch (e: Exception) {
-                NotificareLogger.error("Failed to fetch notification.", e)
-                message.toNotification()
-            }
+                val notification = try {
+                    Notificare.fetchNotification(message.id)
+                } catch (e: Exception) {
+                    NotificareLogger.error("Failed to fetch notification.", e)
+                    message.toNotification()
+                }
 
-            if (message.notify) {
-                generateNotification(
-                    message = message,
-                    notification = notification,
+                if (message.notify) {
+                    generateNotification(
+                        message = message,
+                        notification = notification,
+                    )
+                }
+
+                // Attempt to place the item in the inbox.
+                InboxIntegration.addItemToInbox(message, notification)
+
+                Notificare.requireContext().sendBroadcast(
+                    Intent(Notificare.requireContext(), intentReceiver)
+                        .setAction(Notificare.INTENT_ACTION_NOTIFICATION_RECEIVED)
+                        .putExtra(Notificare.INTENT_EXTRA_NOTIFICATION, notification)
                 )
+            } catch (e: Exception) {
+                NotificareLogger.error("Unable to process remote notification.", e)
             }
-
-            // Attempt to place the item in the inbox.
-            InboxIntegration.addItemToInbox(message, notification)
-
-            Notificare.requireContext().sendBroadcast(
-                Intent(Notificare.requireContext(), intentReceiver)
-                    .setAction(Notificare.INTENT_ACTION_NOTIFICATION_RECEIVED)
-                    .putExtra(Notificare.INTENT_EXTRA_NOTIFICATION, notification)
-            )
         }
     }
 
@@ -625,8 +634,7 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
                                 Notificare.requireContext(),
                                 createUniqueNotificationId(),
                                 actionIntent,
-                                // Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
-                                if (BuildCompat.isAtLeastS()) {
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                                     if (useRemoteInput) {
                                         PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_MUTABLE
                                     } else {

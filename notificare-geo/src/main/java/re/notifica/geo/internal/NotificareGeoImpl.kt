@@ -8,8 +8,8 @@ import android.content.pm.PackageManager
 import android.location.Geocoder
 import android.location.Location
 import android.os.Build
+import androidx.annotation.Keep
 import androidx.core.content.ContextCompat
-import androidx.core.os.BuildCompat
 import kotlinx.coroutines.*
 import okhttp3.Response
 import re.notifica.*
@@ -33,6 +33,7 @@ import re.notifica.ktx.events
 import re.notifica.models.NotificareApplication
 import java.util.*
 
+@Keep
 internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, NotificareInternalGeo, NotificareGeoIntegration {
 
     private lateinit var localStorage: LocalStorage
@@ -44,7 +45,7 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
 
     private val hasForegroundLocationPermission: Boolean
         get() {
-            return if (BuildCompat.isAtLeastS()) {
+            return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 ContextCompat.checkSelfPermission(
                     Notificare.requireContext(),
                     Manifest.permission.ACCESS_COARSE_LOCATION
@@ -467,10 +468,10 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
             if (!localStorage.enteredBeacons.contains(beacon.id)) {
                 triggerBeaconEnter(beacon)
             }
-        }
 
-        onMainThread {
-            listeners.forEach { it.onBeaconEntered(beacon) }
+            onMainThread {
+                listeners.forEach { it.onBeaconEntered(beacon) }
+            }
         }
 
         Notificare.loyaltyIntegration()?.onPassbookLocationRelevanceChanged()
@@ -491,10 +492,10 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
             if (localStorage.enteredBeacons.contains(beacon.id)) {
                 triggerBeaconExit(beacon)
             }
-        }
 
-        onMainThread {
-            listeners.forEach { it.onBeaconExited(beacon) }
+            onMainThread {
+                listeners.forEach { it.onBeaconExited(beacon) }
+            }
         }
 
         Notificare.loyaltyIntegration()?.onPassbookLocationRelevanceChanged()
@@ -506,35 +507,32 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
             return
         }
 
-        beacons
-            .map { b ->
-                val beacon = localStorage.monitoredBeacons.firstOrNull { it.major == b.major && it.minor == b.minor }
-                    ?: run {
-                        NotificareLogger.warning("Received a ranging beacons event for non-cached beacon '${b.major}:${b.minor}'.")
-                        return@map null
-                    }
-
-                if (b.proximity == null || b.proximity < 0) {
-                    // Ignore invalid proximity values.
-                    return@map null
+        val cachedBeacons = beacons.mapNotNull { b ->
+            val beacon = localStorage.monitoredBeacons.firstOrNull { it.major == b.major && it.minor == b.minor }
+                ?: run {
+                    NotificareLogger.warning("Received a ranging beacons event for non-cached beacon '${b.major}:${b.minor}'.")
+                    return@mapNotNull null
                 }
 
-                beacon.proximity = when {
-                    b.proximity < NotificareBeacon.PROXIMITY_NEAR_DISTANCE -> NotificareBeacon.Proximity.IMMEDIATE
-                    b.proximity < NotificareBeacon.PROXIMITY_FAR_DISTANCE -> NotificareBeacon.Proximity.NEAR
-                    else -> NotificareBeacon.Proximity.FAR
-                }
-
-                beacon
+            if (b.proximity == null || b.proximity < 0) {
+                // Ignore invalid proximity values.
+                return@mapNotNull null
             }
-            .filterNotNull()
-            .also { ncBeacons ->
-                updateBeaconSessions(ncBeacons)
 
-                onMainThread {
-                    listeners.forEach { it.onBeaconsRanged(region, ncBeacons) }
-                }
+            beacon.proximity = when {
+                b.proximity < NotificareBeacon.PROXIMITY_NEAR_DISTANCE -> NotificareBeacon.Proximity.IMMEDIATE
+                b.proximity < NotificareBeacon.PROXIMITY_FAR_DISTANCE -> NotificareBeacon.Proximity.NEAR
+                else -> NotificareBeacon.Proximity.FAR
             }
+
+            beacon
+        }
+
+        updateBeaconSessions(cachedBeacons)
+
+        onMainThread {
+            listeners.forEach { it.onBeaconsRanged(region, cachedBeacons) }
+        }
     }
 
     // endregion
@@ -752,7 +750,6 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
                 override fun onSuccess(result: FetchBeaconsResponse) {
                     val beacons = result.beacons
                         .map { it.toModel() }
-                        .filter { it.triggers }
 
                     val mainBeacon = NotificareBeacon(
                         id = region.id,

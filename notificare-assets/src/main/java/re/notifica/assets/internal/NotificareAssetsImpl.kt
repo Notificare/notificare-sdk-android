@@ -1,5 +1,6 @@
 package re.notifica.assets.internal
 
+import androidx.annotation.Keep
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import re.notifica.*
@@ -13,6 +14,7 @@ import re.notifica.internal.network.request.NotificareRequest
 import re.notifica.ktx.device
 import re.notifica.models.NotificareApplication
 
+@Keep
 internal object NotificareAssetsImpl : NotificareModule(), NotificareAssets {
 
     override suspend fun fetch(group: String): List<NotificareAsset> = withContext(Dispatchers.IO) {

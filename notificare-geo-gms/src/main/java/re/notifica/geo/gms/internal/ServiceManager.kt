@@ -5,6 +5,7 @@ import android.app.PendingIntent
 import android.content.Intent
 import android.location.Location
 import android.os.Build
+import androidx.annotation.Keep
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.gms.location.*
@@ -18,6 +19,7 @@ import re.notifica.geo.ktx.*
 import re.notifica.geo.models.NotificareRegion
 import re.notifica.internal.NotificareLogger
 
+@Keep
 @InternalNotificareApi
 public class ServiceManager : ServiceManager() {
 
@@ -117,7 +119,7 @@ public class ServiceManager : ServiceManager() {
             val request = LocationRequest.create()
                 .setInterval(Notificare.DEFAULT_LOCATION_UPDATES_INTERVAL)
                 .setFastestInterval(Notificare.DEFAULT_LOCATION_UPDATES_FASTEST_INTERVAL)
-                .setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY)
+                .setPriority(Priority.PRIORITY_BALANCED_POWER_ACCURACY)
                 .setSmallestDisplacement(Notificare.DEFAULT_LOCATION_UPDATES_SMALLEST_DISPLACEMENT.toFloat())
 
             fusedLocationClient.requestLocationUpdates(request, locationPendingIntent)
