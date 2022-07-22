@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## Upcoming release
+## 3.3.0
 
 - Add opt-in intent when opening a beacon foreground service notification
 - Fix GMS/HMS notification race condition for late configured apps
@@ -10,6 +10,7 @@
 - Monitor and range non-triggering beacons
 - Prevent internal _main beacon region_ from triggering events
 - Fix R8/ProGuard minification issues
+- Add Java-friendly wrappers
 
 ## 3.2.0
 
