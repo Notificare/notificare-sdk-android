@@ -34,6 +34,9 @@ public val Notificare.INTENT_ACTION_LOCATION_UPDATED: String
 public val Notificare.INTENT_ACTION_GEOFENCE_TRANSITION: String
     get() = "re.notifica.intent.action.GeofenceTransition"
 
+public val Notificare.INTENT_ACTION_BEACON_NOTIFICATION_OPENED: String
+    get() = "re.notifica.intent.action.BeaconNotificationOpened"
+
 // endregion
 
 // region Default values
