@@ -1,9 +1,17 @@
 package re.notifica.geo
 
 import re.notifica.Notificare
+import re.notifica.geo.ktx.INTENT_ACTION_BEACON_NOTIFICATION_OPENED
 import re.notifica.geo.ktx.geo
 
 public object NotificareGeoCompat {
+
+    // region Intent actions
+
+    @JvmField
+    public val INTENT_ACTION_BEACON_NOTIFICATION_OPENED: String = Notificare.INTENT_ACTION_BEACON_NOTIFICATION_OPENED
+
+    // endregion
 
     @JvmStatic
     public val hasLocationServicesEnabled: Boolean

@@ -4,10 +4,31 @@ import android.app.Activity
 import androidx.lifecycle.LiveData
 import re.notifica.Notificare
 import re.notifica.NotificareCallback
+import re.notifica.loyalty.ktx.INTENT_ACTION_PASSBOOK_OPENED
+import re.notifica.loyalty.ktx.INTENT_ACTION_RELEVANCE_NOTIFICATION_DELETED
+import re.notifica.loyalty.ktx.INTENT_EXTRA_PASSBOOK
 import re.notifica.loyalty.ktx.loyalty
 import re.notifica.loyalty.models.NotificarePass
 
 public object NotificareLoyaltyCompat {
+
+    // region Intent actions
+
+    @JvmField
+    public val INTENT_ACTION_PASSBOOK_OPENED: String = Notificare.INTENT_ACTION_PASSBOOK_OPENED
+
+    @JvmField
+    public val INTENT_ACTION_RELEVANCE_NOTIFICATION_DELETED: String =
+        Notificare.INTENT_ACTION_RELEVANCE_NOTIFICATION_DELETED
+
+    // endregion
+
+    // region Intent extras
+
+    @JvmField
+    public val INTENT_EXTRA_PASSBOOK: String = Notificare.INTENT_EXTRA_PASSBOOK
+
+    // endregion
 
     @JvmStatic
     public var passbookActivity: Class<out PassbookActivity>
