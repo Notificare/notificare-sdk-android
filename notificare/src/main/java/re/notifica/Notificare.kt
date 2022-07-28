@@ -53,8 +53,12 @@ public object Notificare {
 
     // Configurations
     private var context: WeakReference<Context>? = null
+
+    @JvmStatic
     public var servicesInfo: NotificareServicesInfo? = null
         private set
+
+    @JvmStatic
     public var options: NotificareOptions? = null
         private set
 
@@ -66,14 +70,18 @@ public object Notificare {
 
     // region Public API
 
+    @JvmStatic
     public var intentReceiver: Class<out NotificareIntentReceiver> = NotificareIntentReceiver::class.java
 
+    @JvmStatic
     public val isConfigured: Boolean
         get() = state >= NotificareLaunchState.CONFIGURED
 
+    @JvmStatic
     public val isReady: Boolean
         get() = state == NotificareLaunchState.READY
 
+    @JvmStatic
     public var application: NotificareApplication?
         get() {
             return if (::sharedPreferences.isInitialized) {
@@ -91,6 +99,7 @@ public object Notificare {
             }
         }
 
+    @JvmStatic
     public fun configure(context: Context) {
         val applicationKey = context.getString(R.string.notificare_services_application_key)
         val applicationSecret = context.getString(R.string.notificare_services_application_secret)
@@ -98,6 +107,7 @@ public object Notificare {
         configure(context, applicationKey, applicationSecret)
     }
 
+    @JvmStatic
     public fun configure(context: Context, applicationKey: String, applicationSecret: String) {
         val environment: NotificareServicesInfo.Environment = run {
             try {
@@ -118,10 +128,12 @@ public object Notificare {
         configure(context, servicesInfo)
     }
 
+    @JvmStatic
     public fun requireContext(): Context {
         return context?.get() ?: throw IllegalStateException("Cannot find context for Notificare.")
     }
 
+    @JvmStatic
     public fun launch() {
         if (state == NotificareLaunchState.NONE) {
             NotificareLogger.warning("Notificare.configure() has never been called. Cannot launch.")
@@ -187,6 +199,7 @@ public object Notificare {
         }
     }
 
+    @JvmStatic
     public fun unlaunch() {
         if (!isReady) {
             NotificareLogger.warning("Cannot un-launch Notificare before it has been launched.")
@@ -244,10 +257,12 @@ public object Notificare {
         message = "Use addListener() instead.",
         replaceWith = ReplaceWith("Notificare.addListener(listener)")
     )
+    @JvmStatic
     public fun addOnReadyListener(@Suppress("DEPRECATION") listener: OnReadyListener) {
         addListener(listener)
     }
 
+    @JvmStatic
     public fun addListener(listener: Listener) {
         listeners.add(listener)
         NotificareLogger.debug("Added a new Notificare.Listener (${listeners.size} in total).")
@@ -263,10 +278,12 @@ public object Notificare {
         message = "Use removeListener() instead.",
         replaceWith = ReplaceWith("Notificare.removeListener(listener)")
     )
+    @JvmStatic
     public fun removeOnReadyListener(@Suppress("DEPRECATION") listener: OnReadyListener) {
         removeListener(listener)
     }
 
+    @JvmStatic
     public fun removeListener(listener: Listener) {
         listeners.remove(listener)
         NotificareLogger.debug("Removed a Notificare.Listener (${listeners.size} in total).")
@@ -284,6 +301,7 @@ public object Notificare {
             }
     }
 
+    @JvmStatic
     public fun fetchApplication(callback: NotificareCallback<NotificareApplication>): Unit =
         toCallbackFunction(::fetchApplication)(callback)
 
@@ -297,6 +315,7 @@ public object Notificare {
             .toModel()
     }
 
+    @JvmStatic
     public fun fetchNotification(id: String, callback: NotificareCallback<NotificareNotification>): Unit =
         toCallbackFunction(::fetchNotification)(id, callback)
 
@@ -315,6 +334,7 @@ public object Notificare {
             .link
     }
 
+    @JvmStatic
     public fun fetchDynamicLink(uri: Uri, callback: NotificareCallback<NotificareDynamicLink>): Unit =
         toCallbackFunction(::fetchDynamicLink)(uri, callback)
 
@@ -392,6 +412,7 @@ public object Notificare {
         cancelNotification(notification.id)
     }
 
+    @JvmStatic
     public fun cancelNotification(id: String) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             val notificationManager =
@@ -434,6 +455,7 @@ public object Notificare {
         }
     }
 
+    @JvmStatic
     public fun handleTestDeviceIntent(intent: Intent): Boolean {
         val nonce = parseTestDeviceNonce(intent) ?: return false
 
@@ -450,6 +472,7 @@ public object Notificare {
         return true
     }
 
+    @JvmStatic
     public fun handleDynamicLinkIntent(activity: Activity, intent: Intent): Boolean {
         val uri = parseDynamicLink(intent) ?: return false
 
