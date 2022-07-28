@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## Upcoming release
+
+- Add intent actions & extras as JVM fields
+
 ## 3.3.0
 
 - Add opt-in intent when opening a beacon foreground service notification
