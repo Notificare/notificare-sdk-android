@@ -2,6 +2,7 @@
 
 ## Upcoming release
 
+- Expose Notificare base methods and properties statically to the JVM
 - Add intent actions & extras as JVM fields
 
 ## 3.3.0
