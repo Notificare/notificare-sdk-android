@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## Upcoming release
+## 3.3.1
 
 - Expose Notificare base methods and properties statically to the JVM
 - Add intent actions & extras as JVM fields
