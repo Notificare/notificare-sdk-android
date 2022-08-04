@@ -8,7 +8,13 @@
             android:name=".ui.InAppMessagingActivity"
             android:exported="false"
             android:hardwareAccelerated="true"
-            android:theme="@style/Theme.Notificare.Translucent" />
+            android:theme="@style/Theme.Notificare.Translucent">
+
+            <meta-data
+                android:name="re.notifica.iam.ui.exclude_from_foreground_check"
+                android:value="true" />
+
+        </activity>
 
         <!-- Provider to auto configure the in-app messaging module -->
         <provider

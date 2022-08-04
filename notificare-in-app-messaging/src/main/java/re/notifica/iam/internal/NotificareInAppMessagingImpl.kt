@@ -2,6 +2,7 @@ package re.notifica.iam.internal
 
 import android.app.Activity
 import android.app.Application
+import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.annotation.Keep
 import kotlinx.coroutines.Dispatchers
@@ -24,9 +25,12 @@ import java.lang.ref.WeakReference
 @Keep
 internal object NotificareInAppMessagingImpl : NotificareModule(), NotificareInAppMessaging {
 
+    private const val MANIFEST_EXCLUDE_ACTIVITY_KEY = "re.notifica.iam.ui.exclude_from_foreground_check"
+
     private var foregroundActivitiesCounter = 0
     private var currentState: ApplicationState = ApplicationState.BACKGROUND
     private var currentActivity: WeakReference<Activity>? = null
+    private var isShowingMessage = false
 
     override suspend fun launch() {
         evaluateContext(ApplicationContext.LAUNCH)
@@ -40,6 +44,16 @@ internal object NotificareInAppMessagingImpl : NotificareModule(), NotificareInA
                 currentActivity = WeakReference(activity)
                 foregroundActivitiesCounter++
 
+                // Prevent evaluating the context if there is an in-app message already displayed.
+                var canEvaluateContext = !isShowingMessage
+
+                if (activity is InAppMessagingActivity) {
+                    // Keep track of the in-app message being displayed.
+                    // This will occur when the activity is started.
+                    isShowingMessage = true
+                }
+
+                // No need to run the check when we already processed the foreground check.
                 if (currentState == ApplicationState.FOREGROUND) return
 
                 currentState = ApplicationState.FOREGROUND
@@ -49,7 +63,19 @@ internal object NotificareInAppMessagingImpl : NotificareModule(), NotificareInA
                     return
                 }
 
-                evaluateContext(ApplicationContext.FOREGROUND)
+                val packageManager = Notificare.requireContext().packageManager
+                val info = packageManager.getActivityInfo(activity.componentName, PackageManager.GET_META_DATA)
+                if (info.metaData != null) {
+                    val exclude = info.metaData.getBoolean(MANIFEST_EXCLUDE_ACTIVITY_KEY, false)
+
+                    // We can only evaluate the context when it was already allowed and
+                    // when the current activity is not excluded.
+                    canEvaluateContext = canEvaluateContext && !exclude
+                }
+
+                if (canEvaluateContext) {
+                    evaluateContext(ApplicationContext.FOREGROUND)
+                }
             }
 
             override fun onActivityResumed(activity: Activity) {}
@@ -67,7 +93,11 @@ internal object NotificareInAppMessagingImpl : NotificareModule(), NotificareInA
 
             override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) {}
 
-            override fun onActivityDestroyed(activity: Activity) {}
+            override fun onActivityDestroyed(activity: Activity) {
+                if (activity is InAppMessagingActivity) {
+                    isShowingMessage = false
+                }
+            }
         })
     }
 
