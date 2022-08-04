@@ -25,7 +25,7 @@ import java.lang.ref.WeakReference
 @Keep
 internal object NotificareInAppMessagingImpl : NotificareModule(), NotificareInAppMessaging {
 
-    private const val MANIFEST_EXCLUDE_ACTIVITY_KEY = "re.notifica.iam.ui.exclude_from_foreground_check"
+    private const val MANIFEST_SUPPRESS_MESSAGES_ACTIVITY_KEY = "re.notifica.iam.ui.suppress_messages"
 
     private var foregroundActivitiesCounter = 0
     private var currentState: ApplicationState = ApplicationState.BACKGROUND
@@ -66,11 +66,11 @@ internal object NotificareInAppMessagingImpl : NotificareModule(), NotificareInA
                 val packageManager = Notificare.requireContext().packageManager
                 val info = packageManager.getActivityInfo(activity.componentName, PackageManager.GET_META_DATA)
                 if (info.metaData != null) {
-                    val exclude = info.metaData.getBoolean(MANIFEST_EXCLUDE_ACTIVITY_KEY, false)
+                    val suppressed = info.metaData.getBoolean(MANIFEST_SUPPRESS_MESSAGES_ACTIVITY_KEY, false)
 
                     // We can only evaluate the context when it was already allowed and
-                    // when the current activity is not excluded.
-                    canEvaluateContext = canEvaluateContext && !exclude
+                    // when the current activity is not suppressing messages.
+                    canEvaluateContext = canEvaluateContext && !suppressed
                 }
 
                 if (canEvaluateContext) {

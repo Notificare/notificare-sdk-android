@@ -11,7 +11,7 @@
             android:theme="@style/Theme.Notificare.Translucent">
 
             <meta-data
-                android:name="re.notifica.iam.ui.exclude_from_foreground_check"
+                android:name="re.notifica.iam.ui.suppress_messages"
                 android:value="true" />
 
         </activity>
