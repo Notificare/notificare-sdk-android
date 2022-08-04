@@ -32,9 +32,19 @@ internal object NotificareInAppMessagingImpl : NotificareModule(), NotificareInA
     private var currentActivity: WeakReference<Activity>? = null
     private var isShowingMessage = false
 
+    // region Notificare Module
+
     override suspend fun launch() {
         evaluateContext(ApplicationContext.LAUNCH)
     }
+
+    // endregion
+
+    // region Notificare In App Messaging
+
+    override var hasMessagesSuppressed: Boolean = false
+
+    // endregion
 
     internal fun setupLifecycleListeners(application: Application) {
         application.registerActivityLifecycleCallbacks(object : Application.ActivityLifecycleCallbacks {
@@ -44,8 +54,9 @@ internal object NotificareInAppMessagingImpl : NotificareModule(), NotificareInA
                 currentActivity = WeakReference(activity)
                 foregroundActivitiesCounter++
 
-                // Prevent evaluating the context if there is an in-app message already displayed.
-                var canEvaluateContext = !isShowingMessage
+                // Prevent evaluating the context if there is an in-app message already displayed,
+                // and when the messages are being suppressed.
+                var canEvaluateContext = !isShowingMessage && !hasMessagesSuppressed
 
                 if (activity is InAppMessagingActivity) {
                     // Keep track of the in-app message being displayed.
