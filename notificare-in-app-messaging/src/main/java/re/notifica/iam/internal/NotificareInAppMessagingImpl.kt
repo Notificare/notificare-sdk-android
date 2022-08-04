@@ -79,7 +79,12 @@ internal object NotificareInAppMessagingImpl : NotificareModule(), NotificareInA
                 processInAppMessage(message)
             } catch (e: Exception) {
                 if (e is NetworkException.ValidationException && e.response.code == 404) {
-                    NotificareLogger.debug("There is no in-app message to process.")
+                    NotificareLogger.debug("There is no in-app message for '${context.rawValue}' context to process.")
+
+                    if (context == ApplicationContext.LAUNCH) {
+                        evaluateContext(ApplicationContext.FOREGROUND)
+                        return@launch
+                    }
                 } else {
                     NotificareLogger.error("Failed to process in-app message for context '${context.rawValue}'.", e)
                 }
