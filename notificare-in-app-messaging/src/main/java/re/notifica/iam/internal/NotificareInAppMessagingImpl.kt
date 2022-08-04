@@ -62,6 +62,8 @@ internal object NotificareInAppMessagingImpl : NotificareModule(), NotificareInA
 
                 // Skip when not going into the background.
                 if (foregroundActivitiesCounter > 0) return
+
+                currentState = ApplicationState.BACKGROUND
             }
 
             override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) {}
