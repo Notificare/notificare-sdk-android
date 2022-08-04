@@ -37,6 +37,7 @@ internal object NotificareInAppMessagingImpl : NotificareModule(), NotificareInA
             override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {}
 
             override fun onActivityStarted(activity: Activity) {
+                currentActivity = WeakReference(activity)
                 foregroundActivitiesCounter++
 
                 if (currentState == ApplicationState.FOREGROUND) return
@@ -51,9 +52,7 @@ internal object NotificareInAppMessagingImpl : NotificareModule(), NotificareInA
                 evaluateContext(ApplicationContext.FOREGROUND)
             }
 
-            override fun onActivityResumed(activity: Activity) {
-                currentActivity = WeakReference(activity)
-            }
+            override fun onActivityResumed(activity: Activity) {}
 
             override fun onActivityPaused(activity: Activity) {}
 
