@@ -2,4 +2,20 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="re.notifica.iam">
 
+    <application>
+
+        <activity
+            android:name=".ui.InAppMessagingActivity"
+            android:exported="false"
+            android:hardwareAccelerated="true"
+            android:theme="@style/Theme.Notificare.Translucent" />
+
+        <!-- Provider to auto configure the in-app messaging module -->
+        <provider
+            android:name="re.notifica.iam.NotificareInAppMessagingConfigurationProvider"
+            android:authorities="${applicationId}.NotificareInAppMessagingConfigurationProvider"
+            android:exported="false" />
+
+    </application>
+
 </manifest>
