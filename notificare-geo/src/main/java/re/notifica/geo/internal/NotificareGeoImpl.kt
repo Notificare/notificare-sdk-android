@@ -579,11 +579,11 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
         val locationManager = Notificare.requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             if (!locationManager.isLocationEnabled) {
-                NotificareLogger.warning("Waiting for device location functionality to be enabled")
+                NotificareLogger.warning("Location functionality is disabled by the user. Recovering when it has been enabled.")
             }
         } else {
             if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-                NotificareLogger.warning("Waiting for device location functionality to be enabled")
+                NotificareLogger.warning("Location functionality is disabled by the user. Recovering when it has been enabled.")
             }
         }
     }
