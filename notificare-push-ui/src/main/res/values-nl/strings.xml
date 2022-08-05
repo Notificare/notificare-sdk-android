@@ -4,6 +4,8 @@
     <string name="notificare_dialog_close_button">Sluiten</string>
     <string name="notificare_dialog_cancel_button">Annuleren</string>
 
+    <string name="notificare_camera_permission_rationale_description">We hebben uw toestemming nodig om de camera te gebruiken om deze actie te voltooien.</string>
+
     <string name="notificare_action_camera_failed">Camera kan niet gebruikt worden</string>
     <string name="notificare_action_title_intent_email">E-mail versturen…</string>
     <string name="notificare_action_title_intent_sms">SMS versturen…</string>
