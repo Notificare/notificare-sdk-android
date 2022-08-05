@@ -1,11 +1,46 @@
 package re.notifica.iam
 
+import androidx.annotation.MainThread
+import re.notifica.iam.models.NotificareInAppMessage
+import re.notifica.internal.NotificareLogger
+
 public interface NotificareInAppMessaging {
 
     public var hasMessagesSuppressed: Boolean
 
-    // TODO: add a Listener for onMessageDisplayed() and onMessageFinished()
+    public fun addLifecycleListener(listener: MessageLifecycleListener)
 
-    // TODO: add a way to exclude activities from showing in-app messages.
-    // Some sensitive flows, like payments, shouldn't pop-up in-app-messages.
+    public fun removeLifecycleListener(listener: MessageLifecycleListener)
+
+
+    public interface MessageLifecycleListener {
+        @MainThread
+        public fun onMessagePresented(message: NotificareInAppMessage) {
+            NotificareLogger.debug("Message presented, please override onMessagePresented if you want to receive these events.")
+        }
+
+        @MainThread
+        public fun onMessageFinishedPresenting(message: NotificareInAppMessage) {
+            NotificareLogger.debug("Message finished presenting, please override onMessageFinishedPresenting if you want to receive these events.")
+        }
+
+        @MainThread
+        public fun onMessageFailedToPresent(message: NotificareInAppMessage) {
+            NotificareLogger.debug("Message failed to present, please override onMessageFailedToPresent if you want to receive these events.")
+        }
+
+        @MainThread
+        public fun onActionExecuted(message: NotificareInAppMessage, action: NotificareInAppMessage.Action) {
+            NotificareLogger.debug("Action executed, please override onActionExecuted if you want to receive these events.")
+        }
+
+        @MainThread
+        public fun onActionFailedToExecute(
+            message: NotificareInAppMessage,
+            action: NotificareInAppMessage.Action,
+            error: Exception?,
+        ) {
+            NotificareLogger.debug("Action failed to execute, please override onActionFailedToExecute if you want to receive these events.")
+        }
+    }
 }

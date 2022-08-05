@@ -11,8 +11,10 @@ import re.notifica.Notificare
 import re.notifica.iam.R
 import re.notifica.iam.databinding.NotificareInAppMessagingActivityBinding
 import re.notifica.iam.ktx.INTENT_EXTRA_IN_APP_MESSAGE
+import re.notifica.iam.ktx.inAppMessagingImplementation
 import re.notifica.iam.models.NotificareInAppMessage
 import re.notifica.internal.NotificareLogger
+import re.notifica.internal.common.onMainThread
 
 public open class InAppMessagingActivity : AppCompatActivity() {
     private lateinit var binding: NotificareInAppMessagingActivityBinding
@@ -54,6 +56,12 @@ public open class InAppMessagingActivity : AppCompatActivity() {
 
         // Disable the animation transition.
         overridePendingTransition(0, 0)
+
+        onMainThread {
+            Notificare.inAppMessagingImplementation().lifecycleListeners.forEach {
+                it.onMessageFinishedPresenting(message)
+            }
+        }
     }
 
     public companion object {

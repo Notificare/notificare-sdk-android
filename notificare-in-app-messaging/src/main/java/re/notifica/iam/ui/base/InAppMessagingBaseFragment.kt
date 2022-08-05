@@ -12,10 +12,12 @@ import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
 import re.notifica.Notificare
 import re.notifica.iam.ktx.INTENT_EXTRA_IN_APP_MESSAGE
+import re.notifica.iam.ktx.inAppMessagingImplementation
 import re.notifica.iam.ktx.logInAppMessageActionClicked
 import re.notifica.iam.ktx.logInAppMessageViewed
 import re.notifica.iam.models.NotificareInAppMessage
 import re.notifica.internal.NotificareLogger
+import re.notifica.internal.common.onMainThread
 import re.notifica.ktx.events
 
 public abstract class InAppMessagingBaseFragment : Fragment() {
@@ -77,7 +79,6 @@ public abstract class InAppMessagingBaseFragment : Fragment() {
         animate(
             transition = Transition.EXIT,
             onAnimationFinished = {
-                // TODO: onDismissed()
                 activity?.finish()
             }
         )
@@ -96,22 +97,36 @@ public abstract class InAppMessagingBaseFragment : Fragment() {
                 NotificareInAppMessage.ActionType.SECONDARY -> message.secondaryAction
             }
 
-            val uri = action?.url?.let { Uri.parse(it) }
+            if (action != null) {
+                val uri = action.url?.let { Uri.parse(it) }
 
-            if (uri != null) {
-                val intent = Intent(Intent.ACTION_VIEW, uri).apply {
-                    setPackage(requireContext().packageName)
-                }
+                if (uri != null) {
+                    val intent = Intent(Intent.ACTION_VIEW, uri).apply {
+                        setPackage(requireContext().packageName)
+                    }
 
-                if (intent.resolveActivity(requireContext().packageManager) == null) {
-                    intent.setPackage(null)
-                }
+                    if (intent.resolveActivity(requireContext().packageManager) == null) {
+                        intent.setPackage(null)
+                    }
 
-                try {
-                    startActivity(intent)
-                    NotificareLogger.info("In-app message action '${actionType.rawValue}' successfully processed.")
-                } catch (e: Exception) {
-                    NotificareLogger.warning("Could not find an activity capable of opening the URL.", e)
+                    try {
+                        startActivity(intent)
+                        NotificareLogger.info("In-app message action '${actionType.rawValue}' successfully processed.")
+
+                        onMainThread {
+                            Notificare.inAppMessagingImplementation().lifecycleListeners.forEach {
+                                it.onActionExecuted(message, action)
+                            }
+                        }
+                    } catch (e: Exception) {
+                        NotificareLogger.warning("Could not find an activity capable of opening the URL.", e)
+
+                        onMainThread {
+                            Notificare.inAppMessagingImplementation().lifecycleListeners.forEach {
+                                it.onActionFailedToExecute(message, action, e)
+                            }
+                        }
+                    }
                 }
             }
 

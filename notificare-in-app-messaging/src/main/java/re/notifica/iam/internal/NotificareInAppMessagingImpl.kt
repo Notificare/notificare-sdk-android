@@ -14,6 +14,7 @@ import re.notifica.iam.models.NotificareInAppMessage
 import re.notifica.iam.ui.InAppMessagingActivity
 import re.notifica.internal.NotificareLogger
 import re.notifica.internal.NotificareModule
+import re.notifica.internal.common.onMainThread
 import re.notifica.internal.network.NetworkException
 import re.notifica.internal.network.request.NotificareRequest
 import re.notifica.ktx.device
@@ -30,6 +31,8 @@ internal object NotificareInAppMessagingImpl : NotificareModule(), NotificareInA
     private var delayedMessageJob: Job? = null
     private var isShowingMessage = false
 
+    internal val lifecycleListeners = mutableListOf<NotificareInAppMessaging.MessageLifecycleListener>()
+
     // region Notificare Module
 
     override suspend fun launch() {
@@ -41,6 +44,14 @@ internal object NotificareInAppMessagingImpl : NotificareModule(), NotificareInA
     // region Notificare In App Messaging
 
     override var hasMessagesSuppressed: Boolean = false
+
+    override fun addLifecycleListener(listener: NotificareInAppMessaging.MessageLifecycleListener) {
+        lifecycleListeners.add(listener)
+    }
+
+    override fun removeLifecycleListener(listener: NotificareInAppMessaging.MessageLifecycleListener) {
+        lifecycleListeners.remove(listener)
+    }
 
     // endregion
 
@@ -162,8 +173,16 @@ internal object NotificareInAppMessagingImpl : NotificareModule(), NotificareInA
                     try {
                         NotificareLogger.debug("Presenting in-app message '${message.name}'.")
                         InAppMessagingActivity.show(activity, message)
+
+                        onMainThread {
+                            lifecycleListeners.forEach { it.onMessagePresented(message) }
+                        }
                     } catch (e: Exception) {
                         NotificareLogger.error("Failed to present the in-app message.", e)
+
+                        onMainThread {
+                            lifecycleListeners.forEach { it.onMessageFailedToPresent(message) }
+                        }
                     }
                 }
             } catch (e: Exception) {
