@@ -4,6 +4,8 @@
     <string name="notificare_dialog_close_button">Close</string>
     <string name="notificare_dialog_cancel_button">Cancel</string>
 
+    <string name="notificare_camera_permission_rationale_description">We need your permission to use the camera to complete this action.</string>
+
     <string name="notificare_action_camera_failed">Camera can not be used</string>
     <string name="notificare_action_title_intent_email">Send mail…</string>
     <string name="notificare_action_title_intent_sms">Send SMS…</string>

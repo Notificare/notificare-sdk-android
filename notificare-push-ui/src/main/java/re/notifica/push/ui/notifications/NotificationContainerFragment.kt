@@ -7,12 +7,14 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.*
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
 import re.notifica.Notificare
 import re.notifica.internal.NotificareLogger
+import re.notifica.internal.NotificareUtils
 import re.notifica.internal.common.onMainThread
 import re.notifica.models.NotificareNotification
 import re.notifica.push.ui.R
@@ -189,9 +191,24 @@ public class NotificationContainerFragment
 
     private fun handleAction(action: NotificareNotification.Action) {
         if (action.camera && isCameraPermissionNeeded && !isCameraPermissionGranted) {
-            pendingAction = action
-            cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
+            val permission = Manifest.permission.CAMERA
 
+            if (shouldShowRequestPermissionRationale(permission)) {
+                AlertDialog.Builder(requireContext())
+                    .setTitle(NotificareUtils.applicationName)
+                    .setMessage(R.string.notificare_camera_permission_rationale_description)
+                    .setCancelable(false)
+                    .setPositiveButton(R.string.notificare_dialog_ok_button) { _, _ ->
+                        pendingAction = action
+                        cameraPermissionLauncher.launch(permission)
+                    }
+                    .show()
+
+                return
+            }
+
+            pendingAction = action
+            cameraPermissionLauncher.launch(permission)
             return
         }
 
