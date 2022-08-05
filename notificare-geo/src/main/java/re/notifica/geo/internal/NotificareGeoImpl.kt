@@ -7,6 +7,7 @@ import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.location.Geocoder
 import android.location.Location
+import android.location.LocationManager
 import android.os.Build
 import androidx.annotation.Keep
 import androidx.core.content.ContextCompat
@@ -573,6 +574,17 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
         if (!Notificare.requireContext().packageManager.hasSystemFeature(PackageManager.FEATURE_LOCATION)) {
             NotificareLogger.warning("Location functionality requires location hardware.")
             throw NotificareLocationHardwareUnavailableException()
+        }
+
+        val locationManager = Notificare.requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            if (!locationManager.isLocationEnabled) {
+                NotificareLogger.warning("Waiting for device location functionality to be enabled")
+            }
+        } else {
+            if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                NotificareLogger.warning("Waiting for device location functionality to be enabled")
+            }
         }
     }
 
