@@ -5,10 +5,7 @@ import android.app.Application
 import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.annotation.Keep
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import re.notifica.Notificare
 import re.notifica.NotificareDeviceUnavailableException
 import re.notifica.iam.NotificareInAppMessaging
@@ -30,6 +27,7 @@ internal object NotificareInAppMessagingImpl : NotificareModule(), NotificareInA
     private var foregroundActivitiesCounter = 0
     private var currentState: ApplicationState = ApplicationState.BACKGROUND
     private var currentActivity: WeakReference<Activity>? = null
+    private var delayedMessageJob: Job? = null
     private var isShowingMessage = false
 
     // region Notificare Module
@@ -100,6 +98,12 @@ internal object NotificareInAppMessagingImpl : NotificareModule(), NotificareInA
                 if (foregroundActivitiesCounter > 0) return
 
                 currentState = ApplicationState.BACKGROUND
+
+                if (delayedMessageJob != null) {
+                    NotificareLogger.info("Clearing delayed in-app message from being presented when going to the background.")
+                    delayedMessageJob?.cancel()
+                    delayedMessageJob = null
+                }
             }
 
             override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) {}
@@ -142,12 +146,39 @@ internal object NotificareInAppMessagingImpl : NotificareModule(), NotificareInA
             return
         }
 
-        activity.runOnUiThread {
+        delayedMessageJob = GlobalScope.launch {
             try {
-                InAppMessagingActivity.show(activity, message)
+                if (message.delaySeconds > 0) {
+                    NotificareLogger.debug("Waiting ${message.delaySeconds} seconds before presenting the in-app message.")
+                    delay(message.delaySeconds * 1000L)
+                }
+
+                if (isShowingMessage) {
+                    NotificareLogger.warning("Cannot display an in-app message while another is being presented.")
+                    return@launch
+                }
+
+                activity.runOnUiThread {
+                    try {
+                        NotificareLogger.debug("Presenting in-app message '${message.name}'.")
+                        InAppMessagingActivity.show(activity, message)
+                    } catch (e: Exception) {
+                        NotificareLogger.error("Failed to present the in-app message.", e)
+                    }
+                }
             } catch (e: Exception) {
-                NotificareLogger.error("Failed to add the in-app message view to the window.", e)
+                if (e is CancellationException) {
+                    NotificareLogger.debug("The delayed in-app message job has been canceled.")
+                    return@launch
+                }
+
+                NotificareLogger.error("Failed to present the delayed in-app message.", e)
             }
+        }
+
+        delayedMessageJob?.invokeOnCompletion {
+            // Clear the reference to the Job upon its completion.
+            delayedMessageJob = null
         }
     }
 
