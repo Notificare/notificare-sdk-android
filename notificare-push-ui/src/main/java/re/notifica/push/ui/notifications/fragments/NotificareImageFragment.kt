@@ -34,10 +34,6 @@ public class NotificareImageFragment : NotificationFragment() {
         if (isAdded) {
             binding.pager.adapter = ImageAdapter(notification, this)
         }
-    }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
 
         if (notification.content.isEmpty()) {
             onMainThread {
