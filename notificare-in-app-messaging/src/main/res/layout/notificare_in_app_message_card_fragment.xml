@@ -30,13 +30,12 @@
 
             <ImageButton
                 android:id="@+id/close_button"
-                style="?borderlessButtonStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:padding="4dp"
-                android:src="@drawable/notificare_baseline_close_24"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="?selectableItemBackground"
+                android:padding="12dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/notificare_iam_close_button"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:ignore="ContentDescription" />

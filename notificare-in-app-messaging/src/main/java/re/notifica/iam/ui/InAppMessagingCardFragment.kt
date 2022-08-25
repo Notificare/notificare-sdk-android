@@ -57,6 +57,10 @@ public open class InAppMessagingCardFragment : InAppMessagingBaseFragment() {
             handleActionClicked(NotificareInAppMessage.ActionType.SECONDARY)
         }
 
+        binding.closeButton.setOnClickListener {
+            dismiss()
+        }
+
         binding.root.setOnClickListener {
             dismiss()
         }

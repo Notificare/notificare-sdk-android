@@ -23,12 +23,23 @@
                 tools:ignore="ContentDescription"
                 tools:src="#000" />
 
-            <!-- TODO: add close button -->
+            <ImageButton
+                android:id="@+id/close_button"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="?selectableItemBackground"
+                android:padding="12dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/notificare_iam_close_button"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:ignore="ContentDescription" />
 
             <LinearLayout
+                android:id="@+id/content_container"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/notificare_fullscreen_content_gradient"
+                android:background="@drawable/notificare_iam_fullscreen_content_gradient"
                 android:orientation="vertical"
                 android:padding="16dp"
                 app:layout_constraintBottom_toBottomOf="parent">

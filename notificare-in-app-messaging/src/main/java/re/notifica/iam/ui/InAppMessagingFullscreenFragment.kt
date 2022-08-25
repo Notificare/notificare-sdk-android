@@ -47,6 +47,10 @@ public open class InAppMessagingFullscreenFragment : InAppMessagingBaseFragment(
             handleActionClicked(NotificareInAppMessage.ActionType.PRIMARY)
         }
 
+        binding.closeButton.setOnClickListener {
+            dismiss()
+        }
+
         binding.root.setOnClickListener {
             dismiss()
         }
