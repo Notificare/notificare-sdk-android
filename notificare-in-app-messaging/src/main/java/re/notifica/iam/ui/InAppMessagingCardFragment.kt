@@ -49,12 +49,22 @@ public open class InAppMessagingCardFragment : InAppMessagingBaseFragment() {
             handleActionClicked(NotificareInAppMessage.ActionType.PRIMARY)
         }
 
+        if (message.primaryAction?.destructive == true) {
+            val typedValue = TypedValue()
+            requireContext().theme.resolveAttribute(R.attr.colorError, typedValue, true)
+            binding.primaryActionButton.setTextColor(typedValue.data)
+        }
+
         binding.secondaryActionButton.isVisible = message.secondaryAction?.label != null
         binding.secondaryActionButton.text = message.secondaryAction?.label
-        // TODO: Change text color based on the destructive property
-        // binding.secondaryActionButton.setTextColor()
         binding.secondaryActionButton.setOnClickListener {
             handleActionClicked(NotificareInAppMessage.ActionType.SECONDARY)
+        }
+
+        if (message.secondaryAction?.destructive == true) {
+            val typedValue = TypedValue()
+            requireContext().theme.resolveAttribute(R.attr.colorError, typedValue, true)
+            binding.secondaryActionButton.setTextColor(typedValue.data)
         }
 
         binding.closeButton.setOnClickListener {
