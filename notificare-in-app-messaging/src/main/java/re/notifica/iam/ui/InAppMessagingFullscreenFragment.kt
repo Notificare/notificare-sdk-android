@@ -51,6 +51,8 @@ public open class InAppMessagingFullscreenFragment : InAppMessagingBaseFragment(
             dismiss()
         }
 
-        animate(Transition.ENTER)
+        if (savedInstanceState == null) {
+            animate(Transition.ENTER)
+        }
     }
 }
