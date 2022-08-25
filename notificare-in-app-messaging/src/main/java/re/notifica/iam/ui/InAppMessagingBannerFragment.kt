@@ -37,10 +37,10 @@ public open class InAppMessagingBannerFragment : InAppMessagingBaseFragment() {
             // TODO:  .placeholder()
             .into(binding.imageView)
 
-        binding.titleView.isVisible = message.title != null
+        binding.titleView.isVisible = !message.title.isNullOrBlank()
         binding.titleView.text = message.title
 
-        binding.messageView.isVisible = message.message != null
+        binding.messageView.isVisible = !message.message.isNullOrBlank()
         binding.messageView.text = message.message
 
         binding.cardView.setOnClickListener {

@@ -48,7 +48,7 @@
                 app:constraint_referenced_ids="image_view,close_button" />
 
             <LinearLayout
-                android:id="@+id/content_section"
+                android:id="@+id/content_container"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"

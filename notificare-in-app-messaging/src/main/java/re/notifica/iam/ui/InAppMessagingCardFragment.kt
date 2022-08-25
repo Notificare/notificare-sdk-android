@@ -1,6 +1,7 @@
 package re.notifica.iam.ui
 
 import android.os.Bundle
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -37,13 +38,16 @@ public open class InAppMessagingCardFragment : InAppMessagingBaseFragment() {
             // TODO:  .placeholder()
             .into(binding.imageView)
 
-        binding.titleView.isVisible = message.title != null
+        binding.titleView.isVisible = !message.title.isNullOrBlank()
         binding.titleView.text = message.title
 
-        binding.messageView.isVisible = message.message != null
+        binding.messageView.isVisible = !message.message.isNullOrBlank()
         binding.messageView.text = message.message
 
-        binding.primaryActionButton.isVisible = message.primaryAction?.label != null
+        binding.actionsContainer.isVisible =
+            !message.primaryAction?.label.isNullOrBlank() || !message.secondaryAction?.label.isNullOrBlank()
+
+        binding.primaryActionButton.isVisible = !message.primaryAction?.label.isNullOrBlank()
         binding.primaryActionButton.text = message.primaryAction?.label
         binding.primaryActionButton.setOnClickListener {
             handleActionClicked(NotificareInAppMessage.ActionType.PRIMARY)
@@ -55,7 +59,7 @@ public open class InAppMessagingCardFragment : InAppMessagingBaseFragment() {
             binding.primaryActionButton.setTextColor(typedValue.data)
         }
 
-        binding.secondaryActionButton.isVisible = message.secondaryAction?.label != null
+        binding.secondaryActionButton.isVisible = !message.secondaryAction?.label.isNullOrBlank()
         binding.secondaryActionButton.text = message.secondaryAction?.label
         binding.secondaryActionButton.setOnClickListener {
             handleActionClicked(NotificareInAppMessage.ActionType.SECONDARY)
