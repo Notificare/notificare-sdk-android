@@ -18,6 +18,7 @@ import re.notifica.internal.common.onMainThread
 
 public open class InAppMessagingActivity : AppCompatActivity() {
     private lateinit var binding: NotificareInAppMessagingActivityBinding
+    private var backgroundTimestamp: Long? = null
 
     protected lateinit var message: NotificareInAppMessage
 
@@ -30,6 +31,22 @@ public open class InAppMessagingActivity : AppCompatActivity() {
         message = savedInstanceState?.getParcelable(Notificare.INTENT_EXTRA_IN_APP_MESSAGE)
             ?: intent.getParcelableExtra(Notificare.INTENT_EXTRA_IN_APP_MESSAGE)
                 ?: throw IllegalStateException("Cannot create the UI without the associated in-app message.")
+
+        if (savedInstanceState != null) {
+            val backgroundTimestamp = if (savedInstanceState.containsKey(INTENT_EXTRA_BACKGROUND_TIMESTAMP)) {
+                savedInstanceState.getLong(INTENT_EXTRA_BACKGROUND_TIMESTAMP)
+            } else {
+                null
+            }
+
+            val expired = backgroundTimestamp != null &&
+                Notificare.inAppMessagingImplementation().hasExpiredBackgroundPeriod(backgroundTimestamp)
+
+            if (expired) {
+                NotificareLogger.debug("Dismissing the current in-app message for being in the background for longer than the grace period.")
+                return finish()
+            }
+        }
 
         if (savedInstanceState == null) {
             val klass = getFragmentClass(message) ?: run {
@@ -46,9 +63,28 @@ public open class InAppMessagingActivity : AppCompatActivity() {
         }
     }
 
+    override fun onStart() {
+        super.onStart()
+
+        val backgroundTimestamp = this.backgroundTimestamp
+        val expired = backgroundTimestamp != null &&
+            Notificare.inAppMessagingImplementation().hasExpiredBackgroundPeriod(backgroundTimestamp)
+
+        if (expired) {
+            NotificareLogger.debug("Dismissing the current in-app message for being in the background for longer than the grace period.")
+            return finish()
+        }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        backgroundTimestamp = System.currentTimeMillis()
+    }
+
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putParcelable(Notificare.INTENT_EXTRA_IN_APP_MESSAGE, message)
+        backgroundTimestamp?.also { outState.putLong(INTENT_EXTRA_BACKGROUND_TIMESTAMP, it) }
     }
 
     override fun finish() {
@@ -65,6 +101,8 @@ public open class InAppMessagingActivity : AppCompatActivity() {
     }
 
     public companion object {
+        private const val INTENT_EXTRA_BACKGROUND_TIMESTAMP = "re.notifica.intent.extra.BackgroundTimestamp"
+
         internal fun show(activity: Activity, message: NotificareInAppMessage) {
             activity.startActivity(
                 Intent(activity, InAppMessagingActivity::class.java)

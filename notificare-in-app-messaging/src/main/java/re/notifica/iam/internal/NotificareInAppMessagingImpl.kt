@@ -9,6 +9,7 @@ import kotlinx.coroutines.*
 import re.notifica.Notificare
 import re.notifica.NotificareDeviceUnavailableException
 import re.notifica.iam.NotificareInAppMessaging
+import re.notifica.iam.backgroundGracePeriodMillis
 import re.notifica.iam.internal.network.push.InAppMessageResponse
 import re.notifica.iam.models.NotificareInAppMessage
 import re.notifica.iam.ui.InAppMessagingActivity
@@ -24,12 +25,14 @@ import java.lang.ref.WeakReference
 internal object NotificareInAppMessagingImpl : NotificareModule(), NotificareInAppMessaging {
 
     private const val MANIFEST_SUPPRESS_MESSAGES_ACTIVITY_KEY = "re.notifica.iam.ui.suppress_messages"
+    private const val DEFAULT_BACKGROUND_GRACE_PERIOD_MILLIS = 5 * 60 * 1000L
 
     private var foregroundActivitiesCounter = 0
     private var currentState: ApplicationState = ApplicationState.BACKGROUND
     private var currentActivity: WeakReference<Activity>? = null
     private var delayedMessageJob: Job? = null
     private var isShowingMessage = false
+    private var backgroundTimestamp: Long? = null
 
     internal val lifecycleListeners = mutableListOf<NotificareInAppMessaging.MessageLifecycleListener>()
 
@@ -63,38 +66,15 @@ internal object NotificareInAppMessagingImpl : NotificareModule(), NotificareInA
                 currentActivity = WeakReference(activity)
                 foregroundActivitiesCounter++
 
-                // Prevent evaluating the context if there is an in-app message already displayed,
-                // and when the messages are being suppressed.
-                var canEvaluateContext = !isShowingMessage && !hasMessagesSuppressed
+                // No need to run the check when we already processed the foreground check.
+                if (currentState != ApplicationState.FOREGROUND) {
+                    onApplicationForeground(activity)
+                }
 
                 if (activity is InAppMessagingActivity) {
                     // Keep track of the in-app message being displayed.
                     // This will occur when the activity is started.
                     isShowingMessage = true
-                }
-
-                // No need to run the check when we already processed the foreground check.
-                if (currentState == ApplicationState.FOREGROUND) return
-
-                currentState = ApplicationState.FOREGROUND
-
-                if (!Notificare.isReady) {
-                    NotificareLogger.debug("Postponing in-app message evaluation until Notificare is launched.")
-                    return
-                }
-
-                val packageManager = Notificare.requireContext().packageManager
-                val info = packageManager.getActivityInfo(activity.componentName, PackageManager.GET_META_DATA)
-                if (info.metaData != null) {
-                    val suppressed = info.metaData.getBoolean(MANIFEST_SUPPRESS_MESSAGES_ACTIVITY_KEY, false)
-
-                    // We can only evaluate the context when it was already allowed and
-                    // when the current activity is not suppressing messages.
-                    canEvaluateContext = canEvaluateContext && !suppressed
-                }
-
-                if (canEvaluateContext) {
-                    evaluateContext(ApplicationContext.FOREGROUND)
                 }
             }
 
@@ -109,6 +89,7 @@ internal object NotificareInAppMessagingImpl : NotificareModule(), NotificareInA
                 if (foregroundActivitiesCounter > 0) return
 
                 currentState = ApplicationState.BACKGROUND
+                backgroundTimestamp = System.currentTimeMillis()
 
                 if (delayedMessageJob != null) {
                     NotificareLogger.info("Clearing delayed in-app message from being presented when going to the background.")
@@ -125,6 +106,54 @@ internal object NotificareInAppMessagingImpl : NotificareModule(), NotificareInA
                 }
             }
         })
+    }
+
+    internal fun hasExpiredBackgroundPeriod(timestamp: Long): Boolean {
+        val backgroundGracePeriodMillis = Notificare.options?.backgroundGracePeriodMillis
+            ?: DEFAULT_BACKGROUND_GRACE_PERIOD_MILLIS
+
+        return System.currentTimeMillis() > timestamp + backgroundGracePeriodMillis
+    }
+
+    private fun onApplicationForeground(activity: Activity) {
+        val backgroundTimestamp = backgroundTimestamp
+        val hasExpiredBackgroundPeriod = backgroundTimestamp != null &&
+            hasExpiredBackgroundPeriod(backgroundTimestamp)
+
+        currentState = ApplicationState.FOREGROUND
+        this.backgroundTimestamp = null
+
+        if (hasExpiredBackgroundPeriod) {
+            NotificareLogger.debug("The current in-app message should have been dismissed for being in the background for longer than the grace period.")
+            isShowingMessage = false
+        }
+
+        if (!Notificare.isReady) {
+            NotificareLogger.debug("Postponing in-app message evaluation until Notificare is launched.")
+            return
+        }
+
+        if (isShowingMessage) {
+            NotificareLogger.debug("Skipping context evaluation since there is another in-app message being presented.")
+            return
+        }
+
+        if (hasMessagesSuppressed) {
+            NotificareLogger.debug("Skipping context evaluation since in-app messages are being suppressed.")
+            return
+        }
+
+        val packageManager = Notificare.requireContext().packageManager
+        val info = packageManager.getActivityInfo(activity.componentName, PackageManager.GET_META_DATA)
+        if (info.metaData != null) {
+            val suppressed = info.metaData.getBoolean(MANIFEST_SUPPRESS_MESSAGES_ACTIVITY_KEY, false)
+            if (suppressed) {
+                NotificareLogger.debug("Skipping context evaluation since in-app messages on ${activity::class.java.simpleName} are being suppressed.")
+                return
+            }
+        }
+
+        evaluateContext(ApplicationContext.FOREGROUND)
     }
 
     private fun evaluateContext(context: ApplicationContext) {
