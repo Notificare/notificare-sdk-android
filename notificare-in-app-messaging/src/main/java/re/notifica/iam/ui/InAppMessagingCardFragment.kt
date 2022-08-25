@@ -61,6 +61,14 @@ public open class InAppMessagingCardFragment : InAppMessagingBaseFragment() {
             dismiss()
         }
 
+        binding.cardView.setOnClickListener {
+            // This empty click listener prevents the root click listener
+            // from being triggered when clicking on the card itself.
+            //
+            // Otherwise, the root click listener will treat clicking on
+            // the card itself as a tap outside.
+        }
+
         binding.root.setOnClickListener {
             dismiss()
         }
