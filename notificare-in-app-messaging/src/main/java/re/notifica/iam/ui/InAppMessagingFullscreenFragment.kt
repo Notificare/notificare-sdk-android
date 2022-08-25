@@ -37,6 +37,8 @@ public open class InAppMessagingFullscreenFragment : InAppMessagingBaseFragment(
             // TODO:  .placeholder()
             .into(binding.imageView)
 
+        binding.contentContainer.isVisible = message.title != null || message.message != null
+
         binding.titleView.isVisible = message.title != null
         binding.titleView.text = message.title
 
