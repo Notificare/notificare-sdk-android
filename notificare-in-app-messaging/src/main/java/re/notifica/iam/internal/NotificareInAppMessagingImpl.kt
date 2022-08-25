@@ -140,11 +140,12 @@ internal object NotificareInAppMessagingImpl : NotificareModule(), NotificareInA
 
                     if (context == ApplicationContext.LAUNCH) {
                         evaluateContext(ApplicationContext.FOREGROUND)
-                        return@launch
                     }
-                } else {
-                    NotificareLogger.error("Failed to process in-app message for context '${context.rawValue}'.", e)
+
+                    return@launch
                 }
+
+                NotificareLogger.error("Failed to process in-app message for context '${context.rawValue}'.", e)
             }
         }
     }
@@ -152,52 +153,88 @@ internal object NotificareInAppMessagingImpl : NotificareModule(), NotificareInA
     private fun processInAppMessage(message: NotificareInAppMessage) {
         NotificareLogger.info("Processing in-app message '${message.name}'.")
 
-        val activity = currentActivity?.get() ?: run {
-            NotificareLogger.warning("Cannot display an in-app message without a reference to the current activity.")
+        if (message.delaySeconds > 0) {
+            // Keep a reference to the job to cancel it when
+            // the app goes into the background.
+            delayedMessageJob = GlobalScope.launch {
+                try {
+                    if (message.delaySeconds > 0) {
+                        NotificareLogger.debug("Waiting ${message.delaySeconds} seconds before presenting the in-app message.")
+                        delay(message.delaySeconds * 1000L)
+                    }
+
+                    present(message)
+                } catch (e: Exception) {
+                    if (e is CancellationException) {
+                        NotificareLogger.debug("The delayed in-app message job has been canceled.")
+                        return@launch
+                    }
+
+                    NotificareLogger.error("Failed to present the delayed in-app message.", e)
+
+                    onMainThread {
+                        lifecycleListeners.forEach { it.onMessageFailedToPresent(message) }
+                    }
+                }
+            }
+
+            delayedMessageJob?.invokeOnCompletion {
+                // Clear the reference to the Job upon its completion.
+                delayedMessageJob = null
+            }
+
             return
         }
 
-        delayedMessageJob = GlobalScope.launch {
-            try {
-                if (message.delaySeconds > 0) {
-                    NotificareLogger.debug("Waiting ${message.delaySeconds} seconds before presenting the in-app message.")
-                    delay(message.delaySeconds * 1000L)
-                }
+        present(message)
+    }
 
-                if (isShowingMessage) {
-                    NotificareLogger.warning("Cannot display an in-app message while another is being presented.")
-                    return@launch
-                }
+    private fun present(message: NotificareInAppMessage) {
+        if (isShowingMessage) {
+            NotificareLogger.warning("Cannot display an in-app message while another is being presented.")
 
-                activity.runOnUiThread {
-                    try {
-                        NotificareLogger.debug("Presenting in-app message '${message.name}'.")
-                        InAppMessagingActivity.show(activity, message)
-
-                        onMainThread {
-                            lifecycleListeners.forEach { it.onMessagePresented(message) }
-                        }
-                    } catch (e: Exception) {
-                        NotificareLogger.error("Failed to present the in-app message.", e)
-
-                        onMainThread {
-                            lifecycleListeners.forEach { it.onMessageFailedToPresent(message) }
-                        }
-                    }
-                }
-            } catch (e: Exception) {
-                if (e is CancellationException) {
-                    NotificareLogger.debug("The delayed in-app message job has been canceled.")
-                    return@launch
-                }
-
-                NotificareLogger.error("Failed to present the delayed in-app message.", e)
+            onMainThread {
+                lifecycleListeners.forEach { it.onMessageFailedToPresent(message) }
             }
+
+            return
         }
 
-        delayedMessageJob?.invokeOnCompletion {
-            // Clear the reference to the Job upon its completion.
-            delayedMessageJob = null
+        if (hasMessagesSuppressed) {
+            NotificareLogger.debug("Cannot display an in-app message while messages are being suppressed.")
+
+            onMainThread {
+                lifecycleListeners.forEach { it.onMessageFailedToPresent(message) }
+            }
+
+            return
+        }
+
+        val activity = currentActivity?.get() ?: run {
+            NotificareLogger.warning("Cannot display an in-app message without a reference to the current activity.")
+
+            onMainThread {
+                lifecycleListeners.forEach { it.onMessageFailedToPresent(message) }
+            }
+
+            return
+        }
+
+        activity.runOnUiThread {
+            try {
+                NotificareLogger.debug("Presenting in-app message '${message.name}'.")
+                InAppMessagingActivity.show(activity, message)
+
+                onMainThread {
+                    lifecycleListeners.forEach { it.onMessagePresented(message) }
+                }
+            } catch (e: Exception) {
+                NotificareLogger.error("Failed to present the in-app message.", e)
+
+                onMainThread {
+                    lifecycleListeners.forEach { it.onMessageFailedToPresent(message) }
+                }
+            }
         }
     }
 
