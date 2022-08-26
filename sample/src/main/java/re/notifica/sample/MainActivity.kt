@@ -28,6 +28,9 @@ import re.notifica.geo.ktx.geo
 import re.notifica.geo.models.NotificareBeacon
 import re.notifica.geo.models.NotificareLocation
 import re.notifica.geo.models.NotificareRegion
+import re.notifica.iam.NotificareInAppMessaging
+import re.notifica.iam.ktx.inAppMessaging
+import re.notifica.iam.models.NotificareInAppMessage
 import re.notifica.ktx.device
 import re.notifica.models.*
 import re.notifica.monetize.NotificareMonetize
@@ -87,6 +90,37 @@ class MainActivity : AppCompatActivity(), Notificare.Listener, NotificarePushUI.
         onEnableLocationUpdatesClicked(binding.root)
     }
 
+    private val messageLifecycleListener = object : NotificareInAppMessaging.MessageLifecycleListener {
+        override fun onMessagePresented(message: NotificareInAppMessage) {
+            Log.i(TAG, "---> message presented '${message.name}'")
+            Toast.makeText(this@MainActivity, "Message presented", Toast.LENGTH_SHORT).show()
+        }
+
+        override fun onMessageFinishedPresenting(message: NotificareInAppMessage) {
+            Log.i(TAG, "---> message finished presenting '${message.name}'")
+            Toast.makeText(this@MainActivity, "Message finished presenting", Toast.LENGTH_SHORT).show()
+        }
+
+        override fun onMessageFailedToPresent(message: NotificareInAppMessage) {
+            Log.i(TAG, "---> message failed to present '${message.name}'")
+            Toast.makeText(this@MainActivity, "Message failed to present", Toast.LENGTH_SHORT).show()
+        }
+
+        override fun onActionExecuted(message: NotificareInAppMessage, action: NotificareInAppMessage.Action) {
+            Log.i(TAG, "---> action executed '${message.name}'")
+            Toast.makeText(this@MainActivity, "Action executed", Toast.LENGTH_SHORT).show()
+        }
+
+        override fun onActionFailedToExecute(
+            message: NotificareInAppMessage,
+            action: NotificareInAppMessage.Action,
+            error: Exception?
+        ) {
+            Log.i(TAG, "---> action failed to execute '${message.name}'", error)
+            Toast.makeText(this@MainActivity, "Action failed to execute", Toast.LENGTH_SHORT).show()
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater).also {
@@ -100,6 +134,7 @@ class MainActivity : AppCompatActivity(), Notificare.Listener, NotificarePushUI.
         Notificare.scannables().addListener(this)
         Notificare.geo().addListener(this)
         Notificare.monetize().addListener(this)
+        Notificare.inAppMessaging().addLifecycleListener(messageLifecycleListener)
     }
 
     override fun onDestroy() {
@@ -110,6 +145,7 @@ class MainActivity : AppCompatActivity(), Notificare.Listener, NotificarePushUI.
         Notificare.scannables().removeListener(this)
         Notificare.geo().removeListener(this)
         Notificare.monetize().removeListener(this)
+        Notificare.inAppMessaging().removeLifecycleListener(messageLifecycleListener)
     }
 
     override fun onNewIntent(intent: Intent?) {
@@ -687,6 +723,10 @@ class MainActivity : AppCompatActivity(), Notificare.Listener, NotificarePushUI.
 
     fun onOpenPurchasesClicked(@Suppress("UNUSED_PARAMETER") view: View) {
         startActivity(Intent(this, InAppPurchasesActivity::class.java))
+    }
+
+    fun onToggleSuppressedMessagesClicked(@Suppress("UNUSED_PARAMETER") view: View) {
+        Notificare.inAppMessaging().hasMessagesSuppressed = !Notificare.inAppMessaging().hasMessagesSuppressed
     }
 
     // region Notificare.Listener

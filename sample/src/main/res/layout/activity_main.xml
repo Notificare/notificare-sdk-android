@@ -362,6 +362,21 @@
                 android:onClick="onOpenPurchasesClicked"
                 android:text="Open purchases" />
 
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:gravity="center"
+                android:text="In-app messaging"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6" />
+
+            <Button
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="onToggleSuppressedMessagesClicked"
+                android:text="Toggle suppressed messages" />
+
         </LinearLayout>
 
     </ScrollView>
