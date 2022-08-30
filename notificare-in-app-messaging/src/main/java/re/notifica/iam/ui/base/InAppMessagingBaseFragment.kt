@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.view.View
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
-import android.webkit.URLUtil
 import androidx.annotation.CallSuper
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
@@ -98,7 +97,7 @@ public abstract class InAppMessagingBaseFragment : Fragment() {
             return
         }
 
-        if (action.url == null || !URLUtil.isValidUrl(action.url)) {
+        if (action.url.isNullOrBlank()) {
             NotificareLogger.debug("There is no URL for '${actionType.rawValue}' action.")
             dismiss()
 

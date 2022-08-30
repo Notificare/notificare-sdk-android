@@ -47,7 +47,7 @@ public open class InAppMessagingCardFragment : InAppMessagingBaseFragment() {
         binding.actionsContainer.isVisible =
             !message.primaryAction?.label.isNullOrBlank() || !message.secondaryAction?.label.isNullOrBlank()
 
-        binding.primaryActionButton.isVisible = !message.primaryAction?.label.isNullOrBlank()
+        binding.primaryActionButton.isVisible = canShowAction(message.primaryAction)
         binding.primaryActionButton.text = message.primaryAction?.label
         binding.primaryActionButton.setOnClickListener {
             handleActionClicked(NotificareInAppMessage.ActionType.PRIMARY)
@@ -59,7 +59,7 @@ public open class InAppMessagingCardFragment : InAppMessagingBaseFragment() {
             binding.primaryActionButton.setTextColor(typedValue.data)
         }
 
-        binding.secondaryActionButton.isVisible = !message.secondaryAction?.label.isNullOrBlank()
+        binding.secondaryActionButton.isVisible = canShowAction(message.secondaryAction)
         binding.secondaryActionButton.text = message.secondaryAction?.label
         binding.secondaryActionButton.setOnClickListener {
             handleActionClicked(NotificareInAppMessage.ActionType.SECONDARY)
@@ -90,5 +90,13 @@ public open class InAppMessagingCardFragment : InAppMessagingBaseFragment() {
         if (savedInstanceState == null) {
             animate(Transition.ENTER)
         }
+    }
+
+    private fun canShowAction(action: NotificareInAppMessage.Action?): Boolean {
+        if (action == null) return false
+        if (action.label.isNullOrBlank()) return false
+        if (action.url.isNullOrBlank()) return false
+
+        return true
     }
 }
