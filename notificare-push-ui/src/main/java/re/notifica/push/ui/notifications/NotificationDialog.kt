@@ -75,17 +75,13 @@ public class NotificationDialog : DialogFragment() {
             builder.setNeutralButton(R.string.notificare_dialog_ok_button) { _, _ -> callback?.onNotificationDialogOkClick() }
         }
 
-        return builder.create()
-    }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-
-        val notification = notification ?: return
+        val dialog = builder.create()
 
         onMainThread {
             Notificare.pushUIInternal().lifecycleListeners.forEach { it.onNotificationPresented(notification) }
         }
+
+        return dialog
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
