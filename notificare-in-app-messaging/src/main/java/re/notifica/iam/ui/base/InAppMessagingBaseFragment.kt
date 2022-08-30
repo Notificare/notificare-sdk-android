@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.View
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
+import android.webkit.URLUtil
 import androidx.annotation.CallSuper
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
@@ -85,6 +86,25 @@ public abstract class InAppMessagingBaseFragment : Fragment() {
     }
 
     protected fun handleActionClicked(actionType: NotificareInAppMessage.ActionType) {
+        val action = when (actionType) {
+            NotificareInAppMessage.ActionType.PRIMARY -> message.primaryAction
+            NotificareInAppMessage.ActionType.SECONDARY -> message.secondaryAction
+        }
+
+        if (action == null) {
+            NotificareLogger.debug("There is no '${actionType.rawValue}' action to process.")
+            dismiss()
+
+            return
+        }
+
+        if (action.url == null || !URLUtil.isValidUrl(action.url)) {
+            NotificareLogger.debug("There is no URL for '${actionType.rawValue}' action.")
+            dismiss()
+
+            return
+        }
+
         lifecycleScope.launch {
             try {
                 Notificare.events().logInAppMessageActionClicked(message, actionType)
@@ -92,40 +112,31 @@ public abstract class InAppMessagingBaseFragment : Fragment() {
                 NotificareLogger.error("Failed to log in-app message action.", e)
             }
 
-            val action = when (actionType) {
-                NotificareInAppMessage.ActionType.PRIMARY -> message.primaryAction
-                NotificareInAppMessage.ActionType.SECONDARY -> message.secondaryAction
+            val uri = action.url.let { Uri.parse(it) }
+
+            val intent = Intent(Intent.ACTION_VIEW, uri).apply {
+                setPackage(requireContext().packageName)
             }
 
-            if (action != null) {
-                val uri = action.url?.let { Uri.parse(it) }
+            if (intent.resolveActivity(requireContext().packageManager) == null) {
+                intent.setPackage(null)
+            }
 
-                if (uri != null) {
-                    val intent = Intent(Intent.ACTION_VIEW, uri).apply {
-                        setPackage(requireContext().packageName)
+            try {
+                startActivity(intent)
+                NotificareLogger.info("In-app message action '${actionType.rawValue}' successfully processed.")
+
+                onMainThread {
+                    Notificare.inAppMessagingImplementation().lifecycleListeners.forEach {
+                        it.onActionExecuted(message, action)
                     }
+                }
+            } catch (e: Exception) {
+                NotificareLogger.warning("Could not find an activity capable of opening the URL.", e)
 
-                    if (intent.resolveActivity(requireContext().packageManager) == null) {
-                        intent.setPackage(null)
-                    }
-
-                    try {
-                        startActivity(intent)
-                        NotificareLogger.info("In-app message action '${actionType.rawValue}' successfully processed.")
-
-                        onMainThread {
-                            Notificare.inAppMessagingImplementation().lifecycleListeners.forEach {
-                                it.onActionExecuted(message, action)
-                            }
-                        }
-                    } catch (e: Exception) {
-                        NotificareLogger.warning("Could not find an activity capable of opening the URL.", e)
-
-                        onMainThread {
-                            Notificare.inAppMessagingImplementation().lifecycleListeners.forEach {
-                                it.onActionFailedToExecute(message, action, e)
-                            }
-                        }
+                onMainThread {
+                    Notificare.inAppMessagingImplementation().lifecycleListeners.forEach {
+                        it.onActionFailedToExecute(message, action, e)
                     }
                 }
             }
