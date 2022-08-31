@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 3.4.0-beta.1
+
+- In-app messaging
+- Refactor deprecation notices on the Notification UI
+
 ## 3.3.1
 
 - Expose Notificare base methods and properties statically to the JVM

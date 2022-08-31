@@ -4,6 +4,10 @@ import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.FrameLayout
 import androidx.annotation.Keep
 import re.notifica.Notificare
 import re.notifica.internal.common.onMainThread
@@ -14,9 +18,11 @@ import re.notifica.push.ui.notifications.fragments.base.NotificationFragment
 @Keep
 public class NotificareStoreFragment : NotificationFragment() {
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        return FrameLayout(requireContext())
+    }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val context = context ?: return
 
         val referrer = context.packageName

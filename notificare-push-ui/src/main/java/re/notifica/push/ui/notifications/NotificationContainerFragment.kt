@@ -1,19 +1,20 @@
 package re.notifica.push.ui.notifications
 
 import android.Manifest
-import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.provider.MediaStore
 import android.view.*
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
 import re.notifica.Notificare
 import re.notifica.internal.NotificareLogger
+import re.notifica.internal.NotificareUtils
 import re.notifica.internal.common.onMainThread
 import re.notifica.models.NotificareNotification
 import re.notifica.push.ui.R
@@ -39,6 +40,40 @@ public class NotificationContainerFragment
     private var actionsDialog: NotificationActionsDialog? = null
 
     private var showActionsMenuItem = true
+
+    private val cameraPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        if (!granted) {
+            callback.onNotificationFragmentActionFailed(
+                notification,
+                resources.getString(R.string.notificare_action_camera_failed)
+            )
+
+            callback.onNotificationFragmentFinished()
+            return@registerForActivityResult
+        }
+
+        val pendingAction = pendingAction
+        if (pendingAction != null) {
+            handleAction(pendingAction)
+        }
+    }
+
+    private val takePictureLauncher = registerForActivityResult(
+        ActivityResultContracts.TakePicture()
+    ) { isSuccess ->
+        notificationDialog?.dismissAllowingStateLoss()
+        actionsDialog?.dismissAllowingStateLoss()
+
+        if (isSuccess && pendingResult?.imageUri != null) {
+            handlePendingResult()
+        } else {
+            // User cancelled the image capture
+            callback.onNotificationFragmentActionCanceled(notification)
+            callback.onNotificationFragmentFinished()
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -127,56 +162,6 @@ public class NotificationContainerFragment
         outState.putParcelable(Notificare.INTENT_EXTRA_ACTION, action)
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        when (requestCode) {
-            CAMERA_REQUEST_CODE -> {
-                val pendingAction = pendingAction
-
-                if (
-                    permissions.isNotEmpty() &&
-                    grantResults.isNotEmpty() &&
-                    permissions.first() == Manifest.permission.CAMERA &&
-                    grantResults.first() == PackageManager.PERMISSION_GRANTED &&
-                    pendingAction != null
-                ) {
-                    handleAction(pendingAction)
-                } else {
-                    callback.onNotificationFragmentActionFailed(
-                        notification,
-                        resources.getString(R.string.notificare_action_camera_failed)
-                    )
-
-                    callback.onNotificationFragmentFinished()
-                }
-            }
-            else -> super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        }
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        if (requestCode == NotificarePendingResult.CAPTURE_IMAGE_REQUEST_CODE || requestCode == NotificarePendingResult.CAPTURE_IMAGE_AND_KEYBOARD_REQUEST_CODE) {
-            notificationDialog?.dismissAllowingStateLoss()
-            actionsDialog?.dismissAllowingStateLoss()
-
-            if (resultCode == Activity.RESULT_OK && pendingResult?.imageUri != null) {
-                handlePendingResult()
-            } else if (resultCode == Activity.RESULT_CANCELED) {
-                // User cancelled the image capture
-                callback.onNotificationFragmentActionCanceled(notification)
-                callback.onNotificationFragmentFinished()
-            } else {
-                // Image capture failed, advise user
-                callback.onNotificationFragmentActionFailed(
-                    notification,
-                    resources.getString(R.string.notificare_action_failed)
-                )
-                callback.onNotificationFragmentFinished()
-            }
-        }
-    }
-
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.notificare_menu_notification_fragment, menu)
@@ -206,9 +191,24 @@ public class NotificationContainerFragment
 
     private fun handleAction(action: NotificareNotification.Action) {
         if (action.camera && isCameraPermissionNeeded && !isCameraPermissionGranted) {
-            pendingAction = action
-            requestPermissions(arrayOf(Manifest.permission.CAMERA), CAMERA_REQUEST_CODE)
+            val permission = Manifest.permission.CAMERA
 
+            if (shouldShowRequestPermissionRationale(permission)) {
+                AlertDialog.Builder(requireContext())
+                    .setTitle(NotificareUtils.applicationName)
+                    .setMessage(R.string.notificare_camera_permission_rationale_description)
+                    .setCancelable(false)
+                    .setPositiveButton(R.string.notificare_dialog_ok_button) { _, _ ->
+                        pendingAction = action
+                        cameraPermissionLauncher.launch(permission)
+                    }
+                    .show()
+
+                return
+            }
+
+            pendingAction = action
+            cameraPermissionLauncher.launch(permission)
             return
         }
 
@@ -238,11 +238,7 @@ public class NotificationContainerFragment
                 if (result?.requestCode == NotificarePendingResult.CAPTURE_IMAGE_REQUEST_CODE || result?.requestCode == NotificarePendingResult.CAPTURE_IMAGE_AND_KEYBOARD_REQUEST_CODE) {
                     if (result.imageUri != null) {
                         // We need to wait for the image coming back from the camera activity.
-                        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-                            .addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
-                            .putExtra(MediaStore.EXTRA_OUTPUT, result.imageUri)
-
-                        startActivityForResult(intent, result.requestCode)
+                        takePictureLauncher.launch(result.imageUri)
                     } else {
                         callback.onNotificationFragmentActionFailed(
                             notification,

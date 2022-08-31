@@ -32,7 +32,8 @@ public abstract class NotificareModule {
         AUTHENTICATION(fqn = "re.notifica.authentication.internal.NotificareAuthenticationImpl"),
         GEO(fqn = "re.notifica.geo.internal.NotificareGeoImpl"),
         LOYALTY(fqn = "re.notifica.loyalty.internal.NotificareLoyaltyImpl"),
-        MONETIZE(fqn = "re.notifica.monetize.internal.NotificareMonetizeImpl");
+        MONETIZE(fqn = "re.notifica.monetize.internal.NotificareMonetizeImpl"),
+        IN_APP_MESSAGING(fqn = "re.notifica.iam.internal.NotificareInAppMessagingImpl");
 
         @InternalNotificareApi
         public val isAvailable: Boolean

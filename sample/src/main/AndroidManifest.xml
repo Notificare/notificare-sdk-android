@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="re.notifica.sample">
 
     <uses-permission android:name="android.permission.INTERNET" />
@@ -11,7 +12,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Notificare">
+        android:theme="@style/Theme.Sample">
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -110,7 +111,7 @@
             android:name="re.notifica.push.ui.NotificationActivity"
             android:exported="false"
             android:hardwareAccelerated="true"
-            android:theme="@style/Theme.Notificare.Translucent" />
+            android:theme="@style/Theme.Sample.Translucent" />
         <activity
             android:name="re.notifica.loyalty.PassbookActivity"
             android:exported="true">
@@ -126,6 +127,10 @@
                     android:scheme="https" />
             </intent-filter>
         </activity>
+        <activity
+            android:name="re.notifica.iam.ui.InAppMessagingActivity"
+            android:theme="@style/Theme.Sample.Iam"
+            tools:replace="android:theme" />
 
         <receiver
             android:name="re.notifica.NotificareIntentReceiver"
