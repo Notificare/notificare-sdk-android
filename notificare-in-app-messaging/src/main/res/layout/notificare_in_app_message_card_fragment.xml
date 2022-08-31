@@ -1,110 +1,121 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fillViewport="true"
     android:fitsSystemWindows="true">
 
-    <androidx.cardview.widget.CardView
-        android:id="@+id/card_view"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:layout_margin="16dp">
+        android:layout_height="wrap_content">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+        <androidx.cardview.widget.CardView
+            android:id="@+id/card_view"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintWidth_max="512dp">
 
-            <ImageView
-                android:id="@+id/image_view"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:scaleType="centerCrop"
-                app:layout_constraintDimensionRatio="2:1"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:ignore="ContentDescription" />
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
-            <ImageButton
-                android:id="@+id/close_button"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:background="?selectableItemBackground"
-                android:padding="12dp"
-                android:scaleType="fitCenter"
-                android:src="@drawable/notificare_iam_close_button"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:ignore="ContentDescription" />
+                <ImageView
+                    android:id="@+id/image_view"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:scaleType="centerCrop"
+                    app:layout_constraintDimensionRatio="2:1"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:ignore="ContentDescription" />
 
-            <androidx.constraintlayout.widget.Barrier
-                android:id="@+id/image_section_barrier"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:barrierDirection="bottom"
-                app:constraint_referenced_ids="image_view,close_button" />
+                <ImageButton
+                    android:id="@+id/close_button"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:background="?selectableItemBackground"
+                    android:padding="12dp"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/notificare_iam_close_button"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:ignore="ContentDescription" />
 
-            <LinearLayout
-                android:id="@+id/content_container"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/image_section_barrier">
-
-                <TextView
-                    android:id="@+id/title_view"
-                    android:layout_width="match_parent"
+                <androidx.constraintlayout.widget.Barrier
+                    android:id="@+id/image_section_barrier"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:ellipsize="end"
-                    android:maxLines="2"
-                    android:textStyle="bold"
-                    tools:text="Title label" />
-
-                <TextView
-                    android:id="@+id/message_view"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:ellipsize="end"
-                    android:maxLines="3"
-                    app:layout_goneMarginStart="0dp"
-                    tools:text="Message label" />
+                    app:barrierDirection="bottom"
+                    app:constraint_referenced_ids="image_view,close_button" />
 
                 <LinearLayout
-                    android:id="@+id/actions_container"
-                    android:layout_width="match_parent"
+                    android:id="@+id/content_container"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:gravity="end"
-                    android:orientation="horizontal">
+                    android:orientation="vertical"
+                    android:padding="16dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/image_section_barrier">
 
-                    <Button
-                        android:id="@+id/secondary_action_button"
-                        style="?attr/buttonBarButtonStyle"
-                        android:layout_width="wrap_content"
+                    <TextView
+                        android:id="@+id/title_view"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        tools:text="Secondary" />
+                        android:ellipsize="end"
+                        android:maxLines="2"
+                        android:textStyle="bold"
+                        tools:text="Title label" />
 
-                    <Button
-                        android:id="@+id/primary_action_button"
-                        style="?attr/buttonBarButtonStyle"
-                        android:layout_width="wrap_content"
+                    <TextView
+                        android:id="@+id/message_view"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        tools:text="Primary" />
+                        android:ellipsize="end"
+                        android:maxLines="3"
+                        app:layout_goneMarginStart="0dp"
+                        tools:text="Message label" />
+
+                    <LinearLayout
+                        android:id="@+id/actions_container"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:gravity="end"
+                        android:orientation="horizontal">
+
+                        <Button
+                            android:id="@+id/secondary_action_button"
+                            style="?attr/buttonBarButtonStyle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            tools:text="Secondary" />
+
+                        <Button
+                            android:id="@+id/primary_action_button"
+                            style="?attr/buttonBarButtonStyle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            tools:text="Primary" />
+
+                    </LinearLayout>
 
                 </LinearLayout>
 
-            </LinearLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.cardview.widget.CardView>
 
-    </androidx.cardview.widget.CardView>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-</FrameLayout>
+</ScrollView>
