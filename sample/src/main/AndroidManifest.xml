@@ -127,10 +127,10 @@
                     android:scheme="https" />
             </intent-filter>
         </activity>
-<!--        <activity-->
-<!--            android:name="re.notifica.iam.ui.InAppMessagingActivity"-->
-<!--            android:theme="@style/Theme.Sample.Iam"-->
-<!--            tools:replace="android:theme" />-->
+        <activity
+            android:name="re.notifica.iam.ui.InAppMessagingActivity"
+            android:theme="@style/Theme.Sample.Iam"
+            tools:replace="android:theme" />
 
         <receiver
             android:name="re.notifica.NotificareIntentReceiver"
