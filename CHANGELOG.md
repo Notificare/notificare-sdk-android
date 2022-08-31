@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## Upcoming release
+## 3.4.0-beta.1
 
 - In-app messaging
 - Refactor deprecation notices on the Notification UI
