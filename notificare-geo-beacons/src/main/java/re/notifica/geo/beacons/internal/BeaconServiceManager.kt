@@ -9,9 +9,9 @@ import org.altbeacon.beacon.service.RangedBeacon
 import re.notifica.InternalNotificareApi
 import re.notifica.Notificare
 import re.notifica.geo.beacons.*
-import re.notifica.geo.beacons.ktx.INTENT_ACTION_BEACON_NOTIFICATION_OPENED
 import re.notifica.geo.beacons.ktx.geoInternal
 import re.notifica.geo.internal.BeaconServiceManager
+import re.notifica.geo.ktx.INTENT_ACTION_BEACON_NOTIFICATION_OPENED
 import re.notifica.geo.models.NotificareBeacon
 import re.notifica.geo.models.NotificareRegion
 import re.notifica.internal.NotificareLogger
