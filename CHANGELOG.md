@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## Upcoming release
+## 3.4.0-beta.2
 
 - Fix card in-app message click outside to dismiss
 
