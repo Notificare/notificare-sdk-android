@@ -83,7 +83,7 @@ public open class InAppMessagingCardFragment : InAppMessagingBaseFragment() {
             // the card itself as a tap outside.
         }
 
-        binding.root.setOnClickListener {
+        binding.scrollableContent.setOnClickListener {
             dismiss()
         }
 
