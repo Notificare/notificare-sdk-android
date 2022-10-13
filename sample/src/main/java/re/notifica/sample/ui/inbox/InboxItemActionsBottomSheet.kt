@@ -7,10 +7,12 @@ import android.view.ViewGroup
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import re.notifica.sample.databinding.InboxItemActionsBottomSheetBinding
 
-class InboxItemActionsBottomSheet : BottomSheetDialogFragment() {
-
+class InboxItemActionsBottomSheet(
+    private val onOpenClicked: () -> Unit,
+    private val onMarkAsReadClicked: () -> Unit,
+    private val onRemoveClicked: () -> Unit,
+) : BottomSheetDialogFragment() {
     private lateinit var binding: InboxItemActionsBottomSheetBinding
-    var listener: Listener? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = InboxItemActionsBottomSheetBinding.inflate(inflater, container, false)
@@ -21,27 +23,18 @@ class InboxItemActionsBottomSheet : BottomSheetDialogFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.open.setOnClickListener {
-            dismissAllowingStateLoss()
-            listener?.onOpenClicked()
+            onOpenClicked()
+            dismiss()
         }
 
         binding.markAsRead.setOnClickListener {
-            dismissAllowingStateLoss()
-            listener?.onMarkAsReadClicked()
+            onMarkAsReadClicked()
+            dismiss()
         }
 
         binding.delete.setOnClickListener {
-            dismissAllowingStateLoss()
-            listener?.onDeleteClicked()
+            onRemoveClicked()
+            dismiss()
         }
-    }
-
-    interface Listener {
-
-        fun onOpenClicked()
-
-        fun onMarkAsReadClicked()
-
-        fun onDeleteClicked()
     }
 }

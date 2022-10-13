@@ -590,7 +590,7 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
 
     private fun shouldUpdateLocation(location: Location): Boolean {
         if (lastKnownLocation == null) return true
-        return location.distanceTo(lastKnownLocation) > Notificare.DEFAULT_LOCATION_UPDATES_SMALLEST_DISPLACEMENT
+        return location.distanceTo(lastKnownLocation!!) > Notificare.DEFAULT_LOCATION_UPDATES_SMALLEST_DISPLACEMENT
     }
 
     private suspend fun updateLocation(location: Location, country: String?): Unit = withContext(Dispatchers.IO) {

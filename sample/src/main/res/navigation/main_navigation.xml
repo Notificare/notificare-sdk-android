@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_navigation"
+    app:startDestination="@id/mainFragment">
+
+    <fragment
+        android:id="@+id/mainFragment"
+        android:name="re.notifica.sample.ui.main.MainFragment"
+        android:label="@string/main_fragment_title"
+        tools:layout="@layout/fragment_main">
+        <action
+            android:id="@+id/action_mainFragment_to_inboxFragment"
+            app:destination="@id/inboxFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_beaconsFragment"
+            app:destination="@id/beaconsFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_scannablesFragment"
+            app:destination="@id/scannablesFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_monetizeFragment"
+            app:destination="@id/monetizeFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_assetsFragment"
+            app:destination="@id/assetsFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_eventsFragment"
+            app:destination="@id/eventsFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_authenticationFragment"
+            app:destination="@id/authenticationFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_tagsFragment"
+            app:destination="@id/tagsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/inboxFragment"
+        android:name="re.notifica.sample.ui.inbox.InboxFragment"
+        android:label="@string/inbox_title"
+        tools:layout="@layout/fragment_inbox">
+        <deepLink app:uri="re.notifica.go://notifica.re/inbox" />
+    </fragment>
+    <fragment
+        android:id="@+id/beaconsFragment"
+        android:name="re.notifica.sample.ui.beacons.BeaconsFragment"
+        android:label="@string/beacons_title"
+        tools:layout="@layout/fragment_beacons" />
+    <fragment
+        android:id="@+id/scannablesFragment"
+        android:name="re.notifica.sample.ui.scannables.ScannablesFragment"
+        android:label="@string/scannables_title"
+        tools:layout="@layout/fragment_scannables" />
+    <fragment
+        android:id="@+id/monetizeFragment"
+        android:name="re.notifica.sample.ui.monetize.MonetizeFragment"
+        android:label="@string/monetize_title"
+        tools:layout="@layout/fragment_monetize" />
+    <fragment
+        android:id="@+id/assetsFragment"
+        android:name="re.notifica.sample.ui.assets.AssetsFragment"
+        android:label="@string/assets_title">
+        <action
+            android:id="@+id/action_assetsFragment_to_assetDetailsFragment"
+            app:destination="@id/assetDetailsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/eventsFragment"
+        android:name="re.notifica.sample.ui.events.EventsFragment"
+        android:label="@string/events_title"
+        tools:layout="@layout/fragment_events" />
+    <fragment
+        android:id="@+id/authenticationFragment"
+        android:name="re.notifica.sample.ui.authentication.AuthenticationFragment"
+        android:label="@string/authentication_title" />
+    <fragment
+        android:id="@+id/tagsFragment"
+        android:name="re.notifica.sample.ui.tags.TagsFragment"
+        android:label="@string/tags_title"
+        tools:layout="@layout/fragment_tags" />
+    <fragment
+        android:id="@+id/assetDetailsFragment"
+        android:name="re.notifica.sample.ui.assets.AssetDetailsFragment"
+        android:label="@string/assets_asset_details"
+        tools:layout="@layout/fragment_asset_details">
+        <argument
+            android:name="asset"
+            app:argType="re.notifica.assets.models.NotificareAsset" />
+    </fragment>
+</navigation>

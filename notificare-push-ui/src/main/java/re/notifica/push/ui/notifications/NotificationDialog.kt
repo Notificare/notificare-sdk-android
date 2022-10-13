@@ -54,7 +54,7 @@ public class NotificationDialog : DialogFragment() {
 
             binding.message.text = notification.message
 
-            binding.list.adapter = ArrayAdapter(
+            binding.inboxList.adapter = ArrayAdapter(
                 requireContext(),
                 android.R.layout.simple_list_item_1,
                 notification.actions.map {
@@ -62,7 +62,7 @@ public class NotificationDialog : DialogFragment() {
                 }
             )
 
-            binding.list.setOnItemClickListener { _, _, position, _ ->
+            binding.inboxList.setOnItemClickListener { _, _, position, _ ->
                 callback?.onNotificationDialogActionClick(
                     position
                 )

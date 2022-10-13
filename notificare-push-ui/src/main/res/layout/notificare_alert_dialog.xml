@@ -16,7 +16,7 @@
         tools:text="Lorem ipsum" />
 
     <ListView
-        android:id="@+id/list"
+        android:id="@+id/inbox_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:divider="@null"

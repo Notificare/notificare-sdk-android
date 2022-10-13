@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="?attr/materialCardViewFilledStyle"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/device_other_features_main"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:padding="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/device_other_features_title"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:drawablePadding="8dp"
+                android:text="@string/main_fragment_other_features_title"
+                android:textAppearance="?attr/textAppearanceTitleMedium"
+                app:drawableStartCompat="@drawable/ic_baseline_widgets_24"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <View
+            android:id="@+id/simple_line_other_features"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_marginTop="8dp"
+            android:background="@color/material_dynamic_neutral20"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/device_other_features_main" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/scannables_card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/simple_line_other_features">
+
+            <TextView
+                android:id="@+id/scannables_title"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:drawablePadding="8dp"
+                android:text="@string/main_fragment_scannables_title"
+                android:textAppearance="?attr/textAppearanceTitleMedium"
+                app:drawableStartCompat="@drawable/ic_baseline_qr_code_scanner_24"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/inbox_chevron"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_baseline_chevron_right_24"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:tint="?attr/colorOnSurfaceVariant"
+                tools:ignore="ContentDescription" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <View
+            android:id="@+id/simple_line_scannables"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:background="@color/material_dynamic_neutral20"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/scannables_card" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/monetize_card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/simple_line_scannables">
+
+            <TextView
+                android:id="@+id/monetize_title"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:drawablePadding="8dp"
+                android:text="@string/main_fragment_monetize_title"
+                android:textAppearance="?attr/textAppearanceTitleMedium"
+                app:drawableStartCompat="@drawable/ic_baseline_monetization_on_24"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/monetize_chevron"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_baseline_chevron_right_24"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:tint="?attr/colorOnSurfaceVariant"
+                tools:ignore="ContentDescription" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <View
+            android:id="@+id/simple_line_monetize"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:background="@color/material_dynamic_neutral20"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/monetize_card" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/assets_card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/simple_line_monetize">
+
+            <TextView
+                android:id="@+id/assets_title"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:drawablePadding="8dp"
+                android:text="@string/main_fragment_assets_title"
+                android:textAppearance="?attr/textAppearanceTitleMedium"
+                app:drawableStartCompat="@drawable/ic_baseline_currency_exchange_24"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/assets_chevron"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_baseline_chevron_right_24"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:tint="?attr/colorOnSurfaceVariant"
+                tools:ignore="ContentDescription" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <View
+            android:id="@+id/simple_line_assets"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:background="@color/material_dynamic_neutral20"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/assets_card" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/authentication_card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/simple_line_assets">
+
+            <TextView
+                android:id="@+id/authentication_title"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:drawablePadding="8dp"
+                android:text="@string/main_fragment_authentication_title"
+                android:textAppearance="?attr/textAppearanceTitleMedium"
+                app:drawableStartCompat="@drawable/ic_baseline_person_24"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/authentication_chevron"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_baseline_chevron_right_24"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:tint="?attr/colorOnSurfaceVariant"
+                tools:ignore="ContentDescription" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <View
+            android:id="@+id/simple_line_authentication"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:background="@color/material_dynamic_neutral20"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/authentication_card" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/events_card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/simple_line_authentication">
+
+            <TextView
+                android:id="@+id/events_title"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:drawablePadding="8dp"
+                android:text="@string/main_fragment_events_title"
+                android:textAppearance="?attr/textAppearanceTitleMedium"
+                app:drawableStartCompat="@drawable/ic_baseline_event_24"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/events_chevron"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_baseline_chevron_right_24"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:tint="?attr/colorOnSurfaceVariant"
+                tools:ignore="ContentDescription" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</com.google.android.material.card.MaterialCardView>

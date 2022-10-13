@@ -3,10 +3,10 @@ buildscript {
     properties.load(project.rootProject.file('local.properties').newDataInputStream())
 
     ext {
-        compile_sdk_version = 31
+        compile_sdk_version = 33
         build_tools_version = '31.0.0'
         min_sdk_version = 23
-        target_sdk_version = 31
+        target_sdk_version = 33
 
         // Maven
         maven_artifact_group = 're.notifica'
@@ -16,7 +16,7 @@ buildscript {
 
         // Kotlin
         kotlin_version = '1.6.10'
-        kotlinx_coroutines_version = '1.5.2'
+        kotlinx_coroutines_version = '1.6.1'
 
         // Android
         androidx_activity_version = '1.5.0'
@@ -26,9 +26,10 @@ buildscript {
         androidx_constraint_layout_version = '2.1.4'
         androidx_core_version = '1.8.0'
         androidx_exit_interface_version = '1.3.3'
-        androidx_fragment_version = '1.5.0'
-        androidx_lifecycle_version = '2.5.0'
+        androidx_fragment_version = '1.5.2'
+        androidx_lifecycle_version = '2.5.1'
         androidx_room_version = '2.4.2'
+        androidx_navigation_version = '2.5.2'
         androidx_security_crypto_version = '1.0.0'
         androidx_view_pager_version = '1.0.0'
         androidx_work_version = '2.7.1'
@@ -46,6 +47,7 @@ buildscript {
         google_play_services_location_version = '20.0.0'
         google_play_services_maps_version = '18.0.2'
         google_play_services_vision_version = '20.1.3'
+        google_material_version = '1.7.0-beta01'
 
         // Huawei
         huawei_base_version = '6.5.0.300'
@@ -53,5 +55,8 @@ buildscript {
         huawei_push_version = '6.5.0.300'
         huawei_maps_version = '6.5.1.300'
         huawei_scan_version = '2.6.0.300'
+
+        //Others
+        timber_version = '5.0.1'
     }
 }
