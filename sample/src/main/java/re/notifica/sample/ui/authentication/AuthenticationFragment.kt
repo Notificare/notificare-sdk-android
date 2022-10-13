@@ -146,8 +146,8 @@ class AuthenticationFragment : BaseFragment() {
                 chip.isCloseIconVisible = true
 
                 chip.setOnClickListener {
-                    viewModel.removeUserSegment(segmentId)
                     binding.userSegmentsChipGroup.removeAllViews()
+                    viewModel.removeUserSegment(segmentId)
                 }
 
                 binding.userSegmentsChipGroup.addView(chip)
@@ -202,6 +202,7 @@ class AuthenticationFragment : BaseFragment() {
                     return@setOnClickListener
                 }
 
+                binding.userSegmentsChipGroup.removeAllViews()
                 viewModel.addUserSegmentToPreferences(preference, option)
             }
 
@@ -214,6 +215,7 @@ class AuthenticationFragment : BaseFragment() {
                     return@setOnClickListener
                 }
 
+                binding.userSegmentsChipGroup.removeAllViews()
                 viewModel.removeSegmentFromPreferences(preference, option)
             }
         }
