@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## 3.4.0
+
+#### Important changes since 3.3.0
+
+- In-app messaging module
+
 ## 3.4.0-beta.2
 
 - Fix card in-app message click outside to dismiss
