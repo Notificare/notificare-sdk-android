@@ -3,6 +3,7 @@ package re.notifica.models
 import android.os.Parcelable
 import com.squareup.moshi.JsonClass
 import kotlinx.parcelize.Parcelize
+import java.util.*
 
 @Parcelize
 @JsonClass(generateAdapter = true)
@@ -19,7 +20,7 @@ public data class NotificareTime(
 
     public constructor(timeStr: String) : this(parse(timeStr).first, parse(timeStr).second)
 
-    public fun format(): String = "%02d:%02d".format(hours, minutes)
+    public fun format(): String = String.format(Locale.US, "%02d:%02d", hours, minutes)
 
     public companion object {
         private fun parse(timeStr: String): Pair<Int, Int> {
