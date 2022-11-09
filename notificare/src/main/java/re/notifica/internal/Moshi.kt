@@ -12,11 +12,16 @@ import java.util.*
 
 @InternalNotificareApi
 public val Notificare.moshi: Moshi by lazy {
-    Moshi.Builder()
+    val builder = Moshi.Builder()
         .add(EncodeNullsFactory())
         .add(UseDefaultsWhenNullFactory())
         .add(Date::class.java, Rfc3339DateJsonAdapter())
         .add(NotificareTimeAdapter())
         .add(UriAdapter())
-        .build()
+
+    NotificareModule.Module.values().forEach { module ->
+        module.instance?.moshi(builder)
+    }
+
+    return@lazy builder.build()
 }
