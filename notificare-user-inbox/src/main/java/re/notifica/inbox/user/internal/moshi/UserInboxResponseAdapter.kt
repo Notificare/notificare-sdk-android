@@ -2,9 +2,9 @@ package re.notifica.inbox.user.internal.moshi
 
 import com.squareup.moshi.*
 import okhttp3.internal.closeQuietly
-import re.notifica.inbox.user.models.ConsumerUserInboxResponse
+import re.notifica.inbox.user.internal.responses.ConsumerUserInboxResponse
+import re.notifica.inbox.user.internal.responses.RawUserInboxResponse
 import re.notifica.inbox.user.models.NotificareUserInboxResponse
-import re.notifica.inbox.user.models.RawUserInboxResponse
 import re.notifica.internal.NotificareLogger
 
 internal class UserInboxResponseAdapter {
