@@ -17,6 +17,7 @@ import re.notifica.internal.moshi
 import re.notifica.internal.network.push.NotificationResponse
 import re.notifica.internal.network.request.NotificareRequest
 import re.notifica.ktx.device
+import re.notifica.ktx.events
 import re.notifica.models.NotificareApplication
 import re.notifica.models.NotificareNotification
 
@@ -64,7 +65,9 @@ internal object NotificareUserInboxImpl : NotificareModule(), NotificareUserInbo
     override suspend fun markAsRead(
         item: NotificareUserInboxItem
     ): Unit = withContext(Dispatchers.IO) {
+        checkPrerequisites()
 
+        Notificare.events().logNotificationOpen(item.notification.id)
     }
 
     override fun markAsRead(
