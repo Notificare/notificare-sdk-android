@@ -38,7 +38,8 @@ public data class NotificareApplication(
     @JsonClass(generateAdapter = true)
     public data class InboxConfig(
         val useInbox: Boolean = false,
-        val autoBadge: Boolean = false
+        val useUserInbox: Boolean = false,
+        val autoBadge: Boolean = false,
     ) : Parcelable {
 
         public fun toJson(): JSONObject {
