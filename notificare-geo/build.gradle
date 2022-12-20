@@ -1,4 +1,5 @@
 android {
+    namespace 're.notifica.geo'
     compileSdkVersion compile_sdk_version
     buildToolsVersion build_tools_version
 
