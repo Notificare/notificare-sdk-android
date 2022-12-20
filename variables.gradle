@@ -6,7 +6,7 @@ buildscript {
         compile_sdk_version = 33
         build_tools_version = '33.0.1'
         min_sdk_version = 23
-        target_sdk_version = 31
+        target_sdk_version = 33
 
         // Maven
         maven_artifact_group = 're.notifica'
