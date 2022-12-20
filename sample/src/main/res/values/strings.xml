@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name" translatable="false">Sample</string>
 
+    <string name="main_notifications_permission_rationale">We need access to notifications in order to show relevant content.</string>
     <string name="main_foreground_permission_rationale">We need access to foreground location in order to show relevant content.</string>
     <string name="main_background_permission_rationale">We need access to background location in order to show relevant content.</string>
     <string name="main_bluetooth_scan_permission_rationale">We need access to bluetooth scan in order to show relevant content.</string>
