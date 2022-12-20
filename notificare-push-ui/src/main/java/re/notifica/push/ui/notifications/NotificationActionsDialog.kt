@@ -5,9 +5,9 @@ import android.os.Bundle
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
 import re.notifica.internal.NotificareLogger
+import re.notifica.internal.ktx.parcelable
 import re.notifica.models.NotificareNotification
 import re.notifica.push.ui.R
-
 
 public class NotificationActionsDialog : DialogFragment() {
 
@@ -18,7 +18,7 @@ public class NotificationActionsDialog : DialogFragment() {
         super.onCreate(savedInstanceState)
 
         if (savedInstanceState != null) {
-            notification = savedInstanceState.getParcelable(SAVED_STATE_NOTIFICATION)
+            notification = savedInstanceState.parcelable(SAVED_STATE_NOTIFICATION)
         }
     }
 

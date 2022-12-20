@@ -13,6 +13,7 @@ import com.huawei.hms.maps.model.MarkerOptions
 import re.notifica.Notificare
 import re.notifica.internal.common.onMainThread
 import re.notifica.internal.common.waitForLayout
+import re.notifica.internal.ktx.parcelable
 import re.notifica.models.NotificareNotification
 import re.notifica.push.ui.hms.ktx.pushUIInternal
 
@@ -32,8 +33,8 @@ public class NotificareMapFragment : SupportMapFragment(), OnMapReadyCallback {
 //            throw ClassCastException("Parent fragment must implement NotificationFragment.Callback.")
 //        }
 
-        notification = savedInstanceState?.getParcelable(Notificare.INTENT_EXTRA_NOTIFICATION)
-            ?: arguments?.getParcelable(Notificare.INTENT_EXTRA_NOTIFICATION)
+        notification = savedInstanceState?.parcelable(Notificare.INTENT_EXTRA_NOTIFICATION)
+            ?: arguments?.parcelable(Notificare.INTENT_EXTRA_NOTIFICATION)
                 ?: throw IllegalArgumentException("Missing required notification parameter.")
 
         getMapAsync(this)

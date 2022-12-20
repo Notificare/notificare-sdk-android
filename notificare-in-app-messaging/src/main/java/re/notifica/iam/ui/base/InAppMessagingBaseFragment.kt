@@ -18,6 +18,7 @@ import re.notifica.iam.ktx.logInAppMessageViewed
 import re.notifica.iam.models.NotificareInAppMessage
 import re.notifica.internal.NotificareLogger
 import re.notifica.internal.common.onMainThread
+import re.notifica.internal.ktx.parcelable
 import re.notifica.ktx.events
 
 public abstract class InAppMessagingBaseFragment : Fragment() {
@@ -30,8 +31,8 @@ public abstract class InAppMessagingBaseFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        message = savedInstanceState?.getParcelable(Notificare.INTENT_EXTRA_IN_APP_MESSAGE)
-            ?: arguments?.getParcelable(Notificare.INTENT_EXTRA_IN_APP_MESSAGE)
+        message = savedInstanceState?.parcelable(Notificare.INTENT_EXTRA_IN_APP_MESSAGE)
+            ?: arguments?.parcelable(Notificare.INTENT_EXTRA_IN_APP_MESSAGE)
                 ?: throw IllegalStateException("Cannot create the UI without the associated in-app message.")
     }
 

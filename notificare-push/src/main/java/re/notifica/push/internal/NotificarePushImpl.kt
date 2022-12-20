@@ -28,6 +28,7 @@ import re.notifica.NotificareNotConfiguredException
 import re.notifica.internal.NotificareLogger
 import re.notifica.internal.NotificareModule
 import re.notifica.internal.NotificareUtils
+import re.notifica.internal.ktx.parcelable
 import re.notifica.internal.network.request.NotificareRequest
 import re.notifica.ktx.device
 import re.notifica.ktx.events
@@ -228,9 +229,9 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
         }
 
         handleTrampolineMessage(
-            message = requireNotNull(intent.getParcelableExtra(Notificare.INTENT_EXTRA_REMOTE_MESSAGE)),
-            notification = requireNotNull(intent.getParcelableExtra(Notificare.INTENT_EXTRA_NOTIFICATION)),
-            action = intent.getParcelableExtra(Notificare.INTENT_EXTRA_ACTION)
+            message = requireNotNull(intent.parcelable(Notificare.INTENT_EXTRA_REMOTE_MESSAGE)),
+            notification = requireNotNull(intent.parcelable(Notificare.INTENT_EXTRA_NOTIFICATION)),
+            action = intent.parcelable(Notificare.INTENT_EXTRA_ACTION)
         )
 
         return true

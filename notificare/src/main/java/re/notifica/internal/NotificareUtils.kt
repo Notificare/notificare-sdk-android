@@ -12,6 +12,8 @@ import com.bumptech.glide.request.transition.Transition
 import kotlinx.coroutines.suspendCancellableCoroutine
 import re.notifica.InternalNotificareApi
 import re.notifica.Notificare
+import re.notifica.internal.ktx.applicationInfo
+import re.notifica.internal.ktx.packageInfo
 import java.util.*
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
@@ -23,7 +25,7 @@ public object NotificareUtils {
             return try {
                 val context = Notificare.requireContext().applicationContext
                 context.packageManager.getApplicationLabel(
-                    context.packageManager.getApplicationInfo(context.packageName, 0)
+                    context.packageManager.applicationInfo(context.packageName, 0)
                 ).toString()
             } catch (e: Exception) {
                 Log.e("Notificare", "Application name not found.", e)
@@ -35,7 +37,7 @@ public object NotificareUtils {
         get() {
             return try {
                 val context = Notificare.requireContext().applicationContext
-                context.packageManager.getPackageInfo(context.packageName, 0).versionName
+                context.packageManager.packageInfo(context.packageName, 0).versionName
             } catch (e: PackageManager.NameNotFoundException) {
                 Log.e("Notificare", "Application version not found.", e)
                 "unknown"

@@ -16,6 +16,7 @@ import re.notifica.Notificare
 import re.notifica.NotificareCallback
 import re.notifica.internal.NotificareLogger
 import re.notifica.internal.NotificareUtils
+import re.notifica.internal.ktx.parcelable
 import re.notifica.loyalty.ktx.INTENT_EXTRA_PASSBOOK
 import re.notifica.loyalty.ktx.loyalty
 import re.notifica.loyalty.ktx.loyaltyImplementation
@@ -41,8 +42,8 @@ public open class PassbookActivity : AppCompatActivity() {
         webView.webChromeClient = WebChromeClient()
         webView.webViewClient = WebViewClient()
 
-        val pass = savedInstanceState?.getParcelable(Notificare.INTENT_EXTRA_PASSBOOK)
-            ?: intent.getParcelableExtra<NotificarePass>(Notificare.INTENT_EXTRA_PASSBOOK)
+        val pass = savedInstanceState?.parcelable(Notificare.INTENT_EXTRA_PASSBOOK)
+            ?: intent.parcelable<NotificarePass>(Notificare.INTENT_EXTRA_PASSBOOK)
 
         if (pass != null) {
             handlePass(pass)

@@ -5,7 +5,9 @@ import android.bluetooth.BluetoothManager
 import android.content.Context
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
+import android.location.Address
 import android.location.Geocoder
+import android.location.Geocoder.GeocodeListener
 import android.location.Location
 import android.location.LocationManager
 import android.os.Build
@@ -33,6 +35,9 @@ import re.notifica.ktx.device
 import re.notifica.ktx.events
 import re.notifica.models.NotificareApplication
 import java.util.*
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
+import kotlin.coroutines.suspendCoroutine
 
 @Keep
 internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, NotificareInternalGeo, NotificareGeoIntegration {
@@ -589,7 +594,7 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
     }
 
     private fun shouldUpdateLocation(location: Location): Boolean {
-        if (lastKnownLocation == null) return true
+        val lastKnownLocation = lastKnownLocation ?: return true
         return location.distanceTo(lastKnownLocation) > Notificare.DEFAULT_LOCATION_UPDATES_SMALLEST_DISPLACEMENT
     }
 
@@ -986,15 +991,42 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
         beaconServiceManager?.clearMonitoring()
     }
 
-    private fun getCountryCode(location: Location): String? {
+    private suspend fun getCountryCode(location: Location): String? {
         return try {
-            geocoder
-                ?.getFromLocation(location.latitude, location.longitude, 1)
-                ?.firstOrNull()
+            getLocationAddresses(location)
+                .firstOrNull()
                 ?.countryCode
         } catch (e: Exception) {
             NotificareLogger.warning("Unable to reverse geocode the location.", e)
             null
         }
+    }
+
+    private suspend fun getLocationAddresses(location: Location): List<Address> = withContext(Dispatchers.IO) {
+        val geocoder = geocoder ?: return@withContext listOf()
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            return@withContext suspendCoroutine { continuation ->
+                geocoder.getFromLocation(
+                    location.latitude,
+                    location.longitude,
+                    1,
+                    object : GeocodeListener {
+                        override fun onGeocode(addresses: MutableList<Address>) {
+                            continuation.resume(addresses)
+                        }
+
+                        override fun onError(errorMessage: String?) {
+                            continuation.resumeWithException(Exception(errorMessage))
+                        }
+                    }
+                )
+            }
+        }
+
+        @Suppress("DEPRECATION")
+        val addresses = geocoder.getFromLocation(location.latitude, location.longitude, 1)
+
+        return@withContext addresses ?: listOf()
     }
 }
