@@ -3,8 +3,8 @@ buildscript {
     properties.load(project.rootProject.file('local.properties').newDataInputStream())
 
     ext {
-        compile_sdk_version = 31
-        build_tools_version = '31.0.0'
+        compile_sdk_version = 33
+        build_tools_version = '33.0.1'
         min_sdk_version = 23
         target_sdk_version = 31
 
