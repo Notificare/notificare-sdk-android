@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import re.notifica.Notificare
 import re.notifica.internal.NotificareLogger
+import re.notifica.internal.ktx.parcelable
 import re.notifica.loyalty.ktx.INTENT_ACTION_RELEVANCE_NOTIFICATION_DELETED
 import re.notifica.loyalty.ktx.INTENT_EXTRA_PASSBOOK
 import re.notifica.loyalty.ktx.loyaltyImplementation
@@ -15,7 +16,7 @@ internal class NotificareLoyaltyIntentReceiver : BroadcastReceiver() {
         when (intent.action) {
             Notificare.INTENT_ACTION_RELEVANCE_NOTIFICATION_DELETED -> {
                 val pass: NotificarePass = requireNotNull(
-                    intent.getParcelableExtra(Notificare.INTENT_EXTRA_PASSBOOK)
+                    intent.parcelable(Notificare.INTENT_EXTRA_PASSBOOK)
                 )
 
                 onRelevanceNotificationDeleted(pass)

@@ -19,6 +19,7 @@ import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
 import re.notifica.Notificare
 import re.notifica.internal.NotificareLogger
+import re.notifica.internal.ktx.parcelable
 import re.notifica.push.ui.R
 import re.notifica.push.ui.actions.NotificationCallbackAction
 import re.notifica.push.ui.models.NotificarePendingResult
@@ -50,8 +51,8 @@ public class NotificareCallbackActionFragment private constructor() : Fragment()
             throw ClassCastException("Parent fragment must implement NotificationFragment.Callback.")
         }
 
-        pendingResult = savedInstanceState?.getParcelable(EXTRA_PENDING_RESULT)
-            ?: arguments?.getParcelable(EXTRA_PENDING_RESULT)
+        pendingResult = savedInstanceState?.parcelable(EXTRA_PENDING_RESULT)
+            ?: arguments?.parcelable(EXTRA_PENDING_RESULT)
                 ?: throw IllegalArgumentException("Missing required pending result parameter.")
     }
 

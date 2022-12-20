@@ -116,11 +116,11 @@ public class ServiceManager : ServiceManager() {
                 NotificareLogger.warning("No location found yet.")
             }
 
-            val request = LocationRequest.create()
-                .setInterval(Notificare.DEFAULT_LOCATION_UPDATES_INTERVAL)
-                .setFastestInterval(Notificare.DEFAULT_LOCATION_UPDATES_FASTEST_INTERVAL)
+            val request = LocationRequest.Builder(Notificare.DEFAULT_LOCATION_UPDATES_INTERVAL)
+                .setMinUpdateIntervalMillis(Notificare.DEFAULT_LOCATION_UPDATES_FASTEST_INTERVAL)
                 .setPriority(Priority.PRIORITY_BALANCED_POWER_ACCURACY)
-                .setSmallestDisplacement(Notificare.DEFAULT_LOCATION_UPDATES_SMALLEST_DISPLACEMENT.toFloat())
+                .setMinUpdateDistanceMeters(Notificare.DEFAULT_LOCATION_UPDATES_SMALLEST_DISPLACEMENT.toFloat())
+                .build()
 
             fusedLocationClient.requestLocationUpdates(request, locationPendingIntent)
                 .addOnSuccessListener {

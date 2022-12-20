@@ -2,6 +2,7 @@ package re.notifica.internal.parcelize
 
 import android.os.Parcel
 import kotlinx.parcelize.Parceler
+import re.notifica.internal.ktx.map
 
 internal object NotificationContentDataParceler : Parceler<Any> {
     override fun create(parcel: Parcel): Any {
@@ -10,8 +11,8 @@ internal object NotificationContentDataParceler : Parceler<Any> {
 
         return when (typeStr) {
             "string" -> checkNotNull(parcel.readString())
-            "map" -> mutableMapOf<String, String>().apply {
-                parcel.readMap(this, String::class.java.classLoader)
+            "map" -> mutableMapOf<String, Any>().apply {
+                parcel.map(this)
             }
             else -> throw IllegalArgumentException("Unexpected type string '$typeStr'.")
         }

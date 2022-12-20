@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import re.notifica.Notificare
 import re.notifica.internal.NotificareLogger
+import re.notifica.internal.ktx.parcelable
 import re.notifica.models.NotificareNotification
 import re.notifica.push.ktx.*
 import re.notifica.push.models.NotificareSystemNotification
@@ -15,39 +16,39 @@ public open class NotificarePushIntentReceiver : BroadcastReceiver() {
         when (intent.action) {
             Notificare.INTENT_ACTION_NOTIFICATION_RECEIVED -> {
                 val notification: NotificareNotification = requireNotNull(
-                    intent.getParcelableExtra(Notificare.INTENT_EXTRA_NOTIFICATION)
+                    intent.parcelable(Notificare.INTENT_EXTRA_NOTIFICATION)
                 )
 
                 onNotificationReceived(context, notification)
             }
             Notificare.INTENT_ACTION_SYSTEM_NOTIFICATION_RECEIVED -> {
                 val notification: NotificareSystemNotification = requireNotNull(
-                    intent.getParcelableExtra(Notificare.INTENT_EXTRA_NOTIFICATION)
+                    intent.parcelable(Notificare.INTENT_EXTRA_NOTIFICATION)
                 )
 
                 onSystemNotificationReceived(context, notification)
             }
             Notificare.INTENT_ACTION_UNKNOWN_NOTIFICATION_RECEIVED -> {
                 val notification: NotificareUnknownNotification = requireNotNull(
-                    intent.getParcelableExtra(Notificare.INTENT_EXTRA_NOTIFICATION)
+                    intent.parcelable(Notificare.INTENT_EXTRA_NOTIFICATION)
                 )
 
                 onUnknownNotificationReceived(context, notification)
             }
             Notificare.INTENT_ACTION_NOTIFICATION_OPENED -> {
                 val notification: NotificareNotification = requireNotNull(
-                    intent.getParcelableExtra(Notificare.INTENT_EXTRA_NOTIFICATION)
+                    intent.parcelable(Notificare.INTENT_EXTRA_NOTIFICATION)
                 )
 
                 onNotificationOpened(context, notification)
             }
             Notificare.INTENT_ACTION_ACTION_OPENED -> {
                 val notification: NotificareNotification = requireNotNull(
-                    intent.getParcelableExtra(Notificare.INTENT_EXTRA_NOTIFICATION)
+                    intent.parcelable(Notificare.INTENT_EXTRA_NOTIFICATION)
                 )
 
                 val action: NotificareNotification.Action = requireNotNull(
-                    intent.getParcelableExtra(Notificare.INTENT_EXTRA_ACTION)
+                    intent.parcelable(Notificare.INTENT_EXTRA_ACTION)
                 )
 
                 onActionOpened(context, notification, action)

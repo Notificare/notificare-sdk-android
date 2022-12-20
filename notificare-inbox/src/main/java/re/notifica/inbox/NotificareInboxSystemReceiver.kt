@@ -11,6 +11,7 @@ import re.notifica.Notificare
 import re.notifica.inbox.ktx.inboxImplementation
 import re.notifica.inbox.models.NotificareInboxItem
 import re.notifica.internal.NotificareLogger
+import re.notifica.internal.ktx.parcelable
 import re.notifica.models.NotificareNotification
 import java.util.*
 
@@ -22,7 +23,7 @@ internal class NotificareInboxSystemReceiver : BroadcastReceiver() {
             }
             INTENT_ACTION_INBOX_NOTIFICATION_RECEIVED -> {
                 val notification: NotificareNotification = checkNotNull(
-                    intent.getParcelableExtra(Notificare.INTENT_EXTRA_NOTIFICATION)
+                    intent.parcelable(Notificare.INTENT_EXTRA_NOTIFICATION)
                 )
 
                 val inboxBundle: Bundle = checkNotNull(

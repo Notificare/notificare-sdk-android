@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import re.notifica.Notificare
 import re.notifica.internal.common.onMainThread
+import re.notifica.internal.ktx.parcelable
 import re.notifica.models.NotificareNotification
 import re.notifica.push.ui.databinding.NotificareNotificationActivityBinding
 import re.notifica.push.ui.ktx.pushUIImplementation
@@ -19,12 +20,12 @@ public open class NotificationActivity : AppCompatActivity(), NotificationContai
     private var action: NotificareNotification.Action? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        notification = savedInstanceState?.getParcelable(Notificare.INTENT_EXTRA_NOTIFICATION)
-            ?: intent.getParcelableExtra(Notificare.INTENT_EXTRA_NOTIFICATION)
+        notification = savedInstanceState?.parcelable(Notificare.INTENT_EXTRA_NOTIFICATION)
+            ?: intent.parcelable(Notificare.INTENT_EXTRA_NOTIFICATION)
                 ?: throw IllegalArgumentException("Missing required notification parameter.")
 
-        action = savedInstanceState?.getParcelable(Notificare.INTENT_EXTRA_ACTION)
-            ?: intent.getParcelableExtra(Notificare.INTENT_EXTRA_ACTION)
+        action = savedInstanceState?.parcelable(Notificare.INTENT_EXTRA_ACTION)
+            ?: intent.parcelable(Notificare.INTENT_EXTRA_ACTION)
 
         super.onCreate(savedInstanceState)
         binding = NotificareNotificationActivityBinding.inflate(layoutInflater).also {

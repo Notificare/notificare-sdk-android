@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import re.notifica.Notificare
+import re.notifica.internal.ktx.parcelable
 import re.notifica.models.NotificareNotification
 
 public open class NotificationFragment : Fragment() {
@@ -20,8 +21,8 @@ public open class NotificationFragment : Fragment() {
             throw ClassCastException("Parent fragment must implement NotificationFragment.Callback.")
         }
 
-        notification = savedInstanceState?.getParcelable(Notificare.INTENT_EXTRA_NOTIFICATION)
-            ?: arguments?.getParcelable(Notificare.INTENT_EXTRA_NOTIFICATION)
+        notification = savedInstanceState?.parcelable(Notificare.INTENT_EXTRA_NOTIFICATION)
+            ?: arguments?.parcelable(Notificare.INTENT_EXTRA_NOTIFICATION)
                 ?: throw IllegalArgumentException("Missing required notification parameter.")
     }
 

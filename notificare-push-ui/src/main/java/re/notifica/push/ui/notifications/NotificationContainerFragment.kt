@@ -16,6 +16,8 @@ import re.notifica.Notificare
 import re.notifica.internal.NotificareLogger
 import re.notifica.internal.NotificareUtils
 import re.notifica.internal.common.onMainThread
+import re.notifica.internal.ktx.packageInfo
+import re.notifica.internal.ktx.parcelable
 import re.notifica.models.NotificareNotification
 import re.notifica.push.ui.R
 import re.notifica.push.ui.databinding.NotificareNotificationContainerFragmentBinding
@@ -78,12 +80,12 @@ public class NotificationContainerFragment
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        notification = savedInstanceState?.getParcelable(Notificare.INTENT_EXTRA_NOTIFICATION)
-            ?: arguments?.getParcelable(Notificare.INTENT_EXTRA_NOTIFICATION)
+        notification = savedInstanceState?.parcelable(Notificare.INTENT_EXTRA_NOTIFICATION)
+            ?: arguments?.parcelable(Notificare.INTENT_EXTRA_NOTIFICATION)
                 ?: throw IllegalArgumentException("Missing required notification parameter.")
 
-        action = savedInstanceState?.getParcelable(Notificare.INTENT_EXTRA_ACTION)
-            ?: arguments?.getParcelable(Notificare.INTENT_EXTRA_ACTION)
+        action = savedInstanceState?.parcelable(Notificare.INTENT_EXTRA_ACTION)
+            ?: arguments?.parcelable(Notificare.INTENT_EXTRA_ACTION)
 
         try {
             callback = activity as Callback
@@ -289,7 +291,7 @@ public class NotificationContainerFragment
             val packageName = Notificare.requireContext().packageName
 
             try {
-                val info = packageManager.getPackageInfo(packageName, PackageManager.GET_PERMISSIONS)
+                val info = packageManager.packageInfo(packageName, PackageManager.GET_PERMISSIONS)
                 val requestedPermissions = info.requestedPermissions
 
                 if (requestedPermissions != null) {
