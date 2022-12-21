@@ -6,3 +6,11 @@ import com.squareup.moshi.JsonClass
 internal data class DeviceUpdateNotificationSettingsPayload(
     val allowedUI: Boolean,
 )
+
+@JsonClass(generateAdapter = true)
+internal data class CreateLiveActivityPayload(
+    val activity: String,
+    val token: String,
+    val deviceID: String,
+    val topics: List<String>,
+)

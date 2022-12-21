@@ -3,6 +3,7 @@ package re.notifica.push
 import android.content.Intent
 import androidx.lifecycle.LiveData
 import re.notifica.Notificare
+import re.notifica.NotificareCallback
 import re.notifica.push.ktx.*
 
 public object NotificarePushCompat {
@@ -78,5 +79,22 @@ public object NotificarePushCompat {
     @JvmStatic
     public fun handleTrampolineIntent(intent: Intent): Boolean {
         return Notificare.push().handleTrampolineIntent(intent)
+    }
+
+    @JvmStatic
+    public fun registerLiveActivity(
+        activityId: String,
+        topics: List<String> = listOf(),
+        callback: NotificareCallback<Unit>,
+    ) {
+        Notificare.push().registerLiveActivity(activityId, topics, callback)
+    }
+
+    @JvmStatic
+    public fun endLiveActivity(
+        activityId: String,
+        callback: NotificareCallback<Unit>,
+    ) {
+        Notificare.push().endLiveActivity(activityId, callback)
     }
 }

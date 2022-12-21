@@ -29,6 +29,7 @@ import re.notifica.internal.NotificareLogger
 import re.notifica.internal.NotificareModule
 import re.notifica.internal.NotificareUtils
 import re.notifica.internal.ktx.parcelable
+import re.notifica.internal.ktx.toCallbackFunction
 import re.notifica.internal.network.request.NotificareRequest
 import re.notifica.ktx.device
 import re.notifica.ktx.events
@@ -36,9 +37,11 @@ import re.notifica.models.NotificareApplication
 import re.notifica.models.NotificareNotification
 import re.notifica.models.NotificareTransport
 import re.notifica.push.*
+import re.notifica.push.internal.network.push.CreateLiveActivityPayload
 import re.notifica.push.internal.network.push.DeviceUpdateNotificationSettingsPayload
 import re.notifica.push.ktx.*
 import re.notifica.push.models.*
+import java.net.URLEncoder
 import java.util.concurrent.atomic.AtomicInteger
 
 @Keep
@@ -236,6 +239,57 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
 
         return true
     }
+
+    override suspend fun registerLiveActivity(
+        activityId: String,
+        topics: List<String>
+    ): Unit = withContext(Dispatchers.IO) {
+        val device = Notificare.device().currentDevice
+            ?: throw NotificareDeviceUnavailableException()
+
+        // TODO: fetch current FCM token
+
+        val payload = CreateLiveActivityPayload(
+            activity = activityId,
+            token = device.id,
+            deviceID = device.id,
+            topics = topics,
+        )
+
+        NotificareRequest.Builder()
+            .post("/live-activity", payload)
+            .response()
+    }
+
+    override fun registerLiveActivity(
+        activityId: String,
+        topics: List<String>,
+        callback: NotificareCallback<Unit>,
+    ): Unit = toCallbackFunction(::registerLiveActivity)(activityId, topics, callback)
+
+    override suspend fun endLiveActivity(
+        activityId: String
+    ): Unit = withContext(Dispatchers.IO) {
+        val device = Notificare.device().currentDevice
+            ?: throw NotificareDeviceUnavailableException()
+
+        val encodedActivityId = withContext(Dispatchers.IO) {
+            URLEncoder.encode(activityId, "UTF-8")
+        }
+
+        val encodedDeviceId = withContext(Dispatchers.IO) {
+            URLEncoder.encode(device.id, "UTF-8")
+        }
+
+        NotificareRequest.Builder()
+            .delete("/live-activity/$encodedActivityId/$encodedDeviceId", null)
+            .response()
+    }
+
+    override fun endLiveActivity(
+        activityId: String,
+        callback: NotificareCallback<Unit>,
+    ): Unit = toCallbackFunction(::endLiveActivity)(activityId, callback)
 
     // endregion
 
