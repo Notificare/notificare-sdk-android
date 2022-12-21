@@ -493,6 +493,36 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
                     // TODO: handle Products system notifications
                 }
                 "re.notifica.notification.system.Inbox" -> InboxIntegration.reloadInbox()
+                "re.notifica.notification.system.LiveActivity" -> {
+                    val activity = message.extra["activity"] ?: run {
+                        NotificareLogger.warning("Cannot parse a live activity system notification with the 'activity' property.")
+                        return
+                    }
+
+                    val content = try {
+                        message.extra["content"]?.let { JSONObject(it) }
+                    } catch (e: Exception) {
+                        NotificareLogger.warning("Cannot parse the content of the live activity.", e)
+                        return
+                    }
+
+                    val timestamp = message.extra["timestamp"]?.toLongOrNull() ?: run {
+                        NotificareLogger.warning("Cannot parse the timestamp of the live activity.")
+                        return
+                    }
+
+                    val update = NotificareLiveActivityUpdate(
+                        activity = activity,
+                        title = message.extra["title"],
+                        subtitle = message.extra["subtitle"],
+                        message = message.extra["message"],
+                        content = content,
+                        final = message.extra["final"]?.toBooleanStrictOrNull() ?: false,
+                        timestamp = timestamp,
+                    )
+
+                    // TODO: emit the updates
+                }
                 else -> NotificareLogger.warning("Unhandled system notification: ${message.type}")
             }
         } else {
