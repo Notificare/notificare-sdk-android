@@ -42,6 +42,7 @@ import re.notifica.push.internal.network.push.DeviceUpdateNotificationSettingsPa
 import re.notifica.push.ktx.*
 import re.notifica.push.models.*
 import java.net.URLEncoder
+import java.util.*
 import java.util.concurrent.atomic.AtomicInteger
 
 @Keep
@@ -531,7 +532,7 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
                         message = message.extra["message"],
                         content = content,
                         final = message.extra["final"]?.toBooleanStrictOrNull() ?: false,
-                        timestamp = timestamp,
+                        timestamp = Date(timestamp),
                     )
 
                     Notificare.requireContext().sendBroadcast(

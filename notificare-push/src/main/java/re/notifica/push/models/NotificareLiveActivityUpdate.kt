@@ -9,6 +9,7 @@ import org.json.JSONObject
 import re.notifica.Notificare
 import re.notifica.internal.moshi
 import re.notifica.internal.parcelize.NotificareJsonObjectParceler
+import java.util.*
 
 @Parcelize
 @JsonClass(generateAdapter = true)
@@ -19,7 +20,7 @@ public data class NotificareLiveActivityUpdate(
     val message: String?,
     val content: @WriteWith<NotificareJsonObjectParceler> JSONObject?,
     val final: Boolean,
-    val timestamp: Long,
+    val timestamp: Date,
 ) : Parcelable {
 
     public inline fun <reified T> content(klass: Class<T> = T::class.java): T? {
