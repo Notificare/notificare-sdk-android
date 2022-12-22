@@ -29,6 +29,7 @@ import re.notifica.internal.NotificareLogger
 import re.notifica.internal.NotificareModule
 import re.notifica.internal.NotificareUtils
 import re.notifica.internal.ktx.parcelable
+import re.notifica.internal.ktx.toCallbackFunction
 import re.notifica.internal.network.request.NotificareRequest
 import re.notifica.ktx.device
 import re.notifica.ktx.events
@@ -36,9 +37,12 @@ import re.notifica.models.NotificareApplication
 import re.notifica.models.NotificareNotification
 import re.notifica.models.NotificareTransport
 import re.notifica.push.*
+import re.notifica.push.internal.network.push.CreateLiveActivityPayload
 import re.notifica.push.internal.network.push.DeviceUpdateNotificationSettingsPayload
 import re.notifica.push.ktx.*
 import re.notifica.push.models.*
+import java.net.URLEncoder
+import java.util.*
 import java.util.concurrent.atomic.AtomicInteger
 
 @Keep
@@ -121,6 +125,13 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
                     registerPushToken(manager.transport, token, performReadinessCheck = false)
 
                     // NOTE: the notification settings are updated after a push token registration.
+
+                    Notificare.requireContext().sendBroadcast(
+                        Intent(Notificare.requireContext(), intentReceiver)
+                            .setAction(Notificare.INTENT_ACTION_TOKEN_CHANGED)
+                            .putExtra(Notificare.INTENT_EXTRA_TOKEN, token)
+                    )
+
                     return
                 } else {
                     NotificareLogger.debug("Found a postponed registration token but no service manager.")
@@ -237,6 +248,57 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
         return true
     }
 
+    override suspend fun registerLiveActivity(
+        activityId: String,
+        topics: List<String>
+    ): Unit = withContext(Dispatchers.IO) {
+        val device = Notificare.device().currentDevice
+            ?: throw NotificareDeviceUnavailableException()
+
+        // TODO: fetch current FCM token
+
+        val payload = CreateLiveActivityPayload(
+            activity = activityId,
+            token = device.id,
+            deviceID = device.id,
+            topics = topics,
+        )
+
+        NotificareRequest.Builder()
+            .post("/live-activity", payload)
+            .response()
+    }
+
+    override fun registerLiveActivity(
+        activityId: String,
+        topics: List<String>,
+        callback: NotificareCallback<Unit>,
+    ): Unit = toCallbackFunction(::registerLiveActivity)(activityId, topics, callback)
+
+    override suspend fun endLiveActivity(
+        activityId: String
+    ): Unit = withContext(Dispatchers.IO) {
+        val device = Notificare.device().currentDevice
+            ?: throw NotificareDeviceUnavailableException()
+
+        val encodedActivityId = withContext(Dispatchers.IO) {
+            URLEncoder.encode(activityId, "UTF-8")
+        }
+
+        val encodedDeviceId = withContext(Dispatchers.IO) {
+            URLEncoder.encode(device.id, "UTF-8")
+        }
+
+        NotificareRequest.Builder()
+            .delete("/live-activity/$encodedActivityId/$encodedDeviceId", null)
+            .response()
+    }
+
+    override fun endLiveActivity(
+        activityId: String,
+        callback: NotificareCallback<Unit>,
+    ): Unit = toCallbackFunction(::endLiveActivity)(activityId, callback)
+
     // endregion
 
     // region Notificare Push Internal
@@ -260,6 +322,12 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
 
         if (token != Notificare.device().currentDevice?.id) {
             Notificare.deviceInternal().registerPushToken(transport, token)
+
+            Notificare.requireContext().sendBroadcast(
+                Intent(Notificare.requireContext(), intentReceiver)
+                    .setAction(Notificare.INTENT_ACTION_TOKEN_CHANGED)
+                    .putExtra(Notificare.INTENT_EXTRA_TOKEN, token)
+            )
         } else {
             NotificareLogger.debug("Received token has already been registered. Skipping the registration...")
         }
@@ -439,6 +507,43 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
                     // TODO: handle Products system notifications
                 }
                 "re.notifica.notification.system.Inbox" -> InboxIntegration.reloadInbox()
+                "re.notifica.notification.system.LiveActivity" -> {
+                    val activity = message.extra["activity"] ?: run {
+                        NotificareLogger.warning("Cannot parse a live activity system notification with the 'activity' property.")
+                        return
+                    }
+
+                    val content = try {
+                        message.extra["content"]?.let { JSONObject(it) }
+                    } catch (e: Exception) {
+                        NotificareLogger.warning("Cannot parse the content of the live activity.", e)
+                        return
+                    }
+
+                    val timestamp = message.extra["timestamp"]?.toLongOrNull() ?: run {
+                        NotificareLogger.warning("Cannot parse the timestamp of the live activity.")
+                        return
+                    }
+
+                    val dismissalDateTimestamp = message.extra["dismissalDate"]?.toLongOrNull()
+
+                    val update = NotificareLiveActivityUpdate(
+                        activity = activity,
+                        title = message.extra["title"],
+                        subtitle = message.extra["subtitle"],
+                        message = message.extra["message"],
+                        content = content,
+                        final = message.extra["final"]?.toBooleanStrictOrNull() ?: false,
+                        dismissalDate = dismissalDateTimestamp?.let { Date(it) },
+                        timestamp = Date(timestamp),
+                    )
+
+                    Notificare.requireContext().sendBroadcast(
+                        Intent(Notificare.requireContext(), intentReceiver)
+                            .setAction(Notificare.INTENT_ACTION_LIVE_ACTIVITY_UPDATE)
+                            .putExtra(Notificare.INTENT_EXTRA_LIVE_ACTIVITY_UPDATE, update)
+                    )
+                }
                 else -> NotificareLogger.warning("Unhandled system notification: ${message.type}")
             }
         } else {
