@@ -13,6 +13,11 @@ public object NotificareInAppMessagingCompat {
         }
 
     @JvmStatic
+    public fun setMessagesSuppressed(suppressed: Boolean, evaluateContext: Boolean) {
+        Notificare.inAppMessaging().setMessagesSuppressed(suppressed, evaluateContext)
+    }
+
+    @JvmStatic
     public fun addLifecycleListener(listener: NotificareInAppMessaging.MessageLifecycleListener) {
         Notificare.inAppMessaging().addLifecycleListener(listener)
     }

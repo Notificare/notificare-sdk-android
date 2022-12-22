@@ -8,6 +8,8 @@ public interface NotificareInAppMessaging {
 
     public var hasMessagesSuppressed: Boolean
 
+    public fun setMessagesSuppressed(suppressed: Boolean, evaluateContext: Boolean)
+
     public fun addLifecycleListener(listener: MessageLifecycleListener)
 
     public fun removeLifecycleListener(listener: MessageLifecycleListener)

@@ -49,6 +49,17 @@ internal object NotificareInAppMessagingImpl : NotificareModule(), NotificareInA
 
     override var hasMessagesSuppressed: Boolean = false
 
+    override fun setMessagesSuppressed(suppressed: Boolean, evaluateContext: Boolean) {
+        val suppressChanged = suppressed != hasMessagesSuppressed
+        val canEvaluate = evaluateContext && suppressChanged && !suppressed
+
+        hasMessagesSuppressed = suppressed
+
+        if (canEvaluate) {
+            evaluateContext(ApplicationContext.FOREGROUND)
+        }
+    }
+
     override fun addLifecycleListener(listener: NotificareInAppMessaging.MessageLifecycleListener) {
         lifecycleListeners.add(listener)
     }
