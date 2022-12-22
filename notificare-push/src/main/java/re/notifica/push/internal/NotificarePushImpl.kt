@@ -124,6 +124,13 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
                     registerPushToken(manager.transport, token, performReadinessCheck = false)
 
                     // NOTE: the notification settings are updated after a push token registration.
+
+                    Notificare.requireContext().sendBroadcast(
+                        Intent(Notificare.requireContext(), intentReceiver)
+                            .setAction(Notificare.INTENT_ACTION_TOKEN_CHANGED)
+                            .putExtra(Notificare.INTENT_EXTRA_TOKEN, token)
+                    )
+
                     return
                 } else {
                     NotificareLogger.debug("Found a postponed registration token but no service manager.")
@@ -314,6 +321,12 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
 
         if (token != Notificare.device().currentDevice?.id) {
             Notificare.deviceInternal().registerPushToken(transport, token)
+
+            Notificare.requireContext().sendBroadcast(
+                Intent(Notificare.requireContext(), intentReceiver)
+                    .setAction(Notificare.INTENT_ACTION_TOKEN_CHANGED)
+                    .putExtra(Notificare.INTENT_EXTRA_TOKEN, token)
+            )
         } else {
             NotificareLogger.debug("Received token has already been registered. Skipping the registration...")
         }
@@ -521,7 +534,11 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
                         timestamp = timestamp,
                     )
 
-                    // TODO: emit the updates
+                    Notificare.requireContext().sendBroadcast(
+                        Intent(Notificare.requireContext(), intentReceiver)
+                            .setAction(Notificare.INTENT_ACTION_LIVE_ACTIVITY_UPDATE)
+                            .putExtra(Notificare.INTENT_EXTRA_LIVE_ACTIVITY_UPDATE, update)
+                    )
                 }
                 else -> NotificareLogger.warning("Unhandled system notification: ${message.type}")
             }
