@@ -525,6 +525,8 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
                         return
                     }
 
+                    val dismissalDateTimestamp = message.extra["dismissalDate"]?.toLongOrNull()
+
                     val update = NotificareLiveActivityUpdate(
                         activity = activity,
                         title = message.extra["title"],
@@ -532,6 +534,7 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
                         message = message.extra["message"],
                         content = content,
                         final = message.extra["final"]?.toBooleanStrictOrNull() ?: false,
+                        dismissalDate = dismissalDateTimestamp?.let { Date(it) },
                         timestamp = Date(timestamp),
                     )
 

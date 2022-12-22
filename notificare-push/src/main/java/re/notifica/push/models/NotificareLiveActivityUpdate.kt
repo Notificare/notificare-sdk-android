@@ -20,6 +20,7 @@ public data class NotificareLiveActivityUpdate(
     val message: String?,
     val content: @WriteWith<NotificareJsonObjectParceler> JSONObject?,
     val final: Boolean,
+    val dismissalDate: Date?,
     val timestamp: Date,
 ) : Parcelable {
 
