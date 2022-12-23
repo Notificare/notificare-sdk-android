@@ -510,7 +510,7 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
                 "re.notifica.notification.system.Inbox" -> InboxIntegration.reloadInbox()
                 "re.notifica.notification.system.LiveActivity" -> {
                     val activity = message.extra["activity"] ?: run {
-                        NotificareLogger.warning("Cannot parse a live activity system notification with the 'activity' property.")
+                        NotificareLogger.warning("Cannot parse a live activity system notification without the 'activity' property.")
                         return
                     }
 
