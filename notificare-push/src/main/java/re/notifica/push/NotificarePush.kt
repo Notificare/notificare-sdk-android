@@ -1,9 +1,7 @@
 package re.notifica.push
 
 import android.content.Intent
-import android.os.Parcelable
 import androidx.lifecycle.LiveData
-import kotlinx.parcelize.Parcelize
 import re.notifica.InternalNotificareApi
 import re.notifica.NotificareCallback
 import re.notifica.models.NotificareTransport
