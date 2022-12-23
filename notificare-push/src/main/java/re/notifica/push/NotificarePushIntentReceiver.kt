@@ -9,6 +9,7 @@ import re.notifica.internal.ktx.parcelable
 import re.notifica.models.NotificareNotification
 import re.notifica.push.ktx.*
 import re.notifica.push.models.NotificareLiveActivityUpdate
+import re.notifica.push.models.NotificareNotificationDeliveryMechanism
 import re.notifica.push.models.NotificareSystemNotification
 import re.notifica.push.models.NotificareUnknownNotification
 
@@ -27,7 +28,7 @@ public open class NotificarePushIntentReceiver : BroadcastReceiver() {
                     intent.parcelable(Notificare.INTENT_EXTRA_NOTIFICATION)
                 )
 
-                val deliveryMechanism: NotificarePush.DeliveryMechanism = requireNotNull(
+                val deliveryMechanism: NotificareNotificationDeliveryMechanism = requireNotNull(
                     intent.parcelable(Notificare.INTENT_EXTRA_DELIVERY_MECHANISM)
                 )
 
@@ -86,7 +87,7 @@ public open class NotificarePushIntentReceiver : BroadcastReceiver() {
     protected open fun onNotificationReceived(
         context: Context,
         notification: NotificareNotification,
-        deliveryMechanism: NotificarePush.DeliveryMechanism,
+        deliveryMechanism: NotificareNotificationDeliveryMechanism,
     ) {
         NotificareLogger.info("Received a notification, please override onNotificationReceived if you want to receive these intents.")
 

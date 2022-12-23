@@ -42,12 +42,6 @@ public interface NotificarePush {
     public suspend fun endLiveActivity(activityId: String)
 
     public fun endLiveActivity(activityId: String, callback: NotificareCallback<Unit>)
-
-    @Parcelize
-    public enum class DeliveryMechanism : Parcelable {
-        STANDARD,
-        SILENT,
-    }
 }
 
 public interface NotificareInternalPush {

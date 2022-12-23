@@ -587,8 +587,8 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
                 InboxIntegration.addItemToInbox(message, notification)
 
                 val deliveryMechanism = when {
-                    message.notify -> NotificarePush.DeliveryMechanism.STANDARD
-                    else -> NotificarePush.DeliveryMechanism.SILENT
+                    message.notify -> NotificareNotificationDeliveryMechanism.STANDARD
+                    else -> NotificareNotificationDeliveryMechanism.SILENT
                 }
 
                 Notificare.requireContext().sendBroadcast(
