@@ -72,4 +72,7 @@ public val Notificare.INTENT_EXTRA_TEXT_RESPONSE: String
 public val Notificare.INTENT_EXTRA_LIVE_ACTIVITY_UPDATE: String
     get() = "re.notifica.intent.extra.LiveActivityUpdate"
 
+public val Notificare.INTENT_EXTRA_DELIVERY_MECHANISM: String
+    get() = "re.notifica.intent.extra.DeliveryMechanism"
+
 // endregion

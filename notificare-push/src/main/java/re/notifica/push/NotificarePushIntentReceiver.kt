@@ -27,7 +27,11 @@ public open class NotificarePushIntentReceiver : BroadcastReceiver() {
                     intent.parcelable(Notificare.INTENT_EXTRA_NOTIFICATION)
                 )
 
-                onNotificationReceived(context, notification)
+                val deliveryMechanism: NotificarePush.DeliveryMechanism = requireNotNull(
+                    intent.parcelable(Notificare.INTENT_EXTRA_DELIVERY_MECHANISM)
+                )
+
+                onNotificationReceived(context, notification, deliveryMechanism)
             }
             Notificare.INTENT_ACTION_SYSTEM_NOTIFICATION_RECEIVED -> {
                 val notification: NotificareSystemNotification = requireNotNull(
@@ -65,7 +69,7 @@ public open class NotificarePushIntentReceiver : BroadcastReceiver() {
                 val update: NotificareLiveActivityUpdate = requireNotNull(
                     intent.parcelable(Notificare.INTENT_EXTRA_LIVE_ACTIVITY_UPDATE)
                 )
-                
+
                 onLiveActivityUpdate(context, update)
             }
         }
@@ -75,8 +79,20 @@ public open class NotificarePushIntentReceiver : BroadcastReceiver() {
         NotificareLogger.debug("The push token changed, please override onTokenChanged if you want to receive these intents.")
     }
 
+    @Deprecated("Use onNotificationReceived(context, notification, deliveryMechanism) instead.")
     protected open fun onNotificationReceived(context: Context, notification: NotificareNotification) {
+    }
+
+    protected open fun onNotificationReceived(
+        context: Context,
+        notification: NotificareNotification,
+        deliveryMechanism: NotificarePush.DeliveryMechanism,
+    ) {
         NotificareLogger.info("Received a notification, please override onNotificationReceived if you want to receive these intents.")
+
+        // Continue executing the deprecated method for backwards compatibility.
+        @Suppress("DEPRECATION")
+        onNotificationReceived(context, notification)
     }
 
     protected open fun onSystemNotificationReceived(context: Context, notification: NotificareSystemNotification) {

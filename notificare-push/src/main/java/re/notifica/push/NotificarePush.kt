@@ -1,7 +1,9 @@
 package re.notifica.push
 
 import android.content.Intent
+import android.os.Parcelable
 import androidx.lifecycle.LiveData
+import kotlinx.parcelize.Parcelize
 import re.notifica.InternalNotificareApi
 import re.notifica.NotificareCallback
 import re.notifica.models.NotificareTransport
@@ -40,6 +42,12 @@ public interface NotificarePush {
     public suspend fun endLiveActivity(activityId: String)
 
     public fun endLiveActivity(activityId: String, callback: NotificareCallback<Unit>)
+
+    @Parcelize
+    public enum class DeliveryMechanism : Parcelable {
+        STANDARD,
+        SILENT,
+    }
 }
 
 public interface NotificareInternalPush {
