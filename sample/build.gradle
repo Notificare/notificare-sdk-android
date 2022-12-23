@@ -11,6 +11,7 @@ def properties = new Properties()
 properties.load(project.rootProject.file('local.properties').newDataInputStream())
 
 android {
+    namespace 're.notifica.sample'
     compileSdkVersion compile_sdk_version
     buildToolsVersion build_tools_version
 

@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import re.notifica.internal.NotificareLogger
+import re.notifica.internal.ktx.parcelable
 import re.notifica.models.NotificareApplication
 import re.notifica.models.NotificareDevice
 
@@ -12,7 +13,7 @@ public open class NotificareIntentReceiver : BroadcastReceiver() {
         when (intent.action) {
             Notificare.INTENT_ACTION_READY -> {
                 val application: NotificareApplication = requireNotNull(
-                    intent.getParcelableExtra(Notificare.INTENT_EXTRA_APPLICATION)
+                    intent.parcelable(Notificare.INTENT_EXTRA_APPLICATION)
                 )
 
                 onReady(context, application)
@@ -20,7 +21,7 @@ public open class NotificareIntentReceiver : BroadcastReceiver() {
             Notificare.INTENT_ACTION_UNLAUNCHED -> onUnlaunched(context)
             Notificare.INTENT_ACTION_DEVICE_REGISTERED -> {
                 val device: NotificareDevice = requireNotNull(
-                    intent.getParcelableExtra(Notificare.INTENT_EXTRA_DEVICE)
+                    intent.parcelable(Notificare.INTENT_EXTRA_DEVICE)
                 )
 
                 onDeviceRegistered(context, device)

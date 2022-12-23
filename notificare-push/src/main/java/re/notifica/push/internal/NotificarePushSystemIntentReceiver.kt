@@ -10,6 +10,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import re.notifica.Notificare
 import re.notifica.internal.NotificareLogger
+import re.notifica.internal.ktx.parcelable
 import re.notifica.ktx.events
 import re.notifica.models.NotificareNotification
 import re.notifica.push.ktx.INTENT_ACTION_QUICK_RESPONSE
@@ -22,15 +23,15 @@ internal class NotificarePushSystemIntentReceiver : BroadcastReceiver() {
         when (intent.action) {
             Notificare.INTENT_ACTION_QUICK_RESPONSE -> {
                 val message: NotificareNotificationRemoteMessage = requireNotNull(
-                    intent.getParcelableExtra(Notificare.INTENT_EXTRA_REMOTE_MESSAGE)
+                    intent.parcelable(Notificare.INTENT_EXTRA_REMOTE_MESSAGE)
                 )
 
                 val notification: NotificareNotification = requireNotNull(
-                    intent.getParcelableExtra(Notificare.INTENT_EXTRA_NOTIFICATION)
+                    intent.parcelable(Notificare.INTENT_EXTRA_NOTIFICATION)
                 )
 
                 val action: NotificareNotification.Action = requireNotNull(
-                    intent.getParcelableExtra(Notificare.INTENT_EXTRA_ACTION)
+                    intent.parcelable(Notificare.INTENT_EXTRA_ACTION)
                 )
 
                 val responseText = RemoteInput.getResultsFromIntent(intent)

@@ -28,6 +28,7 @@ internal class GoogleStorageUtils(
 
     private fun <S : Serializable?> deserialize(inputStream: InputStream): S {
         return try {
+            @Suppress("UNCHECKED_CAST")
             ObjectInputStream(inputStream).readObject() as S
         } catch (e: ClassNotFoundException) {
             throw IOException("Failed to deserialize object").apply {

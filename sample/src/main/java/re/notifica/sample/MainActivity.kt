@@ -57,6 +57,17 @@ class MainActivity : AppCompatActivity(), Notificare.Listener, NotificarePushUI.
 
     private lateinit var binding: ActivityMainBinding
 
+    private val notificationsPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        if (!granted) {
+            Log.i(TAG, "User denied notifications permissions.")
+            return@registerForActivityResult
+        }
+
+        onEnableRemoteNotificationsClicked(binding.root)
+    }
+
     private val foregroundLocationPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { permissions ->
@@ -236,6 +247,8 @@ class MainActivity : AppCompatActivity(), Notificare.Listener, NotificarePushUI.
     }
 
     fun onEnableRemoteNotificationsClicked(@Suppress("UNUSED_PARAMETER") view: View) {
+        if (!ensureNotificationsPermission()) return
+
         Notificare.push().enableRemoteNotifications()
     }
 
@@ -889,6 +902,29 @@ class MainActivity : AppCompatActivity(), Notificare.Listener, NotificarePushUI.
     }
 
     // endregion
+
+    private fun ensureNotificationsPermission(): Boolean {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) return true
+
+        val permission = Manifest.permission.POST_NOTIFICATIONS
+        val granted = ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED
+        if (granted) return true
+
+        if (shouldShowRequestPermissionRationale(permission)) {
+            AlertDialog.Builder(this)
+                .setTitle(R.string.app_name)
+                .setMessage(R.string.main_notifications_permission_rationale)
+                .setPositiveButton(android.R.string.ok) { _, _ ->
+                    notificationsPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                }
+                .show()
+
+            return false
+        }
+
+        notificationsPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+        return false
+    }
 
     private fun ensureForegroundLocationPermission(): Boolean {
         val permission = Manifest.permission.ACCESS_FINE_LOCATION
