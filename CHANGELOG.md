@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## 3.5.0
+
+- Add user-level inbox module
+- Remove non-optional `id` requirement from HMS system notifications
+- Compiles with & targets Android 13
+- Include `POST_NOTIFICATIONS` permission in the push module
+- Add Live Activities compatibility mechanism
+- Allow a context evaluation upon un-suppressing in-app messages
+- Include the delivery mechanism for notification received events
+
 ## 3.4.1
 
 - Fix locale-sensitive time formatting on `NotificareTime` objects
