@@ -52,6 +52,9 @@ public object NotificarePushCompat {
     @JvmField
     public val INTENT_EXTRA_LIVE_ACTIVITY_UPDATE: String = Notificare.INTENT_EXTRA_LIVE_ACTIVITY_UPDATE
 
+    @JvmField
+    public val INTENT_EXTRA_DELIVERY_MECHANISM: String = Notificare.INTENT_EXTRA_DELIVERY_MECHANISM
+
     // endregion
 
     @JvmStatic

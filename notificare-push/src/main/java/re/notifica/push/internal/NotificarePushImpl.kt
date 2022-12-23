@@ -12,6 +12,7 @@ import android.content.pm.PackageManager
 import android.graphics.Color
 import android.net.Uri
 import android.os.Build
+import android.os.Parcelable
 import androidx.annotation.Keep
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -585,10 +586,16 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
                 // Attempt to place the item in the inbox.
                 InboxIntegration.addItemToInbox(message, notification)
 
+                val deliveryMechanism = when {
+                    message.notify -> NotificareNotificationDeliveryMechanism.STANDARD
+                    else -> NotificareNotificationDeliveryMechanism.SILENT
+                }
+
                 Notificare.requireContext().sendBroadcast(
                     Intent(Notificare.requireContext(), intentReceiver)
                         .setAction(Notificare.INTENT_ACTION_NOTIFICATION_RECEIVED)
                         .putExtra(Notificare.INTENT_EXTRA_NOTIFICATION, notification)
+                        .putExtra(Notificare.INTENT_EXTRA_DELIVERY_MECHANISM, deliveryMechanism as Parcelable)
                 )
             } catch (e: Exception) {
                 NotificareLogger.error("Unable to process remote notification.", e)
