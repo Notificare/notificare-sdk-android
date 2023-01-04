@@ -2,10 +2,10 @@ package re.notifica.push.hms
 
 import com.huawei.hms.push.HmsMessageService
 import com.huawei.hms.push.RemoteMessage
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import re.notifica.Notificare
 import re.notifica.internal.NotificareLogger
+import re.notifica.internal.ktx.coroutineScope
 import re.notifica.models.NotificareTransport
 import re.notifica.push.hms.internal.NotificareNotificationRemoteMessage
 import re.notifica.push.hms.internal.NotificareSystemRemoteMessage
@@ -19,7 +19,7 @@ public open class NotificarePushService : HmsMessageService() {
     override fun onNewToken(token: String) {
         NotificareLogger.info("Received a new HMS token.")
 
-        GlobalScope.launch {
+        Notificare.coroutineScope.launch {
             try {
                 Notificare.pushInternal().registerPushToken(NotificareTransport.HMS, token)
                 NotificareLogger.info("Registered the device with a HMS token.")

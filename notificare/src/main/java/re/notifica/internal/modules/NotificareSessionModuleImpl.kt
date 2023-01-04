@@ -7,12 +7,12 @@ import android.os.Handler
 import android.os.Looper
 import androidx.annotation.Keep
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import re.notifica.Notificare
 import re.notifica.internal.NotificareLogger
 import re.notifica.internal.NotificareModule
+import re.notifica.internal.ktx.coroutineScope
 import re.notifica.ktx.eventsImplementation
 import java.text.SimpleDateFormat
 import java.util.*
@@ -22,7 +22,7 @@ internal object NotificareSessionModuleImpl : NotificareModule() {
 
     private val handler = Handler(Looper.getMainLooper())
     private val runnable = Runnable {
-        GlobalScope.launch {
+        Notificare.coroutineScope.launch {
             try {
                 stopSession()
             } catch (e: Exception) {
@@ -104,7 +104,7 @@ internal object NotificareSessionModuleImpl : NotificareModule() {
                     return
                 }
 
-                GlobalScope.launch {
+                Notificare.coroutineScope.launch {
                     try {
                         startSession()
                     } catch (e: Exception) {

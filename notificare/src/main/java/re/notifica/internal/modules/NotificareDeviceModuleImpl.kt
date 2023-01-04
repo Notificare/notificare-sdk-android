@@ -10,6 +10,7 @@ import re.notifica.internal.NotificareUtils
 import re.notifica.internal.common.filterNotNull
 import re.notifica.internal.common.toByteArray
 import re.notifica.internal.common.toHex
+import re.notifica.internal.ktx.coroutineScope
 import re.notifica.internal.ktx.toCallbackFunction
 import re.notifica.internal.network.push.*
 import re.notifica.internal.network.request.NotificareRequest
@@ -454,8 +455,7 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
     }
 
     internal fun registerTestDevice(nonce: String, callback: NotificareCallback<Unit>) {
-        @OptIn(DelicateCoroutinesApi::class)
-        GlobalScope.launch {
+        Notificare.coroutineScope.launch {
             withContext(Dispatchers.IO) {
                 try {
                     NotificareRequest.Builder()

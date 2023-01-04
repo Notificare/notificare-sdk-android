@@ -6,12 +6,12 @@ import com.android.billingclient.api.*
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import re.notifica.InternalNotificareApi
 import re.notifica.Notificare
 import re.notifica.internal.NotificareLogger
+import re.notifica.internal.ktx.coroutineScope
 import re.notifica.internal.network.request.NotificareRequest
 import re.notifica.monetize.BillingException
 import re.notifica.monetize.gms.internal.ktx.from
@@ -126,7 +126,7 @@ public class ServiceManager : ServiceManager(), BillingClientStateListener, Purc
             return
         }
 
-        GlobalScope.launch {
+        Notificare.coroutineScope.launch {
             try {
                 refresh()
             } catch (e: Exception) {
@@ -154,7 +154,7 @@ public class ServiceManager : ServiceManager(), BillingClientStateListener, Purc
                 NotificareLogger.debug("${purchases.count { it.purchaseState == Purchase.PurchaseState.PENDING }} pending items.")
                 NotificareLogger.debug("${purchases.count { it.purchaseState == Purchase.PurchaseState.UNSPECIFIED_STATE }} undefined state items.")
 
-                GlobalScope.launch {
+                Notificare.coroutineScope.launch {
                     try {
                         for (purchase in purchases.filter { it.purchaseState == Purchase.PurchaseState.PURCHASED }) {
                             try {

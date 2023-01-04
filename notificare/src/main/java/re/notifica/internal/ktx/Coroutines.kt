@@ -2,12 +2,21 @@ package re.notifica.internal.ktx
 
 import kotlinx.coroutines.*
 import re.notifica.InternalNotificareApi
+import re.notifica.Notificare
 import re.notifica.NotificareCallback
+
+private val ncCoroutineScope: CoroutineScope by lazy {
+    CoroutineScope(Dispatchers.IO + SupervisorJob())
+}
+
+@Suppress("unused")
+@InternalNotificareApi
+public val Notificare.coroutineScope: CoroutineScope
+    get() = ncCoroutineScope
 
 @PublishedApi
 internal fun <T> awaitSuspend(fn: (suspend () -> T), callback: NotificareCallback<T>) {
-    @OptIn(DelicateCoroutinesApi::class)
-    GlobalScope.launch(Dispatchers.IO) {
+    Notificare.coroutineScope.launch {
         try {
             val result = fn()
 

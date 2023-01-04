@@ -29,6 +29,7 @@ import re.notifica.NotificareNotConfiguredException
 import re.notifica.internal.NotificareLogger
 import re.notifica.internal.NotificareModule
 import re.notifica.internal.NotificareUtils
+import re.notifica.internal.ktx.coroutineScope
 import re.notifica.internal.ktx.parcelable
 import re.notifica.internal.ktx.toCallbackFunction
 import re.notifica.internal.network.request.NotificareRequest
@@ -216,8 +217,7 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
     }
 
     override fun disableRemoteNotifications() {
-        @OptIn(DelicateCoroutinesApi::class)
-        GlobalScope.launch {
+        Notificare.coroutineScope.launch {
             try {
                 // Keep track of the status in local storage.
                 sharedPreferences.remoteNotificationsEnabled = false
@@ -373,8 +373,7 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
         notification: NotificareNotification,
         action: NotificareNotification.Action?
     ) {
-        @OptIn(DelicateCoroutinesApi::class)
-        GlobalScope.launch(Dispatchers.IO) {
+        Notificare.coroutineScope.launch {
             // Log the notification open event.
             Notificare.events().logNotificationOpen(notification.id)
             Notificare.events().logNotificationInfluenced(notification.id)
@@ -564,8 +563,7 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
     }
 
     private fun handleNotification(message: NotificareNotificationRemoteMessage) {
-        @OptIn(DelicateCoroutinesApi::class)
-        GlobalScope.launch {
+        Notificare.coroutineScope.launch {
             try {
                 Notificare.events().logNotificationReceived(message.notificationId)
 
@@ -839,8 +837,7 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
     private fun onApplicationForeground() {
         if (!Notificare.isReady) return
 
-        @Suppress("OPT_IN_USAGE")
-        GlobalScope.launch {
+        Notificare.coroutineScope.launch {
             try {
                 updateNotificationSettings()
             } catch (e: Exception) {

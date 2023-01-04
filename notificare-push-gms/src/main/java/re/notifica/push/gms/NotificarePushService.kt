@@ -2,10 +2,10 @@ package re.notifica.push.gms
 
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import re.notifica.Notificare
 import re.notifica.internal.NotificareLogger
+import re.notifica.internal.ktx.coroutineScope
 import re.notifica.models.NotificareTransport
 import re.notifica.push.gms.internal.NotificareNotificationRemoteMessage
 import re.notifica.push.gms.internal.NotificareSystemRemoteMessage
@@ -19,7 +19,7 @@ public open class NotificarePushService : FirebaseMessagingService() {
     override fun onNewToken(token: String) {
         NotificareLogger.info("Received a new FCM token.")
 
-        GlobalScope.launch {
+        Notificare.coroutineScope.launch {
             try {
                 Notificare.pushInternal().registerPushToken(NotificareTransport.GCM, token)
                 NotificareLogger.info("Registered the device with a FCM token.")
