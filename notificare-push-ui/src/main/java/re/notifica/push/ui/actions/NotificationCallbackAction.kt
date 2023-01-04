@@ -5,12 +5,12 @@ import android.net.Uri
 import android.os.Environment
 import androidx.core.content.FileProvider
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import re.notifica.Notificare
 import re.notifica.internal.NotificareLogger
 import re.notifica.internal.common.onMainThread
+import re.notifica.internal.ktx.coroutineScope
 import re.notifica.models.NotificareNotification
 import re.notifica.push.ui.R
 import re.notifica.push.ui.actions.base.NotificationAction
@@ -142,7 +142,7 @@ internal class NotificationCallbackAction(
             mediaUrl?.let { params["media"] = it }
             mimeType?.let { params["mimeType"] = it }
 
-            GlobalScope.launch(Dispatchers.IO) {
+            Notificare.coroutineScope.launch {
                 try {
                     Notificare.callNotificationReplyWebhook(targetUri, params)
 

@@ -8,15 +8,13 @@ import androidx.annotation.Keep
 import androidx.browser.customtabs.CustomTabColorSchemeParams
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.os.bundleOf
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import re.notifica.Notificare
 import re.notifica.NotificareCallback
 import re.notifica.internal.NotificareLogger
 import re.notifica.internal.NotificareModule
 import re.notifica.internal.common.onMainThread
+import re.notifica.internal.ktx.coroutineScope
 import re.notifica.models.NotificareNotification
 import re.notifica.push.ui.*
 import re.notifica.push.ui.actions.*
@@ -106,8 +104,7 @@ internal object NotificarePushUIImpl : NotificareModule(), NotificarePushUI, Not
     ) {
         NotificareLogger.debug("Presenting notification action '${action.type}' for notification '${notification.id}'.")
 
-        @OptIn(DelicateCoroutinesApi::class)
-        GlobalScope.launch(Dispatchers.IO) {
+        Notificare.coroutineScope.launch {
             try {
                 onMainThread {
                     lifecycleListeners.forEach { it.onActionWillExecute(notification, action) }
