@@ -16,8 +16,7 @@ public val Notificare.coroutineScope: CoroutineScope
 
 @PublishedApi
 internal fun <T> awaitSuspend(fn: (suspend () -> T), callback: NotificareCallback<T>) {
-    @OptIn(DelicateCoroutinesApi::class)
-    GlobalScope.launch(Dispatchers.IO) {
+    Notificare.coroutineScope.launch {
         try {
             val result = fn()
 
