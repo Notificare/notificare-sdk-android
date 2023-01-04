@@ -5,13 +5,13 @@ import androidx.annotation.Keep
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import re.notifica.*
 import re.notifica.internal.NotificareLogger
 import re.notifica.internal.NotificareModule
 import re.notifica.internal.common.onMainThread
+import re.notifica.internal.ktx.coroutineScope
 import re.notifica.internal.ktx.toCallbackFunction
 import re.notifica.internal.moshi
 import re.notifica.internal.network.request.NotificareRequest
@@ -47,7 +47,7 @@ internal object NotificareMonetizeImpl : NotificareModule(), NotificareMonetize,
                 onMainThread {
                     listeners.forEach { it.onBillingSetupFinished() }
 
-                    GlobalScope.launch {
+                    Notificare.coroutineScope.launch {
                         try {
                             val adapter = Notificare.moshi.adapter(NotificarePurchase::class.java)
                             val purchases = checkNotNull(serviceManager).fetchPurchases()
@@ -96,7 +96,7 @@ internal object NotificareMonetizeImpl : NotificareModule(), NotificareMonetize,
                 onMainThread {
                     listeners.forEach { it.onPurchaseFinished(purchase) }
 
-                    GlobalScope.launch {
+                    Notificare.coroutineScope.launch {
                         try {
                             val adapter = Notificare.moshi.adapter(NotificarePurchase::class.java)
 
