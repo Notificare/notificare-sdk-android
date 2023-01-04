@@ -17,6 +17,7 @@ import re.notifica.internal.NotificareLogger
 import re.notifica.internal.NotificareModule
 import re.notifica.internal.common.onMainThread
 import re.notifica.internal.ktx.activityInfo
+import re.notifica.internal.ktx.coroutineScope
 import re.notifica.internal.network.NetworkException
 import re.notifica.internal.network.request.NotificareRequest
 import re.notifica.ktx.device
@@ -172,7 +173,7 @@ internal object NotificareInAppMessagingImpl : NotificareModule(), NotificareInA
     private fun evaluateContext(context: ApplicationContext) {
         NotificareLogger.debug("Checking in-app message for context '${context.rawValue}'.")
 
-        GlobalScope.launch {
+        Notificare.coroutineScope.launch {
             try {
                 val message = fetchInAppMessage(context)
                 processInAppMessage(message)
@@ -198,7 +199,7 @@ internal object NotificareInAppMessagingImpl : NotificareModule(), NotificareInA
         if (message.delaySeconds > 0) {
             // Keep a reference to the job to cancel it when
             // the app goes into the background.
-            delayedMessageJob = GlobalScope.launch {
+            delayedMessageJob = Notificare.coroutineScope.launch {
                 try {
                     if (message.delaySeconds > 0) {
                         NotificareLogger.debug("Waiting ${message.delaySeconds} seconds before presenting the in-app message.")
