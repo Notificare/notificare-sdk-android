@@ -79,11 +79,15 @@ public object NotificareUtils {
             .load(url)
             .into(object : CustomTarget<Bitmap>() {
                 override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
-                    continuation.resume(resource)
+                    if (continuation.isActive) {
+                        continuation.resume(resource)
+                    }
                 }
 
                 override fun onLoadFailed(errorDrawable: Drawable?) {
-                    continuation.resumeWithException(RuntimeException("Failed to load the bit at $url"))
+                    if (continuation.isActive) {
+                        continuation.resumeWithException(RuntimeException("Failed to load the bit at $url"))
+                    }
                 }
 
                 override fun onLoadCleared(placeholder: Drawable?) {}
