@@ -23,8 +23,17 @@ internal data class ApplicationResponse(
         val inboxConfig: NotificareApplication.InboxConfig?,
         val regionConfig: NotificareApplication.RegionConfig?,
         val userDataFields: List<NotificareApplication.UserDataField>,
-        val actionCategories: List<NotificareApplication.ActionCategory>
+        val actionCategories: List<ActionCategory>
     ) {
+
+        @JsonClass(generateAdapter = true)
+        internal data class ActionCategory(
+            val type: String,
+            val name: String,
+            val description: String?,
+            val actions: List<NotificationResponse.Notification.Action>,
+        )
+
         fun toModel(): NotificareApplication {
             return NotificareApplication(
                 id,
@@ -34,7 +43,26 @@ internal data class ApplicationResponse(
                 inboxConfig,
                 regionConfig,
                 userDataFields,
-                actionCategories
+                actionCategories.map { category ->
+                    NotificareApplication.ActionCategory(
+                        category.type,
+                        category.name,
+                        category.description,
+                        category.actions.mapNotNull { action ->
+                            if (action.label == null) return@mapNotNull null
+
+                            NotificareNotification.Action(
+                                action.type,
+                                action.label,
+                                action.target,
+                                action.camera,
+                                action.keyboard,
+                                action.destructive,
+                                action.icon
+                            )
+                        }
+                    )
+                }
             )
         }
     }
@@ -71,10 +99,22 @@ public data class NotificationResponse(
         val subtitle: String?,
         val message: String,
         val content: List<NotificareNotification.Content> = listOf(),
-        val actions: List<NotificareNotification.Action> = listOf(),
+        val actions: List<Action> = listOf(),
         val attachments: List<NotificareNotification.Attachment> = listOf(),
         val extra: Map<String, Any> = mapOf(),
     ) {
+
+        @JsonClass(generateAdapter = true)
+        public data class Action(
+            val type: String,
+            val label: String?,
+            val target: String?,
+            val camera: Boolean,
+            val keyboard: Boolean,
+            val destructive: Boolean?,
+            val icon: NotificareNotification.Action.Icon?,
+        )
+
         public fun toModel(): NotificareNotification {
             return NotificareNotification(
                 id,
@@ -85,7 +125,19 @@ public data class NotificationResponse(
                 subtitle,
                 message,
                 content,
-                actions,
+                actions.mapNotNull { action ->
+                    if (action.label == null) return@mapNotNull null
+
+                    NotificareNotification.Action(
+                        action.type,
+                        action.label,
+                        action.target,
+                        action.camera,
+                        action.keyboard,
+                        action.destructive,
+                        action.icon
+                    )
+                },
                 attachments,
                 extra
             )
