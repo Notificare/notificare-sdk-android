@@ -48,19 +48,7 @@ internal data class ApplicationResponse(
                         category.type,
                         category.name,
                         category.description,
-                        category.actions.mapNotNull { action ->
-                            if (action.label == null) return@mapNotNull null
-
-                            NotificareNotification.Action(
-                                action.type,
-                                action.label,
-                                action.target,
-                                action.camera,
-                                action.keyboard,
-                                action.destructive,
-                                action.icon
-                            )
-                        }
+                        category.actions.mapNotNull { it.toModel() }
                     )
                 }
             )
@@ -109,11 +97,26 @@ public data class NotificationResponse(
             val type: String,
             val label: String?,
             val target: String?,
-            val camera: Boolean,
-            val keyboard: Boolean,
+            val camera: Boolean?,
+            val keyboard: Boolean?,
             val destructive: Boolean?,
             val icon: NotificareNotification.Action.Icon?,
-        )
+        ) {
+
+            public fun toModel(): NotificareNotification.Action? {
+                if (label == null) return null
+
+                return NotificareNotification.Action(
+                    type,
+                    label,
+                    target,
+                    camera ?: false,
+                    keyboard ?: false,
+                    destructive,
+                    icon
+                )
+            }
+        }
 
         public fun toModel(): NotificareNotification {
             return NotificareNotification(
@@ -125,19 +128,7 @@ public data class NotificationResponse(
                 subtitle,
                 message,
                 content,
-                actions.mapNotNull { action ->
-                    if (action.label == null) return@mapNotNull null
-
-                    NotificareNotification.Action(
-                        action.type,
-                        action.label,
-                        action.target,
-                        action.camera,
-                        action.keyboard,
-                        action.destructive,
-                        action.icon
-                    )
-                },
+                actions.mapNotNull { it.toModel() },
                 attachments,
                 extra
             )
