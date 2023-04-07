@@ -340,8 +340,8 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
                 oldDeviceId = oldDeviceId,
                 userId = userId,
                 userName = userName,
-                language = getLanguage(),
-                region = getRegion(),
+                language = getDeviceLanguage(),
+                region = getDeviceRegion(),
                 platform = "Android",
                 transport = transport,
                 osVersion = NotificareUtils.osVersion,
@@ -423,12 +423,12 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
             changed = true
         }
 
-        if (device.language != getLanguage()) {
+        if (device.language != getDeviceLanguage()) {
             NotificareLogger.debug("Registration check: language changed")
             changed = true
         }
 
-        if (device.region != getRegion()) {
+        if (device.region != getDeviceRegion()) {
             NotificareLogger.debug("Registration check: region changed")
             changed = true
         }
@@ -446,11 +446,11 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
         return changed
     }
 
-    private fun getLanguage(): String {
+    private fun getDeviceLanguage(): String {
         return Notificare.sharedPreferences.preferredLanguage ?: NotificareUtils.deviceLanguage
     }
 
-    private fun getRegion(): String {
+    private fun getDeviceRegion(): String {
         return Notificare.sharedPreferences.preferredRegion ?: NotificareUtils.deviceRegion
     }
 
@@ -484,8 +484,8 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
             .put(
                 url = "/device/${device.id}",
                 body = DeviceUpdateLanguagePayload(
-                    language = getLanguage(),
-                    region = getRegion(),
+                    language = getDeviceLanguage(),
+                    region = getDeviceRegion(),
                 ),
             )
             .response()
@@ -500,8 +500,8 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
             .put(
                 url = "/device/${device.id}",
                 body = DeviceUpdateTimeZonePayload(
-                    language = getLanguage(),
-                    region = getRegion(),
+                    language = getDeviceLanguage(),
+                    region = getDeviceRegion(),
                     timeZoneOffset = NotificareUtils.timeZoneOffset,
                 ),
             )
