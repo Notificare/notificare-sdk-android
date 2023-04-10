@@ -35,7 +35,11 @@ internal class NotificareSystemIntentReceiver : BroadcastReceiver() {
 
         Notificare.coroutineScope.launch {
             try {
-                Notificare.deviceImplementation().updateLanguage()
+                Notificare.deviceImplementation().updateLanguage(
+                    language = Notificare.deviceImplementation().getDeviceLanguage(),
+                    region = Notificare.deviceImplementation().getDeviceRegion(),
+                )
+
                 NotificareLogger.debug("Successfully updated device locale.")
             } catch (e: Exception) {
                 NotificareLogger.error("Failed to update device locale.", e)
