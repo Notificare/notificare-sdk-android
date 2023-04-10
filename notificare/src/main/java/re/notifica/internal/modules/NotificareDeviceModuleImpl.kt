@@ -103,15 +103,19 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
                 throw IllegalArgumentException("Invalid preferred language value: $preferredLanguage")
             }
 
-            Notificare.sharedPreferences.preferredLanguage = parts[0]
-            Notificare.sharedPreferences.preferredRegion = parts[1]
+            val language = parts[0]
+            val region = parts[1]
+            updateLanguage(language, region)
 
-            updateLanguage()
+            Notificare.sharedPreferences.preferredLanguage = language
+            Notificare.sharedPreferences.preferredRegion = region
         } else {
+            val language = NotificareUtils.deviceLanguage
+            val region = NotificareUtils.deviceRegion
+            updateLanguage(language, region)
+
             Notificare.sharedPreferences.preferredLanguage = null
             Notificare.sharedPreferences.preferredRegion = null
-
-            updateLanguage()
         }
     }
 
@@ -446,11 +450,11 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
         return changed
     }
 
-    private fun getDeviceLanguage(): String {
+    internal fun getDeviceLanguage(): String {
         return Notificare.sharedPreferences.preferredLanguage ?: NotificareUtils.deviceLanguage
     }
 
-    private fun getDeviceRegion(): String {
+    internal fun getDeviceRegion(): String {
         return Notificare.sharedPreferences.preferredRegion ?: NotificareUtils.deviceRegion
     }
 
@@ -475,7 +479,7 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
         }
     }
 
-    internal suspend fun updateLanguage() {
+    internal suspend fun updateLanguage(language: String, region: String) {
         checkPrerequisites()
 
         val device = checkNotNull(currentDevice)
@@ -484,11 +488,17 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
             .put(
                 url = "/device/${device.id}",
                 body = DeviceUpdateLanguagePayload(
-                    language = getDeviceLanguage(),
-                    region = getDeviceRegion(),
+                    language = language,
+                    region = region,
                 ),
             )
             .response()
+
+        // Update current device properties.
+        currentDevice = device.copy(
+            language = language,
+            region = region,
+        )
     }
 
     internal suspend fun updateTimeZone() {
