@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## 3.5.1
+
+- Improved action categories parsing
+- Prevent Glide from invoking the coroutine continuation several times
+- Fix cached language when the network request fails
+- Update cached device when the language changes
+- Use YouTube privacy-enhanced mode
+
 ## 3.5.0
 
 - Add user-level inbox module
