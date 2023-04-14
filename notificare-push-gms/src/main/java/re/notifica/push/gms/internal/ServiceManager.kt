@@ -5,11 +5,11 @@ import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.ktx.messaging
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import re.notifica.InternalNotificareApi
 import re.notifica.Notificare
 import re.notifica.internal.NotificareLogger
+import re.notifica.internal.ktx.coroutineScope
 import re.notifica.models.NotificareTransport
 import re.notifica.push.gms.ktx.pushInternal
 import re.notifica.push.internal.ServiceManager
@@ -30,7 +30,7 @@ public class ServiceManager : ServiceManager() {
             if (task.isSuccessful && task.result != null) {
                 NotificareLogger.info("Retrieved FCM token.")
 
-                GlobalScope.launch {
+                Notificare.coroutineScope.launch {
                     try {
                         Notificare.pushInternal().registerPushToken(transport, token = requireNotNull(task.result))
                         NotificareLogger.debug("Registered the device with a FCM token.")

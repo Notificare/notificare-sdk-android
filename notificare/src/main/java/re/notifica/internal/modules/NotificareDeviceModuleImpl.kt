@@ -10,6 +10,7 @@ import re.notifica.internal.NotificareUtils
 import re.notifica.internal.common.filterNotNull
 import re.notifica.internal.common.toByteArray
 import re.notifica.internal.common.toHex
+import re.notifica.internal.ktx.coroutineScope
 import re.notifica.internal.ktx.toCallbackFunction
 import re.notifica.internal.network.push.*
 import re.notifica.internal.network.request.NotificareRequest
@@ -102,15 +103,19 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
                 throw IllegalArgumentException("Invalid preferred language value: $preferredLanguage")
             }
 
-            Notificare.sharedPreferences.preferredLanguage = parts[0]
-            Notificare.sharedPreferences.preferredRegion = parts[1]
+            val language = parts[0]
+            val region = parts[1]
+            updateLanguage(language, region)
 
-            updateLanguage()
+            Notificare.sharedPreferences.preferredLanguage = language
+            Notificare.sharedPreferences.preferredRegion = region
         } else {
+            val language = NotificareUtils.deviceLanguage
+            val region = NotificareUtils.deviceRegion
+            updateLanguage(language, region)
+
             Notificare.sharedPreferences.preferredLanguage = null
             Notificare.sharedPreferences.preferredRegion = null
-
-            updateLanguage()
         }
     }
 
@@ -339,8 +344,8 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
                 oldDeviceId = oldDeviceId,
                 userId = userId,
                 userName = userName,
-                language = getLanguage(),
-                region = getRegion(),
+                language = getDeviceLanguage(),
+                region = getDeviceRegion(),
                 platform = "Android",
                 transport = transport,
                 osVersion = NotificareUtils.osVersion,
@@ -422,12 +427,12 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
             changed = true
         }
 
-        if (device.language != getLanguage()) {
+        if (device.language != getDeviceLanguage()) {
             NotificareLogger.debug("Registration check: language changed")
             changed = true
         }
 
-        if (device.region != getRegion()) {
+        if (device.region != getDeviceRegion()) {
             NotificareLogger.debug("Registration check: region changed")
             changed = true
         }
@@ -445,17 +450,16 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
         return changed
     }
 
-    private fun getLanguage(): String {
+    internal fun getDeviceLanguage(): String {
         return Notificare.sharedPreferences.preferredLanguage ?: NotificareUtils.deviceLanguage
     }
 
-    private fun getRegion(): String {
+    internal fun getDeviceRegion(): String {
         return Notificare.sharedPreferences.preferredRegion ?: NotificareUtils.deviceRegion
     }
 
     internal fun registerTestDevice(nonce: String, callback: NotificareCallback<Unit>) {
-        @OptIn(DelicateCoroutinesApi::class)
-        GlobalScope.launch {
+        Notificare.coroutineScope.launch {
             withContext(Dispatchers.IO) {
                 try {
                     NotificareRequest.Builder()
@@ -475,7 +479,7 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
         }
     }
 
-    internal suspend fun updateLanguage() {
+    internal suspend fun updateLanguage(language: String, region: String) {
         checkPrerequisites()
 
         val device = checkNotNull(currentDevice)
@@ -484,11 +488,17 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
             .put(
                 url = "/device/${device.id}",
                 body = DeviceUpdateLanguagePayload(
-                    language = getLanguage(),
-                    region = getRegion(),
+                    language = language,
+                    region = region,
                 ),
             )
             .response()
+
+        // Update current device properties.
+        currentDevice = device.copy(
+            language = language,
+            region = region,
+        )
     }
 
     internal suspend fun updateTimeZone() {
@@ -500,8 +510,8 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
             .put(
                 url = "/device/${device.id}",
                 body = DeviceUpdateTimeZonePayload(
-                    language = getLanguage(),
-                    region = getRegion(),
+                    language = getDeviceLanguage(),
+                    region = getDeviceRegion(),
                     timeZoneOffset = NotificareUtils.timeZoneOffset,
                 ),
             )

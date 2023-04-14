@@ -29,6 +29,7 @@ import re.notifica.geo.models.*
 import re.notifica.internal.NotificareLogger
 import re.notifica.internal.NotificareModule
 import re.notifica.internal.common.onMainThread
+import re.notifica.internal.ktx.coroutineScope
 import re.notifica.internal.modules.integrations.NotificareGeoIntegration
 import re.notifica.internal.network.request.NotificareRequest
 import re.notifica.ktx.device
@@ -225,8 +226,7 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
         updateBluetoothState(hasBeaconSupport)
 
         if (!hasForegroundLocationPermission) {
-            @OptIn(DelicateCoroutinesApi::class)
-            GlobalScope.launch {
+            Notificare.coroutineScope.launch {
                 try {
                     lastKnownLocation = null
                     clearLocation()
@@ -281,8 +281,7 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
         // Ensure we keep the bluetooth state updated in the API.
         updateBluetoothState(hasBeaconSupport)
 
-        @OptIn(DelicateCoroutinesApi::class)
-        GlobalScope.launch {
+        Notificare.coroutineScope.launch {
             try {
                 clearLocation()
                 NotificareLogger.debug("Device location cleared.")
@@ -357,8 +356,7 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
             // Keep a reference to the last known location.
             lastKnownLocation = location
 
-            @OptIn(DelicateCoroutinesApi::class)
-            GlobalScope.launch {
+            Notificare.coroutineScope.launch {
                 try {
                     val country = getCountryCode(location)
 
@@ -391,8 +389,7 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
                 NotificareLogger.debug("Handling polygon region (${region.name}).")
 
                 if (!localStorage.enteredRegions.contains(regionId)) {
-                    @OptIn(DelicateCoroutinesApi::class)
-                    GlobalScope.launch {
+                    Notificare.coroutineScope.launch {
                         try {
                             val location = checkNotNull(serviceManager).getCurrentLocationAsync().await()
                             val inside = region.contains(location)

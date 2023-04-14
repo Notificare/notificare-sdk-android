@@ -5,11 +5,10 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import androidx.core.app.RemoteInput
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import re.notifica.Notificare
 import re.notifica.internal.NotificareLogger
+import re.notifica.internal.ktx.coroutineScope
 import re.notifica.internal.ktx.parcelable
 import re.notifica.ktx.events
 import re.notifica.models.NotificareNotification
@@ -49,7 +48,7 @@ internal class NotificarePushSystemIntentReceiver : BroadcastReceiver() {
         action: NotificareNotification.Action,
         responseText: String?
     ) {
-        GlobalScope.launch(Dispatchers.IO) {
+        Notificare.coroutineScope.launch {
             // Log the notification open event.
             Notificare.events().logNotificationOpen(notification.id)
 
@@ -94,7 +93,7 @@ internal class NotificarePushSystemIntentReceiver : BroadcastReceiver() {
         params["label"] = action.label
         responseText?.let { params["message"] = it }
 
-        GlobalScope.launch(Dispatchers.IO) {
+        Notificare.coroutineScope.launch {
             try {
                 Notificare.callNotificationReplyWebhook(targetUri, params)
 
@@ -113,7 +112,7 @@ internal class NotificarePushSystemIntentReceiver : BroadcastReceiver() {
         action: NotificareNotification.Action,
         responseText: String?
     ) {
-        GlobalScope.launch(Dispatchers.IO) {
+        Notificare.coroutineScope.launch {
             try {
                 Notificare.createNotificationReply(
                     notification = notification,

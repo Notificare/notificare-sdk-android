@@ -44,9 +44,9 @@ public class NotificareVideoFragment : NotificationFragment() {
 
         val content = notification.content.firstOrNull()
         val html = when (content?.type) {
-            "re.notifica.content.YouTube" -> String.format(youTubeVideoHTML, content.data)
-            "re.notifica.content.Vimeo" -> String.format(vimeoVideoHTML, content.data)
-            "re.notifica.content.HTML5Video" -> String.format(html5Video, content.data)
+            "re.notifica.content.YouTube" -> getYouTubeVideoHtml(content.data as String)
+            "re.notifica.content.Vimeo" -> getVimeoVideoHtml(content.data as String)
+            "re.notifica.content.HTML5Video" -> getHtml5VideoHtml(content.data as String)
             else -> {
                 onMainThread {
                     Notificare.pushUIInternal().lifecycleListeners.forEach {
@@ -91,6 +91,114 @@ public class NotificareVideoFragment : NotificationFragment() {
         binding.webView.destroy()
     }
 
+    private fun getYouTubeVideoHtml(videoId: String): String {
+        return """
+            <!DOCTYPE html>
+            <html>
+            <head>
+              <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+              <style>
+                body {
+                  margin: 0;
+                }
+                
+                #player {
+                  width: 100vw;
+                  height: 100vh;
+                }
+              </style>
+            </head>
+            <body>
+            <iframe src="https://www.youtube-nocookie.com/embed/$videoId?enablejsapi=1"
+                    id="player"
+                    frameborder="0"
+                    webkitallowfullscreen
+                    mozallowfullscreen
+                    allowfullscreen
+            ></iframe>
+            
+            <script type="text/javascript">
+              var tag = document.createElement("script");
+              tag.src = "https://www.youtube.com/iframe_api";
+              
+              var firstScriptTag = document.getElementsByTagName("script")[0];
+              firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+              
+              var player;
+              
+              function onYouTubeIframeAPIReady() {
+                player = new YT.Player("player", {
+                  events: {
+                    "onReady": onPlayerReady
+                  }
+                });
+              }
+              
+              function onPlayerReady(event) {
+                event.target.playVideo();
+              }
+            </script>
+            </body>
+            </html>
+        """.trimIndent()
+    }
+
+    private fun getVimeoVideoHtml(videoId: String): String {
+        return """
+            <!DOCTYPE html>
+            <html>
+            <head>
+              <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+              <style>
+                body {
+                  margin: 0;
+                }
+                
+                #player {
+                  width: 100vw;
+                  height: 100vh;
+                }
+              </style>
+            </head>
+            <body>
+            <iframe src="https://player.vimeo.com/video/$videoId?autoplay=1"
+                    id="player"
+                    frameborder="0"
+                    webkitallowfullscreen
+                    mozallowfullscreen
+                    allowfullscreen
+            ></iframe>
+            </body>
+            </html>
+        """.trimIndent()
+    }
+
+    private fun getHtml5VideoHtml(videoId: String): String {
+        return """
+            <!DOCTYPE html>
+            <html>
+            <head>
+              <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+              <style>
+                body {
+                  margin: 0;
+                }
+                
+                #player {
+                  width: 100vw;
+                  height: 100vh;
+                }
+              </style>
+            </head>
+            <body>
+            <video id="player" autoplay controls preload>
+              <source src="$videoId" type="video/mp4" />
+            </video>
+            </body>
+            </html>
+        """.trimIndent()
+    }
+
     public inner class VideoChromeClient : WebChromeClient() {
         override fun onShowCustomView(view: View, callback: CustomViewCallback) {
             // if a view already exists then immediately terminate the new one
@@ -132,16 +240,5 @@ public class NotificareVideoFragment : NotificationFragment() {
             binding.webView.isVisible = true
             callback.onNotificationFragmentShouldShowActionBar()
         }
-    }
-
-    public companion object {
-        private const val youTubeVideoHTML =
-            "<!DOCTYPE html><html><head><meta name=\"viewport\" content=\"initial-scale=1, maximum-scale=1\"><style>body{margin:0px 0px 0px 0px;} #player{width: 100vw; height: 100vh;}</style></head><body><div id=\"player\"></div><script>var tag = document.createElement('script'); tag.src = 'https://www.youtube.com/player_api'; var firstScriptTag = document.getElementsByTagName('script')[0]; firstScriptTag.parentNode.insertBefore(tag, firstScriptTag); var player; function onYouTubePlayerAPIReady() { player = new YT.Player('player', { width:window.innerWidth, height:window.innerHeight, videoId:'%s', events: { onReady: onPlayerReady } }); } function onPlayerReady(event) { event.target.playVideo(); } function resizePlayer(width, height) {player.setSize(width, height);}</script></body></html>"
-
-        private const val vimeoVideoHTML =
-            "<!DOCTYPE html><html><head><meta name=\"viewport\" content=\"initial-scale=1, maximum-scale=1\"><style>body{margin:0px 0px 0px 0px;} #player{width: 100vw; height: 100vh;}</style></head><body><iframe id=\"player\" src=\"https://player.vimeo.com/video/%s?autoplay=1\" frameborder=\"0\" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe><script>function resizePlayer(width, height) {var player = document.getElementById('player'); player.width = width; player.height = height;}</script></body> </html>"
-
-        private const val html5Video =
-            "<!DOCTYPE html><html><head><meta name=\"viewport\" content=\"initial-scale=1, maximum-scale=1\"><style>body{margin:0px 0px 0px 0px;} #player{width: 100vw; height: 100vh;}</style></head><body><video id=\"player\" autoplay controls preload><source src=\"%s\" type=\"video/mp4\"/></video><script>function resizePlayer(width, height) {var player = document.getElementById('player'); player.height = height;}</script></body></html>"
     }
 }

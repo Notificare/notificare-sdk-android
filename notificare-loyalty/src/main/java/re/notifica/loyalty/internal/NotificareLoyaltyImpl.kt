@@ -17,11 +17,14 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.work.*
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import re.notifica.*
 import re.notifica.internal.NotificareLogger
 import re.notifica.internal.NotificareModule
 import re.notifica.internal.NotificareUtils
+import re.notifica.internal.ktx.coroutineScope
 import re.notifica.internal.ktx.toCallbackFunction
 import re.notifica.internal.modules.integrations.NotificareGeoIntegration
 import re.notifica.internal.modules.integrations.NotificareLoyaltyIntegration
@@ -210,7 +213,7 @@ internal object NotificareLoyaltyImpl : NotificareModule(), NotificareLoyalty, N
     override fun onPassbookSystemNotificationReceived() {
         NotificareLogger.debug("Received a system notification to update the wallet.")
 
-        GlobalScope.launch {
+        Notificare.coroutineScope.launch {
             try {
                 refreshPasses()
             } catch (e: Exception) {
@@ -254,7 +257,7 @@ internal object NotificareLoyaltyImpl : NotificareModule(), NotificareLoyalty, N
     // region Notificare.OnReadyListener
 
     override fun onReady(application: NotificareApplication) {
-        GlobalScope.launch {
+        Notificare.coroutineScope.launch {
             try {
                 // Update relevant passes.
                 updateRelevantPasses()
@@ -812,7 +815,7 @@ internal object NotificareLoyaltyImpl : NotificareModule(), NotificareLoyalty, N
             extend(wearableExtender)
         }
 
-        GlobalScope.launch {
+        Notificare.coroutineScope.launch {
             val icon: Bitmap? = pass.icon?.let {
                 try {
                     NotificareUtils.loadBitmap(it)
@@ -894,7 +897,7 @@ internal object NotificareLoyaltyImpl : NotificareModule(), NotificareLoyalty, N
             extend(wearableExtender)
         }
 
-        GlobalScope.launch {
+        Notificare.coroutineScope.launch {
             val icon: Bitmap? = pass.icon?.let {
                 try {
                     NotificareUtils.loadBitmap(it)

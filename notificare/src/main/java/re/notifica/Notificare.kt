@@ -12,6 +12,7 @@ import androidx.core.app.NotificationManagerCompat
 import kotlinx.coroutines.*
 import re.notifica.internal.*
 import re.notifica.internal.common.onMainThread
+import re.notifica.internal.ktx.coroutineScope
 import re.notifica.internal.ktx.toCallbackFunction
 import re.notifica.internal.network.push.*
 import re.notifica.internal.network.request.NotificareRequest
@@ -148,8 +149,7 @@ public object Notificare {
         NotificareLogger.info("Launching Notificare.")
         state = NotificareLaunchState.LAUNCHING
 
-        @OptIn(DelicateCoroutinesApi::class)
-        GlobalScope.launch(Dispatchers.IO) {
+        Notificare.coroutineScope.launch {
             try {
                 val application = fetchApplication()
 
@@ -208,8 +208,7 @@ public object Notificare {
 
         NotificareLogger.info("Un-launching Notificare.")
 
-        @OptIn(DelicateCoroutinesApi::class)
-        GlobalScope.launch {
+        Notificare.coroutineScope.launch {
             try {
                 NotificareLogger.debug("Registering a temporary device.")
                 deviceImplementation().registerTemporary()

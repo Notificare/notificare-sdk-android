@@ -9,7 +9,7 @@ buildscript {
         maven { url 'https://developer.huawei.com/repo' }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.3.1'
+        classpath 'com.android.tools.build:gradle:7.4.2'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath 're.notifica.gradle:notificare-services:1.0.1'
         classpath 'com.google.gms:google-services:4.3.14'
