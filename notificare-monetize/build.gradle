@@ -36,6 +36,12 @@ android {
                 '-opt-in=re.notifica.InternalNotificareApi',
         ]
     }
+
+    publishing {
+        singleVariant('release') {
+            withSourcesJar()
+        }
+    }
 }
 
 dependencies {
