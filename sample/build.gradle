@@ -4,7 +4,7 @@ plugins {
     id 'kotlin-kapt'
     id 're.notifica.gradle.notificare-services'
     id 'com.google.gms.google-services'
-    id 'com.huawei.agconnect'
+    // id 'com.huawei.agconnect'
 }
 
 def properties = new Properties()
