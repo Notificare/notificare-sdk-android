@@ -32,7 +32,6 @@ public abstract class NotificareModule {
         INBOX(fqn = "re.notifica.inbox.internal.NotificareInboxImpl"),
         ASSETS(fqn = "re.notifica.assets.internal.NotificareAssetsImpl"),
         SCANNABLES(fqn = "re.notifica.scannables.internal.NotificareScannablesImpl"),
-        AUTHENTICATION(fqn = "re.notifica.authentication.internal.NotificareAuthenticationImpl"),
         GEO(fqn = "re.notifica.geo.internal.NotificareGeoImpl"),
         LOYALTY(fqn = "re.notifica.loyalty.internal.NotificareLoyaltyImpl"),
         MONETIZE(fqn = "re.notifica.monetize.internal.NotificareMonetizeImpl"),

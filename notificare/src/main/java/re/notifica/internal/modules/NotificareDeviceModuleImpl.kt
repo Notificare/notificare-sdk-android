@@ -46,9 +46,6 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
         } else {
             NotificareLogger.debug("New install detected")
 
-            // Let's logout the user in case there's an account in the keychain
-            // TODO: [[NotificareAuth shared] logoutAccount]
-
             try {
                 registerTemporary()
 

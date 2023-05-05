@@ -1,6 +1,5 @@
 include ':notificare'
 include ':notificare-assets'
-include ':notificare-authentication'
 include ':notificare-geo'
 include ':notificare-geo-beacons'
 include ':notificare-geo-gms'
