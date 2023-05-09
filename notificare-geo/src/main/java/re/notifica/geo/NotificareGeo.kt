@@ -10,6 +10,8 @@ import re.notifica.geo.models.NotificareRegion
 
 public interface NotificareGeo {
 
+    public var intentReceiver: Class<out NotificareGeoIntentReceiver>
+
     public val hasLocationServicesEnabled: Boolean
 
     public val hasBluetoothEnabled: Boolean

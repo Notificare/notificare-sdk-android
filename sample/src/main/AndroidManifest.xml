@@ -136,6 +136,10 @@
             android:exported="false" />
 
         <receiver
+            android:name=".SampleGeoIntentReceiver"
+            android:exported="false" />
+
+        <receiver
             android:name="re.notifica.push.NotificarePushIntentReceiver"
             android:exported="false" />
 
