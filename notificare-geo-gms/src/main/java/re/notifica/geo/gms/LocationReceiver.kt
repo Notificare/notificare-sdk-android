@@ -10,13 +10,13 @@ import com.google.android.gms.location.LocationResult
 import re.notifica.Notificare
 import re.notifica.geo.gms.ktx.geoInternal
 import re.notifica.geo.ktx.INTENT_ACTION_GEOFENCE_TRANSITION
-import re.notifica.geo.ktx.INTENT_ACTION_LOCATION_UPDATED
+import re.notifica.geo.ktx.INTENT_ACTION_INTERNAL_LOCATION_UPDATED
 import re.notifica.internal.NotificareLogger
 
 internal class LocationReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         when (intent.action) {
-            Notificare.INTENT_ACTION_LOCATION_UPDATED -> {
+            Notificare.INTENT_ACTION_INTERNAL_LOCATION_UPDATED -> {
                 if (LocationResult.hasResult(intent)) {
                     val result = LocationResult.extractResult(intent) ?: return
                     val location = result.lastLocation ?: return

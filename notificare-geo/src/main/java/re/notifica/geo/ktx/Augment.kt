@@ -27,8 +27,8 @@ internal fun Notificare.loyaltyIntegration(): NotificareLoyaltyIntegration? {
 // region Intent actions
 
 @InternalNotificareApi
-public val Notificare.INTENT_ACTION_LOCATION_UPDATED: String
-    get() = "re.notifica.intent.action.LocationUpdated"
+public val Notificare.INTENT_ACTION_INTERNAL_LOCATION_UPDATED: String
+    get() = "re.notifica.intent.action.InternalLocationUpdated"
 
 @InternalNotificareApi
 public val Notificare.INTENT_ACTION_GEOFENCE_TRANSITION: String
