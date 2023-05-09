@@ -34,8 +34,42 @@ public val Notificare.INTENT_ACTION_INTERNAL_LOCATION_UPDATED: String
 public val Notificare.INTENT_ACTION_GEOFENCE_TRANSITION: String
     get() = "re.notifica.intent.action.GeofenceTransition"
 
+public val Notificare.INTENT_ACTION_LOCATION_UPDATED: String
+    get() = "re.notifica.intent.action.LocationUpdated"
+
+public val Notificare.INTENT_ACTION_REGION_ENTERED: String
+    get() = "re.notifica.intent.action.RegionEntered"
+
+public val Notificare.INTENT_ACTION_REGION_EXITED: String
+    get() = "re.notifica.intent.action.RegionExited"
+
+public val Notificare.INTENT_ACTION_BEACON_ENTERED: String
+    get() = "re.notifica.intent.action.BeaconEntered"
+
+public val Notificare.INTENT_ACTION_BEACON_EXITED: String
+    get() = "re.notifica.intent.action.BeaconExited"
+
+public val Notificare.INTENT_ACTION_BEACONS_RANGED: String
+    get() = "re.notifica.intent.action.BeaconsRanged"
+
 public val Notificare.INTENT_ACTION_BEACON_NOTIFICATION_OPENED: String
     get() = "re.notifica.intent.action.BeaconNotificationOpened"
+
+// endregion
+
+// region Intent extras
+
+public val Notificare.INTENT_EXTRA_LOCATION: String
+    get() = "re.notifica.intent.extra.Location"
+
+public val Notificare.INTENT_EXTRA_REGION: String
+    get() = "re.notifica.intent.extra.Region"
+
+public val Notificare.INTENT_EXTRA_BEACON: String
+    get() = "re.notifica.intent.extra.Beacon"
+
+public val Notificare.INTENT_EXTRA_RANGED_BEACONS: String
+    get() = "re.notifica.intent.extra.RangedBeacons"
 
 // endregion
 

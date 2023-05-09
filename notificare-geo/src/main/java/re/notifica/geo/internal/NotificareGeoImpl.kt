@@ -3,6 +3,7 @@ package re.notifica.geo.internal
 import android.Manifest
 import android.bluetooth.BluetoothManager
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.location.Address
@@ -17,11 +18,22 @@ import kotlinx.coroutines.*
 import okhttp3.Response
 import re.notifica.*
 import re.notifica.geo.NotificareGeo
+import re.notifica.geo.NotificareGeoIntentReceiver
 import re.notifica.geo.NotificareInternalGeo
 import re.notifica.geo.NotificareLocationHardwareUnavailableException
 import re.notifica.geo.internal.network.push.*
 import re.notifica.geo.internal.storage.LocalStorage
 import re.notifica.geo.ktx.DEFAULT_LOCATION_UPDATES_SMALLEST_DISPLACEMENT
+import re.notifica.geo.ktx.INTENT_ACTION_BEACONS_RANGED
+import re.notifica.geo.ktx.INTENT_ACTION_BEACON_ENTERED
+import re.notifica.geo.ktx.INTENT_ACTION_BEACON_EXITED
+import re.notifica.geo.ktx.INTENT_ACTION_LOCATION_UPDATED
+import re.notifica.geo.ktx.INTENT_ACTION_REGION_ENTERED
+import re.notifica.geo.ktx.INTENT_ACTION_REGION_EXITED
+import re.notifica.geo.ktx.INTENT_EXTRA_BEACON
+import re.notifica.geo.ktx.INTENT_EXTRA_LOCATION
+import re.notifica.geo.ktx.INTENT_EXTRA_RANGED_BEACONS
+import re.notifica.geo.ktx.INTENT_EXTRA_REGION
 import re.notifica.geo.ktx.logBeaconSession
 import re.notifica.geo.ktx.logRegionSession
 import re.notifica.geo.ktx.loyaltyIntegration
@@ -189,6 +201,8 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
 
     // region Notificare Geo
 
+    override var intentReceiver: Class<out NotificareGeoIntentReceiver> = NotificareGeoIntentReceiver::class.java
+
     override var hasLocationServicesEnabled: Boolean
         get() {
             if (::localStorage.isInitialized) {
@@ -333,6 +347,12 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
                     onMainThread {
                         listeners.forEach { it.onRegionEntered(region) }
                     }
+
+                    Notificare.requireContext().sendBroadcast(
+                        Intent(Notificare.requireContext(), intentReceiver)
+                            .setAction(Notificare.INTENT_ACTION_REGION_ENTERED)
+                            .putExtra(Notificare.INTENT_EXTRA_REGION, region)
+                    )
                 } else if (entered && !inside) {
                     triggerRegionExit(region)
                     stopRegionSession(region)
@@ -340,6 +360,12 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
                     onMainThread {
                         listeners.forEach { it.onRegionExited(region) }
                     }
+
+                    Notificare.requireContext().sendBroadcast(
+                        Intent(Notificare.requireContext(), intentReceiver)
+                            .setAction(Notificare.INTENT_ACTION_REGION_EXITED)
+                            .putExtra(Notificare.INTENT_EXTRA_REGION, region)
+                    )
                 }
 
                 if (inside) {
@@ -375,6 +401,12 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
             listeners.forEach { it.onLocationUpdated(NotificareLocation(location)) }
         }
 
+        Notificare.requireContext().sendBroadcast(
+            Intent(Notificare.requireContext(), intentReceiver)
+                .setAction(Notificare.INTENT_ACTION_LOCATION_UPDATED)
+                .putExtra(Notificare.INTENT_EXTRA_LOCATION, NotificareLocation(location))
+        )
+
         Notificare.loyaltyIntegration()?.onPassbookLocationRelevanceChanged()
     }
 
@@ -406,6 +438,12 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
                                 onMainThread {
                                     listeners.forEach { it.onRegionEntered(region) }
                                 }
+
+                                Notificare.requireContext().sendBroadcast(
+                                    Intent(Notificare.requireContext(), intentReceiver)
+                                        .setAction(Notificare.INTENT_ACTION_REGION_ENTERED)
+                                        .putExtra(Notificare.INTENT_EXTRA_REGION, region)
+                                )
                             }
                         } catch (e: Exception) {
                             NotificareLogger.warning("Failed to determine the current location.", e)
@@ -427,6 +465,12 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
                 onMainThread {
                     listeners.forEach { it.onRegionEntered(region) }
                 }
+
+                Notificare.requireContext().sendBroadcast(
+                    Intent(Notificare.requireContext(), intentReceiver)
+                        .setAction(Notificare.INTENT_ACTION_REGION_ENTERED)
+                        .putExtra(Notificare.INTENT_EXTRA_REGION, region)
+                )
             }
 
             // Start monitoring for beacons in this region.
@@ -449,6 +493,12 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
                 onMainThread {
                     listeners.forEach { it.onRegionExited(region) }
                 }
+
+                Notificare.requireContext().sendBroadcast(
+                    Intent(Notificare.requireContext(), intentReceiver)
+                        .setAction(Notificare.INTENT_ACTION_REGION_EXITED)
+                        .putExtra(Notificare.INTENT_EXTRA_REGION, region)
+                )
             }
 
             // Stop monitoring for beacons in this region.
@@ -475,6 +525,12 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
             onMainThread {
                 listeners.forEach { it.onBeaconEntered(beacon) }
             }
+
+            Notificare.requireContext().sendBroadcast(
+                Intent(Notificare.requireContext(), intentReceiver)
+                    .setAction(Notificare.INTENT_ACTION_BEACON_ENTERED)
+                    .putExtra(Notificare.INTENT_EXTRA_BEACON, beacon)
+            )
         }
 
         Notificare.loyaltyIntegration()?.onPassbookLocationRelevanceChanged()
@@ -499,6 +555,12 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
             onMainThread {
                 listeners.forEach { it.onBeaconExited(beacon) }
             }
+
+            Notificare.requireContext().sendBroadcast(
+                Intent(Notificare.requireContext(), intentReceiver)
+                    .setAction(Notificare.INTENT_ACTION_BEACON_EXITED)
+                    .putExtra(Notificare.INTENT_EXTRA_BEACON, beacon)
+            )
         }
 
         Notificare.loyaltyIntegration()?.onPassbookLocationRelevanceChanged()
@@ -536,6 +598,13 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
         onMainThread {
             listeners.forEach { it.onBeaconsRanged(region, cachedBeacons) }
         }
+
+        Notificare.requireContext().sendBroadcast(
+            Intent(Notificare.requireContext(), intentReceiver)
+                .setAction(Notificare.INTENT_ACTION_BEACONS_RANGED)
+                .putExtra(Notificare.INTENT_EXTRA_REGION, region)
+                .putParcelableArrayListExtra(Notificare.INTENT_EXTRA_RANGED_BEACONS, ArrayList(cachedBeacons))
+        )
     }
 
     // endregion

@@ -16,10 +16,26 @@ public inline fun <reified T : Parcelable> Intent.parcelable(key: String): T? {
 }
 
 @InternalNotificareApi
+public inline fun <reified T : Parcelable> Intent.parcelableArrayList(key: String): ArrayList<T>? {
+    return when {
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> getParcelableArrayListExtra(key, T::class.java)
+        else -> @Suppress("DEPRECATION") getParcelableArrayListExtra(key)
+    }
+}
+
+@InternalNotificareApi
 public inline fun <reified T : Parcelable> Bundle.parcelable(key: String): T? {
     return when {
         Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> getParcelable(key, T::class.java)
         else -> @Suppress("DEPRECATION") getParcelable(key)
+    }
+}
+
+@InternalNotificareApi
+public inline fun <reified T : Parcelable> Bundle.parcelableArrayList(key: String): ArrayList<T>? {
+    return when {
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> getParcelableArrayList(key, T::class.java)
+        else -> @Suppress("DEPRECATION") getParcelableArrayList(key)
     }
 }
 
