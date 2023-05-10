@@ -91,11 +91,6 @@ public class ServiceManager : ServiceManager() {
 
     @SuppressLint("MissingPermission")
     override fun enableLocationUpdates() {
-        if (locationUpdatesStarted) {
-            NotificareLogger.debug("Location updates were previously enabled. Skipping...")
-            return
-        }
-
         fusedLocationClient.lastLocation.addOnSuccessListener { location ->
             if (location != null) {
                 // NotificareGeo.handleLocationUpdate(location)
@@ -114,6 +109,11 @@ public class ServiceManager : ServiceManager() {
                 }
             } else {
                 NotificareLogger.warning("No location found yet.")
+            }
+
+            if (locationUpdatesStarted) {
+                NotificareLogger.debug("Location updates were previously enabled. Skipping...")
+                return@addOnSuccessListener
             }
 
             val request = LocationRequest.Builder(Notificare.DEFAULT_LOCATION_UPDATES_INTERVAL)
