@@ -90,16 +90,16 @@ public class ServiceManager : ServiceManager() {
 
 
     override fun enableLocationUpdates() {
-        if (locationUpdatesStarted) {
-            NotificareLogger.debug("Location updates were previously enabled. Skipping...")
-            return
-        }
-
         fusedLocationClient.lastLocation.addOnSuccessListener { location ->
             if (location != null) {
                 Notificare.geoInternal().handleLocationUpdate(location)
             } else {
                 NotificareLogger.warning("No location found yet.")
+            }
+
+            if (locationUpdatesStarted) {
+                NotificareLogger.debug("Location updates were previously enabled. Skipping...")
+                return@addOnSuccessListener
             }
 
             val request = LocationRequest.create()

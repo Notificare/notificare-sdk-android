@@ -661,7 +661,15 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
 
     private fun shouldUpdateLocation(location: Location): Boolean {
         val lastKnownLocation = lastKnownLocation ?: return true
-        return location.distanceTo(lastKnownLocation) > Notificare.DEFAULT_LOCATION_UPDATES_SMALLEST_DISPLACEMENT
+
+        // Update the location when the user moves away enough of a distance.
+        if (location.distanceTo(lastKnownLocation) > Notificare.DEFAULT_LOCATION_UPDATES_SMALLEST_DISPLACEMENT) return true
+
+        // Update the location when we can monitor geofences but no fences were loaded yet.
+        // This typically happens when tracking the user's location and later upgrading to background permission.
+        if (hasBackgroundLocationPermission && hasPreciseLocationPermission && localStorage.monitoredRegions.isEmpty()) return true
+
+        return false
     }
 
     private suspend fun updateLocation(location: Location, country: String?): Unit = withContext(Dispatchers.IO) {
