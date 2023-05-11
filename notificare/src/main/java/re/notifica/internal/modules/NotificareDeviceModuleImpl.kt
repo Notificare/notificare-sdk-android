@@ -15,6 +15,7 @@ import re.notifica.internal.ktx.toCallbackFunction
 import re.notifica.internal.network.push.*
 import re.notifica.internal.network.request.NotificareRequest
 import re.notifica.ktx.eventsImplementation
+import re.notifica.ktx.session
 import re.notifica.models.NotificareDevice
 import re.notifica.models.NotificareDoNotDisturb
 import re.notifica.models.NotificareTransport
@@ -31,23 +32,29 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
         val device = currentDevice
 
         if (device != null) {
-            if (device.appVersion != NotificareUtils.applicationVersion) {
-                // It's not the same version, let's log it as an upgrade.
-                NotificareLogger.debug("New version detected")
-                Notificare.eventsImplementation().logApplicationUpgrade()
-            }
-
             register(
                 transport = device.transport,
                 token = device.id,
                 userId = device.userId,
                 userName = device.userName,
             )
+
+            // Ensure a session exists for the current device.
+            Notificare.session().launch()
+
+            if (device.appVersion != NotificareUtils.applicationVersion) {
+                // It's not the same version, let's log it as an upgrade.
+                NotificareLogger.debug("New version detected")
+                Notificare.eventsImplementation().logApplicationUpgrade()
+            }
         } else {
             NotificareLogger.debug("New install detected")
 
             try {
                 registerTemporary()
+
+                // Ensure a session exists for the current device.
+                Notificare.session().launch()
 
                 // We will log the Install & Registration events here since this will execute only one time at the start.
                 Notificare.eventsImplementation().logApplicationInstall()

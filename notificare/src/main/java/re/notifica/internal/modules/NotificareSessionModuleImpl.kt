@@ -13,6 +13,7 @@ import re.notifica.Notificare
 import re.notifica.internal.NotificareLogger
 import re.notifica.internal.NotificareModule
 import re.notifica.internal.ktx.coroutineScope
+import re.notifica.ktx.device
 import re.notifica.ktx.eventsImplementation
 import java.text.SimpleDateFormat
 import java.util.*
@@ -139,7 +140,7 @@ internal object NotificareSessionModuleImpl : NotificareModule() {
     // region Notificare Module
 
     override suspend fun launch() {
-        if (sessionId == null) {
+         if (sessionId == null && Notificare.device().currentDevice != null) {
             // Launch is taking place after the first activity has been created.
             // Start the application session.
             startSession()
