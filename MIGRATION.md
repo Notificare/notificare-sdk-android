@@ -55,7 +55,6 @@ dependencies {
     //
 
     implementation "re.notifica:notificare-assets:$notificare_version"
-    implementation "re.notifica:notificare-authentication:$notificare_version"
     implementation "re.notifica:notificare-inbox:$notificare_version"
     implementation "re.notifica:notificare-loyalty:$notificare_version"
 

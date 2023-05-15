@@ -132,11 +132,7 @@
             tools:replace="android:theme" />
 
         <receiver
-            android:name="re.notifica.NotificareIntentReceiver"
-            android:exported="false" />
-
-        <receiver
-            android:name="re.notifica.push.NotificarePushIntentReceiver"
+            android:name=".SampleGeoIntentReceiver"
             android:exported="false" />
 
         <meta-data

@@ -4,7 +4,7 @@ plugins {
     id 'kotlin-kapt'
     id 're.notifica.gradle.notificare-services'
     id 'com.google.gms.google-services'
-    id 'com.huawei.agconnect'
+    // id 'com.huawei.agconnect'
 }
 
 def properties = new Properties()
@@ -102,7 +102,6 @@ dependencies {
 
     implementation project(':notificare')
     implementation project(':notificare-assets')
-    implementation project(':notificare-authentication')
     implementation project(':notificare-in-app-messaging')
     implementation project(':notificare-inbox')
     implementation project(':notificare-loyalty')

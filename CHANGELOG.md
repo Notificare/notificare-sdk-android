@@ -1,5 +1,12 @@
 # CHANGELOG
 
+## 3.5.2
+
+- Prevent multiple configurations from taking place
+- Add broadcast receiver for geo events
+- Start monitoring nearest regions immediately after upgrading to background location
+- Correctly track device on initial application open event
+
 ## 3.5.1
 
 - Improved action categories parsing

@@ -496,6 +496,11 @@ public object Notificare {
     // endregion
 
     private fun configure(context: Context, servicesInfo: NotificareServicesInfo) {
+        if (isConfigured) {
+            NotificareLogger.warning("Notificare has already been configured. Skipping...")
+            return
+        }
+
         if (servicesInfo.applicationKey.isBlank() || servicesInfo.applicationSecret.isBlank()) {
             throw IllegalArgumentException("Notificare cannot be configured without an application key and secret.")
         }

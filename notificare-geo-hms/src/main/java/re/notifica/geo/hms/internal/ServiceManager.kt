@@ -44,7 +44,7 @@ public class ServiceManager : ServiceManager() {
         // region Setup location pending intent
 
         val locationIntent = Intent(context, LocationReceiver::class.java)
-            .setAction(Notificare.INTENT_ACTION_LOCATION_UPDATED)
+            .setAction(Notificare.INTENT_ACTION_INTERNAL_LOCATION_UPDATED)
 
         locationPendingIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             PendingIntent.getBroadcast(
@@ -90,16 +90,16 @@ public class ServiceManager : ServiceManager() {
 
 
     override fun enableLocationUpdates() {
-        if (locationUpdatesStarted) {
-            NotificareLogger.debug("Location updates were previously enabled. Skipping...")
-            return
-        }
-
         fusedLocationClient.lastLocation.addOnSuccessListener { location ->
             if (location != null) {
                 Notificare.geoInternal().handleLocationUpdate(location)
             } else {
                 NotificareLogger.warning("No location found yet.")
+            }
+
+            if (locationUpdatesStarted) {
+                NotificareLogger.debug("Location updates were previously enabled. Skipping...")
+                return@addOnSuccessListener
             }
 
             val request = LocationRequest.create()
