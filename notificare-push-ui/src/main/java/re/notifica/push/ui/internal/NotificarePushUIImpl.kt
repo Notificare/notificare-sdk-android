@@ -198,7 +198,21 @@ internal object NotificarePushUIImpl : NotificareModule(), NotificarePushUI, Not
         }
 
         val url = Uri.parse(content.data as String)
-        presentDeepLink(activity, notification, url)
+        if (url.host?.endsWith("ntc.re") != true) {
+            presentDeepLink(activity, notification, url)
+            return
+        }
+
+        Notificare.coroutineScope.launch {
+            try {
+                val link = Notificare.fetchDynamicLink(url)
+                presentDeepLink(activity, notification, Uri.parse(link.target))
+            } catch (e: Exception) {
+                onMainThread {
+                    lifecycleListeners.forEach { it.onNotificationFailedToPresent(notification) }
+                }
+            }
+        }
     }
 
     private fun presentDeepLink(activity: Activity, notification: NotificareNotification, url: Uri) {
