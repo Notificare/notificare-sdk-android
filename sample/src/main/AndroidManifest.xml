@@ -47,7 +47,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
 
-                <data android:scheme="re.notifica" />
+                <data android:scheme="re.notifica.sample.app" />
             </intent-filter>
             <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
@@ -56,7 +56,7 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data
-                    android:host="hallo.ntc.re"
+                    android:host="sample.ntc.re"
                     android:scheme="https" />
             </intent-filter>
             <intent-filter android:autoVerify="true">
@@ -68,28 +68,6 @@
                 <data
                     android:host="${notificareApplicationId}.applinks.notifica.re"
                     android:pathPrefix="/testdevice"
-                    android:scheme="https" />
-            </intent-filter>
-            <intent-filter android:autoVerify="true">
-                <action android:name="android.intent.action.VIEW" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-
-                <data
-                    android:host="${notificareApplicationId}.applinks.notifica.re"
-                    android:pathPrefix="/oauth/validate"
-                    android:scheme="https" />
-            </intent-filter>
-            <intent-filter android:autoVerify="true">
-                <action android:name="android.intent.action.VIEW" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-
-                <data
-                    android:host="${notificareApplicationId}.applinks.notifica.re"
-                    android:pathPrefix="/oauth/resetpassword"
                     android:scheme="https" />
             </intent-filter>
         </activity>
