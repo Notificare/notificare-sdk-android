@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## Upcoming release
+
+- Explicit handling of Notificare Links in Deep Link notifications
+
 ## 3.5.2
 
 - Prevent multiple configurations from taking place
