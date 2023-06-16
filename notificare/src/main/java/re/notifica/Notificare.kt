@@ -210,9 +210,6 @@ public object Notificare {
 
         Notificare.coroutineScope.launch {
             try {
-                NotificareLogger.debug("Registering a temporary device.")
-                deviceImplementation().registerTemporary()
-
                 // Loop all possible modules and un-launch the available ones.
                 NotificareModule.Module.values().reversed().forEach { module ->
                     module.instance?.run {
@@ -229,6 +226,9 @@ public object Notificare {
 
                 NotificareLogger.debug("Clearing device tags.")
                 device().clearTags()
+
+                NotificareLogger.debug("Registering a temporary device.")
+                deviceImplementation().registerTemporary()
 
                 NotificareLogger.debug("Removing device.")
                 deviceImplementation().delete()
