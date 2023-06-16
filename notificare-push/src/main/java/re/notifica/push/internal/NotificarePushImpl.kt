@@ -148,7 +148,12 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
     }
 
     override suspend fun unlaunch() {
-        // TODO check if we need to disable remote notifications
+        sharedPreferences.remoteNotificationsEnabled = false
+        sharedPreferences.firstRegistration = true
+
+        // Update the local notification settings.
+        // Registering a temporary device automatically reports the allowedUI to the API.
+        allowedUI = false
     }
 
     // endregion
