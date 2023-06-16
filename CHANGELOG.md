@@ -1,5 +1,11 @@
 # CHANGELOG
 
+- ## 3.5.3
+
+- Explicit handling of Notificare Links in Deep Link notifications
+- Improve supported deep links validation
+- Stricter unlaunch flow
+
 ## 3.5.2
 
 - Prevent multiple configurations from taking place

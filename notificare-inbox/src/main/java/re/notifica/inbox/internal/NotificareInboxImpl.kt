@@ -81,6 +81,8 @@ internal object NotificareInboxImpl : NotificareModule(), NotificareInbox {
 
     override suspend fun unlaunch() {
         clearLocalInbox()
+        clearNotificationCenter()
+        clearRemoteInbox()
     }
 
     // endregion
@@ -415,5 +417,14 @@ internal object NotificareInboxImpl : NotificareModule(), NotificareInbox {
         NotificareLogger.debug("Removing all messages from the notification center.")
         NotificationManagerCompat.from(Notificare.requireContext())
             .cancelAll()
+    }
+
+    private suspend fun clearRemoteInbox() = withContext(Dispatchers.IO) {
+        val device = Notificare.device().currentDevice
+            ?: throw NotificareDeviceUnavailableException()
+
+        NotificareRequest.Builder()
+            .delete("/notification/inbox/fordevice/${device.id}", null)
+            .response()
     }
 }

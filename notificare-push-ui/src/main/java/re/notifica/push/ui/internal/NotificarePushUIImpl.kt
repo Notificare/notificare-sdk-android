@@ -197,24 +197,45 @@ internal object NotificarePushUIImpl : NotificareModule(), NotificarePushUI, Not
             return
         }
 
-        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(content.data as String)).apply {
+        val url = Uri.parse(content.data as String)
+        if (url.host?.endsWith("ntc.re") != true) {
+            presentDeepLink(activity, notification, url)
+            return
+        }
+
+        Notificare.coroutineScope.launch {
+            try {
+                val link = Notificare.fetchDynamicLink(url)
+                presentDeepLink(activity, notification, Uri.parse(link.target))
+            } catch (e: Exception) {
+                onMainThread {
+                    lifecycleListeners.forEach { it.onNotificationFailedToPresent(notification) }
+                }
+            }
+        }
+    }
+
+    private fun presentDeepLink(activity: Activity, notification: NotificareNotification, url: Uri) {
+        val intent = Intent(Intent.ACTION_VIEW, url).apply {
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS)
             setPackage(activity.applicationContext.packageName)
         }
 
         // Check if the application can handle the intent itself.
-        if (intent.resolveActivity(activity.applicationContext.packageManager) != null) {
-            activity.startActivity(intent)
-
-            onMainThread {
-                lifecycleListeners.forEach { it.onNotificationPresented(notification) }
-            }
-        } else {
+        if (intent.resolveActivity(activity.applicationContext.packageManager) == null) {
             NotificareLogger.warning("Cannot open a deep link that's not supported by the application.")
 
             onMainThread {
                 lifecycleListeners.forEach { it.onNotificationFailedToPresent(notification) }
             }
+
+            return
+        }
+
+        activity.startActivity(intent)
+
+        onMainThread {
+            lifecycleListeners.forEach { it.onNotificationPresented(notification) }
         }
     }
 
