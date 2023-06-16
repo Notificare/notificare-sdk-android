@@ -155,6 +155,11 @@ internal object NotificareMonetizeImpl : NotificareModule(), NotificareMonetize,
     override suspend fun unlaunch() {
         checkNotNull(serviceManager) { "No monetize dependencies have been detected. Please include one of the platform-specific monetize packages." }
             .stopConnection()
+
+        database.purchases().clear()
+
+        _observableProducts.postValue(listOf())
+        _observablePurchases.postValue(listOf())
     }
 
     // endregion

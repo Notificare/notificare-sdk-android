@@ -197,6 +197,18 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
         }
     }
 
+    override suspend fun unlaunch() {
+        localStorage.locationServicesEnabled = false
+
+        clearRegions()
+        clearBeacons()
+
+        lastKnownLocation = null
+        serviceManager?.disableLocationUpdates()
+
+        clearLocation()
+    }
+
     // endregion
 
     // region Notificare Geo

@@ -109,6 +109,9 @@ internal object NotificareLoyaltyImpl : NotificareModule(), NotificareLoyalty, N
 
     override suspend fun unlaunch() {
         Notificare.removeListener(this)
+
+        passesBySerial.values.forEach { endPassRelevance(it) }
+        database.passes().clear()
     }
 
     // endregion
