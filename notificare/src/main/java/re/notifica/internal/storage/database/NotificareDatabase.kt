@@ -1,6 +1,7 @@
 package re.notifica.internal.storage.database
 
 import android.content.Context
+import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
@@ -8,10 +9,13 @@ import re.notifica.internal.storage.database.dao.NotificareEventsDao
 import re.notifica.internal.storage.database.entities.NotificareEventEntity
 
 @Database(
-    version = 1,
+    version = 2,
     entities = [
         NotificareEventEntity::class
-    ]
+    ],
+    autoMigrations = [
+        AutoMigration(from = 1, to = 2),
+    ],
 )
 internal abstract class NotificareDatabase : RoomDatabase() {
 
