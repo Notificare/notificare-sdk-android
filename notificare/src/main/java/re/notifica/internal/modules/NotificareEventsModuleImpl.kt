@@ -9,6 +9,7 @@ import re.notifica.NotificareCallback
 import re.notifica.NotificareDeviceUnavailableException
 import re.notifica.NotificareEventsModule
 import re.notifica.NotificareInternalEventsModule
+import re.notifica.NotificareNotReadyException
 import re.notifica.internal.NotificareLogger
 import re.notifica.internal.NotificareModule
 import re.notifica.internal.NotificareUtils
@@ -76,6 +77,8 @@ internal object NotificareEventsModuleImpl : NotificareModule(), NotificareEvent
         toCallbackFunction(::logNotificationOpen)(id, callback)
 
     override suspend fun logCustom(event: String, data: NotificareEventData?) {
+        if (!Notificare.isReady) throw NotificareNotReadyException()
+
         log("re.notifica.event.custom.$event", data)
     }
 
