@@ -8,10 +8,10 @@ import re.notifica.internal.storage.database.dao.NotificareEventsDao
 import re.notifica.internal.storage.database.entities.NotificareEventEntity
 
 @Database(
-    version = 1,
+    version = 2,
     entities = [
         NotificareEventEntity::class
-    ]
+    ],
 )
 internal abstract class NotificareDatabase : RoomDatabase() {
 
