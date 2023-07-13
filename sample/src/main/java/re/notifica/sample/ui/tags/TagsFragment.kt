@@ -3,8 +3,11 @@ package re.notifica.sample.ui.tags
 import android.app.AlertDialog
 import android.os.Bundle
 import android.view.*
+import androidx.core.view.MenuHost
+import androidx.core.view.MenuProvider
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import com.google.android.material.chip.Chip
 import re.notifica.sample.R
 import re.notifica.sample.databinding.FragmentTagsBinding
@@ -16,38 +19,45 @@ class TagsFragment : BaseFragment() {
 
     override val baseViewModel: TagsViewModel by viewModels()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.tags_menu, menu)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.refresh -> onRefreshClicked()
-            R.id.remove_all -> onRemoveAllClicked()
-            else -> return super.onOptionsItemSelected(item)
-        }
-
-        return true
-    }
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = FragmentTagsBinding.inflate(inflater, container, false)
 
         setupListeners()
         setupObservers()
-        onRefreshClicked()
+        fetchTags()
 
         return binding.root
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setupMenu()
+    }
+
+    private fun setupMenu() {
+        (requireActivity() as MenuHost).addMenuProvider(object : MenuProvider {
+            override fun onPrepareMenu(menu: Menu) {
+                // Handle for example visibility of menu items
+            }
+
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                menuInflater.inflate(R.menu.tags_menu, menu)
+            }
+
+            override fun onMenuItemSelected(item: MenuItem): Boolean {
+                when (item.itemId) {
+                    R.id.refresh -> fetchTags()
+                    R.id.remove_all -> clearTags()
+                }
+
+                return true
+            }
+        }, viewLifecycleOwner, Lifecycle.State.RESUMED)
+    }
+
     private fun setupListeners() {
         binding.addTagsButton.setOnClickListener {
-            onAddButtonClicked()
+            addTags()
         }
     }
 
@@ -82,39 +92,40 @@ class TagsFragment : BaseFragment() {
         }
     }
 
-    private fun onAddButtonClicked() {
+    private fun addTags() {
+        val selectedTags = mutableListOf<String>()
+
         binding.tagsChipGroup.checkedChipIds.forEach { id ->
             val chip = binding.tagsChipGroup.findViewById<Chip>(id)
-            viewModel.selectedTags.add(chip.text.toString())
+            selectedTags.add(chip.text.toString())
             chip.isChecked = false
         }
 
         val inputTag = binding.manualTagInput.editText?.text
         if (!inputTag.isNullOrEmpty()) {
-            viewModel.selectedTags.add(inputTag.toString())
+            selectedTags.add(inputTag.toString())
             inputTag.clear()
         }
 
-        if (viewModel.selectedTags.isEmpty()) {
+        if (selectedTags.isEmpty()) {
             AlertDialog.Builder(requireContext())
                 .setTitle(R.string.app_name)
                 .setMessage("Select tags or write your own.")
                 .setCancelable(false)
-                .setNegativeButton(R.string.dialog_ok_button) { _, _ ->
-                }
+                .setNegativeButton(R.string.dialog_ok_button, null)
                 .show()
 
             return
         }
 
-        viewModel.addTags()
+        viewModel.addTags(selectedTags)
     }
 
-    private fun onRefreshClicked() {
+    private fun fetchTags() {
         viewModel.fetchTags()
     }
 
-    private fun onRemoveAllClicked() {
+    private fun clearTags() {
         viewModel.clearTags()
     }
 }

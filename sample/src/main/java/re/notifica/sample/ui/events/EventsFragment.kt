@@ -5,8 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
+import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.viewModels
-import com.google.android.material.textfield.TextInputLayout
 import re.notifica.sample.R
 import re.notifica.sample.databinding.FragmentEventsBinding
 import re.notifica.sample.databinding.RowEventFieldBinding
@@ -28,46 +28,47 @@ class EventsFragment : BaseFragment() {
 
     private fun setupListeners() {
         binding.addFieldImg.setOnClickListener {
-            viewModel.userFieldsCount = viewModel.userFieldsCount + 1
-            val rowNumber = viewModel.userFieldsCount
-            val newField = RowEventFieldBinding.inflate(layoutInflater)
-            newField.inputKey.tag = "key$rowNumber"
-            newField.inputEventValue.tag = "value$rowNumber"
-
-            binding.fieldLinaerLayout.addView(newField.root)
+            addEventDataField()
         }
 
-        binding.registerEventDataButton.setOnClickListener {
-            val eventName = binding.inputEventName.editText?.text.toString()
-
-            if (eventName.isEmpty()) {
-                AlertDialog.Builder(requireContext())
-                    .setTitle(R.string.app_name)
-                    .setMessage("Enter event name.")
-                    .setCancelable(false)
-                    .setNegativeButton(R.string.dialog_ok_button) { _, _ ->
-                    }
-                    .show()
-
-                return@setOnClickListener
-            }
-
-            val fieldsMap = mutableMapOf<String, String>()
-            val rows = viewModel.userFieldsCount
-            if (rows > 0) {
-                for (row in 1..rows) {
-                    val key = binding.fieldLinaerLayout.findViewWithTag<TextInputLayout>("key$row")
-                    val value = binding.fieldLinaerLayout.findViewWithTag<TextInputLayout>("value$row")
-
-                    if (!key.editText?.text.isNullOrEmpty()) {
-                        fieldsMap[key.editText?.text.toString()] = value.editText?.text.toString()
-                    }
-                }
-            }
-
-            viewModel.registerEvent(eventName, fieldsMap)
-            binding.fieldLinaerLayout.removeAllViews()
-            binding.inputEventName.editText?.text?.clear()
+        binding.registerEventButton.setOnClickListener {
+            registerCustomEvent()
         }
+    }
+
+    private fun addEventDataField() {
+        val field = EventField()
+        viewModel.eventDataFields.add(field)
+
+        val fieldView = RowEventFieldBinding.inflate(layoutInflater)
+
+        fieldView.inputKey.doOnTextChanged { text, _, _, _ ->
+            field.key = text.toString()
+        }
+
+        fieldView.inputValue.doOnTextChanged { text, _, _, _ ->
+            field.value = text.toString()
+        }
+
+        binding.fieldsLinearLayout.addView(fieldView.root)
+    }
+
+    private fun registerCustomEvent() {
+        val eventName = binding.inputEventName.editText?.text.toString()
+
+        if (eventName.isEmpty()) {
+            AlertDialog.Builder(requireContext())
+                .setTitle(R.string.app_name)
+                .setMessage("Enter event name.")
+                .setCancelable(false)
+                .setPositiveButton(R.string.dialog_ok_button, null)
+                .show()
+
+            return
+        }
+
+        viewModel.registerEvent(eventName)
+        binding.fieldsLinearLayout.removeAllViews()
+        binding.inputEventName.editText?.text?.clear()
     }
 }

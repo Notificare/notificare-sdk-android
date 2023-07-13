@@ -29,9 +29,6 @@
             android:id="@+id/action_mainFragment_to_eventsFragment"
             app:destination="@id/eventsFragment" />
         <action
-            android:id="@+id/action_mainFragment_to_authenticationFragment"
-            app:destination="@id/authenticationFragment" />
-        <action
             android:id="@+id/action_mainFragment_to_tagsFragment"
             app:destination="@id/tagsFragment" />
     </fragment>
@@ -70,10 +67,6 @@
         android:name="re.notifica.sample.ui.events.EventsFragment"
         android:label="@string/events_title"
         tools:layout="@layout/fragment_events" />
-    <fragment
-        android:id="@+id/authenticationFragment"
-        android:name="re.notifica.sample.ui.authentication.AuthenticationFragment"
-        android:label="@string/authentication_title" />
     <fragment
         android:id="@+id/tagsFragment"
         android:name="re.notifica.sample.ui.tags.TagsFragment"

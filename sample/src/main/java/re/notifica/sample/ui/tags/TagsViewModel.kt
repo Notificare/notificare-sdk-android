@@ -14,13 +14,15 @@ class TagsViewModel : BaseViewModel() {
     val fetchedTag: LiveData<List<String>> = _fetchedTags
 
     val defaultTags = listOf("Kotlin", "Java", "Swift", "Python")
-    val selectedTags = mutableListOf<String>()
 
     fun fetchTags() {
         viewModelScope.launch {
             try {
                 val tags = Notificare.device().fetchTags()
                 _fetchedTags.postValue(tags)
+
+                Timber.i("Tags fetched successfully.")
+                showSnackBar("Tags fetched successfully.")
             } catch (e: Exception) {
                 Timber.e(e, "Failed to fetch tags.")
                 showSnackBar("Failed to fetch tags: ${e.message}")
@@ -28,20 +30,18 @@ class TagsViewModel : BaseViewModel() {
         }
     }
 
-    fun addTags() {
+    fun addTags(tags: List<String>) {
         viewModelScope.launch {
             try {
-                Notificare.device().addTags(selectedTags)
+                Notificare.device().addTags(tags)
+                fetchTags()
+
+                Timber.i("Tags add successfully.")
+                showSnackBar("Tags add successfully.")
             } catch (e: Exception) {
                 Timber.e(e, "Failed to add tags.")
                 showSnackBar("Failed to add tags: ${e.message}")
-
-                selectedTags.clear()
-                return@launch
             }
-
-            selectedTags.clear()
-            fetchTags()
         }
     }
 
@@ -49,14 +49,14 @@ class TagsViewModel : BaseViewModel() {
         viewModelScope.launch {
             try {
                 Notificare.device().removeTag(tag)
+                fetchTags()
+
+                Timber.i("Tag removed successfully.")
+                showSnackBar("Tag removed successfully.")
             } catch (e: Exception) {
                 Timber.e(e, "Failed to remove tag.")
                 showSnackBar("Failed to remove tag: ${e.message}")
-
-                return@launch
             }
-
-            fetchTags()
         }
     }
 
@@ -64,14 +64,14 @@ class TagsViewModel : BaseViewModel() {
         viewModelScope.launch {
             try {
                 Notificare.device().clearTags()
+                fetchTags()
+
+                Timber.i("Cleared tags successfully.")
+                showSnackBar("Cleared tags successfully.")
             } catch (e: Exception) {
                 Timber.e(e, "Failed to clear tags.")
                 showSnackBar("Failed to clear tags: ${e.message}")
-
-                return@launch
             }
-
-            fetchTags()
         }
     }
 }

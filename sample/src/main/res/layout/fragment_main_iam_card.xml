@@ -23,35 +23,45 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
+            android:id="@+id/evaluate_context_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/main_fragment_evaluate_context"
+            android:textAppearance="?attr/textAppearanceBodyMedium"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@+id/evaluate_context_switch"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/evaluate_context_switch" />
+
+        <com.google.android.material.switchmaterial.SwitchMaterial
+            android:id="@+id/evaluate_context_switch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minHeight="48dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/iam_title"
+            app:trackTint="@color/switch_track_color" />
+
+        <TextView
             android:id="@+id/suppressed_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
             android:text="@string/main_fragment_suppressed"
             android:textAppearance="?attr/textAppearanceBodyMedium"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="@+id/iam_switch"
-            app:layout_constraintStart_toStartOf="@+id/iam_title"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/iam_switch" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:text="@string/sdk"
-            android:textAppearance="?attr/textAppearanceBodyMedium"
-            app:layout_constraintBottom_toBottomOf="@+id/suppressed_label"
-            app:layout_constraintStart_toEndOf="@+id/suppressed_label" />
 
         <com.google.android.material.switchmaterial.SwitchMaterial
             android:id="@+id/iam_switch"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="32dp"
             android:minHeight="48dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/iam_title" />
+            app:layout_constraintTop_toBottomOf="@+id/evaluate_context_switch"
+            app:trackTint="@color/switch_track_color" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

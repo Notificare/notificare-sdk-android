@@ -53,8 +53,9 @@ class BeaconsFragment : Fragment(), NotificareGeo.Listener {
     }
 
     override fun onBeaconsRanged(region: NotificareRegion, beacons: List<NotificareBeacon>) {
-        binding.noBeaconsLabel.isVisible = beacons.isEmpty()
         val beaconsRanged = BeaconsViewModel.BeaconsData(region, beacons)
+
+        binding.noBeaconsLabel.isVisible = beacons.isEmpty()
         viewModel.beaconsData.postValue(beaconsRanged)
     }
 

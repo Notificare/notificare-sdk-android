@@ -130,7 +130,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/asset_details_url_data" />
 
             <TextView
-                android:id="@+id/asset_details_buttom_label"
+                android:id="@+id/asset_details_button_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
@@ -151,7 +151,7 @@
                 android:textAppearance="@style/TextAppearance.MaterialComponents.Overline"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/asset_details_buttom_label" />
+                app:layout_constraintTop_toBottomOf="@+id/asset_details_button_label" />
 
             <TextView
                 android:id="@+id/asset_details_buttom_label_data"

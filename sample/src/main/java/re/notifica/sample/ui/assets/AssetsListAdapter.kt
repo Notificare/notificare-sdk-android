@@ -40,21 +40,27 @@ class AssetsListAdapter(
                         val imgUrl = item.url
                         Glide.with(binding.root.context).load(imgUrl).into(binding.assetImage)
                     }
+
                     "video/mp4" -> {
                         binding.assetImage.setImageResource(R.drawable.ic_baseline_video_camera_back_24)
                     }
+
                     "application/pdf" -> {
                         binding.assetImage.setImageResource(R.drawable.ic_baseline_picture_as_pdf_24)
                     }
+
                     "application/json" -> {
                         binding.assetImage.setImageResource(R.drawable.ic_baseline_data_object_24)
                     }
+
                     "text/javascript" -> {
                         binding.assetImage.setImageResource(R.drawable.ic_baseline_javascript_24)
                     }
+
                     "text/css" -> {
                         binding.assetImage.setImageResource(R.drawable.ic_baseline_css_24)
                     }
+
                     "text/html" -> {
                         binding.assetImage.setImageResource(R.drawable.ic_baseline_html_24)
                     }

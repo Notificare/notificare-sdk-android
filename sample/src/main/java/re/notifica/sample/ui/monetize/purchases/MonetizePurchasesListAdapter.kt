@@ -1,4 +1,4 @@
-package re.notifica.sample.ui.monetize
+package re.notifica.sample.ui.monetize.purchases
 
 import android.view.LayoutInflater
 import android.view.ViewGroup

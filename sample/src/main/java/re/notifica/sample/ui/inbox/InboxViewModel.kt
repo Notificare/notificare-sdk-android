@@ -27,85 +27,88 @@ class InboxViewModel : BaseViewModel() {
         }
     }
 
-    fun onInboxItemClicked(activity: Activity, item: NotificareInboxItem) {
+    fun open(activity: Activity, item: NotificareInboxItem) {
         viewModelScope.launch {
             try {
                 val notification = Notificare.inbox().open(item)
                 Notificare.pushUI().presentNotification(activity, notification)
-            } catch (e: Exception) {
-                Timber.e(e, "Failed to open an inbox item.")
-                showSnackBar("Failed to open an inbox item: ${e.message}")
 
-                return@launch
+                Timber.i("Opened inbox item successfully.")
+                showSnackBar("Opened inbox item successfully.")
+            } catch (e: Exception) {
+                Timber.e(e, "Failed to open inbox item.")
+                showSnackBar("Failed to open inbox item.")
             }
         }
     }
 
-    fun onMarkItemAsReadClicked(item: NotificareInboxItem) {
+    fun markAsRead(item: NotificareInboxItem) {
         viewModelScope.launch {
             try {
                 Notificare.inbox().markAsRead(item)
-            } catch (e: Exception) {
-                Timber.e(e, "Failed to mark an item as read.")
-                showSnackBar("Failed to mark an item as read: ${e.message}")
 
-                return@launch
+                Timber.i("Mark inbox item as read successfully.")
+                showSnackBar("Mark inbox item as read successfully.")
+            } catch (e: Exception) {
+                Timber.e(e, "Failed to mark inbox item as read.")
+                showSnackBar("Failed to mark inbox item as read.")
             }
         }
     }
 
-    fun onRemoveItemClicked(item: NotificareInboxItem) {
+    fun remove(item: NotificareInboxItem) {
         viewModelScope.launch {
             try {
                 Notificare.inbox().remove(item)
-            } catch (e: Exception) {
-                Timber.e(e, "Failed to remove an item.")
-                showSnackBar("Failed to remove an item: ${e.message}")
 
-                return@launch
+                Timber.i("Removed inbox item successfully.")
+                showSnackBar("Removed inbox item successfully.")
+            } catch (e: Exception) {
+                Timber.e(e, "Failed to remove inbox item.")
+                showSnackBar("Failed to remove inbox item.")
             }
         }
     }
 
-    fun onReadAllClicked() {
+    fun markAllAsRead() {
         viewModelScope.launch {
             try {
                 Notificare.inbox().markAllAsRead()
+
+                Timber.i("Marked all items as read successfully.")
+                showSnackBar("Marked all items as read successfully.")
             } catch (e: Exception) {
                 Timber.e(e, "Failed to mark all items as read.")
-                showSnackBar("Failed to mark all items as read: ${e.message}")
-
-                return@launch
+                showSnackBar("Failed to mark all items as read.")
             }
         }
     }
 
-    fun onRemoveAllClicked() {
+    fun clear() {
         viewModelScope.launch {
             try {
                 Notificare.inbox().clear()
-            } catch (e: Exception) {
-                Timber.e(e, "Failed to remove all items.")
-                showSnackBar("Failed to remove all items: ${e.message}")
 
-                return@launch
+                Timber.i("Inbox cleared successfully.")
+                showSnackBar("Inbox cleared successfully.")
+            } catch (e: Exception) {
+                Timber.e(e, "Failed to clear inbox.")
+                showSnackBar("Failed to remove clear inbox.")
             }
         }
     }
 
-    fun onRefreshClicked() {
+    fun refresh() {
         viewModelScope.launch {
             try {
                 Notificare.inbox().refresh()
+
+                Timber.i("Refreshed inbox successfully.")
+                showSnackBar("Refreshed inbox successfully.")
             } catch (e: Exception) {
                 Timber.e(e, "Failed to refresh inbox.")
-                showSnackBar("Failed to refresh inbox: ${e.message}")
-
-                return@launch
+                showSnackBar("Failed to refresh inbox.")
             }
-
-            Timber.i("Refreshed inbox successfully.")
-            showSnackBar("Refreshed inbox successfully.")
         }
     }
 }

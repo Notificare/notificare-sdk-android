@@ -35,21 +35,20 @@
                 android:id="@+id/location_switch"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="32dp"
                 android:minHeight="48dp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                app:trackTint="@color/switch_track_color" />
 
             <TextView
                 android:id="@+id/location_enabled_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="32dp"
+                android:layout_marginTop="16dp"
                 android:text="@string/main_fragment_enabled"
                 android:textAppearance="?attr/textAppearanceBodyMedium"
                 android:textStyle="bold"
-                app:layout_constraintStart_toStartOf="@+id/location_title"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/location_title" />
 
             <TextView
@@ -107,7 +106,6 @@
                 android:id="@+id/location_enabled_status_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="32dp"
                 android:textAppearance="?attr/textAppearanceBodyMedium"
                 app:layout_constraintBottom_toBottomOf="@+id/location_enabled_label"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -117,7 +115,6 @@
                 android:id="@+id/location_permission_type_status_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="32dp"
                 android:textAppearance="?attr/textAppearanceBodyMedium"
                 app:layout_constraintBottom_toBottomOf="@+id/location_permission_label"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -127,7 +124,6 @@
                 android:id="@+id/location_bluetooth_status_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="32dp"
                 android:textAppearance="?attr/textAppearanceBodyMedium"
                 app:layout_constraintBottom_toBottomOf="@+id/location_bluetooth_enabled_label"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -137,7 +133,6 @@
                 android:id="@+id/location_bluetooth_permission_status"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="32dp"
                 android:textAppearance="?attr/textAppearanceBodyMedium"
                 app:layout_constraintBottom_toBottomOf="@+id/location_bluetooth_permission_label"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -155,7 +150,7 @@
             app:layout_constraintTop_toBottomOf="@+id/location_card_main" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/beacons_card"
+            android:id="@+id/beacons_row"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="16dp"

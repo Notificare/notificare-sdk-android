@@ -4,8 +4,11 @@ import android.os.Bundle
 import android.view.*
 import androidx.appcompat.widget.SearchView
 import androidx.core.os.bundleOf
+import androidx.core.view.MenuHost
+import androidx.core.view.MenuProvider
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import re.notifica.assets.models.NotificareAsset
@@ -20,38 +23,6 @@ class AssetsFragment : BaseFragment() {
 
     override val baseViewModel: AssetsViewModel by viewModels()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.assets_menu, menu)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.assets_search -> {
-                val searchView = item.actionView as SearchView
-
-                searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-                    override fun onQueryTextSubmit(query: String): Boolean {
-                        getAssets(query)
-
-                        return false
-                    }
-
-                    override fun onQueryTextChange(s: String): Boolean {
-                        return false
-                    }
-                })
-            }
-            else -> return super.onOptionsItemSelected(item)
-        }
-
-        return true
-    }
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = FragmentAssetsBinding.inflate(inflater, container, false)
 
@@ -59,6 +30,45 @@ class AssetsFragment : BaseFragment() {
         setupObservers()
 
         return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setupMenu()
+    }
+
+    private fun setupMenu() {
+        (requireActivity() as MenuHost).addMenuProvider(object : MenuProvider {
+            override fun onPrepareMenu(menu: Menu) {
+                // Handle for example visibility of menu items
+            }
+
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                menuInflater.inflate(R.menu.assets_menu, menu)
+            }
+
+            override fun onMenuItemSelected(item: MenuItem): Boolean {
+                when (item.itemId) {
+                    R.id.assets_search -> {
+                        val searchView = item.actionView as SearchView
+
+                        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+                            override fun onQueryTextSubmit(query: String): Boolean {
+                                getAssets(query)
+
+                                return false
+                            }
+
+                            override fun onQueryTextChange(s: String): Boolean {
+                                return false
+                            }
+                        })
+                    }
+                }
+
+                return true
+            }
+        }, viewLifecycleOwner, Lifecycle.State.RESUMED)
     }
 
     private fun setupList() {
@@ -74,7 +84,7 @@ class AssetsFragment : BaseFragment() {
     }
 
     private fun getAssets(group: String) {
-        viewModel.getAssets(group)
+        viewModel.fetchAssets(group)
     }
 
     private fun onAssetClicked(asset: NotificareAsset) {

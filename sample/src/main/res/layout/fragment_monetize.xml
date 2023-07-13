@@ -10,7 +10,6 @@
         android:id="@+id/monetizeTabLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:tabBackground="@android:color/darker_gray"
         app:tabGravity="fill"
         app:tabIndicatorColor="@color/teal_700"
         app:tabMaxWidth="0dp"

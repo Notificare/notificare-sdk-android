@@ -26,12 +26,11 @@
             android:id="@+id/configured_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
             android:text="@string/main_fragment_configured"
             android:textAppearance="?attr/textAppearanceBodyMedium"
             android:textStyle="bold"
-            app:layout_constraintStart_toStartOf="@+id/launch_flow_title"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/launch_flow_title" />
 
         <TextView
@@ -67,7 +66,6 @@
             android:id="@+id/configured_status_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="32dp"
             android:textAppearance="?attr/textAppearanceBodyMedium"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/configured_label"
@@ -77,7 +75,6 @@
             android:id="@+id/ready_status_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="32dp"
             android:textAppearance="?attr/textAppearanceBodyMedium"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/ready_label"

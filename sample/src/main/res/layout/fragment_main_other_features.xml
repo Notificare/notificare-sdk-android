@@ -44,7 +44,7 @@
             app:layout_constraintTop_toBottomOf="@+id/device_other_features_main" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/scannables_card"
+            android:id="@+id/scannables_row"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="16dp"
@@ -85,10 +85,10 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/scannables_card" />
+            app:layout_constraintTop_toBottomOf="@+id/scannables_row" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/monetize_card"
+            android:id="@+id/monetize_row"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="16dp"
@@ -129,10 +129,10 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/monetize_card" />
+            app:layout_constraintTop_toBottomOf="@+id/monetize_row" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/assets_card"
+            android:id="@+id/assets_row"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="16dp"
@@ -147,7 +147,7 @@
                 android:drawablePadding="8dp"
                 android:text="@string/main_fragment_assets_title"
                 android:textAppearance="?attr/textAppearanceTitleMedium"
-                app:drawableStartCompat="@drawable/ic_baseline_currency_exchange_24"
+                app:drawableStartCompat="@drawable/ic_baseline_folder_24"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -173,60 +173,16 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/assets_card" />
+            app:layout_constraintTop_toBottomOf="@+id/assets_row" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/authentication_card"
+            android:id="@+id/events_row"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="16dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/simple_line_assets">
-
-            <TextView
-                android:id="@+id/authentication_title"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:drawablePadding="8dp"
-                android:text="@string/main_fragment_authentication_title"
-                android:textAppearance="?attr/textAppearanceTitleMedium"
-                app:drawableStartCompat="@drawable/ic_baseline_person_24"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <ImageView
-                android:id="@+id/authentication_chevron"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_baseline_chevron_right_24"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:tint="?attr/colorOnSurfaceVariant"
-                tools:ignore="ContentDescription" />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <View
-            android:id="@+id/simple_line_authentication"
-            android:layout_width="0dp"
-            android:layout_height="1dp"
-            android:background="@color/material_dynamic_neutral20"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/authentication_card" />
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/events_card"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="16dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/simple_line_authentication">
 
             <TextView
                 android:id="@+id/events_title"

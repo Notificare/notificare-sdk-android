@@ -9,6 +9,8 @@ import androidx.fragment.app.FragmentTransaction
 import com.google.android.material.tabs.TabLayout
 import re.notifica.monetize.NotificareMonetize
 import re.notifica.sample.databinding.FragmentMonetizeBinding
+import re.notifica.sample.ui.monetize.products.MonetizeProductsFragment
+import re.notifica.sample.ui.monetize.purchases.MonetizePurchasesFragment
 
 class MonetizeFragment : Fragment(), NotificareMonetize.Listener {
     private lateinit var binding: FragmentMonetizeBinding
@@ -38,19 +40,17 @@ class MonetizeFragment : Fragment(), NotificareMonetize.Listener {
                     }
                 }
 
+                if (fragment == null) return
+
                 val fragmentTransaction = requireActivity().supportFragmentManager.beginTransaction()
-                if (fragment != null) {
-                    fragmentTransaction.replace(binding.simpleFrameLayout.id, fragment)
-                    fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                    fragmentTransaction.commit()
-                }
+                fragmentTransaction.replace(binding.simpleFrameLayout.id, fragment)
+                fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                fragmentTransaction.commit()
             }
 
-            override fun onTabUnselected(tab: TabLayout.Tab?) {
-            }
+            override fun onTabUnselected(tab: TabLayout.Tab?) {}
 
-            override fun onTabReselected(tab: TabLayout.Tab?) {
-            }
+            override fun onTabReselected(tab: TabLayout.Tab?) {}
         })
     }
 }

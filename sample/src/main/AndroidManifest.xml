@@ -72,28 +72,6 @@
                     android:pathPrefix="/testdevice"
                     android:scheme="https" />
             </intent-filter>
-            <intent-filter android:autoVerify="true">
-                <action android:name="android.intent.action.VIEW" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-
-                <data
-                    android:host="${notificareApplicationId}.applinks.notifica.re"
-                    android:pathPrefix="/oauth/validate"
-                    android:scheme="https" />
-            </intent-filter>
-            <intent-filter android:autoVerify="true">
-                <action android:name="android.intent.action.VIEW" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-
-                <data
-                    android:host="${notificareApplicationId}.applinks.notifica.re"
-                    android:pathPrefix="/oauth/resetpassword"
-                    android:scheme="https" />
-            </intent-filter>
         </activity>
 
         <activity
@@ -118,23 +96,6 @@
             android:name="re.notifica.iam.ui.InAppMessagingActivity"
             android:theme="@style/Theme.App.Notificare.Iam"
             tools:replace="android:theme" />
-
-        <activity
-            android:name=".ValidateAccountActivity"
-            android:exported="true"
-            android:label="@string/validate_account_title">
-            <intent-filter android:autoVerify="true">
-                <action android:name="android.intent.action.VIEW" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-
-                <data
-                    android:host="${notificareApplicationId}.applinks.notifica.re"
-                    android:pathPrefix="/oauth/validate"
-                    android:scheme="https" />
-            </intent-filter>
-        </activity>
 
         <receiver
             android:name="re.notifica.NotificareIntentReceiver"

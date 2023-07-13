@@ -1,18 +1,16 @@
-package re.notifica.sample.ui.monetize
+package re.notifica.sample.ui.monetize.products
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import re.notifica.monetize.models.NotificareProduct
 import re.notifica.sample.databinding.RowMonetizeProductBinding
-import re.notifica.sample.ui.monetize.MonetizeViewModel.ProductItem
 
 class MonetizeProductsListAdapter(
-    private val onProductClicked: (NotificareProduct) -> Unit
-) : ListAdapter<ProductItem, RecyclerView.ViewHolder>(ProductsDiffCallback()) {
+    private val onProductPurchaseClicked: (NotificareProduct) -> Unit
+) : ListAdapter<NotificareProduct, RecyclerView.ViewHolder>(ProductsDiffCallback()) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return ItemViewHolder(
             RowMonetizeProductBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -28,37 +26,27 @@ class MonetizeProductsListAdapter(
         private val binding: RowMonetizeProductBinding
     ) : RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(item: ProductItem) {
-            val product = item.product
-            val purchased = item.product.type == NotificareProduct.TYPE_ONE_TIME && item.purchases.isNotEmpty()
+        fun bind(product: NotificareProduct) {
+            val details = product.storeDetails
 
             binding.productIdData.text = product.id
             binding.productNameData.text = product.name
             binding.productTypeData.text = product.type
-
-            val details = product.storeDetails
-            if (details != null) {
-                binding.priceLabelData.text = "${details.currencyCode} ${details.price}"
-            } else {
-                binding.priceLabelData.text = "---"
-            }
-
-            binding.productAlreadyBoughtImage.isVisible = purchased
-            binding.buyProductImage.isVisible = !purchased
+            binding.priceLabelData.text = if (details != null) "${details.currencyCode} ${details.price}" else "---"
 
             binding.buyProductImage.setOnClickListener {
-                onProductClicked(item.product)
+                onProductPurchaseClicked(product)
             }
         }
     }
 }
 
-private class ProductsDiffCallback : DiffUtil.ItemCallback<ProductItem>() {
-    override fun areItemsTheSame(oldItem: ProductItem, newItem: ProductItem): Boolean {
+private class ProductsDiffCallback : DiffUtil.ItemCallback<NotificareProduct>() {
+    override fun areItemsTheSame(oldItem: NotificareProduct, newItem: NotificareProduct): Boolean {
         return oldItem == newItem
     }
 
-    override fun areContentsTheSame(oldItem: ProductItem, newItem: ProductItem): Boolean {
+    override fun areContentsTheSame(oldItem: NotificareProduct, newItem: NotificareProduct): Boolean {
         return oldItem == newItem
     }
 }

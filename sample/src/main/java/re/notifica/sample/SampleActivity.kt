@@ -13,8 +13,6 @@ import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.elevation.SurfaceColors
 import com.google.android.material.snackbar.Snackbar
 import re.notifica.Notificare
-import re.notifica.NotificareCallback
-import re.notifica.authentication.ktx.authentication
 import re.notifica.geo.ktx.INTENT_ACTION_BEACON_NOTIFICATION_OPENED
 import re.notifica.iam.NotificareInAppMessaging
 import re.notifica.iam.ktx.inAppMessaging
@@ -93,13 +91,7 @@ class SampleActivity : AppCompatActivity(), NotificarePushUI.NotificationLifecyc
                     )
                 }
 
-                val type = NotificareNotification.NotificationType.from(notification.type)
-                if (type == NotificareNotification.NotificationType.ALERT && notification.actions.isEmpty()) {
-                    Snackbar.make(binding.root, notification.message, Snackbar.LENGTH_LONG).show()
-                } else {
-                    Notificare.pushUI().presentNotification(this, notification)
-                }
-
+                Notificare.pushUI().presentNotification(this, notification)
                 return
             }
             Notificare.INTENT_ACTION_ACTION_OPENED -> {
@@ -136,36 +128,6 @@ class SampleActivity : AppCompatActivity(), NotificarePushUI.NotificationLifecyc
                 Snackbar.make(binding.root, "Beacon notification opened.", Snackbar.LENGTH_SHORT).show()
                 return
             }
-        }
-
-        val validateUserToken = Notificare.authentication().parseValidateUserToken(intent)
-        if (validateUserToken != null) {
-            Notificare.authentication().validateUser(validateUserToken, object : NotificareCallback<Unit> {
-                override fun onSuccess(result: Unit) {
-                    Timber.tag(TAG).i("User validated.")
-                }
-
-                override fun onFailure(e: Exception) {
-                    Timber.tag(TAG).e(e, "Failed to validate user.")
-                }
-            })
-
-            return
-        }
-
-        val passwordResetToken = Notificare.authentication().parsePasswordResetToken(intent)
-        if (passwordResetToken != null) {
-            Notificare.authentication().resetPassword("123456", passwordResetToken, object : NotificareCallback<Unit> {
-                override fun onSuccess(result: Unit) {
-                    Timber.tag(TAG).i("User password reset.")
-                }
-
-                override fun onFailure(e: Exception) {
-                    Timber.tag(TAG).e(e, "Failed to reset user password.")
-                }
-            })
-
-            return
         }
 
         val uri = intent.data ?: return

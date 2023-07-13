@@ -6,6 +6,7 @@ import re.notifica.Notificare
 import re.notifica.geo.ktx.geo
 import re.notifica.iam.ktx.inAppMessaging
 import re.notifica.ktx.device
+import re.notifica.models.NotificareApplication
 import re.notifica.models.NotificareDevice
 import re.notifica.models.NotificareDoNotDisturb
 import re.notifica.models.NotificareTime
@@ -14,7 +15,7 @@ import re.notifica.sample.ktx.*
 import re.notifica.sample.models.BaseViewModel
 import timber.log.Timber
 
-class MainViewModel : BaseViewModel(), DefaultLifecycleObserver {
+class MainViewModel : BaseViewModel(), DefaultLifecycleObserver, Notificare.Listener {
     private val _notificareConfigured = MutableLiveData(isNotificareConfigured)
     val notificareConfigured: LiveData<Boolean> = _notificareConfigured
 
@@ -107,6 +108,8 @@ class MainViewModel : BaseViewModel(), DefaultLifecycleObserver {
         get() = Notificare.device().currentDevice
 
     init {
+        Notificare.addListener(this)
+
         viewModelScope.launch {
             Notificare.push().observableAllowedUI
                 .asFlow()
@@ -118,11 +121,24 @@ class MainViewModel : BaseViewModel(), DefaultLifecycleObserver {
         }
     }
 
-    fun updateNotificareReady() {
-        _notificareReady.value = Notificare.isReady
+    override fun onCleared() {
+        super.onCleared()
+        Notificare.removeListener(this)
     }
 
-    fun changeRemoteNotifications(enabled: Boolean) {
+    override fun onReady(application: NotificareApplication) {
+        updateNotificareReadyStatus()
+    }
+
+    override fun onUnlaunched() {
+        updateNotificareReadyStatus()
+    }
+
+    fun updateNotificareReadyStatus() {
+        _notificareReady.postValue(Notificare.isReady)
+    }
+
+    fun updateRemoteNotificationsStatus(enabled: Boolean) {
         if (enabled) {
             Notificare.push().enableRemoteNotifications()
             if (_hasNotificationsPermissions.value != true) {
@@ -133,7 +149,7 @@ class MainViewModel : BaseViewModel(), DefaultLifecycleObserver {
         }
     }
 
-    fun changeDoNotDisturbEnabled(enabled: Boolean) {
+    fun updateDndStatus(enabled: Boolean) {
         viewModelScope.launch {
             try {
                 if (enabled) {
@@ -144,6 +160,9 @@ class MainViewModel : BaseViewModel(), DefaultLifecycleObserver {
 
                 _dndEnabled.postValue(enabled)
                 _dnd.postValue(NotificareDoNotDisturb.default)
+
+                Timber.i("DnD updates successfully.")
+                showSnackBar("DnD updates successfully.")
             } catch (e: Exception) {
                 Timber.e(e, "Failed to update the do not disturb settings.")
                 showSnackBar("Failed to update DnD: ${e.message}")
@@ -151,11 +170,14 @@ class MainViewModel : BaseViewModel(), DefaultLifecycleObserver {
         }
     }
 
-    fun changeDoNotDisturb(dnd: NotificareDoNotDisturb) {
+    fun updateDndTime(dnd: NotificareDoNotDisturb) {
         viewModelScope.launch {
             try {
                 Notificare.device().updateDoNotDisturb(dnd)
                 _dnd.postValue(dnd)
+
+                Timber.i("DnD time updated successfully.")
+                showSnackBar("DnD time updated successfully.")
             } catch (e: Exception) {
                 Timber.e(e, "Failed to update the do not disturb settings.")
                 showSnackBar("Failed to update DnD: ${e.message}")
@@ -163,7 +185,7 @@ class MainViewModel : BaseViewModel(), DefaultLifecycleObserver {
         }
     }
 
-    fun changeLocationUpdates(enabled: Boolean) {
+    fun updateLocationUpdatesStatus(enabled: Boolean) {
         if (enabled) {
             Notificare.geo().enableLocationUpdates()
         } else {
@@ -185,13 +207,14 @@ class MainViewModel : BaseViewModel(), DefaultLifecycleObserver {
         viewModelScope.launch {
             try {
                 Notificare.device().register(userID, userName)
+                _deviceRegistrationData.postValue(deviceData)
+
+                Timber.i("Registered device successfully.")
+                showSnackBar("Registered device successfully.")
             } catch (e: Exception) {
                 Timber.e(e, "Failed to register device.")
                 showSnackBar("Failed to register device: ${e.message}")
-                return@launch
             }
-
-            _deviceRegistrationData.postValue(deviceData)
         }
     }
 

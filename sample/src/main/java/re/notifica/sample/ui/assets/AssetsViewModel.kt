@@ -14,16 +14,17 @@ class AssetsViewModel : BaseViewModel() {
     private val _assets = MutableLiveData<List<NotificareAsset>>()
     val assets: LiveData<List<NotificareAsset>> = _assets
 
-    fun getAssets(group: String) {
+    fun fetchAssets(group: String) {
         viewModelScope.launch {
             try {
                 val assets = Notificare.assets().fetch(group)
                 _assets.postValue(assets)
+
+                Timber.i("Fetch assets successfully")
+                showSnackBar("Fetch assets successfully")
             } catch (e: Exception) {
                 Timber.e(e, "Failed to fetch assets")
                 showSnackBar("Failed to fetch assets: ${e.message}")
-
-                return@launch
             }
         }
     }

@@ -35,20 +35,19 @@
                 android:id="@+id/notifications_switch"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="32dp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                app:trackTint="@color/switch_track_color" />
 
             <TextView
                 android:id="@+id/notifications_enabled_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="32dp"
+                android:layout_marginTop="16dp"
                 android:text="@string/main_fragment_enabled"
                 android:textAppearance="?attr/textAppearanceBodyMedium"
                 android:textStyle="bold"
-                app:layout_constraintStart_toStartOf="@+id/notifications_title"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/notifications_title" />
 
             <TextView
@@ -68,7 +67,7 @@
                 android:text="@string/main_fragment_allowed_ui"
                 android:textAppearance="?attr/textAppearanceBodyMedium"
                 android:textStyle="bold"
-                app:layout_constraintStart_toStartOf="@+id/notifications_enabled_label"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/notifications_enabled_label" />
 
             <TextView
@@ -88,14 +87,13 @@
                 android:text="@string/main_fragment_permission"
                 android:textAppearance="?attr/textAppearanceBodyMedium"
                 android:textStyle="bold"
-                app:layout_constraintStart_toStartOf="@+id/notifications_allowed_ui_label"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/notifications_allowed_ui_label" />
 
             <TextView
                 android:id="@+id/notifications_enabled_status_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="32dp"
                 android:textAppearance="?attr/textAppearanceBodyMedium"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/notifications_enabled_label"
@@ -105,7 +103,6 @@
                 android:id="@+id/notifications_allowed_ui_status_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="32dp"
                 android:textAppearance="?attr/textAppearanceBodyMedium"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/notifications_allowed_ui_label"
@@ -115,7 +112,6 @@
                 android:id="@+id/notifications_permission_status_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="32dp"
                 android:textAppearance="?attr/textAppearanceBodyMedium"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/notifications_permission_label"
@@ -133,7 +129,7 @@
             app:layout_constraintTop_toBottomOf="@+id/notifications_main_card" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/tags_card"
+            android:id="@+id/tags_row"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="16dp"
@@ -174,10 +170,10 @@
             android:background="@color/material_dynamic_neutral20"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tags_card" />
+            app:layout_constraintTop_toBottomOf="@+id/tags_row" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/inbox_card"
+            android:id="@+id/inbox_row"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="16dp"

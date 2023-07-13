@@ -41,8 +41,6 @@
                     android:layout_marginTop="16dp"
                     android:hint="@string/events_event_name"
                     android:textAppearance="?attr/textAppearanceBodyMedium"
-                    app:counterEnabled="true"
-                    app:counterMaxLength="15"
                     app:endIconMode="clear_text"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/event_data_card_title">
@@ -56,9 +54,10 @@
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <TextView
-                    android:id="@+id/textView"
+                    android:id="@+id/fields_label"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
                     android:text="@string/events_event_fields"
                     android:textAppearance="?attr/textAppearanceBodyMedium"
                     android:textStyle="bold"
@@ -71,23 +70,23 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:src="@drawable/ic_baseline_add_circle_outline_24"
-                    app:layout_constraintBottom_toBottomOf="@+id/textView"
-                    app:layout_constraintStart_toEndOf="@+id/textView"
-                    app:layout_constraintTop_toTopOf="@+id/textView"
-                    app:tint="@color/purple_700" />
+                    app:layout_constraintBottom_toBottomOf="@+id/fields_label"
+                    app:layout_constraintStart_toEndOf="@+id/fields_label"
+                    app:layout_constraintTop_toTopOf="@+id/fields_label"
+                    app:tint="@color/purple_700"
+                    android:contentDescription="@string/add_field_image" />
 
                 <LinearLayout
-                    android:id="@+id/field_linaer_layout"
+                    android:id="@+id/fields_linear_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
                     android:orientation="vertical"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/textView" />
+                    app:layout_constraintTop_toBottomOf="@+id/fields_label" />
 
                 <Button
-                    android:id="@+id/register_event_data_button"
+                    android:id="@+id/register_event_button"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
@@ -95,7 +94,7 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/field_linaer_layout" />
+                    app:layout_constraintTop_toBottomOf="@+id/fields_linear_layout" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 

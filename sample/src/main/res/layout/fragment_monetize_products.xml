@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:layout_margin="16dp"
     android:orientation="vertical"
-    tools:context=".ui.monetize.MonetizeProductsFragment">
+    tools:context=".ui.monetize.products.MonetizeProductsFragment">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/monetize_products_live_data_list"

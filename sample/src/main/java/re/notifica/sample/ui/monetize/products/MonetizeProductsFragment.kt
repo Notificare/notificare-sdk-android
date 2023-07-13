@@ -1,4 +1,4 @@
-package re.notifica.sample.ui.monetize
+package re.notifica.sample.ui.monetize.products
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -15,19 +15,19 @@ import re.notifica.sample.databinding.FragmentMonetizeProductsBinding
 
 class MonetizeProductsFragment : Fragment() {
     private lateinit var binding: FragmentMonetizeProductsBinding
-    private val viewModel: MonetizeViewModel by viewModels()
-    private val adapterLiveData = MonetizeProductsListAdapter(::onProductClicked)
+    private val viewModel: MonetizeProductsViewModel by viewModels()
+    private val adapterLiveData = MonetizeProductsListAdapter(::onProductPurchaseClicked)
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = FragmentMonetizeProductsBinding.inflate(layoutInflater, container, false)
 
-        setupLists()
+        setupList()
         setupObservers()
 
         return binding.root
     }
 
-    private fun setupLists() {
+    private fun setupList() {
         binding.monetizeProductsLiveDataList.layoutManager = LinearLayoutManager(requireContext())
         binding.monetizeProductsLiveDataList.addItemDecoration(
             DividerItemDecoration(
@@ -35,6 +35,7 @@ class MonetizeProductsFragment : Fragment() {
                 DividerItemDecoration.VERTICAL
             )
         )
+
         binding.monetizeProductsLiveDataList.adapter = adapterLiveData
     }
 
@@ -44,7 +45,7 @@ class MonetizeProductsFragment : Fragment() {
         }
     }
 
-    private fun onProductClicked(product: NotificareProduct) {
+    private fun onProductPurchaseClicked(product: NotificareProduct) {
         Notificare.monetize().startPurchaseFlow(requireActivity(), product)
     }
 }

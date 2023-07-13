@@ -49,7 +49,6 @@ class InboxAdapter(
             binding.title.text = item.notification.title ?: "---"
             binding.message.text = item.notification.message
             binding.type.text = item.notification.type
-
             binding.timeAgo.text = DateUtils.getRelativeTimeSpanString(
                 item.time.time,
                 Calendar.getInstance().timeInMillis,

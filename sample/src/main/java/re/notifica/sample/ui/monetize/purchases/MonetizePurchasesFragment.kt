@@ -1,4 +1,4 @@
-package re.notifica.sample.ui.monetize
+package re.notifica.sample.ui.monetize.purchases
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -12,19 +12,19 @@ import re.notifica.sample.databinding.FragmentMonetizePurchasesBinding
 
 class MonetizePurchasesFragment : Fragment() {
     private lateinit var binding: FragmentMonetizePurchasesBinding
-    private val viewModel: MonetizeViewModel by viewModels()
+    private val viewModel: MonetizePurchasesViewModel by viewModels()
     private val adapterLiveData = MonetizePurchasesListAdapter()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = FragmentMonetizePurchasesBinding.inflate(layoutInflater, container, false)
 
-        setupLists()
+        setupList()
         setupObservers()
 
         return binding.root
     }
 
-    private fun setupLists() {
+    private fun setupList() {
         binding.monetizePurchasesLiveDataList.layoutManager = LinearLayoutManager(requireContext())
         binding.monetizePurchasesLiveDataList.addItemDecoration(
             DividerItemDecoration(
@@ -32,6 +32,7 @@ class MonetizePurchasesFragment : Fragment() {
                 DividerItemDecoration.VERTICAL
             )
         )
+
         binding.monetizePurchasesLiveDataList.adapter = adapterLiveData
     }
 
