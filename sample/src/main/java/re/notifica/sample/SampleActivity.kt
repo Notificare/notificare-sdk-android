@@ -131,29 +131,29 @@ class SampleActivity : AppCompatActivity(), NotificarePushUI.NotificationLifecyc
         }
 
         val uri = intent.data ?: return
-        Timber.tag(TAG).i("Received deep link with uri = $uri")
+        Timber.i("Received deep link with uri = $uri")
         Toast.makeText(this, "Deep link = $uri", Toast.LENGTH_SHORT).show()
     }
 
     // Lifecycle Listeners
     private val messageLifecycleListener = object : NotificareInAppMessaging.MessageLifecycleListener {
         override fun onMessagePresented(message: NotificareInAppMessage) {
-            Timber.tag(TAG).i("---> message presented '$message.name'")
+            Timber.i("---> message presented '$message.name'")
             Toast.makeText(this@SampleActivity, "Message presented", Toast.LENGTH_SHORT).show()
         }
 
         override fun onMessageFinishedPresenting(message: NotificareInAppMessage) {
-            Timber.tag(TAG).i("---> message finished presenting '$message.name'")
+            Timber.i("---> message finished presenting '$message.name'")
             Toast.makeText(this@SampleActivity, "Message finished presenting", Toast.LENGTH_SHORT).show()
         }
 
         override fun onMessageFailedToPresent(message: NotificareInAppMessage) {
-            Timber.tag(TAG).i("---> message failed to present '$message.name'")
+            Timber.i("---> message failed to present '$message.name'")
             Toast.makeText(this@SampleActivity, "Message failed to present", Toast.LENGTH_SHORT).show()
         }
 
         override fun onActionExecuted(message: NotificareInAppMessage, action: NotificareInAppMessage.Action) {
-            Timber.tag(TAG).i("---> action executed '$message.name'")
+            Timber.i("---> action executed '$message.name'")
             Toast.makeText(this@SampleActivity, "Action executed", Toast.LENGTH_SHORT).show()
         }
 
@@ -162,43 +162,43 @@ class SampleActivity : AppCompatActivity(), NotificarePushUI.NotificationLifecyc
             action: NotificareInAppMessage.Action,
             error: Exception?
         ) {
-            Timber.tag(TAG).i(error, "---> action failed to execute '$message.name'")
+            Timber.i(error, "---> action failed to execute '$message.name'")
             Toast.makeText(this@SampleActivity, "Action failed to execute", Toast.LENGTH_SHORT).show()
         }
     }
 
     override fun onNotificationWillPresent(notification: NotificareNotification) {
-        Timber.tag(TAG).i("---> notification will present '$notification.id'")
+        Timber.i("---> notification will present '$notification.id'")
         Toast.makeText(this, "Notification will present", Toast.LENGTH_SHORT).show()
     }
 
     override fun onNotificationPresented(notification: NotificareNotification) {
-        Timber.tag(TAG).i("---> notification presented '$notification.id'")
+        Timber.i("---> notification presented '$notification.id'")
         Toast.makeText(this, "Notification presented", Toast.LENGTH_SHORT).show()
     }
 
     override fun onNotificationFinishedPresenting(notification: NotificareNotification) {
-        Timber.tag(TAG).i("---> notification finished presenting '$notification.id'")
+        Timber.i("---> notification finished presenting '$notification.id'")
         Toast.makeText(this, "Notification finished presenting", Toast.LENGTH_SHORT).show()
     }
 
     override fun onNotificationFailedToPresent(notification: NotificareNotification) {
-        Timber.tag(TAG).i("---> notification failed to present '$notification.id'")
+        Timber.i("---> notification failed to present '$notification.id'")
         Toast.makeText(this, "Notification failed to present", Toast.LENGTH_SHORT).show()
     }
 
     override fun onNotificationUrlClicked(notification: NotificareNotification, uri: Uri) {
-        Timber.tag(TAG).i("---> notification url clicked '$notification.id'")
+        Timber.i("---> notification url clicked '$notification.id'")
         Toast.makeText(this, "Notification URL clicked", Toast.LENGTH_SHORT).show()
     }
 
     override fun onActionWillExecute(notification: NotificareNotification, action: NotificareNotification.Action) {
-        Timber.tag(TAG).i("---> action will execute '$notification.id'")
+        Timber.i("---> action will execute '$notification.id'")
         Toast.makeText(this, "Action will execute", Toast.LENGTH_SHORT).show()
     }
 
     override fun onActionExecuted(notification: NotificareNotification, action: NotificareNotification.Action) {
-        Timber.tag(TAG).i("---> action executed '$notification.id'")
+        Timber.i("---> action executed '$notification.id'")
         Toast.makeText(this, "Action executed", Toast.LENGTH_SHORT).show()
     }
 
@@ -207,7 +207,7 @@ class SampleActivity : AppCompatActivity(), NotificarePushUI.NotificationLifecyc
         action: NotificareNotification.Action,
         error: Exception?
     ) {
-        Timber.tag(TAG).i("---> action failed to execute '${action.label}'")
+        Timber.i("---> action failed to execute '${action.label}'")
         Toast.makeText(this, "Action failed to execute", Toast.LENGTH_SHORT).show()
     }
 
@@ -216,11 +216,7 @@ class SampleActivity : AppCompatActivity(), NotificarePushUI.NotificationLifecyc
         action: NotificareNotification.Action,
         uri: Uri
     ) {
-        Timber.tag(TAG).i("---> custom action received '$uri'")
+        Timber.i("---> custom action received '$uri'")
         Toast.makeText(this, "Custom action received", Toast.LENGTH_SHORT).show()
-    }
-
-    companion object {
-        private val TAG = SampleActivity::class.java.simpleName
     }
 }

@@ -52,6 +52,8 @@ class MainViewModel : BaseViewModel(), DefaultLifecycleObserver, Notificare.List
     private val _hasBluetoothPermission = MutableLiveData(checkBluetoothPermission)
     val hasBluetoothPermission: LiveData<Boolean> = _hasBluetoothPermission
 
+    private var _iamEvaluateContext = false
+
     private val _iamSuppressed = MutableLiveData(isIamSuppressed)
     val iamSuppressed: LiveData<Boolean> = _iamSuppressed
 
@@ -198,8 +200,12 @@ class MainViewModel : BaseViewModel(), DefaultLifecycleObserver, Notificare.List
         _hasBluetoothPermission.postValue(checkBluetoothPermission)
     }
 
-    fun changeIamSuppressed(suppressed: Boolean) {
-        Notificare.inAppMessaging().hasMessagesSuppressed = suppressed
+    fun updateIamEvaluateContextStatus(evaluate: Boolean) {
+        _iamEvaluateContext = evaluate
+    }
+
+    fun updateIamSuppressedStatus(suppressed: Boolean) {
+        Notificare.inAppMessaging().setMessagesSuppressed(suppressed, _iamEvaluateContext)
         _iamSuppressed.postValue(isIamSuppressed)
     }
 

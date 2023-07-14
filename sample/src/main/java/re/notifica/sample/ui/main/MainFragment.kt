@@ -270,10 +270,14 @@ class MainFragment : BaseFragment() {
 
         // In app messaging
 
+        binding.iamCard.evaluateContextSwitch.setOnCheckedChangeListener { _, checked ->
+            viewModel.updateIamEvaluateContextStatus(checked)
+        }
+
         binding.iamCard.iamSwitch.setOnCheckedChangeListener { _, checked ->
             if (checked == viewModel.iamSuppressed.value) return@setOnCheckedChangeListener
 
-            viewModel.changeIamSuppressed(checked)
+            viewModel.updateIamSuppressedStatus(checked)
         }
 
         // End region
