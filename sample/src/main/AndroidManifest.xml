@@ -14,9 +14,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Sample">
         <activity
-            android:name=".MainActivity"
+            android:name=".SampleActivity"
             android:exported="true"
-            android:launchMode="singleTask">
+            android:launchMode="singleTask"
+            android:theme="@style/Theme.Sample">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -71,47 +72,11 @@
                     android:pathPrefix="/testdevice"
                     android:scheme="https" />
             </intent-filter>
-            <intent-filter android:autoVerify="true">
-                <action android:name="android.intent.action.VIEW" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-
-                <data
-                    android:host="${notificareApplicationId}.applinks.notifica.re"
-                    android:pathPrefix="/oauth/validate"
-                    android:scheme="https" />
-            </intent-filter>
-            <intent-filter android:autoVerify="true">
-                <action android:name="android.intent.action.VIEW" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-
-                <data
-                    android:host="${notificareApplicationId}.applinks.notifica.re"
-                    android:pathPrefix="/oauth/resetpassword"
-                    android:scheme="https" />
-            </intent-filter>
         </activity>
-        <activity
-            android:name=".ui.inbox.InboxActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ui.beacons.BeaconsActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ui.iap.InAppPurchasesActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ui.wallet.WalletActivity"
-            android:exported="false" />
 
         <activity
             android:name="re.notifica.push.ui.NotificationActivity"
-            android:exported="false"
-            android:hardwareAccelerated="true"
-            android:theme="@style/Theme.Sample.Translucent" />
+            android:theme="@style/Theme.App.Notificare.Translucent" />
         <activity
             android:name="re.notifica.loyalty.PassbookActivity"
             android:exported="true">
@@ -129,7 +94,7 @@
         </activity>
         <activity
             android:name="re.notifica.iam.ui.InAppMessagingActivity"
-            android:theme="@style/Theme.Sample.Iam"
+            android:theme="@style/Theme.App.Notificare.Iam"
             tools:replace="android:theme" />
 
         <receiver
