@@ -44,7 +44,7 @@ public class ServiceManager : ServiceManager() {
         // region Setup location pending intent
 
         val locationIntent = Intent(context, LocationReceiver::class.java)
-            .setAction(Notificare.INTENT_ACTION_LOCATION_UPDATED)
+            .setAction(Notificare.INTENT_ACTION_INTERNAL_LOCATION_UPDATED)
 
         locationPendingIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             PendingIntent.getBroadcast(
@@ -91,11 +91,6 @@ public class ServiceManager : ServiceManager() {
 
     @SuppressLint("MissingPermission")
     override fun enableLocationUpdates() {
-        if (locationUpdatesStarted) {
-            NotificareLogger.debug("Location updates were previously enabled. Skipping...")
-            return
-        }
-
         fusedLocationClient.lastLocation.addOnSuccessListener { location ->
             if (location != null) {
                 // NotificareGeo.handleLocationUpdate(location)
@@ -116,11 +111,16 @@ public class ServiceManager : ServiceManager() {
                 NotificareLogger.warning("No location found yet.")
             }
 
-            val request = LocationRequest.create()
-                .setInterval(Notificare.DEFAULT_LOCATION_UPDATES_INTERVAL)
-                .setFastestInterval(Notificare.DEFAULT_LOCATION_UPDATES_FASTEST_INTERVAL)
+            if (locationUpdatesStarted) {
+                NotificareLogger.debug("Location updates were previously enabled. Skipping...")
+                return@addOnSuccessListener
+            }
+
+            val request = LocationRequest.Builder(Notificare.DEFAULT_LOCATION_UPDATES_INTERVAL)
+                .setMinUpdateIntervalMillis(Notificare.DEFAULT_LOCATION_UPDATES_FASTEST_INTERVAL)
                 .setPriority(Priority.PRIORITY_BALANCED_POWER_ACCURACY)
-                .setSmallestDisplacement(Notificare.DEFAULT_LOCATION_UPDATES_SMALLEST_DISPLACEMENT.toFloat())
+                .setMinUpdateDistanceMeters(Notificare.DEFAULT_LOCATION_UPDATES_SMALLEST_DISPLACEMENT.toFloat())
+                .build()
 
             fusedLocationClient.requestLocationUpdates(request, locationPendingIntent)
                 .addOnSuccessListener {

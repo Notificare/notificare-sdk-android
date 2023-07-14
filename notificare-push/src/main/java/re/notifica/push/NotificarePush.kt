@@ -3,6 +3,7 @@ package re.notifica.push
 import android.content.Intent
 import androidx.lifecycle.LiveData
 import re.notifica.InternalNotificareApi
+import re.notifica.NotificareCallback
 import re.notifica.models.NotificareTransport
 import re.notifica.push.models.NotificareRemoteMessage
 
@@ -24,6 +25,21 @@ public interface NotificarePush {
     // public fun isNotificareNotification(...: RemoteMessage)
 
     public fun handleTrampolineIntent(intent: Intent): Boolean
+
+    public suspend fun registerLiveActivity(
+        activityId: String,
+        topics: List<String> = listOf(),
+    )
+
+    public fun registerLiveActivity(
+        activityId: String,
+        topics: List<String> = listOf(),
+        callback: NotificareCallback<Unit>,
+    )
+
+    public suspend fun endLiveActivity(activityId: String)
+
+    public fun endLiveActivity(activityId: String, callback: NotificareCallback<Unit>)
 }
 
 public interface NotificareInternalPush {

@@ -6,8 +6,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import re.notifica.Notificare
 import re.notifica.NotificareCallback
+import re.notifica.NotificareDeviceUnavailableException
 import re.notifica.NotificareEventsModule
 import re.notifica.NotificareInternalEventsModule
+import re.notifica.NotificareNotReadyException
 import re.notifica.internal.NotificareLogger
 import re.notifica.internal.NotificareModule
 import re.notifica.internal.NotificareUtils
@@ -18,6 +20,7 @@ import re.notifica.internal.storage.database.ktx.toEntity
 import re.notifica.internal.workers.ProcessEventsWorker
 import re.notifica.ktx.device
 import re.notifica.ktx.session
+import re.notifica.models.NotificareDevice
 import re.notifica.models.NotificareEvent
 import re.notifica.models.NotificareEventData
 
@@ -52,7 +55,11 @@ internal object NotificareEventsModuleImpl : NotificareModule(), NotificareEvent
     // region Notificare Events Module
 
     override suspend fun logApplicationException(throwable: Throwable) {
-        log(throwable.toEvent())
+        val device = Notificare.device().currentDevice
+            ?: throw NotificareDeviceUnavailableException()
+
+        val event = createThrowableEvent(throwable, device)
+        log(event)
     }
 
     override fun logApplicationException(throwable: Throwable, callback: NotificareCallback<Unit>): Unit =
@@ -70,6 +77,8 @@ internal object NotificareEventsModuleImpl : NotificareModule(), NotificareEvent
         toCallbackFunction(::logNotificationOpen)(id, callback)
 
     override suspend fun logCustom(event: String, data: NotificareEventData?) {
+        if (!Notificare.isReady) throw NotificareNotReadyException()
+
         log("re.notifica.event.custom.$event", data)
     }
 
@@ -81,14 +90,17 @@ internal object NotificareEventsModuleImpl : NotificareModule(), NotificareEvent
     // region Notificare Internal Events Module
 
     override suspend fun log(event: String, data: NotificareEventData?, sessionId: String?, notificationId: String?) {
+        val device = Notificare.device().currentDevice
+            ?: throw NotificareDeviceUnavailableException()
+
         log(
             NotificareEvent(
                 type = event,
                 timestamp = System.currentTimeMillis(),
-                deviceId = Notificare.device().currentDevice?.id,
+                deviceId = device.id,
                 sessionId = sessionId ?: Notificare.session().sessionId,
                 notificationId = notificationId,
-                userId = Notificare.device().currentDevice?.userId,
+                userId = device.userId,
                 data = data
             )
         )
@@ -168,28 +180,28 @@ internal object NotificareEventsModuleImpl : NotificareModule(), NotificareEvent
                     .build()
             )
     }
-}
 
-internal fun Throwable.toEvent(): NotificareEvent {
-    val timestamp = System.currentTimeMillis()
+    internal fun createThrowableEvent(throwable: Throwable, device: NotificareDevice): NotificareEvent {
+        val timestamp = System.currentTimeMillis()
 
-    return NotificareEvent(
-        type = EVENT_APPLICATION_EXCEPTION,
-        timestamp = timestamp,
-        deviceId = Notificare.device().currentDevice?.id,
-        sessionId = Notificare.session().sessionId,
-        notificationId = null,
-        userId = Notificare.device().currentDevice?.userId,
-        data = mapOf(
-            "platform" to "Android",
-            "osVersion" to NotificareUtils.osVersion,
-            "deviceString" to NotificareUtils.deviceString,
-            "sdkVersion" to Notificare.SDK_VERSION,
-            "appVersion" to NotificareUtils.applicationVersion,
-            "timestamp" to timestamp.toString(),
-            "name" to this.message,
-            "reason" to this.cause?.toString(),
-            "stackSymbols" to this.stackTraceToString(),
+        return NotificareEvent(
+            type = EVENT_APPLICATION_EXCEPTION,
+            timestamp = timestamp,
+            deviceId = device.id,
+            sessionId = Notificare.session().sessionId,
+            notificationId = null,
+            userId = device.userId,
+            data = mapOf(
+                "platform" to "Android",
+                "osVersion" to NotificareUtils.osVersion,
+                "deviceString" to NotificareUtils.deviceString,
+                "sdkVersion" to Notificare.SDK_VERSION,
+                "appVersion" to NotificareUtils.applicationVersion,
+                "timestamp" to timestamp.toString(),
+                "name" to throwable.message,
+                "reason" to throwable.cause?.toString(),
+                "stackSymbols" to throwable.stackTraceToString(),
+            )
         )
-    )
+    }
 }

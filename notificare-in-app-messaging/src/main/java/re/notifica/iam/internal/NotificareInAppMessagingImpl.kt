@@ -16,6 +16,8 @@ import re.notifica.iam.ui.InAppMessagingActivity
 import re.notifica.internal.NotificareLogger
 import re.notifica.internal.NotificareModule
 import re.notifica.internal.common.onMainThread
+import re.notifica.internal.ktx.activityInfo
+import re.notifica.internal.ktx.coroutineScope
 import re.notifica.internal.network.NetworkException
 import re.notifica.internal.network.request.NotificareRequest
 import re.notifica.ktx.device
@@ -47,6 +49,17 @@ internal object NotificareInAppMessagingImpl : NotificareModule(), NotificareInA
     // region Notificare In App Messaging
 
     override var hasMessagesSuppressed: Boolean = false
+
+    override fun setMessagesSuppressed(suppressed: Boolean, evaluateContext: Boolean) {
+        val suppressChanged = suppressed != hasMessagesSuppressed
+        val canEvaluate = evaluateContext && suppressChanged && !suppressed
+
+        hasMessagesSuppressed = suppressed
+
+        if (canEvaluate) {
+            evaluateContext(ApplicationContext.FOREGROUND)
+        }
+    }
 
     override fun addLifecycleListener(listener: NotificareInAppMessaging.MessageLifecycleListener) {
         lifecycleListeners.add(listener)
@@ -144,7 +157,8 @@ internal object NotificareInAppMessagingImpl : NotificareModule(), NotificareInA
         }
 
         val packageManager = Notificare.requireContext().packageManager
-        val info = packageManager.getActivityInfo(activity.componentName, PackageManager.GET_META_DATA)
+
+        val info = packageManager.activityInfo(activity.componentName, PackageManager.GET_META_DATA)
         if (info.metaData != null) {
             val suppressed = info.metaData.getBoolean(MANIFEST_SUPPRESS_MESSAGES_ACTIVITY_KEY, false)
             if (suppressed) {
@@ -159,7 +173,7 @@ internal object NotificareInAppMessagingImpl : NotificareModule(), NotificareInA
     private fun evaluateContext(context: ApplicationContext) {
         NotificareLogger.debug("Checking in-app message for context '${context.rawValue}'.")
 
-        GlobalScope.launch {
+        Notificare.coroutineScope.launch {
             try {
                 val message = fetchInAppMessage(context)
                 processInAppMessage(message)
@@ -185,7 +199,7 @@ internal object NotificareInAppMessagingImpl : NotificareModule(), NotificareInA
         if (message.delaySeconds > 0) {
             // Keep a reference to the job to cancel it when
             // the app goes into the background.
-            delayedMessageJob = GlobalScope.launch {
+            delayedMessageJob = Notificare.coroutineScope.launch {
                 try {
                     if (message.delaySeconds > 0) {
                         NotificareLogger.debug("Waiting ${message.delaySeconds} seconds before presenting the in-app message.")

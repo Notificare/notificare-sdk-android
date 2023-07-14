@@ -4,13 +4,14 @@ plugins {
     id 'kotlin-kapt'
     id 're.notifica.gradle.notificare-services'
     id 'com.google.gms.google-services'
-    id 'com.huawei.agconnect'
+    // id 'com.huawei.agconnect'
 }
 
 def properties = new Properties()
 properties.load(project.rootProject.file('local.properties').newDataInputStream())
 
 android {
+    namespace 're.notifica.sample'
     compileSdkVersion compile_sdk_version
     buildToolsVersion build_tools_version
 
@@ -46,7 +47,7 @@ android {
             signingConfig signingConfigs.debug
         }
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.release
         }

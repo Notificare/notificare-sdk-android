@@ -3,9 +3,12 @@ package re.notifica.geo.internal
 import android.Manifest
 import android.bluetooth.BluetoothManager
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
+import android.location.Address
 import android.location.Geocoder
+import android.location.Geocoder.GeocodeListener
 import android.location.Location
 import android.location.LocationManager
 import android.os.Build
@@ -15,11 +18,22 @@ import kotlinx.coroutines.*
 import okhttp3.Response
 import re.notifica.*
 import re.notifica.geo.NotificareGeo
+import re.notifica.geo.NotificareGeoIntentReceiver
 import re.notifica.geo.NotificareInternalGeo
 import re.notifica.geo.NotificareLocationHardwareUnavailableException
 import re.notifica.geo.internal.network.push.*
 import re.notifica.geo.internal.storage.LocalStorage
 import re.notifica.geo.ktx.DEFAULT_LOCATION_UPDATES_SMALLEST_DISPLACEMENT
+import re.notifica.geo.ktx.INTENT_ACTION_BEACONS_RANGED
+import re.notifica.geo.ktx.INTENT_ACTION_BEACON_ENTERED
+import re.notifica.geo.ktx.INTENT_ACTION_BEACON_EXITED
+import re.notifica.geo.ktx.INTENT_ACTION_LOCATION_UPDATED
+import re.notifica.geo.ktx.INTENT_ACTION_REGION_ENTERED
+import re.notifica.geo.ktx.INTENT_ACTION_REGION_EXITED
+import re.notifica.geo.ktx.INTENT_EXTRA_BEACON
+import re.notifica.geo.ktx.INTENT_EXTRA_LOCATION
+import re.notifica.geo.ktx.INTENT_EXTRA_RANGED_BEACONS
+import re.notifica.geo.ktx.INTENT_EXTRA_REGION
 import re.notifica.geo.ktx.logBeaconSession
 import re.notifica.geo.ktx.logRegionSession
 import re.notifica.geo.ktx.loyaltyIntegration
@@ -27,12 +41,16 @@ import re.notifica.geo.models.*
 import re.notifica.internal.NotificareLogger
 import re.notifica.internal.NotificareModule
 import re.notifica.internal.common.onMainThread
+import re.notifica.internal.ktx.coroutineScope
 import re.notifica.internal.modules.integrations.NotificareGeoIntegration
 import re.notifica.internal.network.request.NotificareRequest
 import re.notifica.ktx.device
 import re.notifica.ktx.events
 import re.notifica.models.NotificareApplication
 import java.util.*
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
+import kotlin.coroutines.suspendCoroutine
 
 @Keep
 internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, NotificareInternalGeo, NotificareGeoIntegration {
@@ -179,9 +197,23 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
         }
     }
 
+    override suspend fun unlaunch() {
+        localStorage.locationServicesEnabled = false
+
+        clearRegions()
+        clearBeacons()
+
+        lastKnownLocation = null
+        serviceManager?.disableLocationUpdates()
+
+        clearLocation()
+    }
+
     // endregion
 
     // region Notificare Geo
+
+    override var intentReceiver: Class<out NotificareGeoIntentReceiver> = NotificareGeoIntentReceiver::class.java
 
     override var hasLocationServicesEnabled: Boolean
         get() {
@@ -220,8 +252,7 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
         updateBluetoothState(hasBeaconSupport)
 
         if (!hasForegroundLocationPermission) {
-            @OptIn(DelicateCoroutinesApi::class)
-            GlobalScope.launch {
+            Notificare.coroutineScope.launch {
                 try {
                     lastKnownLocation = null
                     clearLocation()
@@ -276,8 +307,7 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
         // Ensure we keep the bluetooth state updated in the API.
         updateBluetoothState(hasBeaconSupport)
 
-        @OptIn(DelicateCoroutinesApi::class)
-        GlobalScope.launch {
+        Notificare.coroutineScope.launch {
             try {
                 clearLocation()
                 NotificareLogger.debug("Device location cleared.")
@@ -329,6 +359,12 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
                     onMainThread {
                         listeners.forEach { it.onRegionEntered(region) }
                     }
+
+                    Notificare.requireContext().sendBroadcast(
+                        Intent(Notificare.requireContext(), intentReceiver)
+                            .setAction(Notificare.INTENT_ACTION_REGION_ENTERED)
+                            .putExtra(Notificare.INTENT_EXTRA_REGION, region)
+                    )
                 } else if (entered && !inside) {
                     triggerRegionExit(region)
                     stopRegionSession(region)
@@ -336,6 +372,12 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
                     onMainThread {
                         listeners.forEach { it.onRegionExited(region) }
                     }
+
+                    Notificare.requireContext().sendBroadcast(
+                        Intent(Notificare.requireContext(), intentReceiver)
+                            .setAction(Notificare.INTENT_ACTION_REGION_EXITED)
+                            .putExtra(Notificare.INTENT_EXTRA_REGION, region)
+                    )
                 }
 
                 if (inside) {
@@ -352,8 +394,7 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
             // Keep a reference to the last known location.
             lastKnownLocation = location
 
-            @OptIn(DelicateCoroutinesApi::class)
-            GlobalScope.launch {
+            Notificare.coroutineScope.launch {
                 try {
                     val country = getCountryCode(location)
 
@@ -372,6 +413,12 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
             listeners.forEach { it.onLocationUpdated(NotificareLocation(location)) }
         }
 
+        Notificare.requireContext().sendBroadcast(
+            Intent(Notificare.requireContext(), intentReceiver)
+                .setAction(Notificare.INTENT_ACTION_LOCATION_UPDATED)
+                .putExtra(Notificare.INTENT_EXTRA_LOCATION, NotificareLocation(location))
+        )
+
         Notificare.loyaltyIntegration()?.onPassbookLocationRelevanceChanged()
     }
 
@@ -386,8 +433,7 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
                 NotificareLogger.debug("Handling polygon region (${region.name}).")
 
                 if (!localStorage.enteredRegions.contains(regionId)) {
-                    @OptIn(DelicateCoroutinesApi::class)
-                    GlobalScope.launch {
+                    Notificare.coroutineScope.launch {
                         try {
                             val location = checkNotNull(serviceManager).getCurrentLocationAsync().await()
                             val inside = region.contains(location)
@@ -404,6 +450,12 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
                                 onMainThread {
                                     listeners.forEach { it.onRegionEntered(region) }
                                 }
+
+                                Notificare.requireContext().sendBroadcast(
+                                    Intent(Notificare.requireContext(), intentReceiver)
+                                        .setAction(Notificare.INTENT_ACTION_REGION_ENTERED)
+                                        .putExtra(Notificare.INTENT_EXTRA_REGION, region)
+                                )
                             }
                         } catch (e: Exception) {
                             NotificareLogger.warning("Failed to determine the current location.", e)
@@ -425,6 +477,12 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
                 onMainThread {
                     listeners.forEach { it.onRegionEntered(region) }
                 }
+
+                Notificare.requireContext().sendBroadcast(
+                    Intent(Notificare.requireContext(), intentReceiver)
+                        .setAction(Notificare.INTENT_ACTION_REGION_ENTERED)
+                        .putExtra(Notificare.INTENT_EXTRA_REGION, region)
+                )
             }
 
             // Start monitoring for beacons in this region.
@@ -447,6 +505,12 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
                 onMainThread {
                     listeners.forEach { it.onRegionExited(region) }
                 }
+
+                Notificare.requireContext().sendBroadcast(
+                    Intent(Notificare.requireContext(), intentReceiver)
+                        .setAction(Notificare.INTENT_ACTION_REGION_EXITED)
+                        .putExtra(Notificare.INTENT_EXTRA_REGION, region)
+                )
             }
 
             // Stop monitoring for beacons in this region.
@@ -473,6 +537,12 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
             onMainThread {
                 listeners.forEach { it.onBeaconEntered(beacon) }
             }
+
+            Notificare.requireContext().sendBroadcast(
+                Intent(Notificare.requireContext(), intentReceiver)
+                    .setAction(Notificare.INTENT_ACTION_BEACON_ENTERED)
+                    .putExtra(Notificare.INTENT_EXTRA_BEACON, beacon)
+            )
         }
 
         Notificare.loyaltyIntegration()?.onPassbookLocationRelevanceChanged()
@@ -497,6 +567,12 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
             onMainThread {
                 listeners.forEach { it.onBeaconExited(beacon) }
             }
+
+            Notificare.requireContext().sendBroadcast(
+                Intent(Notificare.requireContext(), intentReceiver)
+                    .setAction(Notificare.INTENT_ACTION_BEACON_EXITED)
+                    .putExtra(Notificare.INTENT_EXTRA_BEACON, beacon)
+            )
         }
 
         Notificare.loyaltyIntegration()?.onPassbookLocationRelevanceChanged()
@@ -534,6 +610,13 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
         onMainThread {
             listeners.forEach { it.onBeaconsRanged(region, cachedBeacons) }
         }
+
+        Notificare.requireContext().sendBroadcast(
+            Intent(Notificare.requireContext(), intentReceiver)
+                .setAction(Notificare.INTENT_ACTION_BEACONS_RANGED)
+                .putExtra(Notificare.INTENT_EXTRA_REGION, region)
+                .putParcelableArrayListExtra(Notificare.INTENT_EXTRA_RANGED_BEACONS, ArrayList(cachedBeacons))
+        )
     }
 
     // endregion
@@ -589,8 +672,16 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
     }
 
     private fun shouldUpdateLocation(location: Location): Boolean {
-        if (lastKnownLocation == null) return true
-        return location.distanceTo(lastKnownLocation) > Notificare.DEFAULT_LOCATION_UPDATES_SMALLEST_DISPLACEMENT
+        val lastKnownLocation = lastKnownLocation ?: return true
+
+        // Update the location when the user moves away enough of a distance.
+        if (location.distanceTo(lastKnownLocation) > Notificare.DEFAULT_LOCATION_UPDATES_SMALLEST_DISPLACEMENT) return true
+
+        // Update the location when we can monitor geofences but no fences were loaded yet.
+        // This typically happens when tracking the user's location and later upgrading to background permission.
+        if (hasBackgroundLocationPermission && hasPreciseLocationPermission && localStorage.monitoredRegions.isEmpty()) return true
+
+        return false
     }
 
     private suspend fun updateLocation(location: Location, country: String?): Unit = withContext(Dispatchers.IO) {
@@ -986,15 +1077,42 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
         beaconServiceManager?.clearMonitoring()
     }
 
-    private fun getCountryCode(location: Location): String? {
+    private suspend fun getCountryCode(location: Location): String? {
         return try {
-            geocoder
-                ?.getFromLocation(location.latitude, location.longitude, 1)
-                ?.firstOrNull()
+            getLocationAddresses(location)
+                .firstOrNull()
                 ?.countryCode
         } catch (e: Exception) {
             NotificareLogger.warning("Unable to reverse geocode the location.", e)
             null
         }
+    }
+
+    private suspend fun getLocationAddresses(location: Location): List<Address> = withContext(Dispatchers.IO) {
+        val geocoder = geocoder ?: return@withContext listOf()
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            return@withContext suspendCoroutine { continuation ->
+                geocoder.getFromLocation(
+                    location.latitude,
+                    location.longitude,
+                    1,
+                    object : GeocodeListener {
+                        override fun onGeocode(addresses: MutableList<Address>) {
+                            continuation.resume(addresses)
+                        }
+
+                        override fun onError(errorMessage: String?) {
+                            continuation.resumeWithException(Exception(errorMessage))
+                        }
+                    }
+                )
+            }
+        }
+
+        @Suppress("DEPRECATION")
+        val addresses = geocoder.getFromLocation(location.latitude, location.longitude, 1)
+
+        return@withContext addresses ?: listOf()
     }
 }

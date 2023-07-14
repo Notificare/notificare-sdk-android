@@ -12,6 +12,7 @@ import androidx.core.app.NotificationManagerCompat
 import kotlinx.coroutines.*
 import re.notifica.internal.*
 import re.notifica.internal.common.onMainThread
+import re.notifica.internal.ktx.coroutineScope
 import re.notifica.internal.ktx.toCallbackFunction
 import re.notifica.internal.network.push.*
 import re.notifica.internal.network.request.NotificareRequest
@@ -148,8 +149,7 @@ public object Notificare {
         NotificareLogger.info("Launching Notificare.")
         state = NotificareLaunchState.LAUNCHING
 
-        @OptIn(DelicateCoroutinesApi::class)
-        GlobalScope.launch(Dispatchers.IO) {
+        Notificare.coroutineScope.launch {
             try {
                 val application = fetchApplication()
 
@@ -208,12 +208,8 @@ public object Notificare {
 
         NotificareLogger.info("Un-launching Notificare.")
 
-        @OptIn(DelicateCoroutinesApi::class)
-        GlobalScope.launch {
+        Notificare.coroutineScope.launch {
             try {
-                NotificareLogger.debug("Registering a temporary device.")
-                deviceImplementation().registerTemporary()
-
                 // Loop all possible modules and un-launch the available ones.
                 NotificareModule.Module.values().reversed().forEach { module ->
                     module.instance?.run {
@@ -230,6 +226,9 @@ public object Notificare {
 
                 NotificareLogger.debug("Clearing device tags.")
                 device().clearTags()
+
+                NotificareLogger.debug("Registering a temporary device.")
+                deviceImplementation().registerTemporary()
 
                 NotificareLogger.debug("Removing device.")
                 deviceImplementation().delete()
@@ -497,6 +496,11 @@ public object Notificare {
     // endregion
 
     private fun configure(context: Context, servicesInfo: NotificareServicesInfo) {
+        if (isConfigured) {
+            NotificareLogger.warning("Notificare has already been configured. Skipping...")
+            return
+        }
+
         if (servicesInfo.applicationKey.isBlank() || servicesInfo.applicationSecret.isBlank()) {
             throw IllegalArgumentException("Notificare cannot be configured without an application key and secret.")
         }

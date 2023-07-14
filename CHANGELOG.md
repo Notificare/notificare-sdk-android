@@ -1,5 +1,51 @@
 # CHANGELOG
 
+## 3.5.4
+
+- Prevent queued events without an associated device
+- Prevent `logCustom` usage before Notificare becomes ready
+
+## 3.5.3
+
+- Explicit handling of Notificare Links in Deep Link notifications
+- Improve supported deep links validation
+- Stricter unlaunch flow
+
+## 3.5.2
+
+- Prevent multiple configurations from taking place
+- Add broadcast receiver for geo events
+- Start monitoring nearest regions immediately after upgrading to background location
+- Correctly track device on initial application open event
+
+## 3.5.1
+
+- Improved action categories parsing
+- Prevent Glide from invoking the coroutine continuation several times
+- Fix cached language when the network request fails
+- Update cached device when the language changes
+- Use YouTube privacy-enhanced mode
+
+## 3.5.0
+
+- Add user-level inbox module
+- Remove non-optional `id` requirement from HMS system notifications
+- Compiles with & targets Android 13
+- Include `POST_NOTIFICATIONS` permission in the push module
+- Add Live Activities compatibility mechanism
+- Allow a context evaluation upon un-suppressing in-app messages
+- Include the delivery mechanism for notification received events
+
+## 3.4.1
+
+- Fix locale-sensitive time formatting on `NotificareTime` objects
+
+## 3.4.0
+
+#### Important changes since 3.3.0
+
+- In-app messaging module
+
 ## 3.4.0-beta.2
 
 - Fix card in-app message click outside to dismiss

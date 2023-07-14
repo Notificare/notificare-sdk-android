@@ -5,11 +5,11 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import androidx.core.app.RemoteInput
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import re.notifica.Notificare
 import re.notifica.internal.NotificareLogger
+import re.notifica.internal.ktx.coroutineScope
+import re.notifica.internal.ktx.parcelable
 import re.notifica.ktx.events
 import re.notifica.models.NotificareNotification
 import re.notifica.push.ktx.INTENT_ACTION_QUICK_RESPONSE
@@ -22,15 +22,15 @@ internal class NotificarePushSystemIntentReceiver : BroadcastReceiver() {
         when (intent.action) {
             Notificare.INTENT_ACTION_QUICK_RESPONSE -> {
                 val message: NotificareNotificationRemoteMessage = requireNotNull(
-                    intent.getParcelableExtra(Notificare.INTENT_EXTRA_REMOTE_MESSAGE)
+                    intent.parcelable(Notificare.INTENT_EXTRA_REMOTE_MESSAGE)
                 )
 
                 val notification: NotificareNotification = requireNotNull(
-                    intent.getParcelableExtra(Notificare.INTENT_EXTRA_NOTIFICATION)
+                    intent.parcelable(Notificare.INTENT_EXTRA_NOTIFICATION)
                 )
 
                 val action: NotificareNotification.Action = requireNotNull(
-                    intent.getParcelableExtra(Notificare.INTENT_EXTRA_ACTION)
+                    intent.parcelable(Notificare.INTENT_EXTRA_ACTION)
                 )
 
                 val responseText = RemoteInput.getResultsFromIntent(intent)
@@ -48,7 +48,7 @@ internal class NotificarePushSystemIntentReceiver : BroadcastReceiver() {
         action: NotificareNotification.Action,
         responseText: String?
     ) {
-        GlobalScope.launch(Dispatchers.IO) {
+        Notificare.coroutineScope.launch {
             // Log the notification open event.
             Notificare.events().logNotificationOpen(notification.id)
 
@@ -93,7 +93,7 @@ internal class NotificarePushSystemIntentReceiver : BroadcastReceiver() {
         params["label"] = action.label
         responseText?.let { params["message"] = it }
 
-        GlobalScope.launch(Dispatchers.IO) {
+        Notificare.coroutineScope.launch {
             try {
                 Notificare.callNotificationReplyWebhook(targetUri, params)
 
@@ -112,7 +112,7 @@ internal class NotificarePushSystemIntentReceiver : BroadcastReceiver() {
         action: NotificareNotification.Action,
         responseText: String?
     ) {
-        GlobalScope.launch(Dispatchers.IO) {
+        Notificare.coroutineScope.launch {
             try {
                 Notificare.createNotificationReply(
                     notification = notification,

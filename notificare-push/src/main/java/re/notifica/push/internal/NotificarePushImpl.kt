@@ -12,6 +12,7 @@ import android.content.pm.PackageManager
 import android.graphics.Color
 import android.net.Uri
 import android.os.Build
+import android.os.Parcelable
 import androidx.annotation.Keep
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -28,6 +29,9 @@ import re.notifica.NotificareNotConfiguredException
 import re.notifica.internal.NotificareLogger
 import re.notifica.internal.NotificareModule
 import re.notifica.internal.NotificareUtils
+import re.notifica.internal.ktx.coroutineScope
+import re.notifica.internal.ktx.parcelable
+import re.notifica.internal.ktx.toCallbackFunction
 import re.notifica.internal.network.request.NotificareRequest
 import re.notifica.ktx.device
 import re.notifica.ktx.events
@@ -35,9 +39,12 @@ import re.notifica.models.NotificareApplication
 import re.notifica.models.NotificareNotification
 import re.notifica.models.NotificareTransport
 import re.notifica.push.*
+import re.notifica.push.internal.network.push.CreateLiveActivityPayload
 import re.notifica.push.internal.network.push.DeviceUpdateNotificationSettingsPayload
 import re.notifica.push.ktx.*
 import re.notifica.push.models.*
+import java.net.URLEncoder
+import java.util.*
 import java.util.concurrent.atomic.AtomicInteger
 
 @Keep
@@ -120,6 +127,13 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
                     registerPushToken(manager.transport, token, performReadinessCheck = false)
 
                     // NOTE: the notification settings are updated after a push token registration.
+
+                    Notificare.requireContext().sendBroadcast(
+                        Intent(Notificare.requireContext(), intentReceiver)
+                            .setAction(Notificare.INTENT_ACTION_TOKEN_CHANGED)
+                            .putExtra(Notificare.INTENT_EXTRA_TOKEN, token)
+                    )
+
                     return
                 } else {
                     NotificareLogger.debug("Found a postponed registration token but no service manager.")
@@ -134,7 +148,12 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
     }
 
     override suspend fun unlaunch() {
-        // TODO check if we need to disable remote notifications
+        sharedPreferences.remoteNotificationsEnabled = false
+        sharedPreferences.firstRegistration = true
+
+        // Update the local notification settings.
+        // Registering a temporary device automatically reports the allowedUI to the API.
+        allowedUI = false
     }
 
     // endregion
@@ -203,8 +222,7 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
     }
 
     override fun disableRemoteNotifications() {
-        @OptIn(DelicateCoroutinesApi::class)
-        GlobalScope.launch {
+        Notificare.coroutineScope.launch {
             try {
                 // Keep track of the status in local storage.
                 sharedPreferences.remoteNotificationsEnabled = false
@@ -228,13 +246,64 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
         }
 
         handleTrampolineMessage(
-            message = requireNotNull(intent.getParcelableExtra(Notificare.INTENT_EXTRA_REMOTE_MESSAGE)),
-            notification = requireNotNull(intent.getParcelableExtra(Notificare.INTENT_EXTRA_NOTIFICATION)),
-            action = intent.getParcelableExtra(Notificare.INTENT_EXTRA_ACTION)
+            message = requireNotNull(intent.parcelable(Notificare.INTENT_EXTRA_REMOTE_MESSAGE)),
+            notification = requireNotNull(intent.parcelable(Notificare.INTENT_EXTRA_NOTIFICATION)),
+            action = intent.parcelable(Notificare.INTENT_EXTRA_ACTION)
         )
 
         return true
     }
+
+    override suspend fun registerLiveActivity(
+        activityId: String,
+        topics: List<String>
+    ): Unit = withContext(Dispatchers.IO) {
+        val device = Notificare.device().currentDevice
+            ?: throw NotificareDeviceUnavailableException()
+
+        // TODO: fetch current FCM token
+
+        val payload = CreateLiveActivityPayload(
+            activity = activityId,
+            token = device.id,
+            deviceID = device.id,
+            topics = topics,
+        )
+
+        NotificareRequest.Builder()
+            .post("/live-activity", payload)
+            .response()
+    }
+
+    override fun registerLiveActivity(
+        activityId: String,
+        topics: List<String>,
+        callback: NotificareCallback<Unit>,
+    ): Unit = toCallbackFunction(::registerLiveActivity)(activityId, topics, callback)
+
+    override suspend fun endLiveActivity(
+        activityId: String
+    ): Unit = withContext(Dispatchers.IO) {
+        val device = Notificare.device().currentDevice
+            ?: throw NotificareDeviceUnavailableException()
+
+        val encodedActivityId = withContext(Dispatchers.IO) {
+            URLEncoder.encode(activityId, "UTF-8")
+        }
+
+        val encodedDeviceId = withContext(Dispatchers.IO) {
+            URLEncoder.encode(device.id, "UTF-8")
+        }
+
+        NotificareRequest.Builder()
+            .delete("/live-activity/$encodedActivityId/$encodedDeviceId", null)
+            .response()
+    }
+
+    override fun endLiveActivity(
+        activityId: String,
+        callback: NotificareCallback<Unit>,
+    ): Unit = toCallbackFunction(::endLiveActivity)(activityId, callback)
 
     // endregion
 
@@ -259,6 +328,12 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
 
         if (token != Notificare.device().currentDevice?.id) {
             Notificare.deviceInternal().registerPushToken(transport, token)
+
+            Notificare.requireContext().sendBroadcast(
+                Intent(Notificare.requireContext(), intentReceiver)
+                    .setAction(Notificare.INTENT_ACTION_TOKEN_CHANGED)
+                    .putExtra(Notificare.INTENT_EXTRA_TOKEN, token)
+            )
         } else {
             NotificareLogger.debug("Received token has already been registered. Skipping the registration...")
         }
@@ -303,8 +378,7 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
         notification: NotificareNotification,
         action: NotificareNotification.Action?
     ) {
-        @OptIn(DelicateCoroutinesApi::class)
-        GlobalScope.launch(Dispatchers.IO) {
+        Notificare.coroutineScope.launch {
             // Log the notification open event.
             Notificare.events().logNotificationOpen(notification.id)
             Notificare.events().logNotificationInfluenced(notification.id)
@@ -438,6 +512,43 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
                     // TODO: handle Products system notifications
                 }
                 "re.notifica.notification.system.Inbox" -> InboxIntegration.reloadInbox()
+                "re.notifica.notification.system.LiveActivity" -> {
+                    val activity = message.extra["activity"] ?: run {
+                        NotificareLogger.warning("Cannot parse a live activity system notification without the 'activity' property.")
+                        return
+                    }
+
+                    val content = try {
+                        message.extra["content"]?.let { JSONObject(it) }
+                    } catch (e: Exception) {
+                        NotificareLogger.warning("Cannot parse the content of the live activity.", e)
+                        return
+                    }
+
+                    val timestamp = message.extra["timestamp"]?.toLongOrNull() ?: run {
+                        NotificareLogger.warning("Cannot parse the timestamp of the live activity.")
+                        return
+                    }
+
+                    val dismissalDateTimestamp = message.extra["dismissalDate"]?.toLongOrNull()
+
+                    val update = NotificareLiveActivityUpdate(
+                        activity = activity,
+                        title = message.extra["title"],
+                        subtitle = message.extra["subtitle"],
+                        message = message.extra["message"],
+                        content = content,
+                        final = message.extra["final"]?.toBooleanStrictOrNull() ?: false,
+                        dismissalDate = dismissalDateTimestamp?.let { Date(it) },
+                        timestamp = Date(timestamp),
+                    )
+
+                    Notificare.requireContext().sendBroadcast(
+                        Intent(Notificare.requireContext(), intentReceiver)
+                            .setAction(Notificare.INTENT_ACTION_LIVE_ACTIVITY_UPDATE)
+                            .putExtra(Notificare.INTENT_EXTRA_LIVE_ACTIVITY_UPDATE, update)
+                    )
+                }
                 else -> NotificareLogger.warning("Unhandled system notification: ${message.type}")
             }
         } else {
@@ -457,8 +568,7 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
     }
 
     private fun handleNotification(message: NotificareNotificationRemoteMessage) {
-        @OptIn(DelicateCoroutinesApi::class)
-        GlobalScope.launch {
+        Notificare.coroutineScope.launch {
             try {
                 Notificare.events().logNotificationReceived(message.notificationId)
 
@@ -479,10 +589,16 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
                 // Attempt to place the item in the inbox.
                 InboxIntegration.addItemToInbox(message, notification)
 
+                val deliveryMechanism = when {
+                    message.notify -> NotificareNotificationDeliveryMechanism.STANDARD
+                    else -> NotificareNotificationDeliveryMechanism.SILENT
+                }
+
                 Notificare.requireContext().sendBroadcast(
                     Intent(Notificare.requireContext(), intentReceiver)
                         .setAction(Notificare.INTENT_ACTION_NOTIFICATION_RECEIVED)
                         .putExtra(Notificare.INTENT_EXTRA_NOTIFICATION, notification)
+                        .putExtra(Notificare.INTENT_EXTRA_DELIVERY_MECHANISM, deliveryMechanism as Parcelable)
                 )
             } catch (e: Exception) {
                 NotificareLogger.error("Unable to process remote notification.", e)
@@ -726,8 +842,7 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
     private fun onApplicationForeground() {
         if (!Notificare.isReady) return
 
-        @Suppress("OPT_IN_USAGE")
-        GlobalScope.launch {
+        Notificare.coroutineScope.launch {
             try {
                 updateNotificationSettings()
             } catch (e: Exception) {

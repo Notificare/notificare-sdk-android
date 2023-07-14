@@ -18,4 +18,7 @@ internal interface PurchasesDao {
 
     @Query("SELECT * FROM purchases")
     fun getObservablePurchases(): LiveData<List<PurchaseEntity>>
+
+    @Query("DELETE FROM purchases")
+    suspend fun clear()
 }

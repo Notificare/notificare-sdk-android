@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    package="re.notifica.sample">
+    xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
 
@@ -49,7 +48,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
 
-                <data android:scheme="re.notifica" />
+                <data android:scheme="re.notifica.sample.app" />
             </intent-filter>
             <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
@@ -58,7 +57,7 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data
-                    android:host="hallo.ntc.re"
+                    android:host="sample.ntc.re"
                     android:scheme="https" />
             </intent-filter>
             <intent-filter android:autoVerify="true">
@@ -98,11 +97,7 @@
             tools:replace="android:theme" />
 
         <receiver
-            android:name="re.notifica.NotificareIntentReceiver"
-            android:exported="false" />
-
-        <receiver
-            android:name="re.notifica.push.NotificarePushIntentReceiver"
+            android:name=".SampleGeoIntentReceiver"
             android:exported="false" />
 
         <meta-data

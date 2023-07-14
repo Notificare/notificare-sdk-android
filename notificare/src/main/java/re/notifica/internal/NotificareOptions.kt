@@ -6,11 +6,12 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.core.os.bundleOf
 import re.notifica.InternalNotificareApi
+import re.notifica.internal.ktx.applicationInfo
 
 public class NotificareOptions internal constructor(context: Context) {
 
     @InternalNotificareApi
-    public val info: ApplicationInfo = context.packageManager.getApplicationInfo(
+    public val info: ApplicationInfo = context.packageManager.applicationInfo(
         context.packageName,
         PackageManager.GET_META_DATA
     )

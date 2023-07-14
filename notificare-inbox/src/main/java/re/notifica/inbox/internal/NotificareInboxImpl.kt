@@ -8,7 +8,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.work.*
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import re.notifica.*
 import re.notifica.inbox.NotificareInbox
 import re.notifica.inbox.internal.database.InboxDatabase
@@ -18,6 +20,7 @@ import re.notifica.inbox.internal.workers.ExpireItemWorker
 import re.notifica.inbox.models.NotificareInboxItem
 import re.notifica.internal.NotificareLogger
 import re.notifica.internal.NotificareModule
+import re.notifica.internal.ktx.coroutineScope
 import re.notifica.internal.ktx.toCallbackFunction
 import re.notifica.internal.network.NetworkException
 import re.notifica.internal.network.request.NotificareRequest
@@ -78,6 +81,8 @@ internal object NotificareInboxImpl : NotificareModule(), NotificareInbox {
 
     override suspend fun unlaunch() {
         clearLocalInbox()
+        clearNotificationCenter()
+        clearRemoteInbox()
     }
 
     // endregion
@@ -135,8 +140,7 @@ internal object NotificareInboxImpl : NotificareModule(), NotificareInbox {
             return
         }
 
-        @OptIn(DelicateCoroutinesApi::class)
-        GlobalScope.launch {
+        Notificare.coroutineScope.launch {
             try {
                 reloadInbox()
             } catch (e: Exception) {
@@ -413,5 +417,14 @@ internal object NotificareInboxImpl : NotificareModule(), NotificareInbox {
         NotificareLogger.debug("Removing all messages from the notification center.")
         NotificationManagerCompat.from(Notificare.requireContext())
             .cancelAll()
+    }
+
+    private suspend fun clearRemoteInbox() = withContext(Dispatchers.IO) {
+        val device = Notificare.device().currentDevice
+            ?: throw NotificareDeviceUnavailableException()
+
+        NotificareRequest.Builder()
+            .delete("/notification/inbox/fordevice/${device.id}", null)
+            .response()
     }
 }

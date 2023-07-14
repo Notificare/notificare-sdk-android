@@ -1,10 +1,13 @@
 package re.notifica.internal
 
 import android.content.SharedPreferences
+import com.squareup.moshi.Moshi
 import re.notifica.InternalNotificareApi
 
 @InternalNotificareApi
 public abstract class NotificareModule {
+
+    public open fun moshi(builder: Moshi.Builder) {}
 
     public open fun migrate(savedState: SharedPreferences, settings: SharedPreferences) {}
 
@@ -29,11 +32,11 @@ public abstract class NotificareModule {
         INBOX(fqn = "re.notifica.inbox.internal.NotificareInboxImpl"),
         ASSETS(fqn = "re.notifica.assets.internal.NotificareAssetsImpl"),
         SCANNABLES(fqn = "re.notifica.scannables.internal.NotificareScannablesImpl"),
-        AUTHENTICATION(fqn = "re.notifica.authentication.internal.NotificareAuthenticationImpl"),
         GEO(fqn = "re.notifica.geo.internal.NotificareGeoImpl"),
         LOYALTY(fqn = "re.notifica.loyalty.internal.NotificareLoyaltyImpl"),
         MONETIZE(fqn = "re.notifica.monetize.internal.NotificareMonetizeImpl"),
-        IN_APP_MESSAGING(fqn = "re.notifica.iam.internal.NotificareInAppMessagingImpl");
+        IN_APP_MESSAGING(fqn = "re.notifica.iam.internal.NotificareInAppMessagingImpl"),
+        USER_INBOX(fqn = "re.notifica.inbox.user.internal.NotificareUserInboxImpl");
 
         @InternalNotificareApi
         public val isAvailable: Boolean

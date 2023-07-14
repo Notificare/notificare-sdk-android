@@ -4,13 +4,13 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import re.notifica.Notificare
 import re.notifica.inbox.ktx.inboxImplementation
 import re.notifica.inbox.models.NotificareInboxItem
 import re.notifica.internal.NotificareLogger
+import re.notifica.internal.ktx.coroutineScope
+import re.notifica.internal.ktx.parcelable
 import re.notifica.models.NotificareNotification
 import java.util.*
 
@@ -22,7 +22,7 @@ internal class NotificareInboxSystemReceiver : BroadcastReceiver() {
             }
             INTENT_ACTION_INBOX_NOTIFICATION_RECEIVED -> {
                 val notification: NotificareNotification = checkNotNull(
-                    intent.getParcelableExtra(Notificare.INTENT_EXTRA_NOTIFICATION)
+                    intent.parcelable(Notificare.INTENT_EXTRA_NOTIFICATION)
                 )
 
                 val inboxBundle: Bundle = checkNotNull(
@@ -72,7 +72,7 @@ internal class NotificareInboxSystemReceiver : BroadcastReceiver() {
             expires = inboxItemExpires,
         )
 
-        GlobalScope.launch {
+        Notificare.coroutineScope.launch {
             try {
                 NotificareLogger.debug("Adding inbox item to the database.")
                 Notificare.inboxImplementation().addItem(item, inboxItemVisible)
@@ -85,7 +85,7 @@ internal class NotificareInboxSystemReceiver : BroadcastReceiver() {
     // NOTE: we purposely do not use NotificareInbox.markAsRead(item) as that method also logs a notification open,
     // which in this case already happened in the Push module. This is to prevent duplicate events.
     private fun onMarkItemAsRead(id: String) {
-        GlobalScope.launch(Dispatchers.IO) {
+        Notificare.coroutineScope.launch {
             try {
                 val entity = Notificare.inboxImplementation().database.inbox().findById(id) ?: run {
                     NotificareLogger.warning("Unable to find item '$id' in the local database.")

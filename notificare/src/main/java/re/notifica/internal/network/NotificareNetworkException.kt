@@ -13,8 +13,4 @@ public sealed class NetworkException(message: String?, cause: Throwable?) : Exce
         public val response: Response,
         public val validStatusCodes: IntRange,
     ) : NetworkException("Unexpected status code '${response.code}'.", null)
-
-    public class AuthenticationRefreshException(
-        cause: Throwable? = null
-    ) : NetworkException("Failed to refresh the authentication credentials.", cause)
 }
