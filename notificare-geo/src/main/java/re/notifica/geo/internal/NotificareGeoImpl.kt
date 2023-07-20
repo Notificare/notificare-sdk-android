@@ -241,6 +241,27 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
             localStorage.bluetoothEnabled = value
         }
 
+    override val monitoredRegions: List<NotificareRegion>
+        get() {
+            if (::localStorage.isInitialized) {
+                return localStorage.monitoredRegions.values.toList()
+            }
+
+            NotificareLogger.warning("Calling this method requires Notificare to have been configured.")
+            return emptyList()
+        }
+
+    override val enteredRegions: List<NotificareRegion>
+        get() {
+            if (::localStorage.isInitialized) {
+                val monitoredRegions = localStorage.monitoredRegions
+                return localStorage.enteredRegions.mapNotNull { monitoredRegions[it] }
+            }
+
+            NotificareLogger.warning("Calling this method requires Notificare to have been configured.")
+            return emptyList()
+        }
+
     override fun enableLocationUpdates() {
         try {
             checkPrerequisites()
