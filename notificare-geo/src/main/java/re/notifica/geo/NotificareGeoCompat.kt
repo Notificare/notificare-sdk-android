@@ -13,6 +13,7 @@ import re.notifica.geo.ktx.INTENT_EXTRA_LOCATION
 import re.notifica.geo.ktx.INTENT_EXTRA_RANGED_BEACONS
 import re.notifica.geo.ktx.INTENT_EXTRA_REGION
 import re.notifica.geo.ktx.geo
+import re.notifica.geo.models.NotificareRegion
 
 public object NotificareGeoCompat {
 
@@ -71,6 +72,10 @@ public object NotificareGeoCompat {
     @JvmStatic
     public val hasBluetoothEnabled: Boolean
         get() = Notificare.geo().hasBluetoothEnabled
+
+    @JvmStatic
+    public val monitoredRegions: List<NotificareRegion>
+        get() = Notificare.geo().monitoredRegions
 
     @JvmStatic
     public fun enableLocationUpdates() {
