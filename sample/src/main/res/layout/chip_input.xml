@@ -1,0 +1,12 @@
+<com.google.android.material.chip.Chip xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    style="@style/Widget.MaterialComponents.Chip.Action"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:gravity="center"
+    android:paddingLeft="8dp"
+    android:paddingRight="8dp"
+    android:textAppearance="?attr/textAppearanceBodyMedium"
+    android:textColor="@color/white"
+    app:chipBackgroundColor="@color/purple_200"
+    app:chipSurfaceColor="@color/design_default_color_on_primary" />
