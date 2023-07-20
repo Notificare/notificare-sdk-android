@@ -201,11 +201,8 @@ internal object NotificareInAppMessagingImpl : NotificareModule(), NotificareInA
             // the app goes into the background.
             delayedMessageJob = Notificare.coroutineScope.launch {
                 try {
-                    if (message.delaySeconds > 0) {
-                        NotificareLogger.debug("Waiting ${message.delaySeconds} seconds before presenting the in-app message.")
-                        delay(message.delaySeconds * 1000L)
-                    }
-
+                    NotificareLogger.debug("Waiting ${message.delaySeconds} seconds before presenting the in-app message.")
+                    delay(message.delaySeconds * 1000L)
                     present(message)
                 } catch (e: Exception) {
                     if (e is CancellationException) {

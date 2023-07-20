@@ -46,7 +46,7 @@ public abstract class InAppMessagingBaseFragment : Fragment() {
             try {
                 Notificare.events().logInAppMessageViewed(message)
             } catch (e: Exception) {
-                NotificareLogger.error("Failed to log in-message viewed event.", e)
+                NotificareLogger.error("Failed to log in-app message viewed event.", e)
             }
         }
     }
