@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## Upcoming release
+
+- Allow checking which regions are being monitored
+- Allow checking which regions the device is inside of
+
 ## 3.5.4
 
 - Prevent queued events without an associated device
