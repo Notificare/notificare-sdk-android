@@ -78,6 +78,10 @@ public object NotificareGeoCompat {
         get() = Notificare.geo().monitoredRegions
 
     @JvmStatic
+    public val enteredRegions: List<NotificareRegion>
+        get() = Notificare.geo().enteredRegions
+
+    @JvmStatic
     public fun enableLocationUpdates() {
         Notificare.geo().enableLocationUpdates()
     }

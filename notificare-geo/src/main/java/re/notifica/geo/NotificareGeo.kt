@@ -18,6 +18,8 @@ public interface NotificareGeo {
 
     public val monitoredRegions: List<NotificareRegion>
 
+    public val enteredRegions: List<NotificareRegion>
+
     public fun enableLocationUpdates()
 
     public fun disableLocationUpdates()

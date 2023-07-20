@@ -251,6 +251,17 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
             return emptyList()
         }
 
+    override val enteredRegions: List<NotificareRegion>
+        get() {
+            if (::localStorage.isInitialized) {
+                val monitoredRegions = localStorage.monitoredRegions
+                return localStorage.enteredRegions.mapNotNull { monitoredRegions[it] }
+            }
+
+            NotificareLogger.warning("Calling this method requires Notificare to have been configured.")
+            return emptyList()
+        }
+
     override fun enableLocationUpdates() {
         try {
             checkPrerequisites()
