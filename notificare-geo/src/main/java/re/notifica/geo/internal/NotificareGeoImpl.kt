@@ -58,6 +58,7 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
 
     private const val DEFAULT_MONITORED_REGIONS_LIMIT: Int = 10
     private const val MAX_MONITORED_REGIONS_LIMIT: Int = 100
+    private const val MAX_MONITORED_BEACONS_LIMIT: Int = 50
 
     private lateinit var localStorage: LocalStorage
     private var geocoder: Geocoder? = null
@@ -886,6 +887,7 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
 
         NotificareRequest.Builder()
             .get("/beacon/forregion/${region.id}")
+            .query("limit", MAX_MONITORED_BEACONS_LIMIT.toString())
             .responseDecodable(FetchBeaconsResponse::class, object : NotificareCallback<FetchBeaconsResponse> {
                 override fun onSuccess(result: FetchBeaconsResponse) {
                     val beacons = result.beacons
