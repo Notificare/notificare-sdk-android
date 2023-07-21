@@ -38,6 +38,7 @@ import re.notifica.geo.ktx.logBeaconSession
 import re.notifica.geo.ktx.logRegionSession
 import re.notifica.geo.ktx.loyaltyIntegration
 import re.notifica.geo.models.*
+import re.notifica.geo.monitoredRegionsLimit
 import re.notifica.internal.NotificareLogger
 import re.notifica.internal.NotificareModule
 import re.notifica.internal.common.onMainThread
@@ -54,6 +55,9 @@ import kotlin.coroutines.suspendCoroutine
 
 @Keep
 internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, NotificareInternalGeo, NotificareGeoIntegration {
+
+    private const val DEFAULT_MONITORED_REGIONS_LIMIT: Int = 10
+    private const val MAX_MONITORED_REGIONS_LIMIT: Int = 100
 
     private lateinit var localStorage: LocalStorage
     private var geocoder: Geocoder? = null
@@ -172,6 +176,30 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
             }
 
             return true
+        }
+
+    private val monitoredRegionsLimit: Int
+        get() {
+            val options = Notificare.options
+            if (options == null) {
+                NotificareLogger.warning("Notificare is not configured. Using the default limit for geofences.")
+                return DEFAULT_MONITORED_REGIONS_LIMIT
+            }
+
+            val limit = options.monitoredRegionsLimit
+                ?: return DEFAULT_MONITORED_REGIONS_LIMIT
+
+            if (limit <= 0) {
+                NotificareLogger.warning("The monitored regions limit needs to be a positive number. Using the default limit for geofences.")
+                return DEFAULT_MONITORED_REGIONS_LIMIT
+            }
+
+            if (limit > MAX_MONITORED_REGIONS_LIMIT) {
+                NotificareLogger.warning("The monitored regions limit cannot exceed the OS limit of $MAX_MONITORED_REGIONS_LIMIT. Using the OS limit for geofences.")
+                return MAX_MONITORED_REGIONS_LIMIT
+            }
+
+            return limit
         }
 
     // region Notificare Module
@@ -782,22 +810,10 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
         try {
             val regions = NotificareRequest.Builder()
                 .get("/region/bylocation/${location.latitude}/${location.longitude}")
+                .query("limit", monitoredRegionsLimit.toString())
                 .responseDecodable(FetchRegionsResponse::class)
                 .regions
                 .map { it.toModel() }
-
-//            val beaconsPerRegion: Map<String, List<NotificareBeacon>> = regions
-//                .filter { it.major != null }
-//                .map { region ->
-//                    val beacons = NotificareRequest.Builder()
-//                        .get("beacon/forregion/${region.id}")
-//                        .responseDecodable(FetchBeaconsResponse::class)
-//                        .beacons
-//                        .map { it.toModel() }
-//
-//                    region.id to beacons
-//                }
-//                .toMap()
 
             monitorRegions(regions)
         } catch (e: Exception) {
