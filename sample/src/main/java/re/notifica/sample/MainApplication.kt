@@ -4,12 +4,15 @@ import android.app.Application
 import android.os.StrictMode
 import re.notifica.Notificare
 import re.notifica.geo.ktx.geo
+import timber.log.Timber
 
 class MainApplication : Application() {
 
     override fun onCreate() {
         enableStrictMode()
         super.onCreate()
+
+        Timber.plant(Timber.DebugTree())
 
         Notificare.geo().intentReceiver = SampleGeoIntentReceiver::class.java
 

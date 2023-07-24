@@ -1,8 +1,179 @@
-<resources>
+<resources
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="MissingTranslation" >
     <string name="app_name" translatable="false">Sample</string>
 
-    <string name="main_notifications_permission_rationale">We need access to notifications in order to show relevant content.</string>
+    <string name="sdk">SDK</string>
+    <string name="search">Search</string>
+
+    <string name="dialog_yes_button">Yes</string>
+    <string name="dialog_no_button">No</string>
+    <string name="dialog_ok_button">OK</string>
+    <string name="dialog_cancel_button">Cancel</string>
+
+    <string name="permission_notifications_rationale">Allow notifications in order to receive relevant content.</string>
+    <string name="permission_foreground_location_rationale">We need access to foreground location in order to show relevant content.</string>
+    <string name="permission_background_location_rationale">We need access to background location in order to show relevant content.</string>
+    <string name="permission_bluetooth_scan_rationale">We need access to bluetooth scan in order to show relevant content.</string>
+    <string name="permission_open_os_settings_rationale">Please provide relevant permission in order to activate this functionality.</string>
+
+    <string name="reset_password_title">Reset Password</string>
+    <string name="validate_account_title">Validate Account</string>
+
     <string name="main_foreground_permission_rationale">We need access to foreground location in order to show relevant content.</string>
     <string name="main_background_permission_rationale">We need access to background location in order to show relevant content.</string>
     <string name="main_bluetooth_scan_permission_rationale">We need access to bluetooth scan in order to show relevant content.</string>
+
+    <string name="main_fragment_button_launch">Launch</string>
+    <string name="main_fragment_button_unlaunch">Unlaunch</string>
+
+    <string name="main_fragment_assets_title">Assets</string>
+    <string name="main_fragment_authentication_title">Athentication</string>
+    <string name="main_fragment_beacons_title">Beacons</string>
+    <string name="main_fragment_device_registration_title">Device Registration</string>
+    <string name="main_fragment_dnd_title">Do not disturb</string>
+    <string name="main_fragment_events_title">Events</string>
+    <string name="main_fragment_in_app_messaging_title">In App Messaging</string>
+    <string name="main_fragment_inbox_title">Inbox</string>
+    <string name="main_fragment_launch_flow_title">Launch Flow</string>
+    <string name="main_fragment_location_title">Location</string>
+    <string name="main_fragment_loyalty_title">Loyalty</string>
+    <string name="main_fragment_monetize_title">Monetize</string>
+    <string name="main_fragment_notifications_title">Notifications</string>
+    <string name="main_fragment_other_features_title">Other Features</string>
+    <string name="main_fragment_scannables_title">Scannables</string>
+    <string name="main_fragment_tags_title">Tags</string>
+    <string name="main_fragment_title">Sample</string>
+
+    <string name="main_fragment_allowed_ui">Allowed UI</string>
+    <string name="main_fragment_anonymous">Anonymous</string>
+    <string name="main_fragment_bluetooth_enabled">Bluetooth Enabled</string>
+    <string name="main_fragment_bluetooth_permission">Bluetooth Permission</string>
+    <string name="main_fragment_configured">Configured</string>
+    <string name="main_fragment_dnd_end">To</string>
+    <string name="main_fragment_dnd_start">From</string>
+    <string name="main_fragment_enabled">Enabled</string>
+    <string name="main_fragment_fetch">Fetch</string>
+    <string name="main_fragment_permission">Permission</string>
+    <string name="main_fragment_ready">Ready</string>
+    <string name="main_fragment_register_as_user">Register User</string>
+    <string name="main_fragment_register_as_anonymous">Register Anonymous</string>
+    <string name="main_fragment_suppressed">Suppressed</string>
+    <string name="main_fragment_evaluate_context">Evaluate Context</string>
+    <string name="main_fragment_user_id">User ID</string>
+    <string name="main_fragment_user_name">User Name</string>
+
+    <string name="tags_Add">Add</string>
+    <string name="tags_clear">Clear</string>
+    <string name="tags_device_tags">Device Tags</string>
+    <string name="tags_get">Get</string>
+    <string name="tags_manual_input">Manual Input</string>
+    <string name="tags_no_registered_tags_found">No Registered Tags Found!</string>
+    <string name="tags_quick_fill">Quick Fill</string>
+    <string name="tags_remove_all">Remove All</string>
+    <string name="tags_refresh">Refresh</string>
+    <string name="tags_remove_tag">Remove Tag</string>
+    <string name="tags_remove">Remove</string>
+    <string name="tags_tag">Tag</string>
+    <string name="tags_title">Tags</string>
+
+    <string name="inbox_empty_message">You have no notifications in your inbox.</string>
+    <string name="inbox_options_mark_all_as_read">Mark all as read</string>
+    <string name="inbox_options_mark_as_read">Mark 	as read</string>
+    <string name="inbox_options_open">Open</string>
+    <string name="inbox_options_refresh">Refresh</string>
+    <string name="inbox_options_remove_all">Remove all</string>
+    <string name="inbox_options_remove">Remove</string>
+    <string name="inbox_title">Inbox</string>
+
+    <string name="beacons_title">Beacons</string>
+    <string name="beacons_beacons_not_found">Beacons not found!</string>
+
+    <string name="scannables_nfc_and_qr_code_available">NFC and QR Code Sessions are available</string>
+    <string name="scannables_nfc_button">NFC</string>
+    <string name="scannables_only_qr_code_available">Only QR Code Sessions is available</string>
+    <string name="scannables_qr_code_button">QR Code</string>
+    <string name="scannables_scannable_session">Scannable Session</string>
+    <string name="scannables_title">Scannables</string>
+
+    <string name="monetize_price">Price</string>
+    <string name="monetize_product_id">Product ID</string>
+    <string name="monetize_product_name">Product Name</string>
+    <string name="monetize_product_type">Product Type</string>
+    <string name="monetize_products">Products</string>
+    <string name="monetize_purchase_id">Purchase ID</string>
+    <string name="monetize_purchase_token">Purchase Token</string>
+    <string name="monetize_purchases">Purchases</string>
+    <string name="monetize_title">Monetize</string>
+    <string name="buy_product_image">Buy product image</string>
+
+    <string name="assets_asset_button_action">Action</string>
+    <string name="assets_asset_button_label">Label</string>
+    <string name="assets_asset_button">Button</string>
+    <string name="assets_asset_conent_length">Content Length</string>
+    <string name="assets_asset_content_type">Content Type</string>
+    <string name="assets_asset_description">Description</string>
+    <string name="assets_asset_details">Asset Details</string>
+    <string name="assets_asset_key">Key</string>
+    <string name="assets_asset_meta_data">Meta Data</string>
+    <string name="assets_asset_original_file_name">Original File Name</string>
+    <string name="assets_asset_title">Title</string>
+    <string name="assets_asset_url">Url</string>
+    <string name="assets_no_avalable_data">No Available Data</string>
+    <string name="assets_title">Assets</string>
+    <string name="assets_type">Type</string>
+
+    <string name="assets_asset_group">Asset Group</string>
+    <string name="assets_css_content">CSS Content:</string>
+    <string name="assets_fetch_assets_title">Fetch Assets</string>
+    <string name="assets_html_content">HTML Content:</string>
+    <string name="assets_image_content">Image Content:</string>
+    <string name="assets_javascript_content">JavaScript Content:</string>
+    <string name="assets_json_content">JSON Content:</string>
+    <string name="assets_pdf_content">PDF Content:</string>
+    <string name="assets_refresh_assets_button">Refresh Assets</string>
+    <string name="assets_total_assets">Total Assets:</string>
+    <string name="assets_video_content">Video Content:</string>
+    <string name="assets_without_url">Without URL:</string>
+
+    <string name="events_event_fields">Event Fields</string>
+    <string name="events_event_name">Event Name</string>
+    <string name="events_field_key">Key</string>
+    <string name="events_register_button">Register</string>
+    <string name="events_register_event">Register Event</string>
+    <string name="events_title">Events</string>
+    <string name="events_value">Value</string>
+    <string name="add_field_image">Add field image</string>
+
+    <string name="authentication_account">Account</string>
+    <string name="authentication_add">Add</string>
+    <string name="authentication_change">Change</string>
+    <string name="authentication_current_user">Current User</string>
+    <string name="authentication_choose_the_preferece">Choose the Preference</string>
+    <string name="authentication_choose_the_option">Choose the option</string>
+    <string name="authentication_user_segments">User Segments</string>
+    <string name="authentication_email">Email</string>
+    <string name="authentication_generate_push_email">Generate Push Email</string>
+    <string name="authentication_push_email">Push Email</string>
+    <string name="authentication_fetch">Fetch</string>
+    <string name="authentication_fetched_segments_list">Fetched Segments List</string>
+    <string name="authentication_last_active">Last Active</string>
+    <string name="authentication_login">Login</string>
+    <string name="authentication_logout">Logout</string>
+    <string name="authentication_name">Name</string>
+    <string name="authentication_no_data_to_show">No Data</string>
+    <string name="authentication_password">Password</string>
+    <string name="authentication_register_new_account">Register New Account</string>
+    <string name="authentication_remove">Remove</string>
+    <string name="authentication_reset">Reset</string>
+    <string name="authentication_registration_date">Registration Date</string>
+    <string name="authentication_segment">Segment</string>
+    <string name="authentication_send_password_reset">Send Password Reset</string>
+    <string name="authentication_token">Token</string>
+    <string name="authentication_title">Authentication</string>
+    <string name="authentication_user_preferences">User Preferences</string>
+    <string name="authentication_user_segment">User Segment</string>
+    <string name="authentication_user">User</string>
+    <string name="authentication_validate_user">Validate User</string>
+
 </resources>
