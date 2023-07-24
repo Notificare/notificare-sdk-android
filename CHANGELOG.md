@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## Upcoming release
+## 3.6.0
 
 - Allow checking which regions are being monitored
 - Allow checking which regions the device is inside of
