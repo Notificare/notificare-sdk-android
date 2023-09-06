@@ -15,11 +15,11 @@ public abstract class ServiceManager : AbstractServiceManager() {
 
     public abstract fun getCurrentLocationAsync(): Deferred<Location>
 
-    public abstract fun startMonitoringRegions(regions: List<NotificareRegion>)
+    public abstract suspend fun startMonitoringRegions(regions: List<NotificareRegion>)
 
-    public abstract fun stopMonitoringRegions(regions: List<NotificareRegion>)
+    public abstract suspend fun stopMonitoringRegions(regions: List<NotificareRegion>)
 
-    public abstract fun clearMonitoringRegions()
+    public abstract suspend fun clearMonitoringRegions()
 
     internal companion object {
         private const val GMS_FQN = "re.notifica.geo.gms.internal.ServiceManager"

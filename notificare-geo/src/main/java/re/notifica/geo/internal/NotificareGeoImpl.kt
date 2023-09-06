@@ -450,11 +450,25 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
 
                     NotificareLogger.info("Updating device location.")
                     updateLocation(location, country)
-
-                    NotificareLogger.debug("Loading nearest regions.")
-                    loadNearestRegions(location)
                 } catch (e: Exception) {
                     NotificareLogger.error("Failed to process a location update.", e)
+                    return@launch
+                }
+
+                val regions = try {
+                    NotificareLogger.debug("Loading nearest regions.")
+                    fetchNearestRegions(location)
+                } catch (e: Exception) {
+                    NotificareLogger.error("Failed to load nearest regions.", e)
+                    return@launch
+                }
+
+                try {
+                    NotificareLogger.debug("Monitoring nearest regions.")
+                    monitorRegions(regions)
+                } catch (e: Exception) {
+                    NotificareLogger.error("Failed to load nearest regions.", e)
+                    return@launch
                 }
             }
         }
@@ -807,22 +821,16 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
             })
     }
 
-    private suspend fun loadNearestRegions(location: Location): Unit = withContext(Dispatchers.IO) {
-        try {
-            val regions = NotificareRequest.Builder()
-                .get("/region/bylocation/${location.latitude}/${location.longitude}")
-                .query("limit", monitoredRegionsLimit.toString())
-                .responseDecodable(FetchRegionsResponse::class)
-                .regions
-                .map { it.toModel() }
-
-            monitorRegions(regions)
-        } catch (e: Exception) {
-            NotificareLogger.error("Failed to load nearest regions.", e)
-        }
+    private suspend fun fetchNearestRegions(location: Location): List<NotificareRegion> = withContext(Dispatchers.IO) {
+        NotificareRequest.Builder()
+            .get("/region/bylocation/${location.latitude}/${location.longitude}")
+            .query("limit", monitoredRegionsLimit.toString())
+            .responseDecodable(FetchRegionsResponse::class)
+            .regions
+            .map { it.toModel() }
     }
 
-    private fun monitorRegions(regions: List<NotificareRegion>) {
+    private suspend fun monitorRegions(regions: List<NotificareRegion>) {
         if (!hasBackgroundLocationPermission) {
             NotificareLogger.debug("Background location permission not granted. Skipping geofencing functionality.")
             return
@@ -1097,13 +1105,19 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
     }
 
     private fun clearRegions() {
-        // Remove the cached regions.
-        localStorage.monitoredRegions = emptyMap()
-        localStorage.enteredRegions = emptySet()
-        localStorage.clearRegionSessions()
+        Notificare.coroutineScope.launch {
+            try {
+                // Stop monitoring all regions.
+                serviceManager?.clearMonitoringRegions()
 
-        // Stop monitoring all regions.
-        serviceManager?.clearMonitoringRegions()
+                // Remove the cached regions.
+                localStorage.monitoredRegions = emptyMap()
+                localStorage.enteredRegions = emptySet()
+                localStorage.clearRegionSessions()
+            } catch (e: Exception) {
+                NotificareLogger.error("Failed to clear monitored regions.", e)
+            }
+        }
     }
 
     private fun clearBeacons() {

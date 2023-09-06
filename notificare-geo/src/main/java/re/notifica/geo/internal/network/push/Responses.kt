@@ -20,7 +20,7 @@ internal data class FetchRegionsResponse(
         val major: Int?,
         val distance: Double,
         val timezone: String,
-        val timeZoneOffset: Int,
+        val timeZoneOffset: Double,
     ) {
 
         @JsonClass(generateAdapter = true)
