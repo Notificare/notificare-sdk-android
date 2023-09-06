@@ -14,9 +14,11 @@ import com.google.android.material.elevation.SurfaceColors
 import com.google.android.material.snackbar.Snackbar
 import re.notifica.Notificare
 import re.notifica.geo.ktx.INTENT_ACTION_BEACON_NOTIFICATION_OPENED
+import re.notifica.geo.ktx.geo
 import re.notifica.iam.NotificareInAppMessaging
 import re.notifica.iam.ktx.inAppMessaging
 import re.notifica.iam.models.NotificareInAppMessage
+import re.notifica.models.NotificareApplication
 import re.notifica.models.NotificareNotification
 import re.notifica.monetize.NotificareMonetize
 import re.notifica.push.ktx.INTENT_ACTION_ACTION_OPENED
@@ -27,7 +29,7 @@ import re.notifica.push.ui.ktx.pushUI
 import re.notifica.sample.databinding.ActivitySampleBinding
 import timber.log.Timber
 
-class SampleActivity : AppCompatActivity(), NotificarePushUI.NotificationLifecycleListener,
+class SampleActivity : AppCompatActivity(), Notificare.Listener, NotificarePushUI.NotificationLifecycleListener,
     NotificareMonetize.Listener {
 
     private lateinit var binding: ActivitySampleBinding
@@ -53,6 +55,7 @@ class SampleActivity : AppCompatActivity(), NotificarePushUI.NotificationLifecyc
 
         if (intent != null) handleIntent(intent)
 
+        Notificare.addListener(this)
         Notificare.pushUI().addLifecycleListener(this)
         Notificare.inAppMessaging().addLifecycleListener(messageLifecycleListener)
     }
@@ -61,6 +64,7 @@ class SampleActivity : AppCompatActivity(), NotificarePushUI.NotificationLifecyc
     override fun onDestroy() {
         super.onDestroy()
 
+        Notificare.removeListener(this)
         Notificare.pushUI().removeLifecycleListener(this)
         Notificare.inAppMessaging().removeLifecycleListener(messageLifecycleListener)
     }
@@ -133,6 +137,17 @@ class SampleActivity : AppCompatActivity(), NotificarePushUI.NotificationLifecyc
         val uri = intent.data ?: return
         Timber.i("Received deep link with uri = $uri")
         Toast.makeText(this, "Deep link = $uri", Toast.LENGTH_SHORT).show()
+    }
+
+    // Notificare is now safe to use
+    override fun onReady(application: NotificareApplication) {
+        if (Notificare.push().hasRemoteNotificationsEnabled) {
+            Notificare.push().enableRemoteNotifications()
+        }
+
+        if (Notificare.geo().hasLocationServicesEnabled) {
+            Notificare.geo().enableLocationUpdates()
+        }
     }
 
     // Lifecycle Listeners
