@@ -135,7 +135,7 @@ public class ServiceManager : ServiceManager() {
         return fusedLocationClient.lastLocation.asDeferred()
     }
 
-    override fun startMonitoringRegions(regions: List<NotificareRegion>) {
+    override suspend fun startMonitoringRegions(regions: List<NotificareRegion>) {
         val geofences = regions.map { region ->
             Geofence.Builder()
                 .setUniqueId(region.id)
@@ -155,32 +155,38 @@ public class ServiceManager : ServiceManager() {
             .setInitConversions(GeofenceRequest.ENTER_INIT_CONVERSION or GeofenceRequest.DWELL_INIT_CONVERSION or GeofenceRequest.EXIT_INIT_CONVERSION)
             .build()
 
-        geofencingClient.createGeofenceList(request, geofencingPendingIntent)
-            .addOnSuccessListener {
-                NotificareLogger.debug("Successfully started monitoring ${geofences.size} geofences.")
-            }
-            .addOnFailureListener {
-                NotificareLogger.error("Failed to start monitoring ${geofences.size} geofences.", it)
-            }
+        try {
+            geofencingClient.createGeofenceList(request, geofencingPendingIntent)
+                .asDeferred()
+                .await()
+
+            NotificareLogger.debug("Successfully started monitoring ${geofences.size} geofences.")
+        } catch (e: Exception) {
+            NotificareLogger.error("Failed to start monitoring ${geofences.size} geofences.", e)
+        }
     }
 
-    override fun stopMonitoringRegions(regions: List<NotificareRegion>) {
-        geofencingClient.deleteGeofenceList(regions.map { it.id })
-            .addOnSuccessListener {
-                NotificareLogger.debug("Successfully stopped monitoring ${regions.size} geofences.")
-            }
-            .addOnFailureListener {
-                NotificareLogger.error("Failed to stop monitoring ${regions.size} geofences.", it)
-            }
+    override suspend fun stopMonitoringRegions(regions: List<NotificareRegion>) {
+        try {
+            geofencingClient.deleteGeofenceList(regions.map { it.id })
+                .asDeferred()
+                .await()
+
+            NotificareLogger.debug("Successfully stopped monitoring ${regions.size} geofences.")
+        } catch (e: Exception) {
+            NotificareLogger.error("Failed to stop monitoring ${regions.size} geofences.", e)
+        }
     }
 
-    override fun clearMonitoringRegions() {
-        geofencingClient.deleteGeofenceList(geofencingPendingIntent)
-            .addOnSuccessListener {
-                NotificareLogger.debug("Successfully stopped monitoring all geofences.")
-            }
-            .addOnFailureListener {
-                NotificareLogger.error("Failed to stop monitoring all geofences.", it)
-            }
+    override suspend fun clearMonitoringRegions() {
+        try {
+            geofencingClient.deleteGeofenceList(geofencingPendingIntent)
+                .asDeferred()
+                .await()
+
+            NotificareLogger.debug("Successfully stopped monitoring all geofences.")
+        } catch (e: Exception) {
+            NotificareLogger.error("Failed to stop monitoring all geofences.", e)
+        }
     }
 }

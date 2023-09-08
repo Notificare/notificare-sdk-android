@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 3.6.1
+
+- Fix race condition when synchronising monitored regions
+
 ## 3.6.0
 
 - Allow checking which regions are being monitored

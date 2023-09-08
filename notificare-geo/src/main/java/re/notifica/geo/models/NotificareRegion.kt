@@ -20,7 +20,7 @@ public data class NotificareRegion(
     val major: Int?,
     val distance: Double,
     val timeZone: String,
-    val timeZoneOffset: Int,
+    val timeZoneOffset: Double,
 ) : Parcelable {
     public companion object;
 
