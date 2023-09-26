@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## Upcoming release
+
+- Fix warning when notification intents are handled by the broadcast receiver
+
 ## 3.6.1
 
 - Fix race condition when synchronising monitored regions

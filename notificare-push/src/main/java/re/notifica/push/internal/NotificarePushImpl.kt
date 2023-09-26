@@ -428,7 +428,7 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
             if (notificationIntent.resolveActivity(Notificare.requireContext().packageManager) != null) {
                 // Notification handled by custom activity in package
                 Notificare.requireContext().startActivity(notificationIntent)
-            } else {
+            } else if (intentReceiver.simpleName == NotificarePushIntentReceiver::class.java.simpleName) {
                 NotificareLogger.warning("Could not find an activity with the '${notificationIntent.action}' action.")
             }
         }
