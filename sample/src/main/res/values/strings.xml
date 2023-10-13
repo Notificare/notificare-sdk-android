@@ -1,6 +1,4 @@
-<resources
-    xmlns:tools="http://schemas.android.com/tools"
-    tools:ignore="MissingTranslation" >
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
     <string name="app_name" translatable="false">Sample</string>
 
     <string name="sdk">SDK</string>
@@ -32,6 +30,7 @@
     <string name="main_fragment_beacons_title">Beacons</string>
     <string name="main_fragment_device_registration_title">Device Registration</string>
     <string name="main_fragment_dnd_title">Do not disturb</string>
+    <string name="main_fragment_coffee_brewer_title">Live Activities</string>
     <string name="main_fragment_events_title">Events</string>
     <string name="main_fragment_in_app_messaging_title">In App Messaging</string>
     <string name="main_fragment_inbox_title">Inbox</string>
@@ -52,6 +51,10 @@
     <string name="main_fragment_configured">Configured</string>
     <string name="main_fragment_dnd_end">To</string>
     <string name="main_fragment_dnd_start">From</string>
+    <string name="main_fragment_coffee_brewer_start">Brew a coffee</string>
+    <string name="main_fragment_coffee_brewer_brew">Start Brewing</string>
+    <string name="main_fragment_coffee_brewer_serve">Serve the coffee!</string>
+    <string name="main_fragment_coffee_brewer_stop">Cancel</string>
     <string name="main_fragment_enabled">Enabled</string>
     <string name="main_fragment_fetch">Fetch</string>
     <string name="main_fragment_permission">Permission</string>
@@ -176,4 +179,15 @@
     <string name="authentication_user">User</string>
     <string name="authentication_validate_user">Validate User</string>
 
+    <string name="notification_channel_live_activities_title">Live Activities</string>
+    <string name="notification_channel_live_activities_description">Real-time updates for relevant content.</string>
+
+    <string name="coffee_headline_served_title">Coffee is served!</string>
+    <plurals name="coffee_headline_pick_up_title">
+        <item quantity="one">Pick-up in %1$d min</item>
+        <item quantity="other">Pick-up in %1$d mins</item>
+    </plurals>
+    <string name="coffee_headline_served_subtitle">That\'s a good cuppa coffee.</string>
+    <string name="coffee_headline_brewing_subtitle">Brewing the perfect cup of coffee.</string>
+    <string name="coffee_headline_grinding_subtitle">Grinding a few coffee beans!</string>
 </resources>

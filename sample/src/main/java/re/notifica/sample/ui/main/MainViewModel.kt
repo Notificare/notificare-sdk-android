@@ -1,6 +1,7 @@
 package re.notifica.sample.ui.main
 
 import androidx.lifecycle.*
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import re.notifica.Notificare
 import re.notifica.geo.ktx.geo
@@ -12,6 +13,9 @@ import re.notifica.models.NotificareDoNotDisturb
 import re.notifica.models.NotificareTime
 import re.notifica.push.ktx.push
 import re.notifica.sample.ktx.*
+import re.notifica.sample.live_activities.LiveActivitiesController
+import re.notifica.sample.live_activities.models.CoffeeBrewerContentState
+import re.notifica.sample.live_activities.models.CoffeeBrewingState
 import re.notifica.sample.models.BaseViewModel
 import timber.log.Timber
 
@@ -39,6 +43,10 @@ class MainViewModel : BaseViewModel(), DefaultLifecycleObserver, Notificare.List
 
     private val _dndEnabled = MutableLiveData(hasDndEnabled)
     val dndEnabled: LiveData<Boolean> = _dndEnabled
+
+    val coffeeBrewerUiState: LiveData<CoffeeBrewerUiState> = LiveActivitiesController.coffeeActivityStream
+        .map { CoffeeBrewerUiState(it?.state) }
+        .asLiveData()
 
     private val _dnd = MutableLiveData(Notificare.device().currentDevice?.dnd ?: NotificareDoNotDisturb.default)
     val dnd: LiveData<NotificareDoNotDisturb> = _dnd
@@ -183,6 +191,56 @@ class MainViewModel : BaseViewModel(), DefaultLifecycleObserver, Notificare.List
             } catch (e: Exception) {
                 Timber.e(e, "Failed to update the do not disturb settings.")
                 showSnackBar("Failed to update DnD: ${e.message}")
+            }
+        }
+    }
+
+    fun createCoffeeSession() {
+        viewModelScope.launch {
+            try {
+                val contentState = CoffeeBrewerContentState(
+                    state = CoffeeBrewingState.GRINDING,
+                    remaining = 5,
+                )
+
+                LiveActivitiesController.createCoffeeActivity(contentState)
+                Timber.i("Live activity presented.")
+            } catch (e: Exception) {
+                Timber.e(e, "Failed to create the live activity.")
+            }
+        }
+    }
+
+    fun continueCoffeeSession() {
+        val currentBrewingState = coffeeBrewerUiState.value?.brewingState ?: return
+
+        val contentState = when (currentBrewingState) {
+            CoffeeBrewingState.GRINDING -> CoffeeBrewerContentState(
+                state = CoffeeBrewingState.BREWING,
+                remaining = 4,
+            )
+            CoffeeBrewingState.BREWING -> CoffeeBrewerContentState(
+                state = CoffeeBrewingState.SERVED,
+                remaining = 0,
+            )
+            CoffeeBrewingState.SERVED -> return
+        }
+
+        viewModelScope.launch {
+            try {
+                LiveActivitiesController.updateCoffeeActivity(contentState)
+            } catch (e: Exception) {
+                Timber.e(e, "Failed to update the live activity.")
+            }
+        }
+    }
+
+    fun cancelCoffeeSession() {
+        viewModelScope.launch {
+            try {
+                LiveActivitiesController.clearCoffeeActivity()
+            } catch (e: Exception) {
+                Timber.e(e, "Failed to end the live activity.")
             }
         }
     }
