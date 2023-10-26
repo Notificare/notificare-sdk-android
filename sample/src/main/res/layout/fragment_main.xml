@@ -38,6 +38,14 @@
                 android:layout_marginTop="16dp" />
 
             <include
+                android:id="@+id/coffee_brewer_card"
+                layout="@layout/fragment_main_coffee_brewer_card"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginTop="16dp" />
+
+            <include
                 android:id="@+id/location_card"
                 layout="@layout/fragment_main_geo_card"
                 android:layout_width="match_parent"

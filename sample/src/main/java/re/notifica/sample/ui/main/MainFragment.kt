@@ -29,6 +29,7 @@ import re.notifica.sample.R
 import re.notifica.sample.databinding.FragmentMainBinding
 import re.notifica.sample.ktx.LocationPermission
 import re.notifica.sample.ktx.showBasicAlert
+import re.notifica.sample.live_activities.models.CoffeeBrewingState
 import re.notifica.sample.models.BaseFragment
 import timber.log.Timber
 
@@ -240,6 +241,14 @@ class MainFragment : BaseFragment() {
 
         // End region
 
+        // Live Activities
+
+        binding.coffeeBrewerCard.coffeeBrewerCancelButton.setOnClickListener {
+            viewModel.cancelCoffeeSession()
+        }
+
+        // End region
+
         // Location
 
         binding.locationCard.locationSwitch.setOnCheckedChangeListener { _, checked ->
@@ -363,6 +372,34 @@ class MainFragment : BaseFragment() {
         viewModel.dnd.observe(viewLifecycleOwner) { dnd ->
             binding.dndCard.dndStartLabel.text = dnd.start.format()
             binding.dndCard.dndEndLabel.text = dnd.end.format()
+        }
+
+        viewModel.coffeeBrewerUiState.observe(viewLifecycleOwner) { uiState ->
+            binding.coffeeBrewerCard.coffeeBrewerButton.isVisible = uiState.brewingState != CoffeeBrewingState.SERVED
+            binding.coffeeBrewerCard.coffeeBrewerCancelButton.isVisible = uiState.brewingState != null
+
+            when (uiState.brewingState) {
+                null -> {
+                    binding.coffeeBrewerCard.coffeeBrewerButton.setText(R.string.main_fragment_coffee_brewer_start)
+                    binding.coffeeBrewerCard.coffeeBrewerButton.setOnClickListener {
+                        viewModel.createCoffeeSession()
+                    }
+                }
+                CoffeeBrewingState.GRINDING -> {
+                    binding.coffeeBrewerCard.coffeeBrewerButton.setText(R.string.main_fragment_coffee_brewer_brew)
+                    binding.coffeeBrewerCard.coffeeBrewerButton.setOnClickListener {
+                        viewModel.continueCoffeeSession()
+                    }
+                }
+                CoffeeBrewingState.BREWING -> {
+                    binding.coffeeBrewerCard.coffeeBrewerButton.setText(R.string.main_fragment_coffee_brewer_serve)
+                    binding.coffeeBrewerCard.coffeeBrewerButton.setOnClickListener {
+                        viewModel.continueCoffeeSession()
+                    }
+                }
+                CoffeeBrewingState.SERVED -> {}
+            }
+
         }
 
         viewModel.hasLocationUpdatesEnabled.observe(viewLifecycleOwner) { enabled ->
