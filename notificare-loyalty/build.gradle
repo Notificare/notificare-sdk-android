@@ -7,10 +7,6 @@ android {
         minSdkVersion min_sdk_version
         targetSdkVersion target_sdk_version
 
-        manifestPlaceholders = [
-                notificareApplicationId: '${notificareApplicationId}',
-        ]
-
         javaCompileOptions {
             annotationProcessorOptions {
                 arguments = [
