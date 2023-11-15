@@ -19,7 +19,7 @@ android {
         applicationId "re.notifica.sample.app"
         minSdkVersion min_sdk_version
         targetSdkVersion target_sdk_version
-        versionCode 2
+        versionCode 3
         versionName "3.0.0"
 
         manifestPlaceholders = [
