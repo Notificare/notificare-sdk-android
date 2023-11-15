@@ -19,7 +19,7 @@ android {
         applicationId "re.notifica.sample.app"
         minSdkVersion min_sdk_version
         targetSdkVersion target_sdk_version
-        versionCode 1
+        versionCode 3
         versionName "3.0.0"
 
         manifestPlaceholders = [
@@ -45,6 +45,7 @@ android {
     buildTypes {
         debug {
             signingConfig signingConfigs.debug
+            applicationIdSuffix '.dev'
         }
         release {
             minifyEnabled true
@@ -57,18 +58,26 @@ android {
     productFlavors {
         apiTest {
             dimension 'api'
-            applicationIdSuffix '.test'
-
-            manifestPlaceholders = [
-                    notificareApplicationId: properties.getProperty('notificare.test.application.id')
-            ]
+            applicationId "re.notifica.sample.app.test"
         }
         apiProduction {
             dimension 'api'
+        }
+    }
 
-            manifestPlaceholders = [
-                    notificareApplicationId: properties.getProperty('notificare.production.application.id')
-            ]
+    applicationVariants.configureEach {
+        if (name == "apiTestDebug") {
+            resValue("string", "notificare_app_links_hostname", "\"618d0f4edc09fbed1864e8d0.applinks-test.notifica.re\"")
+            resValue("string", "notificare_dynamic_link_hostname", "\"sample-app-dev.test.ntc.re\"")
+        } else if (name == "apiTestRelease") {
+            resValue("string", "notificare_app_links_hostname", "\"654d017fc468efc19379921e.applinks-test.notifica.re\"")
+            resValue("string", "notificare_dynamic_link_hostname", "\"sample-app.test.ntc.re\"")
+        } else if (name == "apiProductionDebug") {
+            resValue("string", "notificare_app_links_hostname", "\"61644511218adebf72c5449b.applinks.notifica.re\"")
+            resValue("string", "notificare_dynamic_link_hostname", "\"sample-app-dev.ntc.re\"")
+        } else if (name == "apiProductionRelease") {
+            resValue("string", "notificare_app_links_hostname", "\"6511625f445cc1c81d47fd6f.applinks.notifica.re\"")
+            resValue("string", "notificare_dynamic_link_hostname", "\"sample-app.ntc.re\"")
         }
     }
 
