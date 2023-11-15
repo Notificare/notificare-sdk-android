@@ -67,7 +67,7 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data
-                    android:host="@string/notificare_dynamic_link_hostname"
+                    android:host="@string/notificare_app_links_hostname"
                     android:pathPrefix="/testdevice"
                     android:scheme="https" />
             </intent-filter>
@@ -86,7 +86,7 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data
-                    android:host="@string/notificare_dynamic_link_hostname"
+                    android:host="@string/notificare_app_links_hostname"
                     android:pathPrefix="/pass"
                     android:scheme="https" />
             </intent-filter>
