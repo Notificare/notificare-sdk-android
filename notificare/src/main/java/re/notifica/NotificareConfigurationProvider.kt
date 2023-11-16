@@ -2,9 +2,15 @@ package re.notifica
 
 import android.content.ContentProvider
 import android.content.ContentValues
+import android.content.Context
+import android.content.pm.ApplicationInfo
+import android.content.pm.PackageManager
 import android.database.Cursor
 import android.net.Uri
+import android.os.Bundle
+import androidx.core.os.bundleOf
 import re.notifica.internal.NotificareLogger
+import re.notifica.internal.ktx.applicationInfo
 
 /**
  * Auto configuration during application startup.
@@ -17,8 +23,11 @@ internal class NotificareConfigurationProvider : ContentProvider() {
         val context = context
             ?: throw IllegalStateException("Cannot find context from the provider.")
 
-        Notificare.configure(context)
-        NotificareLogger.info("Notificare configured automatically.")
+        if (hasAutoConfigurationEnabled(context)) {
+            Notificare.configure(context)
+            NotificareLogger.info("Notificare configured automatically.")
+        } else
+            NotificareLogger.info("Automatic configuration is disabled. Ensure you call configure() when the application starts.")
 
         return true
     }
@@ -43,4 +52,15 @@ internal class NotificareConfigurationProvider : ContentProvider() {
         selection: String?,
         selectionArgs: Array<String>?
     ): Int = 0
+
+    private fun hasAutoConfigurationEnabled(context: Context): Boolean {
+        val info: ApplicationInfo = context.packageManager.applicationInfo(
+            context.packageName,
+            PackageManager.GET_META_DATA
+        )
+
+        val metadata: Bundle = info.metaData ?: bundleOf()
+
+        return metadata.getBoolean("re.notifica.auto_configuration_enabled", true)
+    }
 }
