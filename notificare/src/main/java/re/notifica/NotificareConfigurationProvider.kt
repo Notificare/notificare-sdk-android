@@ -26,8 +26,9 @@ internal class NotificareConfigurationProvider : ContentProvider() {
         if (hasAutoConfigurationEnabled(context)) {
             Notificare.configure(context)
             NotificareLogger.info("Notificare configured automatically.")
-        } else
+        } else {
             NotificareLogger.info("Automatic configuration is disabled. Ensure you call configure() when the application starts.")
+        }
 
         return true
     }
@@ -54,12 +55,12 @@ internal class NotificareConfigurationProvider : ContentProvider() {
     ): Int = 0
 
     private fun hasAutoConfigurationEnabled(context: Context): Boolean {
-        val info: ApplicationInfo = context.packageManager.applicationInfo(
+        val info = context.packageManager.applicationInfo(
             context.packageName,
             PackageManager.GET_META_DATA
         )
 
-        val metadata: Bundle = info.metaData ?: bundleOf()
+        val metadata = info.metaData ?: bundleOf()
 
         return metadata.getBoolean("re.notifica.auto_configuration_enabled", true)
     }
