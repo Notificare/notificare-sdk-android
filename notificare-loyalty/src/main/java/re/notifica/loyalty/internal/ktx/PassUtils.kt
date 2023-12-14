@@ -78,7 +78,8 @@ internal fun NotificarePass.PassbookField.formatNumber(): String? {
 
 
 @Throws(ParseException::class)
-internal fun NotificarePass.Companion.parseDate(dateStr: String, ignoreTimeZone: Boolean = false): Date? {
+internal fun NotificarePass.Companion.parseDate(dateStr: String, @Suppress("UNUSED_PARAMETER") ignoreTimeZone: Boolean = false): Date? {
+    @Suppress("NAME_SHADOWING")
     var dateStr = dateStr
 
     if (dateStr.matches("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}Z$".toRegex()) ||
@@ -158,14 +159,17 @@ private fun getDateFormat(dateStr: String): DateFormat? {
         dateStr.matches("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}Z$".toRegex()) ||
             dateStr.matches("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}[+\\-]\\d{2}:\\d{2}$".toRegex()) ||
             dateStr.matches("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}[+\\-]\\d{4}$".toRegex()) -> "yyyy-MM-dd'T'HH:mmZ"
+
         dateStr.matches("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}$".toRegex()) -> "yyyy-MM-dd'T'HH:mm:ss"
         dateStr.matches("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$".toRegex()) ||
             dateStr.matches("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}[+\\-]\\d{2}:\\d{2}$".toRegex()) ||
             dateStr.matches("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}[+\\-]\\d{4}$".toRegex()) -> "yyyy-MM-dd'T'HH:mm:ssZ"
+
         dateStr.matches("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}.\\d{3}$".toRegex()) -> "yyyy-MM-dd'T'HH:mm:ss.SSS"
         dateStr.matches("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}.\\d{3}Z$".toRegex()) ||
             dateStr.matches("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}.\\d{3}[+\\-]\\d{2}:\\d{2}$".toRegex()) ||
             dateStr.matches("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}.\\d{3}[+\\-]\\d{4}$".toRegex()) -> "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
+
         else -> return null
     }
 
