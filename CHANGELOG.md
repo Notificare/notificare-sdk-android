@@ -5,6 +5,7 @@
 - Fix warning when notification intents are handled by the broadcast receiver
 - Include proguard rule to work around the issue with Moshi in R8
 - Fix crash when presenting an in-app browser when the phone has none installed
+- Fix `getParcelableExtra` on API 33 in certain cases
 
 ## 3.6.1
 

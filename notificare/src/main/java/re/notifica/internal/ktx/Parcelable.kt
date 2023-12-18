@@ -1,42 +1,32 @@
 package re.notifica.internal.ktx
 
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
 import android.os.Parcel
 import android.os.Parcelable
+import androidx.core.content.IntentCompat
+import androidx.core.os.BundleCompat
+import androidx.core.os.ParcelCompat
 import re.notifica.InternalNotificareApi
 
 @InternalNotificareApi
 public inline fun <reified T : Parcelable> Intent.parcelable(key: String): T? {
-    return when {
-        Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> getParcelableExtra(key, T::class.java)
-        else -> @Suppress("DEPRECATION") getParcelableExtra(key)
-    }
+    return IntentCompat.getParcelableExtra(this, key, T::class.java)
 }
 
 @InternalNotificareApi
 public inline fun <reified T : Parcelable> Intent.parcelableArrayList(key: String): ArrayList<T>? {
-    return when {
-        Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> getParcelableArrayListExtra(key, T::class.java)
-        else -> @Suppress("DEPRECATION") getParcelableArrayListExtra(key)
-    }
+    return IntentCompat.getParcelableArrayListExtra(this, key, T::class.java)
 }
 
 @InternalNotificareApi
 public inline fun <reified T : Parcelable> Bundle.parcelable(key: String): T? {
-    return when {
-        Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> getParcelable(key, T::class.java)
-        else -> @Suppress("DEPRECATION") getParcelable(key)
-    }
+    return BundleCompat.getParcelable(this, key, T::class.java)
 }
 
 @InternalNotificareApi
 public inline fun <reified T : Parcelable> Bundle.parcelableArrayList(key: String): ArrayList<T>? {
-    return when {
-        Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> getParcelableArrayList(key, T::class.java)
-        else -> @Suppress("DEPRECATION") getParcelableArrayList(key)
-    }
+    return BundleCompat.getParcelableArrayList(this, key, T::class.java)
 }
 
 @InternalNotificareApi
@@ -46,12 +36,5 @@ public inline fun <reified K, reified V> Parcel.map(
     klassKey: Class<K> = K::class.java,
     klassValue: Class<V> = V::class.java,
 ) {
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
-        @Suppress("DEPRECATION")
-        readMap(outVal, V::class.java.classLoader)
-
-        return
-    }
-
-    readMap(outVal, classLoader, klassKey, klassValue)
+    return ParcelCompat.readMap(this, outVal, classLoader, klassKey, klassValue)
 }
