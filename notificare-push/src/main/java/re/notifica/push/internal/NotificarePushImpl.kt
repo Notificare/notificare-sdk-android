@@ -9,6 +9,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.graphics.Color
 import android.net.Uri
 import android.os.Build
@@ -696,7 +697,7 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
                 NotificationCompat.BigPictureStyle()
                     .setSummaryText(message.alert)
                     .bigPicture(attachmentImage)
-                    .bigLargeIcon(null)
+                    .bigLargeIcon(null as Bitmap?)
             )
         } else {
             builder.setStyle(

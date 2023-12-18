@@ -1,10 +1,10 @@
 package re.notifica.sample.ui.assets
 
-import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.BundleCompat
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import re.notifica.assets.models.NotificareAsset
@@ -23,13 +23,9 @@ class AssetDetailsFragment : Fragment() {
     }
 
     private fun loadAssetDetails() {
-        val asset: NotificareAsset? =
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
-                arguments?.getParcelable("asset", NotificareAsset::class.java)
-            else
-                arguments?.getParcelable("asset")
-
-        if (asset == null) return
+        val asset: NotificareAsset = arguments?.let {
+            BundleCompat.getParcelable(it, "asset", NotificareAsset::class.java)
+        } ?: return
 
         if (asset.url.isNullOrEmpty()) {
             binding.assetImage.setImageResource(R.drawable.ic_baseline_text_fields_24)

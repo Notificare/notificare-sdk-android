@@ -1,12 +1,13 @@
 package re.notifica.sample
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.IntentCompat
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.navigation.ui.setupWithNavController
@@ -82,52 +83,39 @@ class SampleActivity : AppCompatActivity(), Notificare.Listener, NotificarePushU
 
         when (intent.action) {
             Notificare.INTENT_ACTION_NOTIFICATION_OPENED -> {
-                val notification: NotificareNotification = if (Build.VERSION.SDK_INT >= 33) {
-                    requireNotNull(
-                        intent.getParcelableExtra(
-                            Notificare.INTENT_EXTRA_NOTIFICATION,
-                            NotificareNotification::class.java
-                        )
+                val notification = requireNotNull(
+                    IntentCompat.getParcelableExtra(
+                        intent,
+                        Notificare.INTENT_EXTRA_NOTIFICATION,
+                        NotificareNotification::class.java
                     )
-                } else {
-                    requireNotNull(
-                        intent.getParcelableExtra(Notificare.INTENT_EXTRA_NOTIFICATION)
-                    )
-                }
+                )
 
                 Notificare.pushUI().presentNotification(this, notification)
                 return
             }
-            Notificare.INTENT_ACTION_ACTION_OPENED -> {
-                val notification: NotificareNotification = if (Build.VERSION.SDK_INT >= 33) {
-                    requireNotNull(
-                        intent.getParcelableExtra(
-                            Notificare.INTENT_EXTRA_NOTIFICATION,
-                            NotificareNotification::class.java
-                        )
-                    )
-                } else {
-                    requireNotNull(
-                        intent.getParcelableExtra(Notificare.INTENT_EXTRA_NOTIFICATION)
-                    )
-                }
 
-                val action: NotificareNotification.Action = if (Build.VERSION.SDK_INT >= 33) {
-                    requireNotNull(
-                        intent.getParcelableExtra(
-                            Notificare.INTENT_EXTRA_ACTION,
-                            NotificareNotification.Action::class.java
-                        )
+            Notificare.INTENT_ACTION_ACTION_OPENED -> {
+                val notification = requireNotNull(
+                    IntentCompat.getParcelableExtra(
+                        intent,
+                        Notificare.INTENT_EXTRA_NOTIFICATION,
+                        NotificareNotification::class.java
                     )
-                } else {
-                    requireNotNull(
-                        intent.getParcelableExtra(Notificare.INTENT_EXTRA_ACTION)
+                )
+
+                val action = requireNotNull(
+                    IntentCompat.getParcelableExtra(
+                        intent,
+                        Notificare.INTENT_EXTRA_ACTION,
+                        NotificareNotification.Action::class.java
                     )
-                }
+                )
 
                 Notificare.pushUI().presentAction(this, notification, action)
                 return
             }
+
             Notificare.INTENT_ACTION_BEACON_NOTIFICATION_OPENED -> {
                 Snackbar.make(binding.root, "Beacon notification opened.", Snackbar.LENGTH_SHORT).show()
                 return
