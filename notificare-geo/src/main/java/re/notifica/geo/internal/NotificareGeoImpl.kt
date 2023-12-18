@@ -224,6 +224,11 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
         if (beaconServiceManager == null) {
             NotificareLogger.info("To enable beacon support, include the notificare-geo-beacons peer dependency.")
         }
+
+        if (hasLocationServicesEnabled) {
+            NotificareLogger.debug("Enabling locations updates automatically.")
+            enableLocationUpdatesInternal()
+        }
     }
 
     override suspend fun unlaunch() {
@@ -298,43 +303,7 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
             return
         }
 
-        // Ensure we keep the bluetooth state updated in the API.
-        updateBluetoothState(hasBeaconSupport)
-
-        if (!hasForegroundLocationPermission) {
-            Notificare.coroutineScope.launch {
-                try {
-                    lastKnownLocation = null
-                    clearLocation()
-                    NotificareLogger.debug("Device location cleared.")
-
-                    clearRegions()
-                    clearBeacons()
-                } catch (e: Exception) {
-                    NotificareLogger.error("Failed to clear the device location.", e)
-                }
-            }
-
-            return
-        }
-
-        // Keep track of the location services status.
-        localStorage.locationServicesEnabled = true
-
-        // Start the location updates.
-        serviceManager?.enableLocationUpdates()
-
-        if (hasBeaconSupport) {
-            val enteredRegions =
-                localStorage.monitoredRegions.values.filter { localStorage.enteredRegions.contains(it.id) }
-            if (enteredRegions.size > 1) {
-                NotificareLogger.warning("Detected multiple entered regions. Beacon monitoring is limited to a single region at a time.")
-            }
-
-            val region = enteredRegions.firstOrNull()
-            if (region != null) startMonitoringBeacons(region)
-        }
-
+        enableLocationUpdatesInternal()
         NotificareLogger.info("Location updates enabled.")
     }
 
@@ -732,6 +701,45 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
             if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
                 NotificareLogger.warning("Location functionality is disabled by the user. Recovering when it has been enabled.")
             }
+        }
+    }
+
+    private fun enableLocationUpdatesInternal() {
+        // Ensure we keep the bluetooth state updated in the API.
+        updateBluetoothState(hasBeaconSupport)
+
+        if (!hasForegroundLocationPermission) {
+            Notificare.coroutineScope.launch {
+                try {
+                    lastKnownLocation = null
+                    clearLocation()
+                    NotificareLogger.debug("Device location cleared.")
+
+                    clearRegions()
+                    clearBeacons()
+                } catch (e: Exception) {
+                    NotificareLogger.error("Failed to clear the device location.", e)
+                }
+            }
+
+            return
+        }
+
+        // Keep track of the location services status.
+        localStorage.locationServicesEnabled = true
+
+        // Start the location updates.
+        serviceManager?.enableLocationUpdates()
+
+        if (hasBeaconSupport) {
+            val enteredRegions =
+                localStorage.monitoredRegions.values.filter { localStorage.enteredRegions.contains(it.id) }
+            if (enteredRegions.size > 1) {
+                NotificareLogger.warning("Detected multiple entered regions. Beacon monitoring is limited to a single region at a time.")
+            }
+
+            val region = enteredRegions.firstOrNull()
+            if (region != null) startMonitoringBeacons(region)
         }
     }
 
