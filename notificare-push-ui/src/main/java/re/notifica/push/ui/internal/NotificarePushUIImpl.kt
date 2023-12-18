@@ -269,10 +269,18 @@ internal object NotificarePushUIImpl : NotificareModule(), NotificarePushUI, Not
             return
         }
 
-        createInAppBrowser().launchUrl(activity, Uri.parse(content.data as String))
+        try {
+            createInAppBrowser().launchUrl(activity, Uri.parse(content.data as String))
 
-        onMainThread {
-            lifecycleListeners.forEach { it.onNotificationPresented(notification) }
+            onMainThread {
+                lifecycleListeners.forEach { it.onNotificationPresented(notification) }
+            }
+        } catch (e: Exception) {
+            NotificareLogger.error("Failed launch in-app browser.", e)
+
+            onMainThread {
+                lifecycleListeners.forEach { it.onNotificationFailedToPresent(notification) }
+            }
         }
     }
 
