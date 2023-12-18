@@ -3,6 +3,7 @@
 ## Upcoming release
 
 - Fix warning when notification intents are handled by the broadcast receiver
+- Include proguard rule to work around the issue with Moshi in R8
 
 ## 3.6.1
 
