@@ -21,7 +21,7 @@ public val Notificare.moshi: Moshi by lazy {
         .add(UriAdapter())
         .add(JSONObjectAdapter())
 
-    NotificareModule.Module.values().forEach { module ->
+    NotificareModule.Module.entries.forEach { module ->
         module.instance?.moshi(builder)
     }
 
