@@ -114,7 +114,7 @@ public object Notificare {
             try {
                 val useTestApi = context.resources.getBoolean(R.bool.notificare_services_use_test_api)
                 if (useTestApi) return@run NotificareServicesInfo.Environment.TEST
-            } catch (e: Resources.NotFoundException) {
+            } catch (_: Resources.NotFoundException) {
             }
 
             return@run NotificareServicesInfo.Environment.PRODUCTION
@@ -154,7 +154,7 @@ public object Notificare {
                 val application = fetchApplication()
 
                 // Loop all possible modules and launch the available ones.
-                NotificareModule.Module.values().forEach { module ->
+                NotificareModule.Module.entries.forEach { module ->
                     module.instance?.run {
                         NotificareLogger.debug("Launching module: ${module.name.lowercase()}")
                         try {
@@ -223,7 +223,7 @@ public object Notificare {
         Notificare.coroutineScope.launch {
             try {
                 // Loop all possible modules and un-launch the available ones.
-                NotificareModule.Module.values().reversed().forEach { module ->
+                NotificareModule.Module.entries.reversed().forEach { module ->
                     module.instance?.run {
                         NotificareLogger.debug("Un-launching module: ${module.name.lowercase()}.")
 
@@ -333,7 +333,6 @@ public object Notificare {
     public suspend fun fetchDynamicLink(uri: Uri): NotificareDynamicLink = withContext(Dispatchers.IO) {
         if (!isConfigured) throw NotificareNotConfiguredException()
 
-        @Suppress("BlockingMethodInNonBlockingContext")
         val uriEncodedLink = URLEncoder.encode(uri.toString(), "UTF-8")
 
         NotificareRequest.Builder()
@@ -525,7 +524,7 @@ public object Notificare {
         this.database = NotificareDatabase.create(context.applicationContext)
         this.sharedPreferences = NotificareSharedPreferences(context.applicationContext)
 
-        NotificareModule.Module.values().forEach { module ->
+        NotificareModule.Module.entries.forEach { module ->
             module.instance?.run {
                 NotificareLogger.debug("Configuring module: ${module.name.lowercase()}")
                 this.configure()
