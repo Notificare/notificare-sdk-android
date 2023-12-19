@@ -66,6 +66,11 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
         }
     }
 
+    override suspend fun postLaunch() {
+        val device = currentDevice
+        if (device != null) notifyDeviceRegistered(device)
+    }
+
     // endregion
 
     // region Notificare Device Module
@@ -520,7 +525,7 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
             .response()
     }
 
-    internal fun notifyDeviceRegistered(device: NotificareDevice) {
+    private fun notifyDeviceRegistered(device: NotificareDevice) {
         Notificare.requireContext().sendBroadcast(
             Intent(Notificare.requireContext(), Notificare.intentReceiver)
                 .setAction(Notificare.INTENT_ACTION_DEVICE_REGISTERED)

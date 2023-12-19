@@ -193,8 +193,17 @@ public object Notificare {
                     listeners.forEach { it.onReady(application) }
                 }
 
-                val device = device().currentDevice
-                if (device != null) deviceImplementation().notifyDeviceRegistered(device)
+                // Loop all possible modules and post-launch the available ones.
+                NotificareModule.Module.entries.forEach { module ->
+                    module.instance?.run {
+                        NotificareLogger.debug("Post-launching module: ${module.name.lowercase()}")
+                        try {
+                            this.postLaunch()
+                        } catch (e: Exception) {
+                            NotificareLogger.error("Failed to post-launch '${module.name.lowercase()}': $e")
+                        }
+                    }
+                }
             } catch (e: Exception) {
                 NotificareLogger.error("Failed to launch Notificare.", e)
                 state = NotificareLaunchState.CONFIGURED
