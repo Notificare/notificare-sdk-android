@@ -224,7 +224,9 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
         if (beaconServiceManager == null) {
             NotificareLogger.info("To enable beacon support, include the notificare-geo-beacons peer dependency.")
         }
+    }
 
+    override suspend fun postLaunch() {
         if (hasLocationServicesEnabled) {
             NotificareLogger.debug("Enabling locations updates automatically.")
             enableLocationUpdatesInternal()
