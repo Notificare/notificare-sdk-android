@@ -192,6 +192,9 @@ public object Notificare {
                     // Notify the listeners.
                     listeners.forEach { it.onReady(application) }
                 }
+
+                val device = device().currentDevice
+                if (device != null) deviceImplementation().notifyDeviceRegistered(device)
             } catch (e: Exception) {
                 NotificareLogger.error("Failed to launch Notificare.", e)
                 state = NotificareLaunchState.CONFIGURED

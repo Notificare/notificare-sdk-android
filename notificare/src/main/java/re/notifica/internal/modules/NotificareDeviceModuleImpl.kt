@@ -375,12 +375,10 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
             NotificareLogger.info("Skipping device registration, nothing changed.")
         }
 
-        // Send a device registered broadcast.
-        Notificare.requireContext().sendBroadcast(
-            Intent(Notificare.requireContext(), Notificare.intentReceiver)
-                .setAction(Notificare.INTENT_ACTION_DEVICE_REGISTERED)
-                .putExtra(Notificare.INTENT_EXTRA_DEVICE, checkNotNull(currentDevice))
-        )
+        if (Notificare.isReady) {
+            val device = checkNotNull(currentDevice)
+            notifyDeviceRegistered(device)
+        }
     }
 
     private fun registrationChanged(token: String?, userId: String?, userName: String?): Boolean {
@@ -520,6 +518,14 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
                 ),
             )
             .response()
+    }
+
+    internal fun notifyDeviceRegistered(device: NotificareDevice) {
+        Notificare.requireContext().sendBroadcast(
+            Intent(Notificare.requireContext(), Notificare.intentReceiver)
+                .setAction(Notificare.INTENT_ACTION_DEVICE_REGISTERED)
+                .putExtra(Notificare.INTENT_EXTRA_DEVICE, device)
+        )
     }
 }
 
