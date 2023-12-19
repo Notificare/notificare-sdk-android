@@ -15,6 +15,8 @@ public abstract class NotificareModule {
 
     public open suspend fun launch() {}
 
+    public open suspend fun postLaunch() {}
+
     public open suspend fun unlaunch() {}
 
 
