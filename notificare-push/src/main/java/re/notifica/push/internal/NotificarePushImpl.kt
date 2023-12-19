@@ -148,6 +148,13 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
         updateNotificationSettings()
     }
 
+    override suspend fun postLaunch() {
+        if (sharedPreferences.remoteNotificationsEnabled) {
+            NotificareLogger.debug("Enabling remote notifications automatically.")
+            serviceManager?.requestPushToken()
+        }
+    }
+
     override suspend fun unlaunch() {
         sharedPreferences.remoteNotificationsEnabled = false
         sharedPreferences.firstRegistration = true

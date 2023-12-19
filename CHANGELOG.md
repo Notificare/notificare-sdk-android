@@ -3,11 +3,29 @@
 ## Upcoming release
 
 - Add manifest flag to disable the auto configuration
+- Automatically enable remote notifications during launch when possible
 - Automatically enable location updates during launch when possible
 - Fix warning when notification intents are handled by the broadcast receiver
 - Include proguard rule to work around the issue with Moshi in R8
 - Fix crash when presenting an in-app browser when the phone has none installed
 - Fix `getParcelableExtra` on API 33 in certain cases
+
+**Important notice:** Re-enabling remote notifications and location services is no longer required. 
+You can safely remove the following piece of code as the SDK will automatically handle it for you during the launch flow.
+
+```kotlin
+override fun onReady(application: NotificareApplication) {
+    // This check is no longer necessary.
+    if (Notificare.push().hasRemoteNotificationsEnabled) {
+        Notificare.push().enableRemoteNotifications()
+    }
+
+    // This check is no longer necessary.
+    if (Notificare.geo().hasLocationServicesEnabled) {
+        Notificare.geo().enableLocationUpdates()
+    }
+}
+```
 
 ## 3.6.1
 
