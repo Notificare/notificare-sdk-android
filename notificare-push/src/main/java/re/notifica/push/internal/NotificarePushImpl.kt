@@ -144,13 +144,15 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
             }
         }
 
-        if (token == null && sharedPreferences.remoteNotificationsEnabled) {
+        // Ensure the definitive allowedUI value has been communicated to the API.
+        updateNotificationSettings()
+    }
+
+    override suspend fun postLaunch() {
+        if (sharedPreferences.remoteNotificationsEnabled) {
             NotificareLogger.debug("Enabling remote notifications automatically.")
             serviceManager?.requestPushToken()
         }
-
-        // Ensure the definitive allowedUI value has been communicated to the API.
-        updateNotificationSettings()
     }
 
     override suspend fun unlaunch() {
