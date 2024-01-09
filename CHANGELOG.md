@@ -1,10 +1,11 @@
 # CHANGELOG
 
-## Upcoming release
+## 3.7.0-beta.1
 
 - Add manifest flag to disable the auto configuration
 - Automatically enable remote notifications during launch when possible
 - Automatically enable location updates during launch when possible
+- Prevent the `device_registered` event from invoking before the `ready` event
 - Fix warning when notification intents are handled by the broadcast receiver
 - Include proguard rule to work around the issue with Moshi in R8
 - Fix crash when presenting an in-app browser when the phone has none installed
