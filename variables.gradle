@@ -1,60 +1,61 @@
 buildscript {
     def properties = new Properties()
-    properties.load(project.rootProject.file('local.properties').newDataInputStream())
+    properties.load(rootProject.file('local.properties').newDataInputStream())
 
     ext {
-        compile_sdk_version = 33
-        build_tools_version = '33.0.1'
+        compile_sdk_version = 34
+        build_tools_version = '34.0.0'
         min_sdk_version = 23
-        target_sdk_version = 33
+        target_sdk_version = 34
 
         // Maven
         maven_artifact_group = 're.notifica'
-        maven_artifact_version = '3.6.1'
+        maven_artifact_version = '3.7.0-beta.1'
         aws_s3_access_key_id = System.env.AWS_ACCESS_KEY_ID ?: properties.getProperty('aws.s3.access_key_id')
         aws_s3_secret_access_key = System.env.AWS_SECRET_ACCESS_KEY ?: properties.getProperty('aws.s3.secret_access_key')
 
         // Kotlin
-        kotlin_version = '1.7.20'
-        kotlinx_coroutines_version = '1.6.4'
+        kotlin_version = '1.9.10'
+        kotlinx_coroutines_version = '1.7.3'
 
         // Android
-        androidx_activity_version = '1.6.1'
-        androidx_app_compat_version = '1.5.1'
-        androidx_browser_version = '1.4.0'
+        androidx_activity_version = '1.8.2'
+        androidx_app_compat_version = '1.6.1'
+        androidx_browser_version = '1.7.0'
         androidx_card_view_version = '1.0.0'
         androidx_constraint_layout_version = '2.1.4'
-        androidx_core_version = '1.9.0'
-        androidx_exit_interface_version = '1.3.5'
-        androidx_fragment_version = '1.5.5'
-        androidx_lifecycle_version = '2.5.1'
-        androidx_room_version = '2.4.3'
-        androidx_navigation_version = '2.5.2'
+        androidx_datastore_version = '1.0.0'
+        androidx_core_version = '1.12.0'
+        androidx_exit_interface_version = '1.3.7'
+        androidx_fragment_version = '1.6.2'
+        androidx_lifecycle_version = '2.6.2'
+        androidx_room_version = '2.6.1'
+        androidx_navigation_version = '2.7.6'
         androidx_security_crypto_version = '1.0.0'
         androidx_view_pager_version = '1.0.0'
-        androidx_work_version = '2.7.1'
-        google_material_version = '1.7.0'
+        androidx_work_version = '2.9.0'
+        google_material_version = '1.11.0'
 
         // External dependencies
-        moshi_version = '1.14.0'
-        okhttp_version = '4.10.0'
-        glide_version = '4.14.2'
-        altbeacon_version = '2.19.4'
+        moshi_version = '1.15.0'
+        okhttp_version = '4.12.0'
+        glide_version = '4.16.0'
+        altbeacon_version = '2.20.3'
 
         // Firebase & Google Services
-        firebase_bom_version = '31.1.0'
-        google_android_billing_client_version = '5.1.0'
-        google_play_services_base_version = '18.1.0'
+        firebase_bom_version = '32.7.0'
+        google_android_billing_client_version = '5.2.1'
+        google_play_services_base_version = '18.2.0'
         google_play_services_location_version = '21.0.1'
-        google_play_services_maps_version = '18.1.0'
+        google_play_services_maps_version = '18.2.0'
         google_play_services_vision_version = '20.1.3'
 
         // Huawei
-        huawei_base_version = '6.6.0.300'
-        huawei_location_version = '6.8.0.300'
-        huawei_push_version = '6.7.0.300'
-        huawei_maps_version = '6.7.1.302'
-        huawei_scan_version = '2.8.0.300'
+        huawei_base_version = '6.12.0.300'
+        huawei_location_version = '6.12.0.300'
+        huawei_push_version = '6.11.0.300'
+        huawei_maps_version = '6.11.2.301'
+        huawei_scan_version = '2.12.0.301'
 
         // Others
         timber_version = '5.0.1'

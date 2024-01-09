@@ -2,11 +2,11 @@ package re.notifica.sample
 
 import android.content.Intent
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.IntentCompat
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.navigation.ui.setupWithNavController
@@ -14,11 +14,9 @@ import com.google.android.material.elevation.SurfaceColors
 import com.google.android.material.snackbar.Snackbar
 import re.notifica.Notificare
 import re.notifica.geo.ktx.INTENT_ACTION_BEACON_NOTIFICATION_OPENED
-import re.notifica.geo.ktx.geo
 import re.notifica.iam.NotificareInAppMessaging
 import re.notifica.iam.ktx.inAppMessaging
 import re.notifica.iam.models.NotificareInAppMessage
-import re.notifica.models.NotificareApplication
 import re.notifica.models.NotificareNotification
 import re.notifica.monetize.NotificareMonetize
 import re.notifica.push.ktx.INTENT_ACTION_ACTION_OPENED
@@ -29,7 +27,7 @@ import re.notifica.push.ui.ktx.pushUI
 import re.notifica.sample.databinding.ActivitySampleBinding
 import timber.log.Timber
 
-class SampleActivity : AppCompatActivity(), Notificare.Listener, NotificarePushUI.NotificationLifecycleListener,
+class SampleActivity : AppCompatActivity(), NotificarePushUI.NotificationLifecycleListener,
     NotificareMonetize.Listener {
 
     private lateinit var binding: ActivitySampleBinding
@@ -55,7 +53,6 @@ class SampleActivity : AppCompatActivity(), Notificare.Listener, NotificarePushU
 
         if (intent != null) handleIntent(intent)
 
-        Notificare.addListener(this)
         Notificare.pushUI().addLifecycleListener(this)
         Notificare.inAppMessaging().addLifecycleListener(messageLifecycleListener)
     }
@@ -64,7 +61,6 @@ class SampleActivity : AppCompatActivity(), Notificare.Listener, NotificarePushU
     override fun onDestroy() {
         super.onDestroy()
 
-        Notificare.removeListener(this)
         Notificare.pushUI().removeLifecycleListener(this)
         Notificare.inAppMessaging().removeLifecycleListener(messageLifecycleListener)
     }
@@ -82,52 +78,39 @@ class SampleActivity : AppCompatActivity(), Notificare.Listener, NotificarePushU
 
         when (intent.action) {
             Notificare.INTENT_ACTION_NOTIFICATION_OPENED -> {
-                val notification: NotificareNotification = if (Build.VERSION.SDK_INT >= 33) {
-                    requireNotNull(
-                        intent.getParcelableExtra(
-                            Notificare.INTENT_EXTRA_NOTIFICATION,
-                            NotificareNotification::class.java
-                        )
+                val notification = requireNotNull(
+                    IntentCompat.getParcelableExtra(
+                        intent,
+                        Notificare.INTENT_EXTRA_NOTIFICATION,
+                        NotificareNotification::class.java
                     )
-                } else {
-                    requireNotNull(
-                        intent.getParcelableExtra(Notificare.INTENT_EXTRA_NOTIFICATION)
-                    )
-                }
+                )
 
                 Notificare.pushUI().presentNotification(this, notification)
                 return
             }
-            Notificare.INTENT_ACTION_ACTION_OPENED -> {
-                val notification: NotificareNotification = if (Build.VERSION.SDK_INT >= 33) {
-                    requireNotNull(
-                        intent.getParcelableExtra(
-                            Notificare.INTENT_EXTRA_NOTIFICATION,
-                            NotificareNotification::class.java
-                        )
-                    )
-                } else {
-                    requireNotNull(
-                        intent.getParcelableExtra(Notificare.INTENT_EXTRA_NOTIFICATION)
-                    )
-                }
 
-                val action: NotificareNotification.Action = if (Build.VERSION.SDK_INT >= 33) {
-                    requireNotNull(
-                        intent.getParcelableExtra(
-                            Notificare.INTENT_EXTRA_ACTION,
-                            NotificareNotification.Action::class.java
-                        )
+            Notificare.INTENT_ACTION_ACTION_OPENED -> {
+                val notification = requireNotNull(
+                    IntentCompat.getParcelableExtra(
+                        intent,
+                        Notificare.INTENT_EXTRA_NOTIFICATION,
+                        NotificareNotification::class.java
                     )
-                } else {
-                    requireNotNull(
-                        intent.getParcelableExtra(Notificare.INTENT_EXTRA_ACTION)
+                )
+
+                val action = requireNotNull(
+                    IntentCompat.getParcelableExtra(
+                        intent,
+                        Notificare.INTENT_EXTRA_ACTION,
+                        NotificareNotification.Action::class.java
                     )
-                }
+                )
 
                 Notificare.pushUI().presentAction(this, notification, action)
                 return
             }
+
             Notificare.INTENT_ACTION_BEACON_NOTIFICATION_OPENED -> {
                 Snackbar.make(binding.root, "Beacon notification opened.", Snackbar.LENGTH_SHORT).show()
                 return
@@ -137,17 +120,6 @@ class SampleActivity : AppCompatActivity(), Notificare.Listener, NotificarePushU
         val uri = intent.data ?: return
         Timber.i("Received deep link with uri = $uri")
         Toast.makeText(this, "Deep link = $uri", Toast.LENGTH_SHORT).show()
-    }
-
-    // Notificare is now safe to use
-    override fun onReady(application: NotificareApplication) {
-        if (Notificare.push().hasRemoteNotificationsEnabled) {
-            Notificare.push().enableRemoteNotifications()
-        }
-
-        if (Notificare.geo().hasLocationServicesEnabled) {
-            Notificare.geo().enableLocationUpdates()
-        }
     }
 
     // Lifecycle Listeners

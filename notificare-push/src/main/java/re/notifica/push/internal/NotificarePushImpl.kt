@@ -9,6 +9,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.graphics.Color
 import android.net.Uri
 import android.os.Build
@@ -145,6 +146,13 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
 
         // Ensure the definitive allowedUI value has been communicated to the API.
         updateNotificationSettings()
+    }
+
+    override suspend fun postLaunch() {
+        if (sharedPreferences.remoteNotificationsEnabled) {
+            NotificareLogger.debug("Enabling remote notifications automatically.")
+            serviceManager?.requestPushToken()
+        }
     }
 
     override suspend fun unlaunch() {
@@ -428,7 +436,7 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
             if (notificationIntent.resolveActivity(Notificare.requireContext().packageManager) != null) {
                 // Notification handled by custom activity in package
                 Notificare.requireContext().startActivity(notificationIntent)
-            } else {
+            } else if (intentReceiver.simpleName == NotificarePushIntentReceiver::class.java.simpleName) {
                 NotificareLogger.warning("Could not find an activity with the '${notificationIntent.action}' action.")
             }
         }
@@ -696,7 +704,7 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
                 NotificationCompat.BigPictureStyle()
                     .setSummaryText(message.alert)
                     .bigPicture(attachmentImage)
-                    .bigLargeIcon(null)
+                    .bigLargeIcon(null as Bitmap?)
             )
         } else {
             builder.setStyle(

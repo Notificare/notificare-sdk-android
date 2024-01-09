@@ -113,7 +113,6 @@ public class NotificareCallbackActionFragment private constructor() : Fragment()
         // Read bitmap, convert to JPEG
         options.inSampleSize = calculateSampleSize(options)
         options.inJustDecodeBounds = false
-        options.inPurgeable = true
 
         val srcBitmap = BitmapFactory.decodeFile(imagePath, options) ?: return false
 

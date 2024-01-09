@@ -48,7 +48,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
 
-                <data android:scheme="re.notifica.sample.app" />
+                <data android:scheme="${applicationId}" />
             </intent-filter>
             <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
@@ -57,7 +57,7 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data
-                    android:host="sample.ntc.re"
+                    android:host="@string/notificare_dynamic_link_hostname"
                     android:scheme="https" />
             </intent-filter>
             <intent-filter android:autoVerify="true">
@@ -67,7 +67,7 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data
-                    android:host="${notificareApplicationId}.applinks.notifica.re"
+                    android:host="@string/notificare_app_links_hostname"
                     android:pathPrefix="/testdevice"
                     android:scheme="https" />
             </intent-filter>
@@ -86,7 +86,7 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data
-                    android:host="${notificareApplicationId}.applinks.notifica.re"
+                    android:host="@string/notificare_app_links_hostname"
                     android:pathPrefix="/pass"
                     android:scheme="https" />
             </intent-filter>
@@ -98,6 +98,10 @@
 
         <receiver
             android:name=".SampleGeoIntentReceiver"
+            android:exported="false" />
+
+        <receiver
+            android:name=".SamplePushIntentReceiver"
             android:exported="false" />
 
         <meta-data
