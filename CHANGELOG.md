@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## Upcoming release
+
+- Adjusted zoom level when presenting a single map marker
+
 ## 3.7.0-beta.1
 
 - Add manifest flag to disable the auto configuration
