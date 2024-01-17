@@ -3,6 +3,7 @@
 ## Upcoming release
 
 - Adjusted zoom level when presenting a single map marker
+- Fix Google Play Services Location minification issue
 
 ## 3.7.0-beta.1
 
