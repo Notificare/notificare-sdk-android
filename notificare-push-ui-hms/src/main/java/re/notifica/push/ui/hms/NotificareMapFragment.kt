@@ -8,7 +8,6 @@ import com.huawei.hms.maps.OnMapReadyCallback
 import com.huawei.hms.maps.SupportMapFragment
 import com.huawei.hms.maps.model.LatLng
 import com.huawei.hms.maps.model.LatLngBounds
-import com.huawei.hms.maps.model.Marker
 import com.huawei.hms.maps.model.MarkerOptions
 import re.notifica.Notificare
 import re.notifica.internal.common.onMainThread
@@ -22,6 +21,23 @@ public class NotificareMapFragment : SupportMapFragment(), OnMapReadyCallback {
 
     private lateinit var notification: NotificareNotification
     //private lateinit var callback: NotificationFragment.Callback
+
+    private val notificationMarkers: List<NotificationMarker> by lazy {
+        notification.content
+            .filter { it.type == "re.notifica.content.Marker" }
+            .mapNotNull { content ->
+                val data = content.data as? Map<*, *> ?: return@mapNotNull null
+                val latitude = data["latitude"] as? Double ?: return@mapNotNull null
+                val longitude = data["longitude"] as? Double ?: return@mapNotNull null
+
+                return@mapNotNull NotificationMarker(
+                    latitude = latitude,
+                    longitude = longitude,
+                    title = data["title"] as? String,
+                    description = data["description"] as? String,
+                )
+            }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,37 +67,8 @@ public class NotificareMapFragment : SupportMapFragment(), OnMapReadyCallback {
         map.uiSettings.isRotateGesturesEnabled = false
         map.uiSettings.isZoomControlsEnabled = false
 
-        val zoomBounds = LatLngBounds.Builder()
-        val markers = mutableListOf<Marker>()
-
-        notification.content
-            .filter { it.type == "re.notifica.content.Marker" }
-            .forEach {
-                val data = it.data as? Map<*, *>
-                val latitude = data?.get("latitude") as? Double
-                val longitude = data?.get("longitude") as? Double
-
-                if (latitude != null && longitude != null) {
-                    val coordinates = LatLng(latitude, longitude)
-
-                    markers.add(
-                        map.addMarker(
-                            MarkerOptions()
-                                .position(coordinates)
-                                .title(data["title"] as? String)
-                                .snippet(data["description"] as? String)
-                        )
-                    )
-
-                    zoomBounds.include(coordinates)
-                }
-            }
-
-        if (markers.isNotEmpty()) {
-            view?.waitForLayout {
-                map.moveCamera(CameraUpdateFactory.newLatLngBounds(zoomBounds.build(), 50))
-            }
-        }
+        populateMarkers(map)
+        configureMapZoom(map)
 
         onMainThread {
             Notificare.pushUIInternal().lifecycleListeners.forEach {
@@ -91,4 +78,48 @@ public class NotificareMapFragment : SupportMapFragment(), OnMapReadyCallback {
     }
 
     // endregion
+
+    private fun populateMarkers(map: HuaweiMap) {
+        notificationMarkers.forEach { marker ->
+            val coordinates = LatLng(marker.latitude, marker.longitude)
+
+            map.addMarker(
+                MarkerOptions()
+                    .position(coordinates)
+                    .title(marker.title)
+                    .snippet(marker.description)
+            )
+        }
+    }
+
+    private fun configureMapZoom(map: HuaweiMap) {
+        if (notificationMarkers.isEmpty()) return
+
+        if (notificationMarkers.size == 1) {
+            val marker = notificationMarkers.first()
+
+            view?.waitForLayout {
+                map.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(marker.latitude, marker.longitude), 17f))
+            }
+
+            return
+        }
+
+        val zoomBounds = LatLngBounds.Builder().apply {
+            notificationMarkers.forEach {
+                include(LatLng(it.latitude, it.longitude))
+            }
+        }.build()
+
+        view?.waitForLayout {
+            map.moveCamera(CameraUpdateFactory.newLatLngBounds(zoomBounds, 50))
+        }
+    }
+
+    private data class NotificationMarker(
+        val latitude: Double,
+        val longitude: Double,
+        val title: String?,
+        val description: String?,
+    )
 }
