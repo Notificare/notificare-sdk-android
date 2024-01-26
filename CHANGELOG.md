@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## Upcoming release
+## 3.7.1
 
 - Fix map loading conditionals leading to no camera updates
 
