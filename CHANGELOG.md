@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## Upcoming release
+
+- Fix map loading conditionals leading to no camera updates
+
 ## 3.7.0
 
 - Adjusted zoom level when presenting a single map marker
