@@ -19,8 +19,8 @@ subprojects {
         apply(plugin = "kotlin-parcelize")
         apply(plugin = "maven-publish")
 
-        group = rootProject.libs.versions.maven.artifactGroup
-        version = rootProject.libs.versions.maven.artifactVersion
+        group = rootProject.libs.versions.maven.artifactGroup.get()
+        version = rootProject.libs.versions.maven.artifactVersion.get()
 
         val properties = loadProperties("local.properties")
         val awsS3AccessKeyId = System.getenv("AWS_ACCESS_KEY_ID") ?: properties.getProperty("aws.s3.access_key_id")
