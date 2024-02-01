@@ -50,7 +50,7 @@ dependencies {
     implementation(libs.androidx.browser)
     implementation(libs.androidx.constraintLayout)
     implementation(libs.androidx.core)
-    implementation(libs.adroidx.exifInterace)
+    implementation(libs.androidx.exifInterace)
     implementation(libs.androidx.lifecycle.runtime)
     implementation(libs.androidx.viewPager)
 }

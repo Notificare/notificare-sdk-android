@@ -53,7 +53,7 @@ androidx-cardView = { module = "androidx.cardview:cardview", version.ref = "andr
 androidx-constraintLayout = { module = "androidx.constraintlayout:constraintlayout", version.ref = "androidx-contraintLayout" }
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "androidx-datastore" }
 androidx-core = { module = "androidx.core:core-ktx", version.ref = "androidx-core" }
-adroidx-exifInterace = { module = "androidx.exifinterface:exifinterface", version.ref = "androidx-exifInterface" }
+androidx-exifInterace = { module = "androidx.exifinterface:exifinterface", version.ref = "androidx-exifInterface" }
 androidx-fragment = { module = "androidx.fragment:fragment-ktx", version.ref = "androidx-fragment" }
 androidx-lifecycle-livedata = { module = "androidx.lifecycle:lifecycle-livedata-ktx", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-process = { module = "androidx.lifecycle:lifecycle-process", version.ref = "androidx-lifecycle" }
