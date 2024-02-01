@@ -14,7 +14,7 @@ val properties = loadProperties("local.properties")
 android {
     namespace = "re.notifica.sample"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
-    buildToolsVersion = libs.versions.android.buildTools.get().toString()
+    buildToolsVersion = libs.versions.android.buildTools.get()
 
     defaultConfig {
         applicationId = "re.notifica.sample.app"
