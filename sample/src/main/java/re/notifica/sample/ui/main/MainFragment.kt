@@ -453,6 +453,13 @@ class MainFragment : BaseFragment() {
             registerAsUserButton.visibility = View.VISIBLE
             registerAsAnonymousButton.visibility = View.GONE
         }
+
+        viewModel.applicationName.observe(viewLifecycleOwner) { name ->
+            binding.applicationInfoCard.nameStatusLabel.text = name
+        }
+        viewModel.applicationIdentifier.observe(viewLifecycleOwner) { identifier ->
+            binding.applicationInfoCard.identifierStatusLabel.text = identifier
+        }
     }
 
     private fun enableRemoteNotifications() {

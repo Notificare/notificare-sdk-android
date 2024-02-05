@@ -77,6 +77,14 @@
                 android:layout_marginHorizontal="16dp"
                 android:layout_marginTop="16dp" />
 
+            <include
+                android:id="@+id/application_info_card"
+                layout="@layout/fragment_main_application_info_card"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginTop="16dp" />
+
         </LinearLayout>
 
     </ScrollView>
