@@ -298,13 +298,7 @@ class MainViewModel : BaseViewModel(), DefaultLifecycleObserver, Notificare.List
     }
 
     private fun updateApplicationInfo() {
-        val application = Notificare.application
-        if(application != null) {
-            applicationInfo.postValue(ApplicationInfo(application.name, application.id))
-            return
-        }
-
-        applicationInfo.postValue(null)
+        applicationInfo.postValue(appInfo)
     }
 
     private val NotificareDoNotDisturb.Companion.default: NotificareDoNotDisturb
