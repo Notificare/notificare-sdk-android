@@ -454,11 +454,9 @@ class MainFragment : BaseFragment() {
             registerAsAnonymousButton.visibility = View.GONE
         }
 
-        viewModel.applicationName.observe(viewLifecycleOwner) { name ->
-            binding.applicationInfoCard.nameStatusLabel.text = name
-        }
-        viewModel.applicationIdentifier.observe(viewLifecycleOwner) { identifier ->
-            binding.applicationInfoCard.identifierStatusLabel.text = identifier
+        viewModel.applicationInfo.observe(viewLifecycleOwner) { info ->
+            binding.applicationInfoCard.nameStatusLabel.text = info.name
+            binding.applicationInfoCard.identifierStatusLabel.text = info.identifier
         }
     }
 

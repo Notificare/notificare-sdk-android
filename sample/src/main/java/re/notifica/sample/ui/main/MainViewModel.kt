@@ -16,7 +16,8 @@ import re.notifica.sample.ktx.*
 import re.notifica.sample.live_activities.LiveActivitiesController
 import re.notifica.sample.live_activities.models.CoffeeBrewerContentState
 import re.notifica.sample.live_activities.models.CoffeeBrewingState
-import re.notifica.sample.models.BaseViewModel
+import re.notifica.sample.models.ApplicationInfo
+import re.notifica.sample.core.BaseViewModel
 import timber.log.Timber
 
 class MainViewModel : BaseViewModel(), DefaultLifecycleObserver, Notificare.Listener {
@@ -68,11 +69,8 @@ class MainViewModel : BaseViewModel(), DefaultLifecycleObserver, Notificare.List
     private val _deviceRegistrationData = MutableLiveData(deviceData)
     val deviceRegistrationData: LiveData<NotificareDevice?> = _deviceRegistrationData
 
-    private val _applicationName = MutableLiveData(appName)
-    val applicationName: MutableLiveData<String?> = _applicationName
-
-    private val _applicationIdentifier = MutableLiveData(appIdentifier)
-    val applicationIdentifier: MutableLiveData<String?> = _applicationIdentifier
+    private val _applicationInfo = MutableLiveData(appInfo)
+    val applicationInfo: MutableLiveData<ApplicationInfo> = _applicationInfo
 
     private val isNotificareConfigured: Boolean
         get() = Notificare.isConfigured
@@ -123,11 +121,8 @@ class MainViewModel : BaseViewModel(), DefaultLifecycleObserver, Notificare.List
     private val deviceData: NotificareDevice?
         get() = Notificare.device().currentDevice
 
-    private val appName: String?
-        get() = Notificare.application?.name
-
-    private val appIdentifier: String?
-        get() = Notificare.application?.id
+    private val appInfo: ApplicationInfo
+        get() = ApplicationInfo(Notificare.application?.name, Notificare.application?.id)
 
     init {
         Notificare.addListener(this)
@@ -150,6 +145,7 @@ class MainViewModel : BaseViewModel(), DefaultLifecycleObserver, Notificare.List
 
     override fun onReady(application: NotificareApplication) {
         updateNotificareReadyStatus()
+        updateApplicationInfo()
     }
 
     override fun onUnlaunched() {
@@ -292,6 +288,12 @@ class MainViewModel : BaseViewModel(), DefaultLifecycleObserver, Notificare.List
                 showSnackBar("Failed to register device: ${e.message}")
             }
         }
+    }
+
+    private fun updateApplicationInfo() {
+        _applicationInfo.postValue(
+            ApplicationInfo(Notificare.application?.name, Notificare.application?.id)
+        )
     }
 
     private val NotificareDoNotDisturb.Companion.default: NotificareDoNotDisturb
