@@ -10,7 +10,7 @@ import androidx.fragment.app.viewModels
 import re.notifica.sample.R
 import re.notifica.sample.databinding.FragmentEventsBinding
 import re.notifica.sample.databinding.RowEventFieldBinding
-import re.notifica.sample.models.BaseFragment
+import re.notifica.sample.core.BaseFragment
 
 class EventsFragment : BaseFragment() {
     private lateinit var binding: FragmentEventsBinding

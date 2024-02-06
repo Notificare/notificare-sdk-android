@@ -6,7 +6,7 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import re.notifica.Notificare
 import re.notifica.ktx.device
-import re.notifica.sample.models.BaseViewModel
+import re.notifica.sample.core.BaseViewModel
 import timber.log.Timber
 
 class TagsViewModel : BaseViewModel() {

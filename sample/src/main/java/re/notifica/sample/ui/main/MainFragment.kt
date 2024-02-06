@@ -30,7 +30,7 @@ import re.notifica.sample.databinding.FragmentMainBinding
 import re.notifica.sample.ktx.LocationPermission
 import re.notifica.sample.ktx.showBasicAlert
 import re.notifica.sample.live_activities.models.CoffeeBrewingState
-import re.notifica.sample.models.BaseFragment
+import re.notifica.sample.core.BaseFragment
 import timber.log.Timber
 
 class MainFragment : BaseFragment() {

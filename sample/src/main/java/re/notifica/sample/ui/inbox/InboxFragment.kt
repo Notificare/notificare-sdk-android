@@ -14,7 +14,7 @@ import re.notifica.inbox.ktx.inbox
 import re.notifica.inbox.models.NotificareInboxItem
 import re.notifica.sample.R
 import re.notifica.sample.databinding.FragmentInboxBinding
-import re.notifica.sample.models.BaseFragment
+import re.notifica.sample.core.BaseFragment
 
 class InboxFragment : BaseFragment() {
     private lateinit var binding: FragmentInboxBinding

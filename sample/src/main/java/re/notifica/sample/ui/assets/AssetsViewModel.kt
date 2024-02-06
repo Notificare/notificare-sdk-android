@@ -7,7 +7,7 @@ import kotlinx.coroutines.launch
 import re.notifica.Notificare
 import re.notifica.assets.ktx.assets
 import re.notifica.assets.models.NotificareAsset
-import re.notifica.sample.models.BaseViewModel
+import re.notifica.sample.core.BaseViewModel
 import timber.log.Timber
 
 class AssetsViewModel : BaseViewModel() {

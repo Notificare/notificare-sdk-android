@@ -1,4 +1,4 @@
-package re.notifica.sample.models
+package re.notifica.sample.core
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
