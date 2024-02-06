@@ -455,8 +455,12 @@ class MainFragment : BaseFragment() {
         }
 
         viewModel.applicationInfo.observe(viewLifecycleOwner) { info ->
-            binding.applicationInfoCard.nameStatusLabel.text = info.name
-            binding.applicationInfoCard.identifierStatusLabel.text = info.identifier
+            if (info != null){
+                binding.applicationInfoCard.nameStatusLabel.text = info.name
+                binding.applicationInfoCard.identifierStatusLabel.text = info.identifier
+            } else {
+                binding.applicationInfoCard.root.isVisible = false
+            }
         }
     }
 

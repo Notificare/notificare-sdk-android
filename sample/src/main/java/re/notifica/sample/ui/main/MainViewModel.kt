@@ -70,7 +70,7 @@ class MainViewModel : BaseViewModel(), DefaultLifecycleObserver, Notificare.List
     val deviceRegistrationData: LiveData<NotificareDevice?> = _deviceRegistrationData
 
     private val _applicationInfo = MutableLiveData(appInfo)
-    val applicationInfo: MutableLiveData<ApplicationInfo> = _applicationInfo
+    val applicationInfo: MutableLiveData<ApplicationInfo?> = _applicationInfo
 
     private val isNotificareConfigured: Boolean
         get() = Notificare.isConfigured
@@ -121,8 +121,15 @@ class MainViewModel : BaseViewModel(), DefaultLifecycleObserver, Notificare.List
     private val deviceData: NotificareDevice?
         get() = Notificare.device().currentDevice
 
-    private val appInfo: ApplicationInfo
-        get() = ApplicationInfo(Notificare.application?.name, Notificare.application?.id)
+    private val appInfo: ApplicationInfo?
+        get() {
+            val application = Notificare.application
+            if(application != null) {
+                return ApplicationInfo(application.name, application.id)
+            }
+
+            return null
+        }
 
     init {
         Notificare.addListener(this)
@@ -291,9 +298,13 @@ class MainViewModel : BaseViewModel(), DefaultLifecycleObserver, Notificare.List
     }
 
     private fun updateApplicationInfo() {
-        _applicationInfo.postValue(
-            ApplicationInfo(Notificare.application?.name, Notificare.application?.id)
-        )
+        val application = Notificare.application
+        if(application != null) {
+            applicationInfo.postValue(ApplicationInfo(application.name, application.id))
+            return
+        }
+
+        applicationInfo.postValue(null)
     }
 
     private val NotificareDoNotDisturb.Companion.default: NotificareDoNotDisturb
