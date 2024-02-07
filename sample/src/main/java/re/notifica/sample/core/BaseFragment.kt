@@ -1,4 +1,4 @@
-package re.notifica.sample.models
+package re.notifica.sample.core
 
 import android.os.Bundle
 import android.view.View

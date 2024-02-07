@@ -14,7 +14,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import re.notifica.assets.models.NotificareAsset
 import re.notifica.sample.R
 import re.notifica.sample.databinding.FragmentAssetsBinding
-import re.notifica.sample.models.BaseFragment
+import re.notifica.sample.core.BaseFragment
 
 class AssetsFragment : BaseFragment() {
     private lateinit var binding: FragmentAssetsBinding
