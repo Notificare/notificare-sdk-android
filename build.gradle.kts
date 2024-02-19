@@ -8,6 +8,7 @@ plugins {
     alias(libs.plugins.notificare.services) apply false
     alias(libs.plugins.google.services) apply false
     alias(libs.plugins.huawei.agconnect) apply false
+    alias(libs.plugins.google.ksp) apply false
 }
 
 subprojects {
@@ -15,7 +16,7 @@ subprojects {
 
         apply(plugin = "com.android.library")
         apply(plugin = "kotlin-android")
-        apply(plugin = "kotlin-kapt")
+        apply(plugin = "com.google.devtools.ksp")
         apply(plugin = "kotlin-parcelize")
         apply(plugin = "maven-publish")
 

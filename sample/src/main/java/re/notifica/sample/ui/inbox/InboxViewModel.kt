@@ -10,7 +10,7 @@ import re.notifica.Notificare
 import re.notifica.inbox.ktx.inbox
 import re.notifica.inbox.models.NotificareInboxItem
 import re.notifica.push.ui.ktx.pushUI
-import re.notifica.sample.models.BaseViewModel
+import re.notifica.sample.core.BaseViewModel
 import timber.log.Timber
 
 class InboxViewModel : BaseViewModel() {

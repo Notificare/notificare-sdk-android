@@ -52,5 +52,5 @@ dependencies {
 
     // Moshi
     implementation(libs.bundles.moshi)
-    kapt(libs.moshi.codegen)
+    ksp(libs.moshi.codegen)
 }
