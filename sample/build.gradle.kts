@@ -3,7 +3,7 @@ import org.jetbrains.kotlin.konan.properties.loadProperties
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
-    id("kotlin-kapt")
+    alias(libs.plugins.google.ksp)
     alias(libs.plugins.notificare.services)
     alias(libs.plugins.google.services)
     //alias(libs.plugins.huawei.agconnect)
@@ -114,12 +114,12 @@ dependencies {
 
     // Glide
     implementation(libs.glide)
-    kapt(libs.glide.compiler)
+    ksp(libs.glide.compiler)
 
     // Moshi
     implementation(libs.moshi.kotlin)
     implementation(libs.moshi.adapters)
-    kapt(libs.moshi.codegen)
+    ksp(libs.moshi.codegen)
 
     implementation(libs.androidx.navigation.fragment)
     implementation(libs.androidx.navigation.ui)

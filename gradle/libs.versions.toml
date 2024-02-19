@@ -34,6 +34,7 @@ google-playServices-base = "18.2.0"
 google-playServices-location = "21.0.1"
 google-playServices-maps = "18.2.0"
 google-playServices-vision = "20.1.3"
+google-ksp = "1.9.10-1.0.13"
 huawei-agconnect = "1.9.1.301"
 huawei-base = "6.12.0.300"
 huawei-location = "6.12.0.300"
@@ -96,7 +97,8 @@ android-library = { id = "com.android.library", version.ref = "android-tools" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 notificare-services = { id = "re.notifica.gradle.notificare-services", version.ref = "notificare-services" }
 google-services = { id = "com.google.gms.google-services", version.ref = "google-services" }
-huawei-agconnect = { id = "com.huawei.agconnect", version.ref = "huawei-agconnect"}
+google-ksp = { id = "com.google.devtools.ksp", version.ref = "google-ksp" }
+huawei-agconnect = { id = "com.huawei.agconnect", version.ref = "huawei-agconnect" }
 
 [bundles]
 androidx-lifecycle = ["androidx-lifecycle-livedata", "androidx-lifecycle-process"]
