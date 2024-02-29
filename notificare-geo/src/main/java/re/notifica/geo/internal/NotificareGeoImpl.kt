@@ -59,6 +59,7 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
     private const val DEFAULT_MONITORED_REGIONS_LIMIT: Int = 10
     private const val MAX_MONITORED_REGIONS_LIMIT: Int = 100
     private const val MAX_MONITORED_BEACONS_LIMIT: Int = 50
+    private const val SMALLEST_DISPLACEMENT_METERS: Int = 100
 
     private lateinit var localStorage: LocalStorage
     private var geocoder: Geocoder? = null
@@ -749,7 +750,7 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
         val lastKnownLocation = lastKnownLocation ?: return true
 
         // Update the location when the user moves away enough of a distance.
-        if (location.distanceTo(lastKnownLocation) > Notificare.DEFAULT_LOCATION_UPDATES_SMALLEST_DISPLACEMENT) return true
+        if (location.distanceTo(lastKnownLocation) >= SMALLEST_DISPLACEMENT_METERS) return true
 
         // Update the location when we can monitor geofences but no fences were loaded yet.
         // This typically happens when tracking the user's location and later upgrading to background permission.
