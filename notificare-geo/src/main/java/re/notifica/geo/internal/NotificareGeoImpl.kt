@@ -942,6 +942,8 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
             return
         }
 
+        localStorage.enteredRegions = localStorage.enteredRegions + region.id
+
         val payload = RegionTriggerPayload(
             deviceID = device.id,
             region = region.id,
@@ -951,7 +953,6 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
             .post("/trigger/re.notifica.trigger.region.Enter", payload)
             .response(object : NotificareCallback<Response> {
                 override fun onSuccess(result: Response) {
-                    localStorage.enteredRegions = localStorage.enteredRegions + region.id
                     NotificareLogger.debug("Triggered region enter.")
                 }
 
@@ -967,6 +968,8 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
             return
         }
 
+        localStorage.enteredRegions = localStorage.enteredRegions - region.id
+
         val payload = RegionTriggerPayload(
             deviceID = device.id,
             region = region.id,
@@ -976,7 +979,6 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
             .post("/trigger/re.notifica.trigger.region.Exit", payload)
             .response(object : NotificareCallback<Response> {
                 override fun onSuccess(result: Response) {
-                    localStorage.enteredRegions = localStorage.enteredRegions - region.id
                     NotificareLogger.debug("Triggered region exit.")
                 }
 
@@ -992,6 +994,8 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
             return
         }
 
+        localStorage.enteredBeacons = localStorage.enteredBeacons + beacon.id
+
         val payload = BeaconTriggerPayload(
             deviceID = device.id,
             beacon = beacon.id,
@@ -1001,7 +1005,6 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
             .post("/trigger/re.notifica.trigger.beacon.Enter", payload)
             .response(object : NotificareCallback<Response> {
                 override fun onSuccess(result: Response) {
-                    localStorage.enteredBeacons = localStorage.enteredBeacons + beacon.id
                     NotificareLogger.debug("Triggered beacon enter.")
                 }
 
@@ -1017,6 +1020,8 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
             return
         }
 
+        localStorage.enteredBeacons = localStorage.enteredBeacons - beacon.id
+
         val payload = BeaconTriggerPayload(
             deviceID = device.id,
             beacon = beacon.id,
@@ -1026,7 +1031,6 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
             .post("/trigger/re.notifica.trigger.beacon.Exit", payload)
             .response(object : NotificareCallback<Response> {
                 override fun onSuccess(result: Response) {
-                    localStorage.enteredBeacons = localStorage.enteredBeacons - beacon.id
                     NotificareLogger.debug("Triggered beacon exit.")
                 }
 
@@ -1061,15 +1065,15 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
             return
         }
 
+        // Remove the session from local storage.
+        localStorage.removeRegionSession(session)
+
         // Submit the event for processing.
         Notificare.events().logRegionSession(session, object : NotificareCallback<Unit> {
             override fun onSuccess(result: Unit) {}
 
             override fun onFailure(e: Exception) {}
         })
-
-        // Remove the session from local storage.
-        localStorage.removeRegionSession(session)
     }
 
     private fun startBeaconSession(beacon: NotificareBeacon) {
@@ -1104,15 +1108,15 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
             return
         }
 
+        // Remove the session from local storage.
+        localStorage.removeBeaconSession(session)
+
         // Submit the event for processing.
         Notificare.events().logBeaconSession(session, object : NotificareCallback<Unit> {
             override fun onSuccess(result: Unit) {}
 
             override fun onFailure(e: Exception) {}
         })
-
-        // Remove the session from local storage.
-        localStorage.removeBeaconSession(session)
     }
 
     private fun clearRegions() {
