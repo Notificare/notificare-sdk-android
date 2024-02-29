@@ -1,7 +1,10 @@
 package re.notifica.geo.internal
 
 import android.location.Location
+import re.notifica.geo.models.NotificareBeacon
+import re.notifica.geo.models.NotificareBeaconSession
 import re.notifica.geo.models.NotificareRegion
+import java.util.Calendar
 import kotlin.math.abs
 import kotlin.math.acos
 import kotlin.math.cos
@@ -64,4 +67,20 @@ private fun NotificareRegion.AdvancedGeometry.contains(location: Location): Bool
     }
 
     return isInside
+}
+
+internal fun NotificareBeaconSession.canInsertBeacon(beacon: NotificareBeacon): Boolean {
+    val lastEntry = beacons.lastOrNull { it.major == beacon.major && it.minor == beacon.minor }
+        ?: return true
+
+    if (lastEntry.proximity != beacon.proximity.ordinal) {
+        return true
+    }
+
+    val fifteenMinutesAgo = Calendar.getInstance().apply { add(Calendar.MINUTE, -15) }.time
+    if (lastEntry.timestamp < fifteenMinutesAgo) {
+        return true
+    }
+
+    return false
 }
