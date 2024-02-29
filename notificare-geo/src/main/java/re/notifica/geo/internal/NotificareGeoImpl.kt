@@ -60,6 +60,7 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
     private const val MAX_MONITORED_REGIONS_LIMIT: Int = 100
     private const val MAX_MONITORED_BEACONS_LIMIT: Int = 50
     private const val SMALLEST_DISPLACEMENT_METERS: Int = 100
+    private const val MAX_REGION_SESSION_LOCATIONS: Int = 100
 
     private lateinit var localStorage: LocalStorage
     private var geocoder: Geocoder? = null
@@ -360,11 +361,6 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
         }
 
         //
-        // Handle ongoing region sessions.
-        //
-        updateRegionSessions(NotificareLocation(location))
-
-        //
         // Handle polygon enters & exits.
         //
         localStorage.monitoredRegions
@@ -415,6 +411,9 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
         if (shouldUpdateLocation(location)) {
             // Keep a reference to the last known location.
             lastKnownLocation = location
+
+            // Add this location to the region session.
+            updateRegionSessions(NotificareLocation(location))
 
             Notificare.coroutineScope.launch {
                 try {
@@ -1060,13 +1059,19 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
     private fun stopRegionSession(region: NotificareRegion) {
         NotificareLogger.debug("Stopping session for region '${region.name}'.")
 
-        val session = localStorage.regionSessions[region.id] ?: run {
+        var session = localStorage.regionSessions[region.id] ?: run {
             NotificareLogger.warning("Skipping region session end since no session exists for region '${region.name}'.")
             return
         }
 
         // Remove the session from local storage.
         localStorage.removeRegionSession(session)
+
+        if (session.locations.size > MAX_REGION_SESSION_LOCATIONS) {
+            session = session.copy(
+                locations = session.locations.takeEvenlySpaced(MAX_REGION_SESSION_LOCATIONS).toMutableList(),
+            )
+        }
 
         // Submit the event for processing.
         Notificare.events().logRegionSession(session, object : NotificareCallback<Unit> {
