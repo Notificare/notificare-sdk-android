@@ -5,6 +5,7 @@ import android.location.Location
 import androidx.core.content.edit
 import com.squareup.moshi.Types
 import re.notifica.Notificare
+import re.notifica.geo.internal.canInsertBeacon
 import re.notifica.geo.models.*
 import re.notifica.internal.NotificareLogger
 import re.notifica.internal.moshi
@@ -265,10 +266,8 @@ internal class LocalStorage(context: Context) {
                 }
 
                 entry.value.forEach { beacon ->
-                    if (session.beacons.any { it.major == beacon.major && it.minor == beacon.minor && it.proximity == beacon.proximity.ordinal }) {
-                        // Skip adding the beacon multiple times in the same session.
-                        return@forEach
-                    }
+                    // Skip adding the beacon multiple times in the same session.
+                    if (!session.canInsertBeacon(beacon)) return@forEach
 
                     session.beacons.add(
                         NotificareBeaconSession.Beacon(
