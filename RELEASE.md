@@ -1,6 +1,6 @@
 # Release process
 
-1. Update the `maven_artifact_version` in `variables.gradle`.
+1. Update the `maven-artifactVersion` in `gradle/libs.versions.toml`.
 2. Update the `NOTIFICARE_VERSION` in `notificare/src/main/java/re/notifica/internal/Version.kt`.
 3. Update the `CHANGELOG.md`.
 4. Push the changes to the repo.
