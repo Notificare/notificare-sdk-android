@@ -25,6 +25,7 @@
     <string name="main_fragment_button_launch">Launch</string>
     <string name="main_fragment_button_unlaunch">Unlaunch</string>
 
+    <string name="main_fragment_application_info_title">Application Info</string>
     <string name="main_fragment_assets_title">Assets</string>
     <string name="main_fragment_authentication_title">Athentication</string>
     <string name="main_fragment_beacons_title">Beacons</string>
@@ -65,6 +66,8 @@
     <string name="main_fragment_evaluate_context">Evaluate Context</string>
     <string name="main_fragment_user_id">User ID</string>
     <string name="main_fragment_user_name">User Name</string>
+    <string name="main_fragment_name">Name</string>
+    <string name="main_fragment_identifier">Identifier</string>
 
     <string name="tags_Add">Add</string>
     <string name="tags_clear">Clear</string>

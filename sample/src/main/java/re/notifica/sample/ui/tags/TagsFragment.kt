@@ -11,7 +11,7 @@ import androidx.lifecycle.Lifecycle
 import com.google.android.material.chip.Chip
 import re.notifica.sample.R
 import re.notifica.sample.databinding.FragmentTagsBinding
-import re.notifica.sample.models.BaseFragment
+import re.notifica.sample.core.BaseFragment
 
 class TagsFragment : BaseFragment() {
     private lateinit var binding: FragmentTagsBinding

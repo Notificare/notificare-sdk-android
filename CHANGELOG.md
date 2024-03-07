@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## 3.8.0
+
+- Prevent processing location updates too close to the last known location
+- Fix race condition where geo triggers and region sessions were sent multiple times
+- Limit the amount of location points and ranged beacons in geo sessions
+
 ## 3.7.1
 
 - Fix map loading conditionals leading to no camera updates
