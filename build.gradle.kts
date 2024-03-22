@@ -9,6 +9,8 @@ plugins {
     alias(libs.plugins.google.services) apply false
     alias(libs.plugins.huawei.agconnect) apply false
     alias(libs.plugins.google.ksp) apply false
+    alias(libs.plugins.ktlint)
+    alias(libs.plugins.detekt)
 }
 
 subprojects {
@@ -19,6 +21,26 @@ subprojects {
         apply(plugin = "com.google.devtools.ksp")
         apply(plugin = "kotlin-parcelize")
         apply(plugin = "maven-publish")
+        apply(plugin = "org.jlleitschuh.gradle.ktlint")
+        apply(plugin = "io.gitlab.arturbosch.detekt")
+
+        ktlint {
+            debug.set(true)
+            verbose.set(true)
+            android.set(true)
+            baseline.set(file("ktlint-baseline.xml"))
+        }
+
+        val ktlintTaskProvider = tasks.named("ktlintCheck")
+        tasks.getByName("preBuild").finalizedBy(ktlintTaskProvider)
+
+        detekt {
+            config.setFrom(rootProject.files("config/detekt/detekt.yml"))
+            baseline = file("detekt-baseline.xml")
+        }
+
+        val detektTaskProvider = tasks.named("detekt")
+        tasks.getByName("preBuild").finalizedBy(detektTaskProvider)
 
         group = rootProject.libs.versions.maven.artifactGroup.get()
         version = rootProject.libs.versions.maven.artifactVersion.get()
@@ -28,7 +50,14 @@ subprojects {
         val awsS3SecretAccessKey = System.getenv("AWS_SECRET_ACCESS_KEY") ?: properties.getProperty("aws.s3.secret_access_key")
 
         val artifactChannel =
-            if (Regex("/^([0-9]+)\\.([0-9]+)\\.([0-9]+)\$/").matches(version.toString())) "releases" else "prereleases"
+            if (Regex(
+                    "/^([0-9]+)\\.([0-9]+)\\.([0-9]+)\$/"
+                ).matches(version.toString())
+            ) {
+                "releases"
+            } else {
+                "prereleases"
+            }
 
         afterEvaluate {
             configure<PublishingExtension> {

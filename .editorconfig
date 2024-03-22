@@ -1,0 +1,10 @@
+root = true
+
+[*.{kt,kts}]
+ktlint_code_style = android_studio
+ktlint_standard_max-line-length = disabled
+ktlint_standard_trailing-comma-on-declaration-site = disabled
+ktlint_standard_trailing-comma-on-call-site = disabled
+ktlint_standard_colon-spacing = disabled
+##ktlint_standard_import-ordering = disabled
+ktlint_standard_filename = disabled

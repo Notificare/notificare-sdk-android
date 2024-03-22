@@ -43,6 +43,8 @@ huawei-maps = "6.11.2.301"
 huawei-scan = "2.12.0.301"
 timber = "5.0.1"
 notificare-services = "1.0.1"
+ktlint = "12.1.0"
+detekt = "1.23.3"
 
 [libraries]
 kotlinx-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinx-coroutines" }
@@ -99,6 +101,8 @@ notificare-services = { id = "re.notifica.gradle.notificare-services", version.r
 google-services = { id = "com.google.gms.google-services", version.ref = "google-services" }
 google-ksp = { id = "com.google.devtools.ksp", version.ref = "google-ksp" }
 huawei-agconnect = { id = "com.huawei.agconnect", version.ref = "huawei-agconnect" }
+ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint" }
+detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 
 [bundles]
 androidx-lifecycle = ["androidx-lifecycle-livedata", "androidx-lifecycle-process"]
