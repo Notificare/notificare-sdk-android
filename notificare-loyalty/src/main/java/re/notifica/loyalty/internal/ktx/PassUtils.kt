@@ -1,11 +1,11 @@
 package re.notifica.loyalty.internal.ktx
 
-import re.notifica.loyalty.models.NotificarePass
 import java.text.DateFormat
 import java.text.NumberFormat
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
+import re.notifica.loyalty.models.NotificarePass
 
 internal val NotificarePass.PassbookField.isDateField: Boolean
     get() = dateStyle != null && timeStyle != null
@@ -15,7 +15,6 @@ internal val NotificarePass.PassbookField.isCurrencyField: Boolean
 
 internal val NotificarePass.PassbookField.isNumberField: Boolean
     get() = numberStyle != null && currencyCode.isNullOrBlank() && isNumeric(value)
-
 
 internal fun NotificarePass.PassbookField.formatDate(): String? {
     val value = value ?: return null
@@ -41,7 +40,10 @@ internal fun NotificarePass.PassbookField.formatDate(): String? {
     }
 
     val outputFormat: DateFormat = when {
-        dateStyle != null && timeStyle != null -> DateFormat.getDateTimeInstance(dateStyle, timeStyle)
+        dateStyle != null && timeStyle != null -> DateFormat.getDateTimeInstance(
+            dateStyle,
+            timeStyle
+        )
         dateStyle != null -> DateFormat.getDateInstance(dateStyle)
         timeStyle != null -> DateFormat.getTimeInstance(timeStyle)
         else -> return null
@@ -76,9 +78,11 @@ internal fun NotificarePass.PassbookField.formatNumber(): String? {
         .format(value)
 }
 
-
 @Throws(ParseException::class)
-internal fun NotificarePass.Companion.parseDate(dateStr: String, @Suppress("UNUSED_PARAMETER") ignoreTimeZone: Boolean = false): Date? {
+internal fun NotificarePass.Companion.parseDate(
+    dateStr: String,
+    @Suppress("UNUSED_PARAMETER") ignoreTimeZone: Boolean = false
+): Date? {
     @Suppress("NAME_SHADOWING")
     var dateStr = dateStr
 
@@ -99,7 +103,9 @@ internal fun NotificarePass.Companion.parseDate(dateStr: String, @Suppress("UNUS
     return getDateFormat(dateStr)?.parse(dateStr)
 }
 
-internal fun NotificarePass.getUpdatedFields(oldPass: NotificarePass): List<NotificarePass.PassbookField> {
+internal fun NotificarePass.getUpdatedFields(
+    oldPass: NotificarePass
+): List<NotificarePass.PassbookField> {
     val auxiliaryFields = auxiliaryFields
         .filter { newField ->
             val oldField = oldPass.auxiliaryFields.firstOrNull { it.key == newField.key }
@@ -148,7 +154,6 @@ internal fun NotificarePass.getUpdatedFields(oldPass: NotificarePass): List<Noti
     return auxiliaryFields + headerFields + backFields + primaryFields + secondaryFields
 }
 
-
 private fun isNumeric(text: String?): Boolean {
     return text?.matches("\\d+(\\.\\d+)?".toRegex()) ?: false
 }
@@ -160,12 +165,16 @@ private fun getDateFormat(dateStr: String): DateFormat? {
             dateStr.matches("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}[+\\-]\\d{2}:\\d{2}$".toRegex()) ||
             dateStr.matches("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}[+\\-]\\d{4}$".toRegex()) -> "yyyy-MM-dd'T'HH:mmZ"
 
-        dateStr.matches("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}$".toRegex()) -> "yyyy-MM-dd'T'HH:mm:ss"
+        dateStr.matches(
+            "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}$".toRegex()
+        ) -> "yyyy-MM-dd'T'HH:mm:ss"
         dateStr.matches("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$".toRegex()) ||
             dateStr.matches("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}[+\\-]\\d{2}:\\d{2}$".toRegex()) ||
             dateStr.matches("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}[+\\-]\\d{4}$".toRegex()) -> "yyyy-MM-dd'T'HH:mm:ssZ"
 
-        dateStr.matches("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}.\\d{3}$".toRegex()) -> "yyyy-MM-dd'T'HH:mm:ss.SSS"
+        dateStr.matches(
+            "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}.\\d{3}$".toRegex()
+        ) -> "yyyy-MM-dd'T'HH:mm:ss.SSS"
         dateStr.matches("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}.\\d{3}Z$".toRegex()) ||
             dateStr.matches("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}.\\d{3}[+\\-]\\d{2}:\\d{2}$".toRegex()) ||
             dateStr.matches("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}.\\d{3}[+\\-]\\d{4}$".toRegex()) -> "yyyy-MM-dd'T'HH:mm:ss.SSSZ"

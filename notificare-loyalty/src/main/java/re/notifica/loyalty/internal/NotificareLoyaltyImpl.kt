@@ -16,11 +16,25 @@ import androidx.core.os.bundleOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
-import androidx.work.*
+import androidx.work.Constraints
+import androidx.work.ExistingWorkPolicy
+import androidx.work.NetworkType
+import androidx.work.OneTimeWorkRequest
+import androidx.work.WorkManager
+import java.text.DateFormat
+import java.util.Calendar
+import java.util.Date
+import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicInteger
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import re.notifica.*
+import re.notifica.Notificare
+import re.notifica.NotificareApplicationUnavailableException
+import re.notifica.NotificareCallback
+import re.notifica.NotificareDeviceUnavailableException
+import re.notifica.NotificareNotReadyException
+import re.notifica.NotificareServiceUnavailableException
 import re.notifica.internal.NotificareLogger
 import re.notifica.internal.NotificareModule
 import re.notifica.internal.NotificareUtils
@@ -31,25 +45,42 @@ import re.notifica.internal.modules.integrations.NotificareLoyaltyIntegration
 import re.notifica.internal.network.NetworkException
 import re.notifica.internal.network.request.NotificareRequest
 import re.notifica.ktx.device
-import re.notifica.loyalty.*
+import re.notifica.loyalty.NotificareLoyalty
+import re.notifica.loyalty.NotificareLoyaltyIntentReceiver
+import re.notifica.loyalty.PassbookActivity
 import re.notifica.loyalty.R
 import re.notifica.loyalty.internal.ktx.getUpdatedFields
-import re.notifica.loyalty.internal.network.push.*
+import re.notifica.loyalty.internal.network.push.FetchPassResponse
+import re.notifica.loyalty.internal.network.push.FetchPassbookTemplateResponse
+import re.notifica.loyalty.internal.network.push.FetchSaveLinksResponse
+import re.notifica.loyalty.internal.network.push.FetchUpdatedSerialsResponse
+import re.notifica.loyalty.internal.network.push.RegisterPassPayload
 import re.notifica.loyalty.internal.storage.LocalStorage
 import re.notifica.loyalty.internal.storage.database.LoyaltyDatabase
 import re.notifica.loyalty.internal.storage.database.entities.PassEntity
 import re.notifica.loyalty.internal.workers.PassRelevanceUpdateWorker
-import re.notifica.loyalty.ktx.*
+import re.notifica.loyalty.ktx.INTENT_ACTION_PASSBOOK_OPENED
+import re.notifica.loyalty.ktx.INTENT_ACTION_RELEVANCE_NOTIFICATION_DELETED
+import re.notifica.loyalty.ktx.INTENT_EXTRA_PASSBOOK
+import re.notifica.loyalty.ktx.geoIntegration
+import re.notifica.loyalty.ktx.loyalty
 import re.notifica.loyalty.models.NotificarePass
+import re.notifica.loyalty.passNotificationAccentColor
+import re.notifica.loyalty.passNotificationChannel
+import re.notifica.loyalty.passNotificationOngoing
+import re.notifica.loyalty.passNotificationSmallIcon
+import re.notifica.loyalty.passRelevanceHours
+import re.notifica.loyalty.passRelevanceLargeRadius
+import re.notifica.loyalty.passRelevanceSmallRadius
+import re.notifica.loyalty.passRelevanceText
 import re.notifica.models.NotificareApplication
 import re.notifica.models.NotificareNotification
-import java.text.DateFormat
-import java.util.*
-import java.util.concurrent.TimeUnit
-import java.util.concurrent.atomic.AtomicInteger
 
 @Keep
-internal object NotificareLoyaltyImpl : NotificareModule(), NotificareLoyalty, NotificareLoyaltyIntegration,
+internal object NotificareLoyaltyImpl :
+    NotificareModule(),
+    NotificareLoyalty,
+    NotificareLoyaltyIntegration,
     Notificare.Listener {
 
     private lateinit var database: LoyaltyDatabase
@@ -125,7 +156,9 @@ internal object NotificareLoyaltyImpl : NotificareModule(), NotificareLoyalty, N
 
     override val observablePasses: LiveData<List<NotificarePass>> = _observablePasses
 
-    override suspend fun fetchPassBySerial(serial: String): NotificarePass = withContext(Dispatchers.IO) {
+    override suspend fun fetchPassBySerial(serial: String): NotificarePass = withContext(
+        Dispatchers.IO
+    ) {
         checkPrerequisites()
 
         val pass = NotificareRequest.Builder()
@@ -136,10 +169,14 @@ internal object NotificareLoyaltyImpl : NotificareModule(), NotificareLoyalty, N
         enhancePass(pass)
     }
 
-    override fun fetchPassBySerial(serial: String, callback: NotificareCallback<NotificarePass>): Unit =
-        toCallbackFunction(::fetchPassBySerial)(serial, callback)
+    override fun fetchPassBySerial(
+        serial: String,
+        callback: NotificareCallback<NotificarePass>
+    ): Unit = toCallbackFunction(::fetchPassBySerial)(serial, callback)
 
-    override suspend fun fetchPassByBarcode(barcode: String): NotificarePass = withContext(Dispatchers.IO) {
+    override suspend fun fetchPassByBarcode(barcode: String): NotificarePass = withContext(
+        Dispatchers.IO
+    ) {
         checkPrerequisites()
 
         val pass = NotificareRequest.Builder()
@@ -150,8 +187,10 @@ internal object NotificareLoyaltyImpl : NotificareModule(), NotificareLoyalty, N
         enhancePass(pass)
     }
 
-    override fun fetchPassByBarcode(barcode: String, callback: NotificareCallback<NotificarePass>): Unit =
-        toCallbackFunction(::fetchPassByBarcode)(barcode, callback)
+    override fun fetchPassByBarcode(
+        barcode: String,
+        callback: NotificareCallback<NotificarePass>
+    ): Unit = toCallbackFunction(::fetchPassByBarcode)(barcode, callback)
 
     override fun isInWallet(pass: NotificarePass): Boolean {
         return passesBySerial[pass.serial] != null
@@ -237,22 +276,26 @@ internal object NotificareLoyaltyImpl : NotificareModule(), NotificareLoyalty, N
         val serial = extractPassSerial(notification) ?: run {
             NotificareLogger.warning("Unable to extract the pass' serial from the notification.")
 
-            val error = IllegalArgumentException("Unable to extract the pass' serial from the notification.")
+            val error =
+                IllegalArgumentException("Unable to extract the pass' serial from the notification.")
             callback.onFailure(error)
 
             return
         }
 
-        fetchPassBySerial(serial, object : NotificareCallback<NotificarePass> {
-            override fun onSuccess(result: NotificarePass) {
-                present(activity, result, callback)
-            }
+        fetchPassBySerial(
+            serial,
+            object : NotificareCallback<NotificarePass> {
+                override fun onSuccess(result: NotificarePass) {
+                    present(activity, result, callback)
+                }
 
-            override fun onFailure(e: Exception) {
-                NotificareLogger.error("Failed to fetch the pass with serial '$serial'.", e)
-                callback.onFailure(e)
+                override fun onFailure(e: Exception) {
+                    NotificareLogger.error("Failed to fetch the pass with serial '$serial'.", e)
+                    callback.onFailure(e)
+                }
             }
-        })
+        )
     }
 
     // endregion
@@ -294,7 +337,9 @@ internal object NotificareLoyaltyImpl : NotificareModule(), NotificareLoyalty, N
 
         if (application.services[NotificareApplication.ServiceKeys.PASSBOOK] != true) {
             NotificareLogger.warning("Notificare passes functionality is not enabled.")
-            throw NotificareServiceUnavailableException(service = NotificareApplication.ServiceKeys.PASSBOOK)
+            throw NotificareServiceUnavailableException(
+                service = NotificareApplication.ServiceKeys.PASSBOOK
+            )
         }
     }
 
@@ -313,38 +358,39 @@ internal object NotificareLoyaltyImpl : NotificareModule(), NotificareLoyalty, N
         return parts.last()
     }
 
-    private suspend fun enhancePass(
-        pass: FetchPassResponse.Pass,
-    ): NotificarePass = withContext(Dispatchers.IO) {
-        val passType = when (pass.version) {
-            1 -> pass.passbook?.let { fetchPassType(it) }
-            else -> null
+    private suspend fun enhancePass(pass: FetchPassResponse.Pass,): NotificarePass =
+        withContext(Dispatchers.IO) {
+            val passType = when (pass.version) {
+                1 -> pass.passbook?.let { fetchPassType(it) }
+                else -> null
+            }
+
+            val googlePaySaveLink = when (pass.version) {
+                2 -> fetchGooglePaySaveLink(pass.serial)
+                else -> null
+            }
+
+            NotificarePass(
+                id = pass._id,
+                type = passType,
+                version = pass.version,
+                passbook = pass.passbook,
+                template = pass.template,
+                serial = pass.serial,
+                barcode = pass.barcode,
+                redeem = pass.redeem,
+                redeemHistory = pass.redeemHistory,
+                limit = pass.limit,
+                token = pass.token,
+                data = pass.data ?: emptyMap(),
+                date = pass.date,
+                googlePaySaveLink = googlePaySaveLink,
+            )
         }
 
-        val googlePaySaveLink = when (pass.version) {
-            2 -> fetchGooglePaySaveLink(pass.serial)
-            else -> null
-        }
-
-        NotificarePass(
-            id = pass._id,
-            type = passType,
-            version = pass.version,
-            passbook = pass.passbook,
-            template = pass.template,
-            serial = pass.serial,
-            barcode = pass.barcode,
-            redeem = pass.redeem,
-            redeemHistory = pass.redeemHistory,
-            limit = pass.limit,
-            token = pass.token,
-            data = pass.data ?: emptyMap(),
-            date = pass.date,
-            googlePaySaveLink = googlePaySaveLink,
-        )
-    }
-
-    private suspend fun fetchPassType(passbook: String): NotificarePass.PassType = withContext(Dispatchers.IO) {
+    private suspend fun fetchPassType(passbook: String): NotificarePass.PassType = withContext(
+        Dispatchers.IO
+    ) {
         NotificareRequest.Builder()
             .get("/passbook/$passbook")
             .responseDecodable(FetchPassbookTemplateResponse::class)
@@ -352,7 +398,9 @@ internal object NotificareLoyaltyImpl : NotificareModule(), NotificareLoyalty, N
             .passStyle
     }
 
-    private suspend fun fetchGooglePaySaveLink(serial: String): String? = withContext(Dispatchers.IO) {
+    private suspend fun fetchGooglePaySaveLink(serial: String): String? = withContext(
+        Dispatchers.IO
+    ) {
         NotificareRequest.Builder()
             .get("/pass/savelinks/$serial")
             .responseDecodable(FetchSaveLinksResponse::class)
@@ -456,7 +504,11 @@ internal object NotificareLoyaltyImpl : NotificareModule(), NotificareLoyalty, N
         }
     }
 
-    private fun present(activity: Activity, pass: NotificarePass, callback: NotificareCallback<Unit>?) {
+    private fun present(
+        activity: Activity,
+        pass: NotificarePass,
+        callback: NotificareCallback<Unit>?
+    ) {
         when (pass.version) {
             1 -> {
                 activity.startActivity(
@@ -470,7 +522,8 @@ internal object NotificareLoyaltyImpl : NotificareModule(), NotificareLoyalty, N
                 val url = pass.googlePaySaveLink ?: run {
                     NotificareLogger.warning("Cannot present the pass without a Google Pay link.")
 
-                    val error = IllegalArgumentException("Cannot present the pass without a Google Pay link.")
+                    val error =
+                        IllegalArgumentException("Cannot present the pass without a Google Pay link.")
                     callback?.onFailure(error)
 
                     return
@@ -596,12 +649,16 @@ internal object NotificareLoyaltyImpl : NotificareModule(), NotificareLoyalty, N
 
     private fun checkPassRelevanceBeacon(pass: NotificarePass): NotificarePass.PassbookBeacon? {
         if (Notificare.application?.regionConfig?.proximityUUID == null) {
-            NotificareLogger.debug("Cannot check location relevance for pass ${pass.serial} because the application has no region config.")
+            NotificareLogger.debug(
+                "Cannot check location relevance for pass ${pass.serial} because the application has no region config."
+            )
             return null
         }
 
         if (pass.isExpired) {
-            NotificareLogger.debug("Skipping location relevance for pass ${pass.serial} because the pass has expired.")
+            NotificareLogger.debug(
+                "Skipping location relevance for pass ${pass.serial} because the pass has expired."
+            )
             return null
         }
 
@@ -638,7 +695,9 @@ internal object NotificareLoyaltyImpl : NotificareModule(), NotificareLoyalty, N
 
     private fun checkPassRelevanceLocation(pass: NotificarePass): NotificarePass.PassbookLocation? {
         if (pass.isExpired) {
-            NotificareLogger.debug("Skipping location relevance for pass ${pass.serial} because the pass has expired.")
+            NotificareLogger.debug(
+                "Skipping location relevance for pass ${pass.serial} because the pass has expired."
+            )
             return null
         }
 
@@ -649,7 +708,9 @@ internal object NotificareLoyaltyImpl : NotificareModule(), NotificareLoyalty, N
 
         var maxDistance: Double = when (pass.type) {
             NotificarePass.PassType.BOARDING,
-            NotificarePass.PassType.TICKET -> checkNotNull(Notificare.options).passRelevanceLargeRadius
+            NotificarePass.PassType.TICKET -> checkNotNull(
+                Notificare.options
+            ).passRelevanceLargeRadius
             else -> checkNotNull(Notificare.options).passRelevanceSmallRadius
         }
 
@@ -675,17 +736,26 @@ internal object NotificareLoyaltyImpl : NotificareModule(), NotificareLoyalty, N
             DateFormat.getTimeInstance(DateFormat.SHORT).format(it)
         } ?: ""
 
-        return Notificare.requireContext().getString(R.string.notificare_passbook_absolute_date_relevance_text, dateStr)
+        return Notificare.requireContext().getString(
+            R.string.notificare_passbook_absolute_date_relevance_text,
+            dateStr
+        )
     }
 
     private fun getBeaconRelevanceText(beacon: NotificarePass.PassbookBeacon): String {
-        return if (!beacon.relevantText.isNullOrBlank()) beacon.relevantText
-        else checkNotNull(Notificare.options).passRelevanceText
+        return if (!beacon.relevantText.isNullOrBlank()) {
+            beacon.relevantText
+        } else {
+            checkNotNull(Notificare.options).passRelevanceText
+        }
     }
 
     private fun getLocationRelevanceText(location: NotificarePass.PassbookLocation): String {
-        return if (!location.relevantText.isNullOrBlank()) location.relevantText
-        else checkNotNull(Notificare.options).passRelevanceText
+        return if (!location.relevantText.isNullOrBlank()) {
+            location.relevantText
+        } else {
+            checkNotNull(Notificare.options).passRelevanceText
+        }
     }
 
     private fun schedulePassRelevanceUpdate(pass: NotificarePass) {
@@ -746,7 +816,11 @@ internal object NotificareLoyaltyImpl : NotificareModule(), NotificareLoyalty, N
             .build()
 
         WorkManager.getInstance(Notificare.requireContext())
-            .enqueueUniqueWork("re.notifica.loyalty.tasks.PassRelevanceUpdate", ExistingWorkPolicy.REPLACE, task)
+            .enqueueUniqueWork(
+                "re.notifica.loyalty.tasks.PassRelevanceUpdate",
+                ExistingWorkPolicy.REPLACE,
+                task
+            )
     }
 
     internal fun handleScheduledPassRelevanceUpdate() {
@@ -782,7 +856,10 @@ internal object NotificareLoyaltyImpl : NotificareModule(), NotificareLoyalty, N
         )
 
         // Create an intent for notification delete
-        val deleteIntent = Intent(Notificare.requireContext(), NotificareLoyaltyIntentReceiver::class.java)
+        val deleteIntent = Intent(
+            Notificare.requireContext(),
+            NotificareLoyaltyIntentReceiver::class.java
+        )
             .setAction(Notificare.INTENT_ACTION_RELEVANCE_NOTIFICATION_DELETED)
             .putExtras(notificationIntent.extras ?: bundleOf())
 
@@ -796,7 +873,10 @@ internal object NotificareLoyaltyImpl : NotificareModule(), NotificareLoyalty, N
         val options = checkNotNull(Notificare.options)
         val notificationManager = NotificationManagerCompat.from(Notificare.requireContext())
 
-        val builder = NotificationCompat.Builder(Notificare.requireContext(), options.passNotificationChannel).apply {
+        val builder = NotificationCompat.Builder(
+            Notificare.requireContext(),
+            options.passNotificationChannel
+        ).apply {
             setSmallIcon(options.passNotificationSmallIcon)
             setContentTitle(NotificareUtils.applicationName)
             setContentText(relevanceText)
@@ -878,7 +958,10 @@ internal object NotificareLoyaltyImpl : NotificareModule(), NotificareLoyalty, N
         val options = checkNotNull(Notificare.options)
         val notificationManager = NotificationManagerCompat.from(Notificare.requireContext())
 
-        val builder = NotificationCompat.Builder(Notificare.requireContext(), options.passNotificationChannel).apply {
+        val builder = NotificationCompat.Builder(
+            Notificare.requireContext(),
+            options.passNotificationChannel
+        ).apply {
             setAutoCancel(true)
             setSmallIcon(options.passNotificationSmallIcon)
             setContentTitle(pass.description)
@@ -919,7 +1002,10 @@ internal object NotificareLoyaltyImpl : NotificareModule(), NotificareLoyalty, N
         return "Relevance:${pass.serial}"
     }
 
-    private fun getPassUpdateMessages(oldPass: NotificarePass, newPass: NotificarePass): List<String> {
+    private fun getPassUpdateMessages(
+        oldPass: NotificarePass,
+        newPass: NotificarePass
+    ): List<String> {
         return newPass.getUpdatedFields(oldPass)
             .mapNotNull { it.parsedChangeMessage }
     }

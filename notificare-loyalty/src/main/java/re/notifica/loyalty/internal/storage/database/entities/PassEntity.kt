@@ -6,7 +6,6 @@ import androidx.room.PrimaryKey
 import re.notifica.Notificare
 import re.notifica.internal.moshi
 import re.notifica.loyalty.models.NotificarePass
-import java.util.*
 
 @Entity(
     tableName = "passes"
