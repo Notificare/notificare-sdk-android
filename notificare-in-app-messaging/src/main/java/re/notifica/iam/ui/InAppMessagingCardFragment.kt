@@ -22,7 +22,11 @@ public open class InAppMessagingCardFragment : InAppMessagingBaseFragment() {
     override val enterAnimation: Int = R.anim.notificare_iam_card_enter_animation
     override val exitAnimation: Int = R.anim.notificare_iam_card_exit_animation
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         binding = NotificareInAppMessageCardFragmentBinding.inflate(inflater, container, false)
         return binding.root
     }

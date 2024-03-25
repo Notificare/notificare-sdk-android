@@ -5,7 +5,13 @@ import android.app.Application
 import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.annotation.Keep
-import kotlinx.coroutines.*
+import java.lang.ref.WeakReference
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import re.notifica.Notificare
 import re.notifica.NotificareDeviceUnavailableException
 import re.notifica.iam.NotificareInAppMessaging
@@ -21,7 +27,6 @@ import re.notifica.internal.ktx.coroutineScope
 import re.notifica.internal.network.NetworkException
 import re.notifica.internal.network.request.NotificareRequest
 import re.notifica.ktx.device
-import java.lang.ref.WeakReference
 
 @Keep
 internal object NotificareInAppMessagingImpl : NotificareModule(), NotificareInAppMessaging {
@@ -36,7 +41,8 @@ internal object NotificareInAppMessagingImpl : NotificareModule(), NotificareInA
     private var isShowingMessage = false
     private var backgroundTimestamp: Long? = null
 
-    internal val lifecycleListeners = mutableListOf<NotificareInAppMessaging.MessageLifecycleListener>()
+    internal val lifecycleListeners =
+        mutableListOf<NotificareInAppMessaging.MessageLifecycleListener>()
 
     // region Notificare Module
 
@@ -65,7 +71,9 @@ internal object NotificareInAppMessagingImpl : NotificareModule(), NotificareInA
         lifecycleListeners.add(listener)
     }
 
-    override fun removeLifecycleListener(listener: NotificareInAppMessaging.MessageLifecycleListener) {
+    override fun removeLifecycleListener(
+        listener: NotificareInAppMessaging.MessageLifecycleListener
+    ) {
         lifecycleListeners.remove(listener)
     }
 
@@ -105,7 +113,9 @@ internal object NotificareInAppMessagingImpl : NotificareModule(), NotificareInA
                 backgroundTimestamp = System.currentTimeMillis()
 
                 if (delayedMessageJob != null) {
-                    NotificareLogger.info("Clearing delayed in-app message from being presented when going to the background.")
+                    NotificareLogger.info(
+                        "Clearing delayed in-app message from being presented when going to the background."
+                    )
                     delayedMessageJob?.cancel()
                     delayedMessageJob = null
                 }
@@ -137,22 +147,30 @@ internal object NotificareInAppMessagingImpl : NotificareModule(), NotificareInA
         this.backgroundTimestamp = null
 
         if (hasExpiredBackgroundPeriod) {
-            NotificareLogger.debug("The current in-app message should have been dismissed for being in the background for longer than the grace period.")
+            NotificareLogger.debug(
+                "The current in-app message should have been dismissed for being in the background for longer than the grace period."
+            )
             isShowingMessage = false
         }
 
         if (!Notificare.isReady) {
-            NotificareLogger.debug("Postponing in-app message evaluation until Notificare is launched.")
+            NotificareLogger.debug(
+                "Postponing in-app message evaluation until Notificare is launched."
+            )
             return
         }
 
         if (isShowingMessage) {
-            NotificareLogger.debug("Skipping context evaluation since there is another in-app message being presented.")
+            NotificareLogger.debug(
+                "Skipping context evaluation since there is another in-app message being presented."
+            )
             return
         }
 
         if (hasMessagesSuppressed) {
-            NotificareLogger.debug("Skipping context evaluation since in-app messages are being suppressed.")
+            NotificareLogger.debug(
+                "Skipping context evaluation since in-app messages are being suppressed."
+            )
             return
         }
 
@@ -160,9 +178,14 @@ internal object NotificareInAppMessagingImpl : NotificareModule(), NotificareInA
 
         val info = packageManager.activityInfo(activity.componentName, PackageManager.GET_META_DATA)
         if (info.metaData != null) {
-            val suppressed = info.metaData.getBoolean(MANIFEST_SUPPRESS_MESSAGES_ACTIVITY_KEY, false)
+            val suppressed = info.metaData.getBoolean(
+                MANIFEST_SUPPRESS_MESSAGES_ACTIVITY_KEY,
+                false
+            )
             if (suppressed) {
-                NotificareLogger.debug("Skipping context evaluation since in-app messages on ${activity::class.java.simpleName} are being suppressed.")
+                NotificareLogger.debug(
+                    "Skipping context evaluation since in-app messages on ${activity::class.java.simpleName} are being suppressed."
+                )
                 return
             }
         }
@@ -179,7 +202,9 @@ internal object NotificareInAppMessagingImpl : NotificareModule(), NotificareInA
                 processInAppMessage(message)
             } catch (e: Exception) {
                 if (e is NetworkException.ValidationException && e.response.code == 404) {
-                    NotificareLogger.debug("There is no in-app message for '${context.rawValue}' context to process.")
+                    NotificareLogger.debug(
+                        "There is no in-app message for '${context.rawValue}' context to process."
+                    )
 
                     if (context == ApplicationContext.LAUNCH) {
                         evaluateContext(ApplicationContext.FOREGROUND)
@@ -188,7 +213,10 @@ internal object NotificareInAppMessagingImpl : NotificareModule(), NotificareInA
                     return@launch
                 }
 
-                NotificareLogger.error("Failed to process in-app message for context '${context.rawValue}'.", e)
+                NotificareLogger.error(
+                    "Failed to process in-app message for context '${context.rawValue}'.",
+                    e
+                )
             }
         }
     }
@@ -231,7 +259,9 @@ internal object NotificareInAppMessagingImpl : NotificareModule(), NotificareInA
 
     private fun present(message: NotificareInAppMessage) {
         if (isShowingMessage) {
-            NotificareLogger.warning("Cannot display an in-app message while another is being presented.")
+            NotificareLogger.warning(
+                "Cannot display an in-app message while another is being presented."
+            )
 
             onMainThread {
                 lifecycleListeners.forEach { it.onMessageFailedToPresent(message) }
@@ -241,7 +271,9 @@ internal object NotificareInAppMessagingImpl : NotificareModule(), NotificareInA
         }
 
         if (hasMessagesSuppressed) {
-            NotificareLogger.debug("Cannot display an in-app message while messages are being suppressed.")
+            NotificareLogger.debug(
+                "Cannot display an in-app message while messages are being suppressed."
+            )
 
             onMainThread {
                 lifecycleListeners.forEach { it.onMessageFailedToPresent(message) }
@@ -278,20 +310,18 @@ internal object NotificareInAppMessagingImpl : NotificareModule(), NotificareInA
         }
     }
 
-    private suspend fun fetchInAppMessage(
-        context: ApplicationContext
-    ): NotificareInAppMessage = withContext(Dispatchers.IO) {
-        val device = Notificare.device().currentDevice
-            ?: throw NotificareDeviceUnavailableException()
+    private suspend fun fetchInAppMessage(context: ApplicationContext): NotificareInAppMessage =
+        withContext(Dispatchers.IO) {
+            val device = Notificare.device().currentDevice
+                ?: throw NotificareDeviceUnavailableException()
 
-        NotificareRequest.Builder()
-            .get("/inappmessage/forcontext/${context.rawValue}")
-            .query("deviceID", device.id)
-            .responseDecodable(InAppMessageResponse::class)
-            .message
-            .toModel()
-    }
-
+            NotificareRequest.Builder()
+                .get("/inappmessage/forcontext/${context.rawValue}")
+                .query("deviceID", device.id)
+                .responseDecodable(InAppMessageResponse::class)
+                .message
+                .toModel()
+        }
 
     // TODO: checkPrerequisites()
 }

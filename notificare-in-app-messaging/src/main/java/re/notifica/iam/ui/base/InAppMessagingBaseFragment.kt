@@ -33,7 +33,7 @@ public abstract class InAppMessagingBaseFragment : Fragment() {
 
         message = savedInstanceState?.parcelable(Notificare.INTENT_EXTRA_IN_APP_MESSAGE)
             ?: arguments?.parcelable(Notificare.INTENT_EXTRA_IN_APP_MESSAGE)
-                ?: throw IllegalStateException("Cannot create the UI without the associated in-app message.")
+            ?: throw IllegalStateException("Cannot create the UI without the associated in-app message.")
     }
 
     @CallSuper
@@ -124,7 +124,9 @@ public abstract class InAppMessagingBaseFragment : Fragment() {
 
             try {
                 startActivity(intent)
-                NotificareLogger.info("In-app message action '${actionType.rawValue}' successfully processed.")
+                NotificareLogger.info(
+                    "In-app message action '${actionType.rawValue}' successfully processed."
+                )
 
                 onMainThread {
                     Notificare.inAppMessagingImplementation().lifecycleListeners.forEach {
@@ -132,7 +134,10 @@ public abstract class InAppMessagingBaseFragment : Fragment() {
                     }
                 }
             } catch (e: Exception) {
-                NotificareLogger.warning("Could not find an activity capable of opening the URL.", e)
+                NotificareLogger.warning(
+                    "Could not find an activity capable of opening the URL.",
+                    e
+                )
 
                 onMainThread {
                     Notificare.inAppMessagingImplementation().lifecycleListeners.forEach {
@@ -147,6 +152,6 @@ public abstract class InAppMessagingBaseFragment : Fragment() {
 
     protected enum class Transition {
         ENTER,
-        EXIT;
+        EXIT
     }
 }

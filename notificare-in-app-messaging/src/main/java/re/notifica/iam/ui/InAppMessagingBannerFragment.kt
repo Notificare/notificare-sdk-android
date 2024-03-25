@@ -21,7 +21,11 @@ public open class InAppMessagingBannerFragment : InAppMessagingBaseFragment() {
     override val enterAnimation: Int = R.anim.notificare_iam_banner_enter_animation
     override val exitAnimation: Int = R.anim.notificare_iam_banner_exit_animation
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         binding = NotificareInAppMessageBannerFragmentBinding.inflate(inflater, container, false)
         return binding.root
     }
