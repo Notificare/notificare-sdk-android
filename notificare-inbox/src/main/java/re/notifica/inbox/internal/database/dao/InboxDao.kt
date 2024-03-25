@@ -1,13 +1,19 @@
 package re.notifica.inbox.internal.database.dao
 
 import androidx.lifecycle.LiveData
-import androidx.room.*
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
+import androidx.room.Update
 import re.notifica.inbox.internal.database.entities.InboxItemEntity
 
 @Dao
 internal interface InboxDao {
 
-    @Query("SELECT * FROM inbox WHERE (visible IS NULL OR visible == 1) AND (expires IS NULL OR expires > strftime('%s', 'now') || substr(strftime('%f', 'now'), 4))")
+    @Query(
+        "SELECT * FROM inbox WHERE (visible IS NULL OR visible == 1) AND (expires IS NULL OR expires > strftime('%s', 'now') || substr(strftime('%f', 'now'), 4))"
+    )
     fun getLiveItems(): LiveData<List<InboxItemEntity>>
 
     @Query("SELECT * FROM inbox WHERE id = :id LIMIT 1")

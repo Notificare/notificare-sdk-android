@@ -2,9 +2,9 @@ package re.notifica.inbox.internal.network.push
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
+import java.util.Date
 import re.notifica.internal.moshi.UseDefaultsWhenNull
 import re.notifica.models.NotificareNotification
-import java.util.*
 
 @JsonClass(generateAdapter = true)
 internal data class InboxResponse(

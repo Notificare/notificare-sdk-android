@@ -7,11 +7,24 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
-import androidx.work.*
+import androidx.work.Constraints
+import androidx.work.ExistingWorkPolicy
+import androidx.work.NetworkType
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
+import androidx.work.workDataOf
+import java.util.Date
+import java.util.SortedSet
+import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import re.notifica.*
+import re.notifica.Notificare
+import re.notifica.NotificareApplicationUnavailableException
+import re.notifica.NotificareCallback
+import re.notifica.NotificareDeviceUnavailableException
+import re.notifica.NotificareNotReadyException
+import re.notifica.NotificareServiceUnavailableException
 import re.notifica.inbox.NotificareInbox
 import re.notifica.inbox.internal.database.InboxDatabase
 import re.notifica.inbox.internal.database.entities.InboxItemEntity
@@ -28,8 +41,6 @@ import re.notifica.ktx.device
 import re.notifica.ktx.events
 import re.notifica.models.NotificareApplication
 import re.notifica.models.NotificareNotification
-import java.util.*
-import java.util.concurrent.TimeUnit
 
 @Keep
 internal object NotificareInboxImpl : NotificareModule(), NotificareInbox {
@@ -149,12 +160,17 @@ internal object NotificareInboxImpl : NotificareModule(), NotificareInbox {
         }
     }
 
-    override suspend fun open(item: NotificareInboxItem): NotificareNotification = withContext(Dispatchers.IO) {
+    override suspend fun open(item: NotificareInboxItem): NotificareNotification = withContext(
+        Dispatchers.IO
+    ) {
         checkPrerequisites()
 
         val notification =
-            if (item.notification.partial) Notificare.fetchNotification(item.id)
-            else item.notification
+            if (item.notification.partial) {
+                Notificare.fetchNotification(item.id)
+            } else {
+                item.notification
+            }
 
         if (item.notification.partial) {
             val entity = cachedEntities.find { it.id == item.id }
@@ -178,8 +194,10 @@ internal object NotificareInboxImpl : NotificareModule(), NotificareInbox {
         return@withContext notification
     }
 
-    override fun open(item: NotificareInboxItem, callback: NotificareCallback<NotificareNotification>): Unit =
-        toCallbackFunction(NotificareInboxImpl::open)(item, callback)
+    override fun open(
+        item: NotificareInboxItem,
+        callback: NotificareCallback<NotificareNotification>
+    ): Unit = toCallbackFunction(NotificareInboxImpl::open)(item, callback)
 
     override suspend fun markAsRead(item: NotificareInboxItem): Unit = withContext(Dispatchers.IO) {
         checkPrerequisites()
@@ -273,16 +291,22 @@ internal object NotificareInboxImpl : NotificareModule(), NotificareInbox {
 
         if (application.services[NotificareApplication.ServiceKeys.INBOX] != true) {
             NotificareLogger.warning("Notificare inbox functionality is not enabled.")
-            throw NotificareServiceUnavailableException(service = NotificareApplication.ServiceKeys.INBOX)
+            throw NotificareServiceUnavailableException(
+                service = NotificareApplication.ServiceKeys.INBOX
+            )
         }
 
         if (application.inboxConfig?.useInbox != true) {
             NotificareLogger.warning("Notificare inbox functionality is not enabled.")
-            throw NotificareServiceUnavailableException(service = NotificareApplication.ServiceKeys.INBOX)
+            throw NotificareServiceUnavailableException(
+                service = NotificareApplication.ServiceKeys.INBOX
+            )
         }
     }
 
-    internal suspend fun addItem(item: NotificareInboxItem, visible: Boolean): Unit = withContext(Dispatchers.IO) {
+    internal suspend fun addItem(item: NotificareInboxItem, visible: Boolean): Unit = withContext(
+        Dispatchers.IO
+    ) {
         val entity = InboxItemEntity.from(item, visible)
         addItem(entity)
     }
@@ -326,7 +350,9 @@ internal object NotificareInboxImpl : NotificareModule(), NotificareInbox {
         }
 
         try {
-            NotificareLogger.debug("Checking if the inbox has been modified since ${mostRecentItem.time}.")
+            NotificareLogger.debug(
+                "Checking if the inbox has been modified since ${mostRecentItem.time}."
+            )
             NotificareRequest.Builder()
                 .get("/notification/inbox/fordevice/${device.id}")
                 .query("ifModifiedSince", mostRecentItem.time.time.toString())
@@ -336,7 +362,9 @@ internal object NotificareInboxImpl : NotificareModule(), NotificareInbox {
             reloadInbox()
         } catch (e: Exception) {
             if (e is NetworkException.ValidationException && e.response.code == 304) {
-                NotificareLogger.debug("The inbox has not been modified. Proceeding with locally stored data.")
+                NotificareLogger.debug(
+                    "The inbox has not been modified. Proceeding with locally stored data."
+                )
             } else {
                 // Rethrow the exception to be handled by the caller.
                 throw e
@@ -393,7 +421,9 @@ internal object NotificareInboxImpl : NotificareModule(), NotificareInbox {
             ?: return
 
         val initialDelayMilliseconds = checkNotNull(earliestExpirationItem.expires).time - now.time
-        NotificareLogger.debug("Scheduling the next expiration in '$initialDelayMilliseconds' milliseconds.")
+        NotificareLogger.debug(
+            "Scheduling the next expiration in '$initialDelayMilliseconds' milliseconds."
+        )
 
         val task = OneTimeWorkRequestBuilder<ExpireItemWorker>()
             .setInitialDelay(initialDelayMilliseconds, TimeUnit.MILLISECONDS)

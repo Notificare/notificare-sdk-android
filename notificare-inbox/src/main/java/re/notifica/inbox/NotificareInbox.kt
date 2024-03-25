@@ -1,10 +1,10 @@
 package re.notifica.inbox
 
 import androidx.lifecycle.LiveData
+import java.util.SortedSet
 import re.notifica.NotificareCallback
 import re.notifica.inbox.models.NotificareInboxItem
 import re.notifica.models.NotificareNotification
-import java.util.*
 
 public interface NotificareInbox {
 
@@ -13,7 +13,6 @@ public interface NotificareInbox {
 
     public val observableItems: LiveData<SortedSet<NotificareInboxItem>>
     public val observableBadge: LiveData<Int>
-
 
     public fun refresh()
 

@@ -1,12 +1,12 @@
 package re.notifica.inbox
 
 import androidx.lifecycle.LiveData
+import java.util.SortedSet
 import re.notifica.Notificare
 import re.notifica.NotificareCallback
 import re.notifica.inbox.ktx.inbox
 import re.notifica.inbox.models.NotificareInboxItem
 import re.notifica.models.NotificareNotification
-import java.util.*
 
 public object NotificareInboxCompat {
 
