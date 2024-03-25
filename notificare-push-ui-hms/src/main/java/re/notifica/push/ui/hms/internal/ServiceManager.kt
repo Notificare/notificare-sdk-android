@@ -25,7 +25,9 @@ public class ServiceManager : ServiceManager() {
             NotificareNotification.TYPE_MAP -> NotificareMapFragment::class.java
             NotificareNotification.TYPE_RATE -> NotificareRateFragment::class.java
             NotificareNotification.TYPE_STORE -> NotificareStoreFragment::class.java
-            else -> throw IllegalArgumentException("Unhandled notification type '${notification.type}'.")
+            else -> throw IllegalArgumentException(
+                "Unhandled notification type '${notification.type}'."
+            )
         }
     }
 }

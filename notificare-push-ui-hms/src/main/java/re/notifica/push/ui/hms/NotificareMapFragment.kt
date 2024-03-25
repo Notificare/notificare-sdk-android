@@ -20,7 +20,7 @@ import re.notifica.push.ui.hms.ktx.pushUIInternal
 public class NotificareMapFragment : SupportMapFragment(), OnMapReadyCallback {
 
     private lateinit var notification: NotificareNotification
-    //private lateinit var callback: NotificationFragment.Callback
+    // private lateinit var callback: NotificationFragment.Callback
 
     private val notificationMarkers: List<NotificationMarker> by lazy {
         notification.content
@@ -51,7 +51,7 @@ public class NotificareMapFragment : SupportMapFragment(), OnMapReadyCallback {
 
         notification = savedInstanceState?.parcelable(Notificare.INTENT_EXTRA_NOTIFICATION)
             ?: arguments?.parcelable(Notificare.INTENT_EXTRA_NOTIFICATION)
-                ?: throw IllegalArgumentException("Missing required notification parameter.")
+            ?: throw IllegalArgumentException("Missing required notification parameter.")
 
         getMapAsync(this)
     }
@@ -99,7 +99,12 @@ public class NotificareMapFragment : SupportMapFragment(), OnMapReadyCallback {
             val marker = notificationMarkers.first()
 
             view?.waitForLayout {
-                map.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(marker.latitude, marker.longitude), 17f))
+                map.moveCamera(
+                    CameraUpdateFactory.newLatLngZoom(
+                        LatLng(marker.latitude, marker.longitude),
+                        17f
+                    )
+                )
             }
 
             return

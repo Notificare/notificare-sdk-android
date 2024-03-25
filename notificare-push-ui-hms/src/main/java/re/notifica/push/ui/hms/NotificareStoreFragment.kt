@@ -18,7 +18,11 @@ import re.notifica.push.ui.notifications.fragments.base.NotificationFragment
 @Keep
 public class NotificareStoreFragment : NotificationFragment() {
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
         return FrameLayout(requireContext())
     }
 
@@ -73,7 +77,9 @@ public class NotificareStoreFragment : NotificationFragment() {
                     }
                 }
             } catch (e: ActivityNotFoundException) {
-                callback.onNotificationFragmentActionFailed(resources.getString(R.string.notificare_app_gallery_intent_failed))
+                callback.onNotificationFragmentActionFailed(
+                    resources.getString(R.string.notificare_app_gallery_intent_failed)
+                )
                 callback.onNotificationFragmentFinished()
 
                 onMainThread {
@@ -83,7 +89,9 @@ public class NotificareStoreFragment : NotificationFragment() {
                 }
             }
         } else {
-            callback.onNotificationFragmentActionFailed(resources.getString(R.string.notificare_app_gallery_intent_failed))
+            callback.onNotificationFragmentActionFailed(
+                resources.getString(R.string.notificare_app_gallery_intent_failed)
+            )
             callback.onNotificationFragmentFinished()
 
             onMainThread {
