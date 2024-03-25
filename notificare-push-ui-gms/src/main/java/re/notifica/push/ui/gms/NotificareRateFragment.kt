@@ -16,7 +16,11 @@ import re.notifica.push.ui.notifications.fragments.base.NotificationFragment
 @Keep
 public class NotificareRateFragment : NotificationFragment() {
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         return super.onCreateView(inflater, container, savedInstanceState).also {
             try {
                 val uri = Uri.parse("market://details?id=${inflater.context.packageName}")
@@ -26,10 +30,16 @@ public class NotificareRateFragment : NotificationFragment() {
                 callback.onNotificationFragmentFinished()
 
                 onMainThread {
-                    Notificare.pushUIInternal().lifecycleListeners.forEach { it.onNotificationPresented(notification) }
+                    Notificare.pushUIInternal().lifecycleListeners.forEach {
+                        it.onNotificationPresented(
+                            notification
+                        )
+                    }
                 }
             } catch (e: ActivityNotFoundException) {
-                val uri = Uri.parse("https://play.google.com/store/apps/details?id=${inflater.context.packageName}")
+                val uri = Uri.parse(
+                    "https://play.google.com/store/apps/details?id=${inflater.context.packageName}"
+                )
                 val rateIntent = Intent(Intent.ACTION_VIEW, uri)
 
                 callback.onNotificationFragmentStartActivity(rateIntent)
