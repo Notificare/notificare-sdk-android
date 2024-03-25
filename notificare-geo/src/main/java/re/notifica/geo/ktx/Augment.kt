@@ -14,7 +14,6 @@ public fun Notificare.geo(): NotificareGeo {
     return NotificareGeoImpl
 }
 
-
 internal fun Notificare.eventsInternal(): NotificareInternalEventsModule {
     return events() as NotificareInternalEventsModule
 }

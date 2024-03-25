@@ -37,7 +37,7 @@ public data class NotificareBeacon(
         NEAR,
 
         @Json(name = "far")
-        FAR;
+        FAR
     }
 }
 

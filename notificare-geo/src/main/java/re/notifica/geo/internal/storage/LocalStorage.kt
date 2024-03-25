@@ -4,11 +4,15 @@ import android.content.Context
 import android.location.Location
 import androidx.core.content.edit
 import com.squareup.moshi.Types
+import java.util.Date
 import re.notifica.Notificare
-import re.notifica.geo.models.*
+import re.notifica.geo.models.NotificareBeacon
+import re.notifica.geo.models.NotificareBeaconSession
+import re.notifica.geo.models.NotificareLocation
+import re.notifica.geo.models.NotificareRegion
+import re.notifica.geo.models.NotificareRegionSession
 import re.notifica.internal.NotificareLogger
 import re.notifica.internal.moshi
-import java.util.*
 
 private const val PREFERENCES_FILE_NAME = "re.notifica.geo.preferences"
 private const val PREFERENCE_LOCATION_SERVICES_ENABLED = "re.notifica.geo.preferences.location_services_enabled"
@@ -28,7 +32,9 @@ internal class LocalStorage(context: Context) {
 
     var locationServicesEnabled: Boolean
         get() = sharedPreferences.getBoolean(PREFERENCE_LOCATION_SERVICES_ENABLED, false)
-        set(value) = sharedPreferences.edit { putBoolean(PREFERENCE_LOCATION_SERVICES_ENABLED, value) }
+        set(
+        value
+        ) = sharedPreferences.edit { putBoolean(PREFERENCE_LOCATION_SERVICES_ENABLED, value) }
 
     var bluetoothEnabled: Boolean
         get() = sharedPreferences.getBoolean(PREFERENCE_BLUETOOTH_ENABLED, false)
@@ -40,7 +46,10 @@ internal class LocalStorage(context: Context) {
                 ?: return emptyMap()
 
             try {
-                val type = Types.newParameterizedType(List::class.java, NotificareRegion::class.java)
+                val type = Types.newParameterizedType(
+                    List::class.java,
+                    NotificareRegion::class.java
+                )
                 val adapter = Notificare.moshi.adapter<List<NotificareRegion>>(type)
                 val regions = adapter.fromJson(jsonStr) ?: return emptyMap()
 
@@ -58,7 +67,10 @@ internal class LocalStorage(context: Context) {
             try {
                 val regions = value.values.toList()
 
-                val type = Types.newParameterizedType(List::class.java, NotificareRegion::class.java)
+                val type = Types.newParameterizedType(
+                    List::class.java,
+                    NotificareRegion::class.java
+                )
                 val adapter = Notificare.moshi.adapter<List<NotificareRegion>>(type)
 
                 sharedPreferences.edit {
@@ -75,7 +87,10 @@ internal class LocalStorage(context: Context) {
                 ?: return emptyList()
 
             try {
-                val type = Types.newParameterizedType(List::class.java, NotificareBeacon::class.java)
+                val type = Types.newParameterizedType(
+                    List::class.java,
+                    NotificareBeacon::class.java
+                )
                 val adapter = Notificare.moshi.adapter<List<NotificareBeacon>>(type)
 
                 return adapter.fromJson(jsonStr) ?: emptyList()
@@ -90,7 +105,10 @@ internal class LocalStorage(context: Context) {
         }
         set(value) {
             try {
-                val type = Types.newParameterizedType(List::class.java, NotificareBeacon::class.java)
+                val type = Types.newParameterizedType(
+                    List::class.java,
+                    NotificareBeacon::class.java
+                )
                 val adapter = Notificare.moshi.adapter<List<NotificareBeacon>>(type)
 
                 sharedPreferences.edit {
@@ -131,7 +149,10 @@ internal class LocalStorage(context: Context) {
                 ?: return emptyMap()
 
             try {
-                val type = Types.newParameterizedType(List::class.java, NotificareRegionSession::class.java)
+                val type = Types.newParameterizedType(
+                    List::class.java,
+                    NotificareRegionSession::class.java
+                )
                 val adapter = Notificare.moshi.adapter<List<NotificareRegionSession>>(type)
 
                 val sessions = adapter.fromJson(jsonStr) ?: emptyList()
@@ -150,7 +171,10 @@ internal class LocalStorage(context: Context) {
             try {
                 val sessions = value.values.toList()
 
-                val type = Types.newParameterizedType(List::class.java, NotificareRegionSession::class.java)
+                val type = Types.newParameterizedType(
+                    List::class.java,
+                    NotificareRegionSession::class.java
+                )
                 val adapter = Notificare.moshi.adapter<List<NotificareRegionSession>>(type)
 
                 sharedPreferences.edit {
@@ -160,7 +184,6 @@ internal class LocalStorage(context: Context) {
                 NotificareLogger.warning("Failed to encode the region sessions.", e)
             }
         }
-
 
     fun addRegionSession(session: NotificareRegionSession) {
         regionSessions = regionSessions.toMutableMap().apply {
@@ -194,7 +217,10 @@ internal class LocalStorage(context: Context) {
                 ?: return emptyMap()
 
             try {
-                val type = Types.newParameterizedType(List::class.java, NotificareBeaconSession::class.java)
+                val type = Types.newParameterizedType(
+                    List::class.java,
+                    NotificareBeaconSession::class.java
+                )
                 val adapter = Notificare.moshi.adapter<List<NotificareBeaconSession>>(type)
 
                 val sessions = adapter.fromJson(jsonStr) ?: emptyList()
@@ -213,7 +239,10 @@ internal class LocalStorage(context: Context) {
             try {
                 val sessions = value.values.toList()
 
-                val type = Types.newParameterizedType(List::class.java, NotificareBeaconSession::class.java)
+                val type = Types.newParameterizedType(
+                    List::class.java,
+                    NotificareBeaconSession::class.java
+                )
                 val adapter = Notificare.moshi.adapter<List<NotificareBeaconSession>>(type)
 
                 sharedPreferences.edit {
@@ -224,7 +253,6 @@ internal class LocalStorage(context: Context) {
             }
         }
 
-
     fun addBeaconSession(session: NotificareBeaconSession) {
         beaconSessions = beaconSessions.toMutableMap().apply {
             put(session.regionId, session)
@@ -233,7 +261,9 @@ internal class LocalStorage(context: Context) {
 
     fun updateBeaconSession(beacons: List<NotificareBeacon>, location: Location?) {
         if (beacons.isEmpty()) {
-            NotificareLogger.debug("Cannot update beacon session without at least one ranged beacon.")
+            NotificareLogger.debug(
+                "Cannot update beacon session without at least one ranged beacon."
+            )
             return
         }
 
@@ -260,12 +290,17 @@ internal class LocalStorage(context: Context) {
             .map { entry ->
                 val region = entry.key
                 val session = beaconSessions[region.id] ?: run {
-                    NotificareLogger.warning("Cannot update the beacon session for region with major '${entry.key}' since there's no ongoing session.")
+                    NotificareLogger.warning(
+                        "Cannot update the beacon session for region with major '${entry.key}' since there's no ongoing session."
+                    )
                     return@map null
                 }
 
                 entry.value.forEach { beacon ->
-                    if (session.beacons.any { it.major == beacon.major && it.minor == beacon.minor && it.proximity == beacon.proximity.ordinal }) {
+                    if (session.beacons.any {
+                            it.major == beacon.major && it.minor == beacon.minor && it.proximity == beacon.proximity.ordinal
+                        }
+                    ) {
                         // Skip adding the beacon multiple times in the same session.
                         return@forEach
                     }

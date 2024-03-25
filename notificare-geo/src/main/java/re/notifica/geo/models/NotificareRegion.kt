@@ -77,7 +77,9 @@ public fun NotificareRegion.toJson(): JSONObject {
 public val NotificareRegion.Geometry.Companion.adapter: JsonAdapter<NotificareRegion.Geometry>
     get() = Notificare.moshi.adapter(NotificareRegion.Geometry::class.java)
 
-public fun NotificareRegion.Geometry.Companion.fromJson(json: JSONObject): NotificareRegion.Geometry {
+public fun NotificareRegion.Geometry.Companion.fromJson(
+    json: JSONObject
+): NotificareRegion.Geometry {
     val jsonStr = json.toString()
     return requireNotNull(adapter.fromJson(jsonStr))
 }
@@ -94,7 +96,9 @@ public fun NotificareRegion.Geometry.toJson(): JSONObject {
 public val NotificareRegion.AdvancedGeometry.Companion.adapter: JsonAdapter<NotificareRegion.AdvancedGeometry>
     get() = Notificare.moshi.adapter(NotificareRegion.AdvancedGeometry::class.java)
 
-public fun NotificareRegion.AdvancedGeometry.Companion.fromJson(json: JSONObject): NotificareRegion.AdvancedGeometry {
+public fun NotificareRegion.AdvancedGeometry.Companion.fromJson(
+    json: JSONObject
+): NotificareRegion.AdvancedGeometry {
     val jsonStr = json.toString()
     return requireNotNull(adapter.fromJson(jsonStr))
 }
@@ -111,7 +115,9 @@ public fun NotificareRegion.AdvancedGeometry.toJson(): JSONObject {
 public val NotificareRegion.Coordinate.Companion.adapter: JsonAdapter<NotificareRegion.Coordinate>
     get() = Notificare.moshi.adapter(NotificareRegion.Coordinate::class.java)
 
-public fun NotificareRegion.Coordinate.Companion.fromJson(json: JSONObject): NotificareRegion.Coordinate {
+public fun NotificareRegion.Coordinate.Companion.fromJson(
+    json: JSONObject
+): NotificareRegion.Coordinate {
     val jsonStr = json.toString()
     return requireNotNull(adapter.fromJson(jsonStr))
 }

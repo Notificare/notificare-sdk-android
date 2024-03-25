@@ -1,6 +1,6 @@
 android {
     namespace = "re.notifica.geo"
-    compileSdk =  libs.versions.android.compileSdk.get().toInt()
+    compileSdk = libs.versions.android.compileSdk.get().toInt()
     buildToolsVersion = libs.versions.android.buildTools.get()
 
     defaultConfig {
@@ -11,7 +11,10 @@ android {
     buildTypes {
         getByName("release") {
             isMinifyEnabled = false
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
         }
     }
 
@@ -23,8 +26,8 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
         freeCompilerArgs = listOf(
-                "-Xexplicit-api=strict",
-                "-opt-in=re.notifica.InternalNotificareApi",
+            "-Xexplicit-api=strict",
+            "-opt-in=re.notifica.InternalNotificareApi",
         )
     }
 
