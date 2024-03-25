@@ -8,7 +8,14 @@ import android.os.Build
 import androidx.annotation.Keep
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
-import com.google.android.gms.location.*
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.Geofence
+import com.google.android.gms.location.GeofencingClient
+import com.google.android.gms.location.GeofencingRequest
+import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationResult
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.Priority
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.tasks.asDeferred
 import kotlinx.coroutines.tasks.await
@@ -16,7 +23,12 @@ import re.notifica.InternalNotificareApi
 import re.notifica.Notificare
 import re.notifica.geo.gms.LocationReceiver
 import re.notifica.geo.internal.ServiceManager
-import re.notifica.geo.ktx.*
+import re.notifica.geo.ktx.DEFAULT_GEOFENCE_RESPONSIVENESS
+import re.notifica.geo.ktx.DEFAULT_LOCATION_UPDATES_FASTEST_INTERVAL
+import re.notifica.geo.ktx.DEFAULT_LOCATION_UPDATES_INTERVAL
+import re.notifica.geo.ktx.DEFAULT_LOCATION_UPDATES_SMALLEST_DISPLACEMENT
+import re.notifica.geo.ktx.INTENT_ACTION_GEOFENCE_TRANSITION
+import re.notifica.geo.ktx.INTENT_ACTION_INTERNAL_LOCATION_UPDATED
 import re.notifica.geo.models.NotificareRegion
 import re.notifica.internal.NotificareLogger
 
@@ -34,7 +46,6 @@ public class ServiceManager : ServiceManager() {
     override val available: Boolean
         get() = GoogleApiAvailability.getInstance()
             .isGooglePlayServicesAvailable(Notificare.requireContext()) == ConnectionResult.SUCCESS
-
 
     init {
         val context = Notificare.requireContext()
@@ -89,7 +100,6 @@ public class ServiceManager : ServiceManager() {
         // endregion
     }
 
-
     @SuppressLint("MissingPermission")
     override fun enableLocationUpdates() {
         fusedLocationClient.lastLocation.addOnSuccessListener { location ->
@@ -120,7 +130,9 @@ public class ServiceManager : ServiceManager() {
             val request = LocationRequest.Builder(Notificare.DEFAULT_LOCATION_UPDATES_INTERVAL)
                 .setMinUpdateIntervalMillis(Notificare.DEFAULT_LOCATION_UPDATES_FASTEST_INTERVAL)
                 .setPriority(Priority.PRIORITY_BALANCED_POWER_ACCURACY)
-                .setMinUpdateDistanceMeters(Notificare.DEFAULT_LOCATION_UPDATES_SMALLEST_DISPLACEMENT.toFloat())
+                .setMinUpdateDistanceMeters(
+                    Notificare.DEFAULT_LOCATION_UPDATES_SMALLEST_DISPLACEMENT.toFloat()
+                )
                 .build()
 
             fusedLocationClient.requestLocationUpdates(request, locationPendingIntent)
@@ -161,7 +173,9 @@ public class ServiceManager : ServiceManager() {
                     region.geometry.coordinate.longitude,
                     region.distance.toFloat()
                 )
-                .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER or Geofence.GEOFENCE_TRANSITION_EXIT)
+                .setTransitionTypes(
+                    Geofence.GEOFENCE_TRANSITION_ENTER or Geofence.GEOFENCE_TRANSITION_EXIT
+                )
                 .setExpirationDuration(Geofence.NEVER_EXPIRE)
                 .setNotificationResponsiveness(Notificare.DEFAULT_GEOFENCE_RESPONSIVENESS)
                 .build()
@@ -169,7 +183,9 @@ public class ServiceManager : ServiceManager() {
 
         val request = GeofencingRequest.Builder()
             .addGeofences(geofences)
-            .setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER or GeofencingRequest.INITIAL_TRIGGER_DWELL or GeofencingRequest.INITIAL_TRIGGER_EXIT)
+            .setInitialTrigger(
+                GeofencingRequest.INITIAL_TRIGGER_ENTER or GeofencingRequest.INITIAL_TRIGGER_DWELL or GeofencingRequest.INITIAL_TRIGGER_EXIT
+            )
             .build()
 
         try {
