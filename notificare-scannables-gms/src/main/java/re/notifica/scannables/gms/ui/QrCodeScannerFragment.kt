@@ -32,16 +32,16 @@ public class QrCodeScannerFragment : Fragment(R.layout.notificare_scannable_qr_c
             ) == PackageManager.PERMISSION_GRANTED
         }
 
-    private val cameraPermission = registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
-        if (granted) {
-            setupScanner()
-        } else {
-            val error = IllegalStateException("Barcode scanner is not operational.")
-            (activity as? ScannableActivity)?.handleScannableError(error)
-            activity?.finish()
+    private val cameraPermission =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+            if (granted) {
+                setupScanner()
+            } else {
+                val error = IllegalStateException("Barcode scanner is not operational.")
+                (activity as? ScannableActivity)?.handleScannableError(error)
+                activity?.finish()
+            }
         }
-    }
-
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -64,10 +64,11 @@ public class QrCodeScannerFragment : Fragment(R.layout.notificare_scannable_qr_c
         cameraSource?.release()
     }
 
-
     private fun setupScanner() {
         val detector = BarcodeDetector.Builder(requireContext())
-            .setBarcodeFormats(Barcode.PDF417 or Barcode.AZTEC or Barcode.CODE_128 or Barcode.QR_CODE)
+            .setBarcodeFormats(
+                Barcode.PDF417 or Barcode.AZTEC or Barcode.CODE_128 or Barcode.QR_CODE
+            )
             .build()
 
         if (!detector.isOperational) {
@@ -112,7 +113,12 @@ public class QrCodeScannerFragment : Fragment(R.layout.notificare_scannable_qr_c
                 }
             }
 
-            override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {}
+            override fun surfaceChanged(
+                holder: SurfaceHolder,
+                format: Int,
+                width: Int,
+                height: Int
+            ) {}
 
             override fun surfaceDestroyed(holder: SurfaceHolder) {
                 cameraSource?.stop()
