@@ -32,7 +32,9 @@ internal class LocationReceiver : BroadcastReceiver() {
                 }
 
                 when (event.conversion) {
-                    Geofence.ENTER_GEOFENCE_CONVERSION -> onRegionEnter(event.convertingGeofenceList)
+                    Geofence.ENTER_GEOFENCE_CONVERSION -> onRegionEnter(
+                        event.convertingGeofenceList
+                    )
                     Geofence.EXIT_GEOFENCE_CONVERSION -> onRegionExit(event.convertingGeofenceList)
                 }
             }

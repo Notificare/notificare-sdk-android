@@ -6,7 +6,9 @@ import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Deferred
 
 @Suppress("DeferredIsResult")
-internal fun <T> Task<T>.asDeferred(cancellationTokenSource: CancellationTokenSource? = null): Deferred<T> {
+internal fun <T> Task<T>.asDeferred(
+    cancellationTokenSource: CancellationTokenSource? = null
+): Deferred<T> {
     val deferred = CompletableDeferred<T>()
     if (isComplete) {
         val e = exception
