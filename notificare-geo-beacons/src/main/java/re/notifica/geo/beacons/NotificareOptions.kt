@@ -4,15 +4,18 @@ import android.os.Build
 import re.notifica.Notificare
 import re.notifica.internal.NotificareOptions
 
-private const val DEFAULT_FOREGROUND_SCAN_INTERVAL: Long = 0L           // always-on
-private const val DEFAULT_BACKGROUND_SCAN_INTERVAL: Long = 30000L       // 30 seconds
-private const val DEFAULT_BACKGROUND_SCAN_INTERVAL_O: Long = 900000L    // 15 minutes
-private const val DEFAULT_SAMPLE_EXPIRATION: Long = 10000L              // 10 seconds
+private const val DEFAULT_FOREGROUND_SCAN_INTERVAL: Long = 0L // always-on
+private const val DEFAULT_BACKGROUND_SCAN_INTERVAL: Long = 30000L // 30 seconds
+private const val DEFAULT_BACKGROUND_SCAN_INTERVAL_O: Long = 900000L // 15 minutes
+private const val DEFAULT_SAMPLE_EXPIRATION: Long = 10000L // 10 seconds
 private const val DEFAULT_NOTIFICATION_CHANNEL: String = "notificare_channel_default"
 
 public val NotificareOptions.beaconForegroundScanInterval: Long
     get() {
-        return metadata.getLong("re.notifica.geo.beacons.foreground_scan_interval", DEFAULT_FOREGROUND_SCAN_INTERVAL)
+        return metadata.getLong(
+            "re.notifica.geo.beacons.foreground_scan_interval",
+            DEFAULT_FOREGROUND_SCAN_INTERVAL
+        )
     }
 
 public val NotificareOptions.beaconBackgroundScanInterval: Long
@@ -28,7 +31,10 @@ public val NotificareOptions.beaconBackgroundScanInterval: Long
 
 public val NotificareOptions.beaconSampleExpiration: Long
     get() {
-        return metadata.getLong("re.notifica.geo.beacons.sample_expiration", DEFAULT_SAMPLE_EXPIRATION)
+        return metadata.getLong(
+            "re.notifica.geo.beacons.sample_expiration",
+            DEFAULT_SAMPLE_EXPIRATION
+        )
     }
 
 public val NotificareOptions.beaconForegroundServiceEnabled: Boolean
@@ -38,7 +44,10 @@ public val NotificareOptions.beaconForegroundServiceEnabled: Boolean
 
 public val NotificareOptions.beaconServiceNotificationChannel: String
     get() {
-        return metadata.getString("re.notifica.geo.beacons.service_notification_channel", DEFAULT_NOTIFICATION_CHANNEL)
+        return metadata.getString(
+            "re.notifica.geo.beacons.service_notification_channel",
+            DEFAULT_NOTIFICATION_CHANNEL
+        )
     }
 
 public val NotificareOptions.beaconServiceNotificationSmallIcon: Int
@@ -48,14 +57,22 @@ public val NotificareOptions.beaconServiceNotificationSmallIcon: Int
 
 public val NotificareOptions.beaconServiceNotificationContentTitle: String?
     get() {
-        return metadata.getString("re.notifica.geo.beacons.service_notification_content_title", null)
+        return metadata.getString(
+            "re.notifica.geo.beacons.service_notification_content_title",
+            null
+        )
     }
 
 public val NotificareOptions.beaconServiceNotificationContentText: String
     get() {
-        val defaultText = Notificare.requireContext().getString(R.string.notificare_beacons_notification_content_text)
+        val defaultText = Notificare.requireContext().getString(
+            R.string.notificare_beacons_notification_content_text
+        )
 
-        return metadata.getString("re.notifica.geo.beacons.service_notification_content_text", defaultText)
+        return metadata.getString(
+            "re.notifica.geo.beacons.service_notification_content_text",
+            defaultText
+        )
     }
 
 public val NotificareOptions.beaconServiceNotificationProgress: Boolean
