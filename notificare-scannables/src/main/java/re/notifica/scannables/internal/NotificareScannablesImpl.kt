@@ -42,11 +42,15 @@ internal object NotificareScannablesImpl : NotificareModule(), NotificareScannab
     override val canStartNfcScannableSession: Boolean
         get() {
             if (!Notificare.isConfigured) {
-                NotificareLogger.warning("You must configure Notificare before executing 'canStartNfcScannableSession'.")
+                NotificareLogger.warning(
+                    "You must configure Notificare before executing 'canStartNfcScannableSession'."
+                )
                 return false
             }
 
-            val manager = Notificare.requireContext().getSystemService(Context.NFC_SERVICE) as? NfcManager
+            val manager = Notificare.requireContext().getSystemService(
+                Context.NFC_SERVICE
+            ) as? NfcManager
             val adapter = manager?.defaultAdapter ?: return false
 
             return adapter.isEnabled

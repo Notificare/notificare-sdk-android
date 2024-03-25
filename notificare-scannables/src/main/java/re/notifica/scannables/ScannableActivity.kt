@@ -30,13 +30,12 @@ public class ScannableActivity : AppCompatActivity() {
     private var mode: ScanMode = ScanMode.QR_CODE
     private var handlingScannable = false
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         mode = savedInstanceState?.getEnum<ScanMode>(EXTRA_MODE)
             ?: intent.getEnumExtra<ScanMode>(EXTRA_MODE)
-                ?: ScanMode.QR_CODE
+            ?: ScanMode.QR_CODE
 
         when (mode) {
             ScanMode.NFC -> setContentView(R.layout.notificare_scannable_nfc_activity)
@@ -50,7 +49,8 @@ public class ScannableActivity : AppCompatActivity() {
             ScanMode.NFC -> setupNfcAdapter()
             ScanMode.QR_CODE -> {
                 val manager = Notificare.scannablesImplementation().serviceManager ?: run {
-                    val error = IllegalStateException("No scannables dependencies have been detected.")
+                    val error =
+                        IllegalStateException("No scannables dependencies have been detected.")
                     Notificare.scannablesImplementation().notifyListeners(error)
 
                     finish()
@@ -117,7 +117,6 @@ public class ScannableActivity : AppCompatActivity() {
         }
     }
 
-
     // region NFC
 
     private fun setupNfcAdapter() {
@@ -164,28 +163,29 @@ public class ScannableActivity : AppCompatActivity() {
 
     // endregion
 
-
     public fun handleScannableTag(tag: String) {
         if (handlingScannable) return
         handlingScannable = true
 
-        Notificare.scannables().fetch(tag, object : NotificareCallback<NotificareScannable> {
-            override fun onSuccess(result: NotificareScannable) {
-                Notificare.scannablesImplementation().notifyListeners(result)
-                finish()
-            }
+        Notificare.scannables().fetch(
+            tag,
+            object : NotificareCallback<NotificareScannable> {
+                override fun onSuccess(result: NotificareScannable) {
+                    Notificare.scannablesImplementation().notifyListeners(result)
+                    finish()
+                }
 
-            override fun onFailure(e: Exception) {
-                Notificare.scannablesImplementation().notifyListeners(e)
-                finish()
+                override fun onFailure(e: Exception) {
+                    Notificare.scannablesImplementation().notifyListeners(e)
+                    finish()
+                }
             }
-        })
+        )
     }
 
     public fun handleScannableError(error: Exception) {
         Notificare.scannablesImplementation().notifyListeners(error)
     }
-
 
     internal enum class ScanMode {
         NFC,
