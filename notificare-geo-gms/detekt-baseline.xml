@@ -1,0 +1,9 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues></ManuallySuppressedIssues>
+  <CurrentIssues>
+    <ID>MaxLineLength:ServiceManager.kt$ServiceManager$GeofencingRequest.INITIAL_TRIGGER_ENTER or GeofencingRequest.INITIAL_TRIGGER_DWELL or GeofencingRequest.INITIAL_TRIGGER_EXIT</ID>
+    <ID>ReturnCount:LocationReceiver.kt$LocationReceiver$override fun onReceive(context: Context, intent: Intent)</ID>
+    <ID>TooGenericExceptionCaught:ServiceManager.kt$ServiceManager$e: Exception</ID>
+  </CurrentIssues>
+</SmellBaseline>

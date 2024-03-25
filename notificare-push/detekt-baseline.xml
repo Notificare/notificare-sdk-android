@@ -1,0 +1,39 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues></ManuallySuppressedIssues>
+  <CurrentIssues>
+    <ID>CyclomaticComplexMethod:NotificarePushImpl.kt$NotificarePushImpl$private fun generateNotification( message: NotificareNotificationRemoteMessage, notification: NotificareNotification )</ID>
+    <ID>CyclomaticComplexMethod:NotificarePushImpl.kt$NotificarePushImpl$private fun handleSystemNotification(message: NotificareSystemRemoteMessage)</ID>
+    <ID>ForbiddenComment:NotificarePushImpl.kt$NotificarePushImpl$// TODO: fetch current FCM token</ID>
+    <ID>ForbiddenComment:NotificarePushImpl.kt$NotificarePushImpl$// TODO: handle Products system notifications</ID>
+    <ID>InstanceOfCheckForException:InboxIntegration.kt$InboxIntegration$e is ClassNotFoundException</ID>
+    <ID>LargeClass:NotificarePushImpl.kt$NotificarePushImpl : NotificareModuleNotificarePushNotificareInternalPush</ID>
+    <ID>LongMethod:NotificarePushImpl.kt$NotificarePushImpl$private fun generateNotification( message: NotificareNotificationRemoteMessage, notification: NotificareNotification )</ID>
+    <ID>LongMethod:NotificarePushImpl.kt$NotificarePushImpl$private fun handleSystemNotification(message: NotificareSystemRemoteMessage)</ID>
+    <ID>MagicNumber:NotificareOptions.kt$1500</ID>
+    <ID>MagicNumber:NotificareOptions.kt$500</ID>
+    <ID>MagicNumber:NotificarePushImpl.kt$NotificarePushImpl$26</ID>
+    <ID>MaxLineLength:InboxIntegration.kt$InboxIntegration$"The inbox module is not available. Please include it if you want to leverage the inbox capabilities."</ID>
+    <ID>MaxLineLength:NotificarePushImpl.kt$NotificarePushImpl$"Cannot process remote messages before Notificare is configured. Invoke Notificare.configure() when the application starts."</ID>
+    <ID>MaxLineLength:NotificarePushImpl.kt$NotificarePushImpl$// Notificare.shared().getApplicationContext().getString(re.notifica.R.string.notificare_action_title_intent_more),</ID>
+    <ID>MaxLineLength:NotificarePushImpl.kt$NotificarePushImpl$NotificareLogger.warning("Cannot parse a live activity system notification without the 'activity' property.")</ID>
+    <ID>MaxLineLength:NotificarePushImpl.kt$NotificarePushImpl$NotificareLogger.warning("No push dependencies have been detected. Please include one of the platform-specific push packages.")</ID>
+    <ID>MaxLineLength:NotificarePushIntentReceiver.kt$NotificarePushIntentReceiver$"Received a live activity update, please override onLiveActivityUpdate if you want to receive these intents."</ID>
+    <ID>MaxLineLength:NotificarePushIntentReceiver.kt$NotificarePushIntentReceiver$"Received a system notification, please override onSystemNotificationReceived if you want to receive these intents."</ID>
+    <ID>MaxLineLength:NotificarePushIntentReceiver.kt$NotificarePushIntentReceiver$"Received an unknown notification, please override onUnknownNotificationReceived if you want to receive these intents."</ID>
+    <ID>MaxLineLength:NotificarePushSystemIntentReceiver.kt$NotificarePushSystemIntentReceiver$// NotificarePushUI.shared.delegate?.notificare(NotificarePushUI.shared, didExecuteAction: action, for: notification)</ID>
+    <ID>MaxLineLength:NotificarePushSystemIntentReceiver.kt$NotificarePushSystemIntentReceiver$// NotificarePushUI.shared.delegate?.notificare(NotificarePushUI.shared, didExecuteAction: self.action, for: self.notification)</ID>
+    <ID>MaxLineLength:NotificarePushSystemIntentReceiver.kt$NotificarePushSystemIntentReceiver$// NotificarePushUI.shared.delegate?.notificare(NotificarePushUI.shared, didFailToExecuteAction: self.action, for: self.notification, error: error)</ID>
+    <ID>NestedBlockDepth:NotificarePushImpl.kt$NotificarePushImpl$override fun migrate(savedState: SharedPreferences, settings: SharedPreferences)</ID>
+    <ID>NestedBlockDepth:NotificarePushImpl.kt$NotificarePushImpl$private fun generateNotification( message: NotificareNotificationRemoteMessage, notification: NotificareNotification )</ID>
+    <ID>NestedBlockDepth:NotificarePushImpl.kt$NotificarePushImpl$private fun handleSystemNotification(message: NotificareSystemRemoteMessage)</ID>
+    <ID>ReturnCount:NotificareLiveActivityUpdate.kt$NotificareLiveActivityUpdate$public inline fun &lt;reified T&gt; content(klass: Class&lt;T&gt; = T::class.java, moshi: Moshi): T?</ID>
+    <ID>ReturnCount:NotificarePushImpl.kt$NotificarePushImpl$override fun enableRemoteNotifications()</ID>
+    <ID>ReturnCount:NotificarePushImpl.kt$NotificarePushImpl$private fun handleSystemNotification(message: NotificareSystemRemoteMessage)</ID>
+    <ID>SwallowedException:NotificarePushImpl.kt$NotificarePushImpl$e: Exception</ID>
+    <ID>SwallowedException:NotificarePushImpl.kt$NotificarePushImpl$e: IllegalArgumentException</ID>
+    <ID>TooGenericExceptionCaught:InboxIntegration.kt$InboxIntegration$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:NotificarePushImpl.kt$NotificarePushImpl$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:NotificarePushSystemIntentReceiver.kt$NotificarePushSystemIntentReceiver$e: Exception</ID>
+  </CurrentIssues>
+</SmellBaseline>

@@ -1,0 +1,14 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues></ManuallySuppressedIssues>
+  <CurrentIssues>
+    <ID>InstanceOfCheckForException:NotificareInboxImpl.kt$NotificareInboxImpl$e is NetworkException.ValidationException</ID>
+    <ID>MagicNumber:NotificareInboxImpl.kt$NotificareInboxImpl$100</ID>
+    <ID>MagicNumber:NotificareInboxImpl.kt$NotificareInboxImpl$304</ID>
+    <ID>MatchingDeclarationName:Responses.kt$InboxResponse</ID>
+    <ID>MaxLineLength:InboxDao.kt$InboxDao$"SELECT * FROM inbox WHERE (visible IS NULL OR visible == 1) AND (expires IS NULL OR expires &gt; strftime('%s', 'now') || substr(strftime('%f', 'now'), 4))"</ID>
+    <ID>ThrowsCount:NotificareInboxImpl.kt$NotificareInboxImpl$@Throws private fun checkPrerequisites()</ID>
+    <ID>TooGenericExceptionCaught:NotificareInboxImpl.kt$NotificareInboxImpl$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:NotificareInboxSystemReceiver.kt$NotificareInboxSystemReceiver$e: Exception</ID>
+  </CurrentIssues>
+</SmellBaseline>

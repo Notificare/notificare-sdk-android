@@ -1,0 +1,13 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues></ManuallySuppressedIssues>
+  <CurrentIssues>
+    <ID>ConstructorParameterNaming:Responses.kt$FetchProductsResponse.Product$val _id: String</ID>
+    <ID>LongMethod:NotificareMonetizeImpl.kt$NotificareMonetizeImpl$override fun configure()</ID>
+    <ID>LongParameterList:ServiceManager.kt$ServiceManager.Companion$( onBillingSetupFinished: OnBillingSetupFinished, onBillingSetupFailed: OnBillingSetupFailed, onProductsUpdated: OnProductsUpdated, onPurchaseFinished: OnPurchaseFinished, onPurchaseCanceled: OnPurchaseCanceled, onPurchaseFailed: OnPurchaseFailed, )</ID>
+    <ID>MatchingDeclarationName:Responses.kt$FetchProductsResponse</ID>
+    <ID>MaxLineLength:NotificareMonetizeImpl.kt$NotificareMonetizeImpl$"No monetize dependencies have been detected. Please include one of the platform-specific monetize packages."</ID>
+    <ID>ThrowsCount:NotificareMonetizeImpl.kt$NotificareMonetizeImpl$@Throws private fun checkPrerequisites()</ID>
+    <ID>TooGenericExceptionCaught:NotificareMonetizeImpl.kt$NotificareMonetizeImpl$e: Exception</ID>
+  </CurrentIssues>
+</SmellBaseline>

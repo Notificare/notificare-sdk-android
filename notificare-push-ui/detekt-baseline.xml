@@ -1,0 +1,82 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues></ManuallySuppressedIssues>
+  <CurrentIssues>
+    <ID>ComplexCondition:NotificareWebPassFragment.kt$NotificareWebPassFragment$content?.type != NotificareNotification.Content.TYPE_PK_PASS || passUrlStr == null || application == null || host == null</ID>
+    <ID>ComplexCondition:NotificationContainerFragment.kt$NotificationContainerFragment$action == null &amp;&amp; notification.type != NotificareNotification.TYPE_ALERT &amp;&amp; notification.type != NotificareNotification.TYPE_PASSBOOK &amp;&amp; notification.actions.isNotEmpty()</ID>
+    <ID>CyclomaticComplexMethod:NotificarePushUIImpl.kt$NotificarePushUIImpl$internal fun getFragmentCanonicalClassName(notification: NotificareNotification): String?</ID>
+    <ID>CyclomaticComplexMethod:NotificationContainerFragment.kt$NotificationContainerFragment$private fun handleAction(action: NotificareNotification.Action)</ID>
+    <ID>CyclomaticComplexMethod:NotificationWebViewClient.kt$NotificationWebViewClient$private fun handleUri(@Suppress("UNUSED_PARAMETER") view: WebView, uri: Uri?): Boolean</ID>
+    <ID>LongMethod:NotificationContainerFragment.kt$NotificationContainerFragment$private fun handleAction(action: NotificareNotification.Action)</ID>
+    <ID>MagicNumber:NotificareCallbackActionFragment.kt$NotificareCallbackActionFragment$80</ID>
+    <ID>MagicNumber:NotificareCallbackActionFragment.kt$NotificareCallbackActionFragment.Companion$180</ID>
+    <ID>MagicNumber:NotificareCallbackActionFragment.kt$NotificareCallbackActionFragment.Companion$270</ID>
+    <ID>MagicNumber:NotificareCallbackActionFragment.kt$NotificareCallbackActionFragment.Companion$90</ID>
+    <ID>MaxLineLength:Augment.kt$NotificareLogger.debug("Loyalty module instance does not comply with the NotificareLoyaltyIntegration interface.")</ID>
+    <ID>MaxLineLength:NotificareCallbackActionFragment.kt$NotificareCallbackActionFragment$NotificarePendingResult.CAPTURE_IMAGE_AND_KEYBOARD_REQUEST_CODE -&gt; R.layout.notificare_action_callback_camera_keyboard</ID>
+    <ID>MaxLineLength:NotificareCallbackActionFragment.kt$NotificareCallbackActionFragment$activity?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE or WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)</ID>
+    <ID>MaxLineLength:NotificareCallbackActionFragment.kt$NotificareCallbackActionFragment.Companion$NotificareLogger.debug("Reading bitmap image of ${options.outWidth}x${options.outHeight} pixels with sampleSize $sampleSize")</ID>
+    <ID>MaxLineLength:NotificareImageFragment.kt$NotificareImageFragment$Notificare.pushUIInternal().lifecycleListeners.forEach { it.onNotificationFailedToPresent(notification) }</ID>
+    <ID>MaxLineLength:NotificareOptions.kt$"Invalid color resource provided for 're.notifica.push.ui.custom_tabs_navigation_bar_divider_color'."</ID>
+    <ID>MaxLineLength:NotificarePushUI.kt$NotificarePushUI.NotificationLifecycleListener$"Action failed to execute, please override onActionFailedToExecute if you want to receive these events."</ID>
+    <ID>MaxLineLength:NotificarePushUI.kt$NotificarePushUI.NotificationLifecycleListener$// NotificareLogger.debug("Action did not execute, please override onActionNotExecuted if you want to receive these events.")</ID>
+    <ID>MaxLineLength:NotificarePushUI.kt$NotificarePushUI.NotificationLifecycleListener$NotificareLogger.debug("Action executed, please override onActionExecuted if you want to receive these events.")</ID>
+    <ID>MaxLineLength:NotificarePushUI.kt$NotificarePushUI.NotificationLifecycleListener$NotificareLogger.debug("Action will execute, please override onActionWillExecute if you want to receive these events.")</ID>
+    <ID>MaxLineLength:NotificarePushUI.kt$NotificarePushUI.NotificationLifecycleListener$NotificareLogger.debug("Notification failed to present, please override onNotificationFailedToPresent if you want to receive these events.")</ID>
+    <ID>MaxLineLength:NotificarePushUI.kt$NotificarePushUI.NotificationLifecycleListener$NotificareLogger.debug("Notification finished presenting, please override onNotificationFinishedPresenting if you want to receive these events.")</ID>
+    <ID>MaxLineLength:NotificarePushUI.kt$NotificarePushUI.NotificationLifecycleListener$NotificareLogger.debug("Notification presented, please override onNotificationPresented if you want to receive these events.")</ID>
+    <ID>MaxLineLength:NotificarePushUI.kt$NotificarePushUI.NotificationLifecycleListener$NotificareLogger.debug("Notification url clicked, please override onNotificationUrlClicked if you want to receive these events.")</ID>
+    <ID>MaxLineLength:NotificarePushUI.kt$NotificarePushUI.NotificationLifecycleListener$NotificareLogger.debug("Notification will present, please override onNotificationWillPresent if you want to receive these events.")</ID>
+    <ID>MaxLineLength:NotificarePushUI.kt$NotificarePushUI.NotificationLifecycleListener$NotificareLogger.warning("Action received, please override onCustomActionReceived if you want to receive these events.")</ID>
+    <ID>MaxLineLength:NotificarePushUIImpl.kt$NotificarePushUIImpl$NotificareLogger.debug("Attempting to create a fragment for a notification of type 'InAppBrowser'. This type contains no visual interface.")</ID>
+    <ID>MaxLineLength:NotificarePushUIImpl.kt$NotificarePushUIImpl$NotificareLogger.debug("Attempting to create a fragment for a notification of type 'UrlScheme'. This type contains no visual interface.")</ID>
+    <ID>MaxLineLength:NotificarePushUIImpl.kt$NotificarePushUIImpl$NotificareLogger.debug("Attempting to create a fragment for a notification of type 'none'. This type contains to visual interface.")</ID>
+    <ID>MaxLineLength:NotificarePushUIImpl.kt$NotificarePushUIImpl$NotificareLogger.debug("Attempting to present a notification of type 'none'. These should be handled by the application instead.")</ID>
+    <ID>MaxLineLength:NotificarePushUIImpl.kt$NotificarePushUIImpl$NotificareLogger.warning("No push-ui dependencies have been detected. Please include one of the platform-specific push-ui packages.")</ID>
+    <ID>MaxLineLength:NotificarePushUIImpl.kt$NotificarePushUIImpl$addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS)</ID>
+    <ID>MaxLineLength:NotificareUrlFragment.kt$NotificareUrlFragment$Notificare.pushUIInternal().lifecycleListeners.forEach { it.onNotificationFailedToPresent(notification) }</ID>
+    <ID>MaxLineLength:NotificareWebPassFragment.kt$NotificareWebPassFragment$Notificare.pushUIInternal().lifecycleListeners.forEach { it.onNotificationFailedToPresent(notification) }</ID>
+    <ID>MaxLineLength:NotificareWebPassFragment.kt$NotificareWebPassFragment$if</ID>
+    <ID>MaxLineLength:NotificareWebViewFragment.kt$NotificareWebViewFragment$Notificare.pushUIInternal().lifecycleListeners.forEach { it.onNotificationFailedToPresent(notification) }</ID>
+    <ID>MaxLineLength:NotificationCallbackAction.kt$NotificationCallbackAction$?:</ID>
+    <ID>MaxLineLength:NotificationContainerFragment.kt$NotificationContainerFragment$// if (notification.getType().equals(NotificareNotification.TYPE_ALERT) || notification.getType().equals(NotificareNotification.TYPE_PASSBOOK)) {</ID>
+    <ID>MaxLineLength:NotificationContainerFragment.kt$NotificationContainerFragment$if</ID>
+    <ID>MaxLineLength:NotificationDialog.kt$NotificationDialog$builder.setNeutralButton(R.string.notificare_dialog_cancel_button) { _, _ -&gt; callback?.onNotificationDialogCancelClick() }</ID>
+    <ID>MaxLineLength:NotificationDialog.kt$NotificationDialog$builder.setNeutralButton(R.string.notificare_dialog_ok_button) { _, _ -&gt; callback?.onNotificationDialogOkClick() }</ID>
+    <ID>MaxLineLength:NotificationWebViewClient.kt$NotificationWebViewClient$// Normal HTTP links will be handled by the webView itself, unless they match any of the app's intent filters</ID>
+    <ID>MaxLineLength:NotificationWebViewClient.kt$NotificationWebViewClient$if</ID>
+    <ID>ReturnCount:Augment.kt$internal fun Notificare.loyaltyIntegration(): NotificareLoyaltyIntegration?</ID>
+    <ID>ReturnCount:NotificareCallbackActionFragment.kt$NotificareCallbackActionFragment$private fun renderImage(): Boolean</ID>
+    <ID>ReturnCount:NotificarePushUIImpl.kt$NotificarePushUIImpl$internal fun getFragmentCanonicalClassName(notification: NotificareNotification): String?</ID>
+    <ID>ReturnCount:NotificationCallbackAction.kt$NotificationCallbackAction$private fun getOutputMediaFileUri(type: MediaType): Uri?</ID>
+    <ID>ReturnCount:NotificationContainerFragment.kt$NotificationContainerFragment$private fun handleAction(action: NotificareNotification.Action)</ID>
+    <ID>ReturnCount:NotificationWebViewClient.kt$NotificationWebViewClient$private fun handleUri(@Suppress("UNUSED_PARAMETER") view: WebView, uri: Uri?): Boolean</ID>
+    <ID>SwallowedException:NotificareCallbackActionFragment.kt$NotificareCallbackActionFragment$e: ClassCastException</ID>
+    <ID>SwallowedException:NotificarePushUIImpl.kt$NotificarePushUIImpl$e: Exception</ID>
+    <ID>SwallowedException:NotificationActionsDialog.kt$NotificationActionsDialog$e: Exception</ID>
+    <ID>SwallowedException:NotificationContainerFragment.kt$NotificationContainerFragment$e: ClassCastException</ID>
+    <ID>SwallowedException:NotificationDialog.kt$NotificationDialog$e: Exception</ID>
+    <ID>SwallowedException:NotificationFragment.kt$NotificationFragment$e: ClassCastException</ID>
+    <ID>SwallowedException:NotificationMailAction.kt$NotificationMailAction$e: ActivityNotFoundException</ID>
+    <ID>SwallowedException:NotificationSmsAction.kt$NotificationSmsAction$e: ActivityNotFoundException</ID>
+    <ID>SwallowedException:NotificationTelephoneAction.kt$NotificationTelephoneAction$e: ActivityNotFoundException</ID>
+    <ID>TooGenericExceptionCaught:NotificareCallbackActionFragment.kt$NotificareCallbackActionFragment$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:NotificarePushUIImpl.kt$NotificarePushUIImpl$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:NotificationActionsDialog.kt$NotificationActionsDialog$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:NotificationCallbackAction.kt$NotificationCallbackAction$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:NotificationCallbackAction.kt$NotificationCallbackAction.Companion$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:NotificationContainerFragment.kt$NotificationContainerFragment$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:NotificationDialog.kt$NotificationDialog$e: Exception</ID>
+    <ID>TooGenericExceptionThrown:NotificationAppAction.kt$NotificationAppAction$throw Exception(context.getString(R.string.notificare_action_failed))</ID>
+    <ID>TooGenericExceptionThrown:NotificationBrowserAction.kt$NotificationBrowserAction$throw Exception(context.getString(R.string.notificare_action_failed))</ID>
+    <ID>TooGenericExceptionThrown:NotificationCustomAction.kt$NotificationCustomAction$throw Exception(context.getString(R.string.notificare_action_failed))</ID>
+    <ID>TooGenericExceptionThrown:NotificationInAppBrowserAction.kt$NotificationInAppBrowserAction$throw Exception(context.getString(R.string.notificare_action_failed))</ID>
+    <ID>TooGenericExceptionThrown:NotificationMailAction.kt$NotificationMailAction$throw Exception( context.getString(R.string.notificare_action_error_no_email_clients) )</ID>
+    <ID>TooGenericExceptionThrown:NotificationMailAction.kt$NotificationMailAction$throw Exception(context.getString(R.string.notificare_action_failed))</ID>
+    <ID>TooGenericExceptionThrown:NotificationSmsAction.kt$NotificationSmsAction$throw Exception(context.getString(R.string.notificare_action_error_no_sms_clients))</ID>
+    <ID>TooGenericExceptionThrown:NotificationSmsAction.kt$NotificationSmsAction$throw Exception(context.getString(R.string.notificare_action_failed))</ID>
+    <ID>TooGenericExceptionThrown:NotificationTelephoneAction.kt$NotificationTelephoneAction$throw Exception(context.getString(R.string.notificare_action_error_no_dialer))</ID>
+    <ID>TooGenericExceptionThrown:NotificationTelephoneAction.kt$NotificationTelephoneAction$throw Exception(context.getString(R.string.notificare_action_failed))</ID>
+    <ID>UnusedPrivateProperty:NotificationContainerFragment.kt$NotificationContainerFragment.Companion$private const val CAMERA_REQUEST_CODE = 1</ID>
+  </CurrentIssues>
+</SmellBaseline>

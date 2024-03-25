@@ -1,0 +1,41 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues></ManuallySuppressedIssues>
+  <CurrentIssues>
+    <ID>ConstructorParameterNaming:Responses.kt$FetchPassResponse.Pass$val _id: String</ID>
+    <ID>CyclomaticComplexMethod:PassUtils.kt$internal fun NotificarePass.PassbookField.formatDate(): String?</ID>
+    <ID>InstanceOfCheckForException:NotificareLoyaltyImpl.kt$NotificareLoyaltyImpl$e is NetworkException.ValidationException</ID>
+    <ID>LargeClass:NotificareLoyaltyImpl.kt$NotificareLoyaltyImpl : NotificareModuleNotificareLoyaltyNotificareLoyaltyIntegrationListener</ID>
+    <ID>LongMethod:NotificareLoyaltyImpl.kt$NotificareLoyaltyImpl$private fun generateRelevanceNotification(pass: NotificarePass, relevanceText: String)</ID>
+    <ID>MagicNumber:NotificareLoyaltyImpl.kt$NotificareLoyaltyImpl$1000</ID>
+    <ID>MagicNumber:NotificareLoyaltyImpl.kt$NotificareLoyaltyImpl$200</ID>
+    <ID>MagicNumber:NotificareLoyaltyImpl.kt$NotificareLoyaltyImpl$204</ID>
+    <ID>MagicNumber:NotificareLoyaltyImpl.kt$NotificareLoyaltyImpl$404</ID>
+    <ID>MagicNumber:NotificareOptions.kt$2000.0</ID>
+    <ID>MagicNumber:NotificareOptions.kt$500.0</ID>
+    <ID>MagicNumber:PassUtils.kt$3</ID>
+    <ID>MatchingDeclarationName:Payloads.kt$RegisterPassPayload</ID>
+    <ID>MaxLineLength:NotificareLoyaltyImpl.kt$NotificareLoyaltyImpl$// val deleteIntent = Intent(Notificare.shared().getApplicationContext(), Notificare.shared().getIntentReceiver())</ID>
+    <ID>MaxLineLength:NotificareLoyaltyImpl.kt$NotificareLoyaltyImpl$NotificareLogger.debug("Skipping location relevance for pass ${pass.serial} because the geo module is not available.")</ID>
+    <ID>MaxLineLength:NotificareLoyaltyImpl.kt$NotificareLoyaltyImpl$NotificareLogger.debug("Skipping location relevance for pass ${pass.serial} because there is no last known location.")</ID>
+    <ID>MaxLineLength:NotificareLoyaltyImpl.kt$NotificareLoyaltyImpl$return passbookBeacon.major == nearbyBeacon.major &amp;&amp; (passbookBeacon.minor == null || passbookBeacon.minor == nearbyBeacon.minor)</ID>
+    <ID>MaxLineLength:PassUtils.kt$dateStr.matches("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}.\\d{3}[+\\-]\\d{4}$".toRegex())</ID>
+    <ID>MaxLineLength:PassUtils.kt$dateStr.matches("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}[+\\-]\\d{4}$".toRegex())</ID>
+    <ID>ReturnCount:NotificareLoyaltyImpl.kt$NotificareLoyaltyImpl$private fun checkPassRelevanceBeacon( passbookBeacon: NotificarePass.PassbookBeacon, nearbyBeacon: NotificareGeoIntegration.Beacon, ): Boolean</ID>
+    <ID>ReturnCount:NotificareLoyaltyImpl.kt$NotificareLoyaltyImpl$private fun checkPassRelevanceBeacon(pass: NotificarePass): NotificarePass.PassbookBeacon?</ID>
+    <ID>ReturnCount:NotificareLoyaltyImpl.kt$NotificareLoyaltyImpl$private fun checkPassRelevanceLocation(pass: NotificarePass): NotificarePass.PassbookLocation?</ID>
+    <ID>ReturnCount:NotificareLoyaltyImpl.kt$NotificareLoyaltyImpl$private fun extractPassSerial(notification: NotificareNotification): String?</ID>
+    <ID>ReturnCount:NotificareLoyaltyImpl.kt$NotificareLoyaltyImpl$private fun updatePassRelevance(pass: NotificarePass)</ID>
+    <ID>ReturnCount:NotificarePass.kt$NotificarePass.PassbookLocation.Companion$internal fun from(data: Map&lt;String, Any&gt;): PassbookLocation?</ID>
+    <ID>ReturnCount:PassUtils.kt$internal fun NotificarePass.PassbookField.formatCurrency(): String?</ID>
+    <ID>ReturnCount:PassUtils.kt$internal fun NotificarePass.PassbookField.formatDate(): String?</ID>
+    <ID>ReturnCount:PassbookActivity.kt$PassbookActivity$override fun onOptionsItemSelected(item: MenuItem): Boolean</ID>
+    <ID>ReturnCount:PassbookActivity.kt$PassbookActivity$private fun parsePassbookIntent(intent: Intent): String?</ID>
+    <ID>SwallowedException:NotificareLoyaltyImpl.kt$NotificareLoyaltyImpl$e: Exception</ID>
+    <ID>SwallowedException:NotificareOptions.kt$e: Resources.NotFoundException</ID>
+    <ID>SwallowedException:NotificarePass.kt$NotificarePass$e: Exception</ID>
+    <ID>ThrowsCount:NotificareLoyaltyImpl.kt$NotificareLoyaltyImpl$@Throws private fun checkPrerequisites()</ID>
+    <ID>TooGenericExceptionCaught:NotificareLoyaltyImpl.kt$NotificareLoyaltyImpl$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:NotificarePass.kt$NotificarePass$e: Exception</ID>
+  </CurrentIssues>
+</SmellBaseline>

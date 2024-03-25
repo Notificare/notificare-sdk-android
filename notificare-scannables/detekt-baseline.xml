@@ -1,0 +1,10 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues></ManuallySuppressedIssues>
+  <CurrentIssues>
+    <ID>ConstructorParameterNaming:Responses.kt$FetchScannableResponse.Scannable$val _id: String</ID>
+    <ID>MatchingDeclarationName:Exceptions.kt$NotificareUserCancelledScannableSessionException : Exception</ID>
+    <ID>MatchingDeclarationName:Responses.kt$FetchScannableResponse</ID>
+    <ID>TooGenericExceptionCaught:ScannableActivity.kt$ScannableActivity$e: Exception</ID>
+  </CurrentIssues>
+</SmellBaseline>
