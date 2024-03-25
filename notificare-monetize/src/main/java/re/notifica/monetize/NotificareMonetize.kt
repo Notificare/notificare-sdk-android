@@ -28,7 +28,6 @@ public interface NotificareMonetize {
 
     public fun startPurchaseFlow(activity: Activity, product: NotificareProduct)
 
-
     public interface Listener {
         public fun onBillingSetupFinished() {}
 

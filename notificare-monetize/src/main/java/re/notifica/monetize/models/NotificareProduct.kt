@@ -34,7 +34,6 @@ public data class NotificareProduct(
         }
     }
 
-
     @Parcelize
     @JsonClass(generateAdapter = true)
     public data class StoreDetails(
