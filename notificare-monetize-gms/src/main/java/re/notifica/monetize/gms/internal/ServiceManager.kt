@@ -2,7 +2,21 @@ package re.notifica.monetize.gms.internal
 
 import android.app.Activity
 import androidx.annotation.Keep
-import com.android.billingclient.api.*
+import com.android.billingclient.api.AcknowledgePurchaseParams
+import com.android.billingclient.api.BillingClient
+import com.android.billingclient.api.BillingClientStateListener
+import com.android.billingclient.api.BillingFlowParams
+import com.android.billingclient.api.BillingResult
+import com.android.billingclient.api.ConsumeParams
+import com.android.billingclient.api.ProductDetails
+import com.android.billingclient.api.Purchase
+import com.android.billingclient.api.PurchasesUpdatedListener
+import com.android.billingclient.api.QueryProductDetailsParams
+import com.android.billingclient.api.QueryPurchasesParams
+import com.android.billingclient.api.acknowledgePurchase
+import com.android.billingclient.api.consumePurchase
+import com.android.billingclient.api.queryProductDetails
+import com.android.billingclient.api.queryPurchasesAsync
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import kotlinx.coroutines.Dispatchers
@@ -38,9 +52,8 @@ public class ServiceManager : ServiceManager(), BillingClientStateListener, Purc
             .build()
     }
 
-    private var products = mapOf<String, NotificareProduct>()       // where K is the Google product identifier
-    private var productDetails = mapOf<String, ProductDetails>()    // where K is the Google product identifier
-
+    private var products = mapOf<String, NotificareProduct>() // where K is the Google product identifier
+    private var productDetails = mapOf<String, ProductDetails>() // where K is the Google product identifier
 
     override val available: Boolean
         get() = GoogleApiAvailability.getInstance()
@@ -105,7 +118,9 @@ public class ServiceManager : ServiceManager(), BillingClientStateListener, Purc
         if (result.billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
             return@withContext result.purchasesList.map { NotificarePurchase.from(it) }
         } else {
-            NotificareLogger.error("Failed to query purchases with error code '${result.billingResult.responseCode}': ${result.billingResult.debugMessage}")
+            NotificareLogger.error(
+                "Failed to query purchases with error code '${result.billingResult.responseCode}': ${result.billingResult.debugMessage}"
+            )
             throw Exception("Failed to query purchases.")
         }
     }
@@ -150,24 +165,38 @@ public class ServiceManager : ServiceManager(), BillingClientStateListener, Purc
                 }
 
                 NotificareLogger.info("Processing purchases event.")
-                NotificareLogger.debug("${purchases.count { it.purchaseState == Purchase.PurchaseState.PURCHASED }} purchased items.")
-                NotificareLogger.debug("${purchases.count { it.purchaseState == Purchase.PurchaseState.PENDING }} pending items.")
-                NotificareLogger.debug("${purchases.count { it.purchaseState == Purchase.PurchaseState.UNSPECIFIED_STATE }} undefined state items.")
+                NotificareLogger.debug(
+                    "${purchases.count { it.purchaseState == Purchase.PurchaseState.PURCHASED }} purchased items."
+                )
+                NotificareLogger.debug(
+                    "${purchases.count { it.purchaseState == Purchase.PurchaseState.PENDING }} pending items."
+                )
+                NotificareLogger.debug(
+                    "${purchases.count { it.purchaseState == Purchase.PurchaseState.UNSPECIFIED_STATE }} undefined state items."
+                )
 
                 Notificare.coroutineScope.launch {
                     try {
                         for (purchase in purchases.filter { it.purchaseState == Purchase.PurchaseState.PURCHASED }) {
                             try {
-                                NotificareLogger.debug("Verifying purchase order '${purchase.orderId}'.")
+                                NotificareLogger.debug(
+                                    "Verifying purchase order '${purchase.orderId}'."
+                                )
                                 processPurchase(purchase)
 
                                 onPurchaseFinished(NotificarePurchase.from(purchase))
                             } catch (e: Exception) {
-                                NotificareLogger.error("Failed to process purchase order '${purchase.orderId}'.", e)
+                                NotificareLogger.error(
+                                    "Failed to process purchase order '${purchase.orderId}'.",
+                                    e
+                                )
                             }
                         }
                     } catch (e: Exception) {
-                        NotificareLogger.error("Something went wrong while processing the purchases.", e)
+                        NotificareLogger.error(
+                            "Something went wrong while processing the purchases.",
+                            e
+                        )
                     }
                 }
             }
@@ -178,8 +207,9 @@ public class ServiceManager : ServiceManager(), BillingClientStateListener, Purc
 
     // endregion
 
-
-    private suspend fun fetchProducts(): List<FetchProductsResponse.Product> = withContext(Dispatchers.IO) {
+    private suspend fun fetchProducts(): List<FetchProductsResponse.Product> = withContext(
+        Dispatchers.IO
+    ) {
         NotificareRequest.Builder()
             .get("/product/active")
             .responseDecodable(FetchProductsResponse::class)
@@ -187,36 +217,40 @@ public class ServiceManager : ServiceManager(), BillingClientStateListener, Purc
             .filter { it.isGooglePlay }
     }
 
-    private suspend fun fetchProductDetails(
-        identifiers: List<String>
-    ): List<ProductDetails> = withContext(Dispatchers.IO) {
-        val params = QueryProductDetailsParams.newBuilder()
-            .setProductList(
-                identifiers.map {
-                    QueryProductDetailsParams.Product.newBuilder()
-                        .setProductId(it)
-                        .setProductType(BillingClient.ProductType.INAPP)
-                        .build()
-                }
-            )
-            .build()
+    private suspend fun fetchProductDetails(identifiers: List<String>): List<ProductDetails> =
+        withContext(Dispatchers.IO) {
+            val params = QueryProductDetailsParams.newBuilder()
+                .setProductList(
+                    identifiers.map {
+                        QueryProductDetailsParams.Product.newBuilder()
+                            .setProductId(it)
+                            .setProductType(BillingClient.ProductType.INAPP)
+                            .build()
+                    }
+                )
+                .build()
 
-        val result = billingClient.queryProductDetails(params)
+            val result = billingClient.queryProductDetails(params)
 
-        if (result.billingResult.responseCode != BillingClient.BillingResponseCode.OK) {
-            throw BillingException(result.billingResult.responseCode, result.billingResult.debugMessage)
+            if (result.billingResult.responseCode != BillingClient.BillingResponseCode.OK) {
+                throw BillingException(
+                    result.billingResult.responseCode,
+                    result.billingResult.debugMessage
+                )
+            }
+
+            val productDetailsList = result.productDetailsList ?: run {
+                throw RuntimeException("Fetch product details succeeded with an undefined list.")
+            }
+
+            return@withContext productDetailsList
         }
-
-        val productDetailsList = result.productDetailsList ?: run {
-            throw RuntimeException("Fetch product details succeeded with an undefined list.")
-        }
-
-        return@withContext productDetailsList
-    }
 
     private suspend fun processPurchase(purchase: Purchase): Unit = withContext(Dispatchers.IO) {
         if (purchase.products.size > 1) {
-            NotificareLogger.warning("Detected a purchase with multiple products. Notificare only supports single-product purchases.")
+            NotificareLogger.warning(
+                "Detected a purchase with multiple products. Notificare only supports single-product purchases."
+            )
         }
 
         val identifier = purchase.products.firstOrNull() ?: run {
@@ -257,7 +291,10 @@ public class ServiceManager : ServiceManager(), BillingClientStateListener, Purc
                 NotificareLogger.warning("Something went wrong while consuming the purchase.")
                 NotificareLogger.debug("$result")
 
-                throw BillingException(result.billingResult.responseCode, result.billingResult.debugMessage)
+                throw BillingException(
+                    result.billingResult.responseCode,
+                    result.billingResult.debugMessage
+                )
             }
 
             return@withContext
