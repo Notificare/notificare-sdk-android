@@ -16,11 +16,30 @@ import re.notifica.internal.NotificareModule
 import re.notifica.internal.common.onMainThread
 import re.notifica.internal.ktx.coroutineScope
 import re.notifica.models.NotificareNotification
-import re.notifica.push.ui.*
-import re.notifica.push.ui.actions.*
+import re.notifica.push.ui.NotificareInternalPushUI
+import re.notifica.push.ui.NotificarePushUI
+import re.notifica.push.ui.NotificationActivity
+import re.notifica.push.ui.actions.NotificationAppAction
+import re.notifica.push.ui.actions.NotificationBrowserAction
+import re.notifica.push.ui.actions.NotificationCallbackAction
+import re.notifica.push.ui.actions.NotificationCustomAction
+import re.notifica.push.ui.actions.NotificationInAppBrowserAction
+import re.notifica.push.ui.actions.NotificationMailAction
+import re.notifica.push.ui.actions.NotificationSmsAction
+import re.notifica.push.ui.actions.NotificationTelephoneAction
 import re.notifica.push.ui.actions.base.NotificationAction
+import re.notifica.push.ui.customTabsColorScheme
+import re.notifica.push.ui.customTabsNavigationBarColor
+import re.notifica.push.ui.customTabsNavigationBarDividerColor
+import re.notifica.push.ui.customTabsShowTitle
+import re.notifica.push.ui.customTabsToolbarColor
 import re.notifica.push.ui.ktx.loyaltyIntegration
-import re.notifica.push.ui.notifications.fragments.*
+import re.notifica.push.ui.notifications.fragments.NotificareAlertFragment
+import re.notifica.push.ui.notifications.fragments.NotificareImageFragment
+import re.notifica.push.ui.notifications.fragments.NotificareUrlFragment
+import re.notifica.push.ui.notifications.fragments.NotificareVideoFragment
+import re.notifica.push.ui.notifications.fragments.NotificareWebPassFragment
+import re.notifica.push.ui.notifications.fragments.NotificareWebViewFragment
 
 @Keep
 internal object NotificarePushUIImpl : NotificareModule(), NotificarePushUI, NotificareInternalPushUI {

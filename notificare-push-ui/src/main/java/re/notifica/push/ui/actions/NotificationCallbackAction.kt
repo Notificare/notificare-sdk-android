@@ -4,6 +4,10 @@ import android.content.Context
 import android.net.Uri
 import android.os.Environment
 import androidx.core.content.FileProvider
+import java.io.File
+import java.io.IOException
+import java.text.SimpleDateFormat
+import java.util.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -17,10 +21,6 @@ import re.notifica.push.ui.actions.base.NotificationAction
 import re.notifica.push.ui.ktx.pushUIImplementation
 import re.notifica.push.ui.ktx.pushUIInternal
 import re.notifica.push.ui.models.NotificarePendingResult
-import java.io.File
-import java.io.IOException
-import java.text.SimpleDateFormat
-import java.util.*
 
 internal class NotificationCallbackAction(
     context: Context,
@@ -37,8 +37,11 @@ internal class NotificationCallbackAction(
                     ?: throw IllegalStateException(context.getString(R.string.notificare_action_camera_failed)) // Cannot save file.
 
                 val requestCode =
-                    if (action.keyboard) NotificarePendingResult.CAPTURE_IMAGE_AND_KEYBOARD_REQUEST_CODE
-                    else NotificarePendingResult.CAPTURE_IMAGE_REQUEST_CODE
+                    if (action.keyboard) {
+                        NotificarePendingResult.CAPTURE_IMAGE_AND_KEYBOARD_REQUEST_CODE
+                    } else {
+                        NotificarePendingResult.CAPTURE_IMAGE_REQUEST_CODE
+                    }
 
                 NotificarePendingResult(
                     notification = notification,
@@ -98,7 +101,9 @@ internal class NotificationCallbackAction(
             return null
         }
 
-        val mediaStorageDir = Notificare.requireContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+        val mediaStorageDir = Notificare.requireContext().getExternalFilesDir(
+            Environment.DIRECTORY_PICTURES
+        )
 
         // Create a media file name
         val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(Date())
@@ -129,7 +134,12 @@ internal class NotificationCallbackAction(
                 )
 
                 onMainThread {
-                    Notificare.pushUIInternal().lifecycleListeners.forEach { it.onActionExecuted(notification, action) }
+                    Notificare.pushUIInternal().lifecycleListeners.forEach {
+                        it.onActionExecuted(
+                            notification,
+                            action
+                        )
+                    }
                 }
 
                 return@withContext
