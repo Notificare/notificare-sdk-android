@@ -3,13 +3,15 @@ package re.notifica.internal.workers
 import android.content.Context
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
+import java.util.Calendar
+import java.util.Date
+import java.util.GregorianCalendar
 import re.notifica.Notificare
 import re.notifica.internal.NotificareLogger
 import re.notifica.internal.common.recoverable
 import re.notifica.internal.network.request.NotificareRequest
 import re.notifica.internal.storage.database.entities.NotificareEventEntity
 import re.notifica.internal.storage.database.ktx.toModel
-import java.util.*
 
 private const val MAX_RETRIES = 5
 
@@ -68,7 +70,9 @@ internal class ProcessEventsWorker(context: Context, params: WorkerParameters) :
                     Notificare.database.events().delete(entity)
                 }
             } else {
-                NotificareLogger.debug("Failed to process event due to an unrecoverable error. Discarding it...")
+                NotificareLogger.debug(
+                    "Failed to process event due to an unrecoverable error. Discarding it..."
+                )
                 Notificare.database.events().delete(entity)
             }
         }

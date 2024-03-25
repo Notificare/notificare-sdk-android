@@ -6,6 +6,8 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import androidx.annotation.Keep
+import java.text.SimpleDateFormat
+import java.util.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -15,8 +17,6 @@ import re.notifica.internal.NotificareModule
 import re.notifica.internal.ktx.coroutineScope
 import re.notifica.ktx.device
 import re.notifica.ktx.eventsImplementation
-import java.text.SimpleDateFormat
-import java.util.*
 
 @Keep
 internal object NotificareSessionModuleImpl : NotificareModule() {
@@ -38,7 +38,6 @@ internal object NotificareSessionModuleImpl : NotificareModule() {
 
     var sessionId: String? = null
         private set
-
 
     private suspend fun startSession() = withContext(Dispatchers.IO) {
         val sessionId = UUID.randomUUID().toString()
@@ -140,7 +139,7 @@ internal object NotificareSessionModuleImpl : NotificareModule() {
     // region Notificare Module
 
     override suspend fun launch() {
-         if (sessionId == null && Notificare.device().currentDevice != null) {
+        if (sessionId == null && Notificare.device().currentDevice != null) {
             // Launch is taking place after the first activity has been created.
             // Start the application session.
             startSession()

@@ -3,6 +3,7 @@ package re.notifica.models
 import android.content.Context
 import android.os.Parcelable
 import com.squareup.moshi.JsonClass
+import java.util.Date
 import kotlinx.parcelize.Parcelize
 import kotlinx.parcelize.WriteWith
 import org.json.JSONObject
@@ -10,7 +11,6 @@ import re.notifica.Notificare
 import re.notifica.internal.moshi
 import re.notifica.internal.parcelize.NotificareExtraParceler
 import re.notifica.internal.parcelize.NotificationContentDataParceler
-import java.util.*
 
 @Parcelize
 @JsonClass(generateAdapter = true)
@@ -101,7 +101,11 @@ public data class NotificareNotification(
         public fun getLocalizedLabel(context: Context): String {
             val prefix = Notificare.options?.notificationActionLabelPrefix ?: ""
             val resourceName = "$prefix$label"
-            val resource = context.resources.getIdentifier(resourceName, "string", context.packageName)
+            val resource = context.resources.getIdentifier(
+                resourceName,
+                "string",
+                context.packageName
+            )
 
             return if (resource == 0) label else context.getString(resource)
         }

@@ -56,11 +56,14 @@ internal class NotificareSharedPreferences(context: Context) {
         }
         set(value) {
             sharedPreferences.edit().also {
-                if (value == null) it.remove(PREFERENCE_APPLICATION)
-                else it.putString(
-                    PREFERENCE_APPLICATION,
-                    Notificare.moshi.adapter(NotificareApplication::class.java).toJson(value)
-                )
+                if (value == null) {
+                    it.remove(PREFERENCE_APPLICATION)
+                } else {
+                    it.putString(
+                        PREFERENCE_APPLICATION,
+                        Notificare.moshi.adapter(NotificareApplication::class.java).toJson(value)
+                    )
+                }
             }.apply()
         }
 
@@ -82,11 +85,14 @@ internal class NotificareSharedPreferences(context: Context) {
         }
         set(value) {
             sharedPreferences.edit().also {
-                if (value == null) it.remove(PREFERENCE_DEVICE)
-                else it.putString(
-                    PREFERENCE_DEVICE,
-                    Notificare.moshi.adapter(NotificareDevice::class.java).toJson(value)
-                )
+                if (value == null) {
+                    it.remove(PREFERENCE_DEVICE)
+                } else {
+                    it.putString(
+                        PREFERENCE_DEVICE,
+                        Notificare.moshi.adapter(NotificareDevice::class.java).toJson(value)
+                    )
+                }
             }.apply()
         }
 
@@ -144,14 +150,18 @@ internal class NotificareSharedPreferences(context: Context) {
                     }
                 }
         }
+
         @SuppressLint("ApplySharedPref")
         set(value) {
             sharedPreferences.edit().also {
-                if (value == null) it.remove(PREFERENCE_CRASH_REPORT)
-                else it.putString(
-                    PREFERENCE_CRASH_REPORT,
-                    Notificare.moshi.adapter(NotificareEvent::class.java).toJson(value)
-                )
+                if (value == null) {
+                    it.remove(PREFERENCE_CRASH_REPORT)
+                } else {
+                    it.putString(
+                        PREFERENCE_CRASH_REPORT,
+                        Notificare.moshi.adapter(NotificareEvent::class.java).toJson(value)
+                    )
+                }
             }.commit()
         }
 }

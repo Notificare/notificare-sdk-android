@@ -11,14 +11,16 @@ public interface NotificareDeviceModule {
 
     public val preferredLanguage: String?
 
-
     public suspend fun register(userId: String?, userName: String?)
 
     public fun register(userId: String?, userName: String?, callback: NotificareCallback<Unit>)
 
     public suspend fun updatePreferredLanguage(preferredLanguage: String?)
 
-    public fun updatePreferredLanguage(preferredLanguage: String?, callback: NotificareCallback<Unit>)
+    public fun updatePreferredLanguage(
+        preferredLanguage: String?,
+        callback: NotificareCallback<Unit>
+    )
 
     public suspend fun fetchTags(): List<String>
 

@@ -1,11 +1,25 @@
 package re.notifica.internal.network.request
 
+import java.io.IOException
+import kotlin.coroutines.Continuation
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
+import kotlin.coroutines.suspendCoroutine
+import kotlin.reflect.KClass
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import okhttp3.*
+import okhttp3.Call
+import okhttp3.Callback
+import okhttp3.Credentials
+import okhttp3.FormBody
+import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.Response
 import okhttp3.internal.EMPTY_REQUEST
 import okhttp3.logging.HttpLoggingInterceptor
 import re.notifica.InternalNotificareApi
@@ -16,12 +30,6 @@ import re.notifica.internal.ktx.toCallbackFunction
 import re.notifica.internal.moshi
 import re.notifica.internal.network.NetworkException
 import re.notifica.internal.network.NotificareHeadersInterceptor
-import java.io.IOException
-import kotlin.coroutines.Continuation
-import kotlin.coroutines.resume
-import kotlin.coroutines.resumeWithException
-import kotlin.coroutines.suspendCoroutine
-import kotlin.reflect.KClass
 
 @InternalNotificareApi
 public class NotificareRequest private constructor(
@@ -37,31 +45,34 @@ public class NotificareRequest private constructor(
         private val client = OkHttpClient.Builder()
             // .authenticator(NotificareBasicAuthenticator())
             .addInterceptor(NotificareHeadersInterceptor())
-            .addInterceptor(HttpLoggingInterceptor().apply {
-                level = if (Notificare.options?.debugLoggingEnabled == true) {
-                    HttpLoggingInterceptor.Level.BASIC
-                } else {
-                    HttpLoggingInterceptor.Level.NONE
+            .addInterceptor(
+                HttpLoggingInterceptor().apply {
+                    level = if (Notificare.options?.debugLoggingEnabled == true) {
+                        HttpLoggingInterceptor.Level.BASIC
+                    } else {
+                        HttpLoggingInterceptor.Level.NONE
+                    }
                 }
-            })
+            )
             .build()
     }
 
-    public suspend fun response(closeResponse: Boolean): Response = suspendCoroutine { continuation ->
-        client.newCall(request).enqueue(object : Callback {
-            override fun onFailure(call: Call, e: IOException) {
-                continuation.resumeWithException(e)
-            }
+    public suspend fun response(closeResponse: Boolean): Response =
+        suspendCoroutine { continuation ->
+            client.newCall(request).enqueue(object : Callback {
+                override fun onFailure(call: Call, e: IOException) {
+                    continuation.resumeWithException(e)
+                }
 
-            override fun onResponse(call: Call, response: Response) {
-                handleResponse(
-                    response = response,
-                    closeResponse = closeResponse,
-                    continuation = continuation
-                )
-            }
-        })
-    }
+                override fun onResponse(call: Call, response: Response) {
+                    handleResponse(
+                        response = response,
+                        closeResponse = closeResponse,
+                        continuation = continuation
+                    )
+                }
+            })
+        }
 
     public suspend fun responseString(): String {
         val response = response(closeResponse = false)
@@ -146,13 +157,21 @@ public class NotificareRequest private constructor(
 
         public fun get(url: String): Builder = method("GET", url, null)
 
-        public fun <T : Any> patch(url: String, body: T? = null): Builder = method("PATCH", url, body)
+        public fun <T : Any> patch(url: String, body: T? = null): Builder = method(
+            "PATCH",
+            url,
+            body
+        )
 
         public fun <T : Any> post(url: String, body: T? = null): Builder = method("POST", url, body)
 
         public fun <T : Any> put(url: String, body: T? = null): Builder = method("PUT", url, body)
 
-        public fun <T : Any> delete(url: String, body: T? = null): Builder = method("DELETE", url, body)
+        public fun <T : Any> delete(url: String, body: T? = null): Builder = method(
+            "DELETE",
+            url,
+            body
+        )
 
         private fun <T : Any> method(method: String, url: String, body: T?): Builder {
             this.method = method
@@ -212,10 +231,10 @@ public class NotificareRequest private constructor(
             return this
         }
 
-
         @Throws(IllegalArgumentException::class)
         public fun build(): NotificareRequest {
-            val method = requireNotNull(method) { "Please provide the HTTP method for the request." }
+            val method =
+                requireNotNull(method) { "Please provide the HTTP method for the request." }
 
             val request = Request.Builder()
                 .url(computeCompleteUrl())
@@ -255,8 +274,10 @@ public class NotificareRequest private constructor(
             return build().responseDecodable(klass)
         }
 
-        public fun <T : Any> responseDecodable(klass: KClass<T>, callback: NotificareCallback<T>): Unit =
-            toCallbackFunction(suspend { responseDecodable(klass) })(callback)
+        public fun <T : Any> responseDecodable(
+            klass: KClass<T>,
+            callback: NotificareCallback<T>
+        ): Unit = toCallbackFunction(suspend { responseDecodable(klass) })(callback)
 
         @Throws(IllegalArgumentException::class)
         private fun computeCompleteUrl(): HttpUrl {

@@ -32,6 +32,6 @@ public data class NotificareServicesInfo(
 
     public enum class Environment {
         TEST,
-        PRODUCTION;
+        PRODUCTION
     }
 }

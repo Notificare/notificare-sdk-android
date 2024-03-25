@@ -1,6 +1,10 @@
 package re.notifica.internal.ktx
 
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import re.notifica.InternalNotificareApi
 import re.notifica.Notificare
 import re.notifica.NotificareCallback
@@ -32,9 +36,10 @@ internal fun <T> awaitSuspend(fn: (suspend () -> T), callback: NotificareCallbac
 }
 
 @InternalNotificareApi
-public fun <T> toCallbackFunction(fn: suspend () -> T): (callback: NotificareCallback<T>) -> Unit = { callback ->
-    awaitSuspend(fn, callback)
-}
+public fun <T> toCallbackFunction(fn: suspend () -> T): (callback: NotificareCallback<T>) -> Unit =
+    { callback ->
+        awaitSuspend(fn, callback)
+    }
 
 @InternalNotificareApi
 public fun <A, T> toCallbackFunction(

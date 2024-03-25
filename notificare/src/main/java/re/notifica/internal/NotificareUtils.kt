@@ -9,14 +9,16 @@ import android.widget.ImageView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
+import java.util.GregorianCalendar
+import java.util.Locale
+import java.util.TimeZone
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 import kotlinx.coroutines.suspendCancellableCoroutine
 import re.notifica.InternalNotificareApi
 import re.notifica.Notificare
 import re.notifica.internal.ktx.applicationInfo
 import re.notifica.internal.ktx.packageInfo
-import java.util.*
-import kotlin.coroutines.resume
-import kotlin.coroutines.resumeWithException
 
 @InternalNotificareApi
 public object NotificareUtils {
@@ -73,26 +75,32 @@ public object NotificareUtils {
             .map { it.name.lowercase() }
     }
 
-    public suspend fun loadBitmap(url: String): Bitmap = suspendCancellableCoroutine { continuation ->
-        Glide.with(Notificare.requireContext())
-            .asBitmap()
-            .load(url)
-            .into(object : CustomTarget<Bitmap>() {
-                override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
-                    if (continuation.isActive) {
-                        continuation.resume(resource)
+    public suspend fun loadBitmap(url: String): Bitmap =
+        suspendCancellableCoroutine { continuation ->
+            Glide.with(Notificare.requireContext())
+                .asBitmap()
+                .load(url)
+                .into(object : CustomTarget<Bitmap>() {
+                    override fun onResourceReady(
+                        resource: Bitmap,
+                        transition: Transition<in Bitmap>?
+                    ) {
+                        if (continuation.isActive) {
+                            continuation.resume(resource)
+                        }
                     }
-                }
 
-                override fun onLoadFailed(errorDrawable: Drawable?) {
-                    if (continuation.isActive) {
-                        continuation.resumeWithException(RuntimeException("Failed to load the bit at $url"))
+                    override fun onLoadFailed(errorDrawable: Drawable?) {
+                        if (continuation.isActive) {
+                            continuation.resumeWithException(
+                                RuntimeException("Failed to load the bit at $url")
+                            )
+                        }
                     }
-                }
 
-                override fun onLoadCleared(placeholder: Drawable?) {}
-            })
-    }
+                    override fun onLoadCleared(placeholder: Drawable?) {}
+                })
+        }
 
     public fun loadImage(url: String, view: ImageView) {
         Glide.with(Notificare.requireContext())

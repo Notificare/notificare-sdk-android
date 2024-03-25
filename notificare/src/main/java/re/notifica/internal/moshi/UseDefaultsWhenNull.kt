@@ -1,8 +1,12 @@
 package re.notifica.internal.moshi
 
-import com.squareup.moshi.*
-import re.notifica.InternalNotificareApi
+import com.squareup.moshi.JsonAdapter
+import com.squareup.moshi.JsonReader
+import com.squareup.moshi.JsonWriter
+import com.squareup.moshi.Moshi
+import com.squareup.moshi.Types
 import java.lang.reflect.Type
+import re.notifica.InternalNotificareApi
 
 @InternalNotificareApi
 @Target(AnnotationTarget.CLASS)
@@ -10,7 +14,11 @@ import java.lang.reflect.Type
 public annotation class UseDefaultsWhenNull
 
 internal class UseDefaultsWhenNullFactory : JsonAdapter.Factory {
-    override fun create(type: Type, annotations: MutableSet<out Annotation>, moshi: Moshi): JsonAdapter<*>? {
+    override fun create(
+        type: Type,
+        annotations: MutableSet<out Annotation>,
+        moshi: Moshi
+    ): JsonAdapter<*>? {
         if (!Types.getRawType(type).isAnnotationPresent(UseDefaultsWhenNull::class.java)) {
             return null
         }

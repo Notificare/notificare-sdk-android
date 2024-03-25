@@ -9,12 +9,26 @@ import android.net.Uri
 import android.os.Build
 import androidx.annotation.MainThread
 import androidx.core.app.NotificationManagerCompat
-import kotlinx.coroutines.*
-import re.notifica.internal.*
+import java.lang.ref.WeakReference
+import java.net.URLEncoder
+import java.util.regex.Pattern
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import re.notifica.internal.NOTIFICARE_VERSION
+import re.notifica.internal.NotificareLaunchState
+import re.notifica.internal.NotificareLogger
+import re.notifica.internal.NotificareModule
+import re.notifica.internal.NotificareOptions
+import re.notifica.internal.NotificareUtils
 import re.notifica.internal.common.onMainThread
 import re.notifica.internal.ktx.coroutineScope
 import re.notifica.internal.ktx.toCallbackFunction
-import re.notifica.internal.network.push.*
+import re.notifica.internal.network.push.ApplicationResponse
+import re.notifica.internal.network.push.CreateNotificationReplyPayload
+import re.notifica.internal.network.push.DynamicLinkResponse
+import re.notifica.internal.network.push.NotificareUploadResponse
+import re.notifica.internal.network.push.NotificationResponse
 import re.notifica.internal.network.request.NotificareRequest
 import re.notifica.internal.storage.SharedPreferencesMigration
 import re.notifica.internal.storage.database.NotificareDatabase
@@ -24,9 +38,6 @@ import re.notifica.ktx.deviceImplementation
 import re.notifica.models.NotificareApplication
 import re.notifica.models.NotificareDynamicLink
 import re.notifica.models.NotificareNotification
-import java.lang.ref.WeakReference
-import java.net.URLEncoder
-import java.util.regex.Pattern
 
 public object Notificare {
 
@@ -88,7 +99,9 @@ public object Notificare {
             return if (::sharedPreferences.isInitialized) {
                 sharedPreferences.application
             } else {
-                NotificareLogger.warning("Calling this method requires Notificare to have been configured.")
+                NotificareLogger.warning(
+                    "Calling this method requires Notificare to have been configured."
+                )
                 null
             }
         }
@@ -96,7 +109,9 @@ public object Notificare {
             if (::sharedPreferences.isInitialized) {
                 sharedPreferences.application = value
             } else {
-                NotificareLogger.warning("Calling this method requires Notificare to have been configured.")
+                NotificareLogger.warning(
+                    "Calling this method requires Notificare to have been configured."
+                )
             }
         }
 
@@ -112,7 +127,9 @@ public object Notificare {
     public fun configure(context: Context, applicationKey: String, applicationSecret: String) {
         val environment: NotificareServicesInfo.Environment = run {
             try {
-                val useTestApi = context.resources.getBoolean(R.bool.notificare_services_use_test_api)
+                val useTestApi = context.resources.getBoolean(
+                    R.bool.notificare_services_use_test_api
+                )
                 if (useTestApi) return@run NotificareServicesInfo.Environment.TEST
             } catch (_: Resources.NotFoundException) {
             }
@@ -160,7 +177,9 @@ public object Notificare {
                         try {
                             this.launch()
                         } catch (e: Exception) {
-                            NotificareLogger.debug("Failed to launch '${module.name.lowercase()}': $e")
+                            NotificareLogger.debug(
+                                "Failed to launch '${module.name.lowercase()}': $e"
+                            )
                             throw e
                         }
                     }
@@ -171,15 +190,21 @@ public object Notificare {
                 val enabledServices = application.services.filter { it.value }.map { it.key }
                 val enabledModules = NotificareUtils.getEnabledPeerModules()
 
-                NotificareLogger.debug("/==================================================================================/")
+                NotificareLogger.debug(
+                    "/==================================================================================/"
+                )
                 NotificareLogger.debug("Notificare SDK is ready to use for application")
                 NotificareLogger.debug("App name: ${application.name}")
                 NotificareLogger.debug("App ID: ${application.id}")
                 NotificareLogger.debug("App services: ${enabledServices.joinToString(", ")}")
-                NotificareLogger.debug("/==================================================================================/")
+                NotificareLogger.debug(
+                    "/==================================================================================/"
+                )
                 NotificareLogger.debug("SDK version: $SDK_VERSION")
                 NotificareLogger.debug("SDK modules: ${enabledModules.joinToString(", ")}")
-                NotificareLogger.debug("/==================================================================================/")
+                NotificareLogger.debug(
+                    "/==================================================================================/"
+                )
 
                 // We're done launching. Send a broadcast.
                 requireContext().sendBroadcast(
@@ -200,7 +225,9 @@ public object Notificare {
                         try {
                             this.postLaunch()
                         } catch (e: Exception) {
-                            NotificareLogger.error("Failed to post-launch '${module.name.lowercase()}': $e")
+                            NotificareLogger.error(
+                                "Failed to post-launch '${module.name.lowercase()}': $e"
+                            )
                         }
                     }
                 }
@@ -230,7 +257,9 @@ public object Notificare {
                         try {
                             this.unlaunch()
                         } catch (e: Exception) {
-                            NotificareLogger.debug("Failed to un-launch ${module.name.lowercase()}': $e")
+                            NotificareLogger.debug(
+                                "Failed to un-launch ${module.name.lowercase()}': $e"
+                            )
                             throw e
                         }
                     }
@@ -316,7 +345,9 @@ public object Notificare {
     public fun fetchApplication(callback: NotificareCallback<NotificareApplication>): Unit =
         toCallbackFunction(::fetchApplication)(callback)
 
-    public suspend fun fetchNotification(id: String): NotificareNotification = withContext(Dispatchers.IO) {
+    public suspend fun fetchNotification(id: String): NotificareNotification = withContext(
+        Dispatchers.IO
+    ) {
         if (!isConfigured) throw NotificareNotConfiguredException()
 
         NotificareRequest.Builder()
@@ -327,16 +358,20 @@ public object Notificare {
     }
 
     @JvmStatic
-    public fun fetchNotification(id: String, callback: NotificareCallback<NotificareNotification>): Unit =
-        toCallbackFunction(::fetchNotification)(id, callback)
+    public fun fetchNotification(
+        id: String,
+        callback: NotificareCallback<NotificareNotification>
+    ): Unit = toCallbackFunction(::fetchNotification)(id, callback)
 
-    public suspend fun fetchDynamicLink(uri: Uri): NotificareDynamicLink = withContext(Dispatchers.IO) {
+    public suspend fun fetchDynamicLink(uri: Uri): NotificareDynamicLink = withContext(
+        Dispatchers.IO
+    ) {
         if (!isConfigured) throw NotificareNotConfiguredException()
 
         val uriEncodedLink = URLEncoder.encode(uri.toString(), "UTF-8")
 
         NotificareRequest.Builder()
-            .get("/link/dynamic/${uriEncodedLink}")
+            .get("/link/dynamic/$uriEncodedLink")
             .query("platform", "Android")
             .query("deviceID", device().currentDevice?.id)
             .query("userID", device().currentDevice?.userId)
@@ -345,8 +380,10 @@ public object Notificare {
     }
 
     @JvmStatic
-    public fun fetchDynamicLink(uri: Uri, callback: NotificareCallback<NotificareDynamicLink>): Unit =
-        toCallbackFunction(::fetchDynamicLink)(uri, callback)
+    public fun fetchDynamicLink(
+        uri: Uri,
+        callback: NotificareCallback<NotificareDynamicLink>
+    ): Unit = toCallbackFunction(::fetchDynamicLink)(uri, callback)
 
     public suspend fun createNotificationReply(
         notification: NotificareNotification,
@@ -379,28 +416,26 @@ public object Notificare {
             .response()
     }
 
-    public suspend fun callNotificationReplyWebhook(
-        uri: Uri,
-        data: Map<String, String>
-    ): Unit = withContext(Dispatchers.IO) {
-        val params = mutableMapOf<String, String?>()
+    public suspend fun callNotificationReplyWebhook(uri: Uri, data: Map<String, String>): Unit =
+        withContext(Dispatchers.IO) {
+            val params = mutableMapOf<String, String?>()
 
-        // Add all query parameters to the POST body.
-        uri.queryParameterNames.forEach {
-            params[it] = uri.getQueryParameter(it)
+            // Add all query parameters to the POST body.
+            uri.queryParameterNames.forEach {
+                params[it] = uri.getQueryParameter(it)
+            }
+
+            // Add our standard properties.
+            params["userID"] = device().currentDevice?.userId
+            params["deviceID"] = device().currentDevice?.id
+
+            // Add all the items passed via data.
+            params.putAll(data)
+
+            NotificareRequest.Builder()
+                .post(uri.toString(), params)
+                .response()
         }
-
-        // Add our standard properties.
-        params["userID"] = device().currentDevice?.userId
-        params["deviceID"] = device().currentDevice?.id
-
-        // Add all the items passed via data.
-        params.putAll(data)
-
-        NotificareRequest.Builder()
-            .post(uri.toString(), params)
-            .response()
-    }
 
     public suspend fun uploadNotificationReplyAsset(
         payload: ByteArray,
@@ -426,7 +461,9 @@ public object Notificare {
     public fun cancelNotification(id: String) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             val notificationManager =
-                requireContext().getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager
+                requireContext().getSystemService(
+                    Context.NOTIFICATION_SERVICE
+                ) as? NotificationManager
 
             if (notificationManager != null) {
                 val groupKey = notificationManager.activeNotifications.find {
@@ -469,15 +506,18 @@ public object Notificare {
     public fun handleTestDeviceIntent(intent: Intent): Boolean {
         val nonce = parseTestDeviceNonce(intent) ?: return false
 
-        deviceImplementation().registerTestDevice(nonce, object : NotificareCallback<Unit> {
-            override fun onSuccess(result: Unit) {
-                NotificareLogger.info("Device registered for testing.")
-            }
+        deviceImplementation().registerTestDevice(
+            nonce,
+            object : NotificareCallback<Unit> {
+                override fun onSuccess(result: Unit) {
+                    NotificareLogger.info("Device registered for testing.")
+                }
 
-            override fun onFailure(e: Exception) {
-                NotificareLogger.error("Failed to register the device for testing.", e)
+                override fun onFailure(e: Exception) {
+                    NotificareLogger.error("Failed to register the device for testing.", e)
+                }
             }
-        })
+        )
 
         return true
     }
@@ -487,19 +527,22 @@ public object Notificare {
         val uri = parseDynamicLink(intent) ?: return false
 
         NotificareLogger.debug("Handling a dynamic link.")
-        fetchDynamicLink(uri, object : NotificareCallback<NotificareDynamicLink> {
-            override fun onSuccess(result: NotificareDynamicLink) {
-                activity.startActivity(
-                    Intent()
-                        .setAction(Intent.ACTION_VIEW)
-                        .setData(Uri.parse(result.target))
-                )
-            }
+        fetchDynamicLink(
+            uri,
+            object : NotificareCallback<NotificareDynamicLink> {
+                override fun onSuccess(result: NotificareDynamicLink) {
+                    activity.startActivity(
+                        Intent()
+                            .setAction(Intent.ACTION_VIEW)
+                            .setData(Uri.parse(result.target))
+                    )
+                }
 
-            override fun onFailure(e: Exception) {
-                NotificareLogger.warning("Failed to fetch the dynamic link.", e)
+                override fun onFailure(e: Exception) {
+                    NotificareLogger.warning("Failed to fetch the dynamic link.", e)
+                }
             }
-        })
+        )
 
         return true
     }
@@ -513,7 +556,9 @@ public object Notificare {
         }
 
         if (servicesInfo.applicationKey.isBlank() || servicesInfo.applicationSecret.isBlank()) {
-            throw IllegalArgumentException("Notificare cannot be configured without an application key and secret.")
+            throw IllegalArgumentException(
+                "Notificare cannot be configured without an application key and secret."
+            )
         }
 
         this.context = WeakReference(context.applicationContext)
@@ -557,7 +602,7 @@ public object Notificare {
         val application = Notificare.application ?: return null
         val appLinksDomain = servicesInfo?.appLinksDomain ?: return null
 
-        if (uri.host == "${application.id}.${appLinksDomain}" && pathSegments.size >= 2 && pathSegments[0] == "testdevice") {
+        if (uri.host == "${application.id}.$appLinksDomain" && pathSegments.size >= 2 && pathSegments[0] == "testdevice") {
             return pathSegments[1]
         }
 
@@ -586,7 +631,11 @@ public object Notificare {
             return null
         }
 
-        if (!Pattern.matches("^([a-z0-9-])+\\.${Pattern.quote(servicesInfo.dynamicLinkDomain)}$", host)) {
+        if (!Pattern.matches(
+                "^([a-z0-9-])+\\.${Pattern.quote(servicesInfo.dynamicLinkDomain)}$",
+                host
+            )
+        ) {
             NotificareLogger.debug("Domain pattern wasn't a match.")
             return null
         }

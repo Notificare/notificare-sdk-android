@@ -3,11 +3,9 @@ package re.notifica
 import android.content.ContentProvider
 import android.content.ContentValues
 import android.content.Context
-import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.database.Cursor
 import android.net.Uri
-import android.os.Bundle
 import androidx.core.os.bundleOf
 import re.notifica.internal.NotificareLogger
 import re.notifica.internal.ktx.applicationInfo
@@ -27,7 +25,9 @@ internal class NotificareConfigurationProvider : ContentProvider() {
             Notificare.configure(context)
             NotificareLogger.info("Notificare configured automatically.")
         } else {
-            NotificareLogger.info("Automatic configuration is disabled. Ensure you call configure() when the application starts.")
+            NotificareLogger.info(
+                "Automatic configuration is disabled. Ensure you call configure() when the application starts."
+            )
         }
 
         return true

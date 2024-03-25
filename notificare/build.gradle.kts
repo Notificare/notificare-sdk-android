@@ -18,7 +18,10 @@ android {
     buildTypes {
         getByName("release") {
             isMinifyEnabled = false
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
         }
     }
 
@@ -30,8 +33,8 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
         freeCompilerArgs += listOf(
-                "-Xexplicit-api=strict",
-                "-opt-in=re.notifica.InternalNotificareApi",
+            "-Xexplicit-api=strict",
+            "-opt-in=re.notifica.InternalNotificareApi",
         )
     }
 

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<baseline version="1.0">
+    <file name="src/main/java/re/notifica/internal/storage/database/ktx/NotificareEvent.kt">
+        <error line="16" column="22" source="standard:discouraged-comment-location" />
+    </file>
+</baseline>

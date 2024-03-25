@@ -14,7 +14,11 @@ public interface NotificareEventsModule {
 
     public suspend fun logCustom(event: String, data: NotificareEventData? = null)
 
-    public fun logCustom(event: String, data: NotificareEventData? = null, callback: NotificareCallback<Unit>)
+    public fun logCustom(
+        event: String,
+        data: NotificareEventData? = null,
+        callback: NotificareCallback<Unit>
+    )
 }
 
 public interface NotificareInternalEventsModule {

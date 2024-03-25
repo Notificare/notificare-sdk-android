@@ -2,8 +2,19 @@ package re.notifica.internal.modules
 
 import android.content.Intent
 import androidx.annotation.Keep
-import kotlinx.coroutines.*
-import re.notifica.*
+import java.util.Calendar
+import java.util.Date
+import java.util.GregorianCalendar
+import java.util.Locale
+import java.util.UUID
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import re.notifica.Notificare
+import re.notifica.NotificareCallback
+import re.notifica.NotificareDeviceModule
+import re.notifica.NotificareInternalDeviceModule
+import re.notifica.NotificareNotReadyException
 import re.notifica.internal.NotificareLogger
 import re.notifica.internal.NotificareModule
 import re.notifica.internal.NotificareUtils
@@ -12,7 +23,14 @@ import re.notifica.internal.common.toByteArray
 import re.notifica.internal.common.toHex
 import re.notifica.internal.ktx.coroutineScope
 import re.notifica.internal.ktx.toCallbackFunction
-import re.notifica.internal.network.push.*
+import re.notifica.internal.network.push.DeviceDoNotDisturbResponse
+import re.notifica.internal.network.push.DeviceRegistrationPayload
+import re.notifica.internal.network.push.DeviceTagsPayload
+import re.notifica.internal.network.push.DeviceTagsResponse
+import re.notifica.internal.network.push.DeviceUpdateLanguagePayload
+import re.notifica.internal.network.push.DeviceUpdateTimeZonePayload
+import re.notifica.internal.network.push.DeviceUserDataResponse
+import re.notifica.internal.network.push.TestDeviceRegistrationPayload
 import re.notifica.internal.network.request.NotificareRequest
 import re.notifica.ktx.eventsImplementation
 import re.notifica.ktx.session
@@ -20,10 +38,11 @@ import re.notifica.models.NotificareDevice
 import re.notifica.models.NotificareDoNotDisturb
 import re.notifica.models.NotificareTransport
 import re.notifica.models.NotificareUserData
-import java.util.*
 
 @Keep
-internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDeviceModule,
+internal object NotificareDeviceModuleImpl :
+    NotificareModule(),
+    NotificareDeviceModule,
     NotificareInternalDeviceModule {
 
     // region Notificare Module
@@ -89,17 +108,24 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
             return "$preferredLanguage-$preferredRegion"
         }
 
-    override suspend fun register(userId: String?, userName: String?): Unit = withContext(Dispatchers.IO) {
+    override suspend fun register(userId: String?, userName: String?): Unit = withContext(
+        Dispatchers.IO
+    ) {
         checkPrerequisites()
 
         val device = checkNotNull(currentDevice)
         register(device.transport, device.id, userId, userName)
     }
 
-    override fun register(userId: String?, userName: String?, callback: NotificareCallback<Unit>): Unit =
-        toCallbackFunction(::register)(userId, userName, callback)
+    override fun register(
+        userId: String?,
+        userName: String?,
+        callback: NotificareCallback<Unit>
+    ): Unit = toCallbackFunction(::register)(userId, userName, callback)
 
-    override suspend fun updatePreferredLanguage(preferredLanguage: String?): Unit = withContext(Dispatchers.IO) {
+    override suspend fun updatePreferredLanguage(preferredLanguage: String?): Unit = withContext(
+        Dispatchers.IO
+    ) {
         checkPrerequisites()
 
         if (preferredLanguage != null) {
@@ -109,7 +135,9 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
                 !Locale.getISOLanguages().contains(parts[0]) ||
                 !Locale.getISOCountries().contains(parts[1])
             ) {
-                throw IllegalArgumentException("Invalid preferred language value: $preferredLanguage")
+                throw IllegalArgumentException(
+                    "Invalid preferred language value: $preferredLanguage"
+                )
             }
 
             val language = parts[0]
@@ -128,8 +156,10 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
         }
     }
 
-    override fun updatePreferredLanguage(preferredLanguage: String?, callback: NotificareCallback<Unit>): Unit =
-        toCallbackFunction(::updatePreferredLanguage)(preferredLanguage, callback)
+    override fun updatePreferredLanguage(
+        preferredLanguage: String?,
+        callback: NotificareCallback<Unit>
+    ): Unit = toCallbackFunction(::updatePreferredLanguage)(preferredLanguage, callback)
 
     override suspend fun fetchTags(): List<String> = withContext(Dispatchers.IO) {
         checkPrerequisites()
@@ -195,7 +225,9 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
     override fun clearTags(callback: NotificareCallback<Unit>): Unit =
         toCallbackFunction(::clearTags)(callback)
 
-    override suspend fun fetchDoNotDisturb(): NotificareDoNotDisturb? = withContext(Dispatchers.IO) {
+    override suspend fun fetchDoNotDisturb(): NotificareDoNotDisturb? = withContext(
+        Dispatchers.IO
+    ) {
         checkPrerequisites()
 
         val device = checkNotNull(currentDevice)
@@ -213,7 +245,9 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
     override fun fetchDoNotDisturb(callback: NotificareCallback<NotificareDoNotDisturb?>): Unit =
         toCallbackFunction(::fetchDoNotDisturb)(callback)
 
-    override suspend fun updateDoNotDisturb(dnd: NotificareDoNotDisturb): Unit = withContext(Dispatchers.IO) {
+    override suspend fun updateDoNotDisturb(dnd: NotificareDoNotDisturb): Unit = withContext(
+        Dispatchers.IO
+    ) {
         checkPrerequisites()
 
         val device = checkNotNull(currentDevice)
@@ -225,8 +259,10 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
         currentDevice = device.copy(dnd = dnd)
     }
 
-    override fun updateDoNotDisturb(dnd: NotificareDoNotDisturb, callback: NotificareCallback<Unit>): Unit =
-        toCallbackFunction(::updateDoNotDisturb)(dnd, callback)
+    override fun updateDoNotDisturb(
+        dnd: NotificareDoNotDisturb,
+        callback: NotificareCallback<Unit>
+    ): Unit = toCallbackFunction(::updateDoNotDisturb)(dnd, callback)
 
     override suspend fun clearDoNotDisturb(): Unit = withContext(Dispatchers.IO) {
         checkPrerequisites()
@@ -262,7 +298,9 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
     override fun fetchUserData(callback: NotificareCallback<NotificareUserData>): Unit =
         toCallbackFunction(::fetchUserData)(callback)
 
-    override suspend fun updateUserData(userData: NotificareUserData): Unit = withContext(Dispatchers.IO) {
+    override suspend fun updateUserData(userData: NotificareUserData): Unit = withContext(
+        Dispatchers.IO
+    ) {
         checkPrerequisites()
 
         val device = checkNotNull(currentDevice)
@@ -274,8 +312,10 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
         currentDevice = device.copy(userData = userData)
     }
 
-    override fun updateUserData(userData: NotificareUserData, callback: NotificareCallback<Unit>): Unit =
-        toCallbackFunction(::updateUserData)(userData, callback)
+    override fun updateUserData(
+        userData: NotificareUserData,
+        callback: NotificareCallback<Unit>
+    ): Unit = toCallbackFunction(::updateUserData)(userData, callback)
 
     // endregion
 
@@ -298,21 +338,19 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
         )
     }
 
-    override suspend fun registerPushToken(
-        transport: NotificareTransport,
-        token: String
-    ): Unit = withContext(Dispatchers.IO) {
-        if (transport == NotificareTransport.NOTIFICARE) {
-            throw IllegalArgumentException("Invalid transport '$transport'.")
-        }
+    override suspend fun registerPushToken(transport: NotificareTransport, token: String): Unit =
+        withContext(Dispatchers.IO) {
+            if (transport == NotificareTransport.NOTIFICARE) {
+                throw IllegalArgumentException("Invalid transport '$transport'.")
+            }
 
-        register(
-            transport = transport,
-            token = token,
-            userId = currentDevice?.userId,
-            userName = currentDevice?.userName,
-        )
-    }
+            register(
+                transport = transport,
+                token = token,
+                userId = currentDevice?.userId,
+                userName = currentDevice?.userName,
+            )
+        }
 
     // endregion
 
@@ -340,13 +378,21 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
         }
     }
 
-    private suspend fun register(transport: NotificareTransport, token: String, userId: String?, userName: String?) {
+    private suspend fun register(
+        transport: NotificareTransport,
+        token: String,
+        userId: String?,
+        userName: String?
+    ) {
         if (registrationChanged(token, userId, userName)) {
             val currentDevice = currentDevice
 
             val oldDeviceId =
-                if (currentDevice?.id != null && currentDevice.id != token) currentDevice.id
-                else null
+                if (currentDevice?.id != null && currentDevice.id != token) {
+                    currentDevice.id
+                } else {
+                    null
+                }
 
             val deviceRegistration = DeviceRegistrationPayload(
                 deviceId = token,
@@ -534,7 +580,9 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
     }
 }
 
-private fun DeviceRegistrationPayload.toStoredDevice(previous: NotificareDevice?): NotificareDevice {
+private fun DeviceRegistrationPayload.toStoredDevice(
+    previous: NotificareDevice?
+): NotificareDevice {
     return NotificareDevice(
         id = this.deviceId,
         userId = this.userId,

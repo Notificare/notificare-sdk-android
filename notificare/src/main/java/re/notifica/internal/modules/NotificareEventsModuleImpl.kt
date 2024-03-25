@@ -1,7 +1,11 @@
 package re.notifica.internal.modules
 
 import androidx.annotation.Keep
-import androidx.work.*
+import androidx.work.Constraints
+import androidx.work.ExistingWorkPolicy
+import androidx.work.NetworkType
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import re.notifica.Notificare
@@ -34,7 +38,9 @@ private const val EVENT_NOTIFICATION_OPEN = "re.notifica.event.notification.Open
 private const val TASK_UPLOAD_EVENTS = "re.notifica.tasks.events.Upload"
 
 @Keep
-internal object NotificareEventsModuleImpl : NotificareModule(), NotificareEventsModule,
+internal object NotificareEventsModuleImpl :
+    NotificareModule(),
+    NotificareEventsModule,
     NotificareInternalEventsModule {
 
     private val discardableEvents = listOf<String>()
@@ -62,8 +68,10 @@ internal object NotificareEventsModuleImpl : NotificareModule(), NotificareEvent
         log(event)
     }
 
-    override fun logApplicationException(throwable: Throwable, callback: NotificareCallback<Unit>): Unit =
-        toCallbackFunction(::logApplicationException)(throwable, callback)
+    override fun logApplicationException(
+        throwable: Throwable,
+        callback: NotificareCallback<Unit>
+    ): Unit = toCallbackFunction(::logApplicationException)(throwable, callback)
 
     override suspend fun logNotificationOpen(id: String) {
         log(
@@ -82,14 +90,22 @@ internal object NotificareEventsModuleImpl : NotificareModule(), NotificareEvent
         log("re.notifica.event.custom.$event", data)
     }
 
-    override fun logCustom(event: String, data: NotificareEventData?, callback: NotificareCallback<Unit>): Unit =
-        toCallbackFunction(::logCustom)(event, data, callback)
+    override fun logCustom(
+        event: String,
+        data: NotificareEventData?,
+        callback: NotificareCallback<Unit>
+    ): Unit = toCallbackFunction(::logCustom)(event, data, callback)
 
     // endregion
 
     // region Notificare Internal Events Module
 
-    override suspend fun log(event: String, data: NotificareEventData?, sessionId: String?, notificationId: String?) {
+    override suspend fun log(
+        event: String,
+        data: NotificareEventData?,
+        sessionId: String?,
+        notificationId: String?
+    ) {
         val device = Notificare.device().currentDevice
             ?: throw NotificareDeviceUnavailableException()
 
@@ -164,7 +180,9 @@ internal object NotificareEventsModuleImpl : NotificareModule(), NotificareEvent
     }
 
     private fun scheduleUploadWorker() {
-        NotificareLogger.debug("Scheduling a worker to process stored events when there's connectivity.")
+        NotificareLogger.debug(
+            "Scheduling a worker to process stored events when there's connectivity."
+        )
 
         WorkManager
             .getInstance(Notificare.requireContext())
@@ -181,7 +199,10 @@ internal object NotificareEventsModuleImpl : NotificareModule(), NotificareEvent
             )
     }
 
-    internal fun createThrowableEvent(throwable: Throwable, device: NotificareDevice): NotificareEvent {
+    internal fun createThrowableEvent(
+        throwable: Throwable,
+        device: NotificareDevice
+    ): NotificareEvent {
         val timestamp = System.currentTimeMillis()
 
         return NotificareEvent(

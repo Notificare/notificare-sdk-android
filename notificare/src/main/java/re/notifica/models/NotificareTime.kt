@@ -2,8 +2,8 @@ package re.notifica.models
 
 import android.os.Parcelable
 import com.squareup.moshi.JsonClass
+import java.util.Locale
 import kotlinx.parcelize.Parcelize
-import java.util.*
 
 @Parcelize
 @JsonClass(generateAdapter = true)
@@ -30,7 +30,11 @@ public data class NotificareTime(
             val hours = parts[0].toIntOrNull()
             val minutes = parts[1].toIntOrNull()
 
-            if (hours == null || minutes == null) throw IllegalArgumentException("Invalid time string.")
+            if (hours == null || minutes == null) {
+                throw IllegalArgumentException(
+                    "Invalid time string."
+                )
+            }
 
             return Pair(hours, minutes)
         }

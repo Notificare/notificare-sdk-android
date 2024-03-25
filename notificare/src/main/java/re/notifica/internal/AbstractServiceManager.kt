@@ -32,14 +32,18 @@ public abstract class AbstractServiceManager {
                     return implementation
                 }
 
-                NotificareLogger.debug("Preferred peer dependency and its mobile services counterpart is not available.")
+                NotificareLogger.debug(
+                    "Preferred peer dependency and its mobile services counterpart is not available."
+                )
             }
 
             if (preferredMobileServices != GOOGLE_MOBILE_SERVICES) {
                 implementation = implementation(gms)
 
                 if (implementation != null && implementation.available) {
-                    NotificareLogger.debug("Detected GMS peer dependency. Setting it as the target platform.")
+                    NotificareLogger.debug(
+                        "Detected GMS peer dependency. Setting it as the target platform."
+                    )
                     return implementation
                 }
             }
@@ -48,13 +52,19 @@ public abstract class AbstractServiceManager {
                 implementation = implementation(hms)
 
                 if (implementation != null && implementation.available) {
-                    NotificareLogger.debug("Detected HMS peer dependency. Setting it as the target platform.")
+                    NotificareLogger.debug(
+                        "Detected HMS peer dependency. Setting it as the target platform."
+                    )
                     return implementation
                 }
             }
 
-            NotificareLogger.warning("No platform dependencies have been detected. Please include one of the platform-specific packages.")
-            throw IllegalStateException("No platform dependencies have been detected. Please include one of the platform-specific packages.")
+            NotificareLogger.warning(
+                "No platform dependencies have been detected. Please include one of the platform-specific packages."
+            )
+            throw IllegalStateException(
+                "No platform dependencies have been detected. Please include one of the platform-specific packages."
+            )
         }
 
         @PublishedApi
