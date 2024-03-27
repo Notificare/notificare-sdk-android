@@ -5,7 +5,6 @@
     <ID>ComplexCondition:LocationUtils.kt$x1 &lt;= location.longitude &amp;&amp; x2 &gt; location.longitude || x1 &gt;= location.longitude &amp;&amp; x2 &lt; location.longitude</ID>
     <ID>ConstructorParameterNaming:Responses.kt$FetchBeaconsResponse.Beacon$val _id: String</ID>
     <ID>ConstructorParameterNaming:Responses.kt$FetchRegionsResponse.Region$val _id: String</ID>
-    <ID>CyclomaticComplexMethod:LocalStorage.kt$LocalStorage$fun updateBeaconSession(beacons: List&lt;NotificareBeacon&gt;, location: Location?)</ID>
     <ID>CyclomaticComplexMethod:NotificareGeoImpl.kt$NotificareGeoImpl$override fun handleLocationUpdate(location: Location)</ID>
     <ID>EmptyFunctionBlock:NotificareGeoImpl.kt$NotificareGeoImpl.&lt;no name provided&gt;${}</ID>
     <ID>LargeClass:NotificareGeoImpl.kt$NotificareGeoImpl : NotificareModuleNotificareGeoNotificareInternalGeoNotificareGeoIntegration</ID>
@@ -16,21 +15,21 @@
     <ID>MagicNumber:Augment.kt$30</ID>
     <ID>MagicNumber:Augment.kt$60</ID>
     <ID>MagicNumber:Events.kt$1000.0</ID>
+    <ID>MagicNumber:LocationUtils.kt$15</ID>
     <ID>MagicNumber:LocationUtils.kt$180.0</ID>
     <ID>MagicNumber:LocationUtils.kt$360.0</ID>
     <ID>MagicNumber:LocationUtils.kt$90.0</ID>
     <ID>MatchingDeclarationName:Exceptions.kt$NotificareLocationHardwareUnavailableException : Exception</ID>
     <ID>MaxLineLength:LocalStorage.kt$LocalStorage$"Cannot update the beacon session for region with major '${entry.key}' since there's no ongoing session."</ID>
     <ID>MaxLineLength:LocalStorage.kt$LocalStorage$NotificareLogger.warning("Cannot update the beacon session for region with major '${entry.key}' since the corresponding region is not being monitored.")</ID>
-    <ID>MaxLineLength:LocalStorage.kt$LocalStorage$it.major == beacon.major &amp;&amp; it.minor == beacon.minor &amp;&amp; it.proximity == beacon.proximity.ordinal</ID>
     <ID>MaxLineLength:LocationUtils.kt$// we have, most likely, just jumped the dateline (could do further validation to this effect if needed). normalise the numbers.</ID>
     <ID>MaxLineLength:LocationUtils.kt$if</ID>
     <ID>MaxLineLength:NotificareGeoImpl.kt$NotificareGeoImpl$"The monitored regions limit cannot exceed the OS limit of $MAX_MONITORED_REGIONS_LIMIT. Using the OS limit for geofences."</ID>
     <ID>MaxLineLength:NotificareGeoImpl.kt$NotificareGeoImpl$NotificareLogger.warning("Cannot start the session for beacon '${beacon.name}' since the corresponding region is not being monitored.")</ID>
     <ID>MaxLineLength:NotificareGeoImpl.kt$NotificareGeoImpl$NotificareLogger.warning("Received a ranging beacons event for non-cached beacon '${b.major}:${b.minor}'.")</ID>
     <ID>MaxLineLength:NotificareGeoImpl.kt$NotificareGeoImpl$if (hasBackgroundLocationPermission &amp;&amp; hasPreciseLocationPermission &amp;&amp; localStorage.monitoredRegions.isEmpty()) return true</ID>
-    <ID>MaxLineLength:NotificareGeoImpl.kt$NotificareGeoImpl$if (location.distanceTo(lastKnownLocation) &gt; Notificare.DEFAULT_LOCATION_UPDATES_SMALLEST_DISPLACEMENT) return true</ID>
     <ID>NestedBlockDepth:LocationUtils.kt$private fun NotificareRegion.AdvancedGeometry.contains(location: Location): Boolean</ID>
+    <ID>ReturnCount:LocationUtils.kt$internal fun NotificareBeaconSession.canInsertBeacon(beacon: NotificareBeacon): Boolean</ID>
     <ID>ReturnCount:NotificareGeoImpl.kt$NotificareGeoImpl$private fun shouldUpdateLocation(location: Location): Boolean</ID>
     <ID>SwallowedException:BeaconServiceManager.kt$BeaconServiceManager.Companion$e: Exception</ID>
     <ID>SwallowedException:NotificareGeoImpl.kt$NotificareGeoImpl$e: Exception</ID>

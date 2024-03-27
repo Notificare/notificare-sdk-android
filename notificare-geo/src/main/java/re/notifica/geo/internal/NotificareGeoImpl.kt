@@ -14,7 +14,7 @@ import android.location.LocationManager
 import android.os.Build
 import androidx.annotation.Keep
 import androidx.core.content.ContextCompat
-import java.util.*
+import java.util.Date
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
@@ -38,7 +38,6 @@ import re.notifica.geo.internal.network.push.RegionTriggerPayload
 import re.notifica.geo.internal.network.push.UpdateBluetoothPayload
 import re.notifica.geo.internal.network.push.UpdateDeviceLocationPayload
 import re.notifica.geo.internal.storage.LocalStorage
-import re.notifica.geo.ktx.DEFAULT_LOCATION_UPDATES_SMALLEST_DISPLACEMENT
 import re.notifica.geo.ktx.INTENT_ACTION_BEACONS_RANGED
 import re.notifica.geo.ktx.INTENT_ACTION_BEACON_ENTERED
 import re.notifica.geo.ktx.INTENT_ACTION_BEACON_EXITED
@@ -52,6 +51,7 @@ import re.notifica.geo.ktx.INTENT_EXTRA_REGION
 import re.notifica.geo.ktx.logBeaconSession
 import re.notifica.geo.ktx.logRegionSession
 import re.notifica.geo.ktx.loyaltyIntegration
+import re.notifica.geo.ktx.takeEvenlySpaced
 import re.notifica.geo.models.NotificareBeacon
 import re.notifica.geo.models.NotificareBeaconSession
 import re.notifica.geo.models.NotificareLocation
@@ -74,6 +74,8 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
     private const val DEFAULT_MONITORED_REGIONS_LIMIT: Int = 10
     private const val MAX_MONITORED_REGIONS_LIMIT: Int = 100
     private const val MAX_MONITORED_BEACONS_LIMIT: Int = 50
+    private const val SMALLEST_DISPLACEMENT_METERS: Int = 100
+    private const val MAX_REGION_SESSION_LOCATIONS: Int = 100
 
     private lateinit var localStorage: LocalStorage
     private var geocoder: Geocoder? = null
@@ -402,11 +404,6 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
         }
 
         //
-        // Handle ongoing region sessions.
-        //
-        updateRegionSessions(NotificareLocation(location))
-
-        //
         // Handle polygon enters & exits.
         //
         localStorage.monitoredRegions
@@ -457,6 +454,9 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
         if (shouldUpdateLocation(location)) {
             // Keep a reference to the last known location.
             lastKnownLocation = location
+
+            // Add this location to the region session.
+            updateRegionSessions(NotificareLocation(location))
 
             Notificare.coroutineScope.launch {
                 try {
@@ -819,7 +819,7 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
         val lastKnownLocation = lastKnownLocation ?: return true
 
         // Update the location when the user moves away enough of a distance.
-        if (location.distanceTo(lastKnownLocation) > Notificare.DEFAULT_LOCATION_UPDATES_SMALLEST_DISPLACEMENT) return true
+        if (location.distanceTo(lastKnownLocation) >= SMALLEST_DISPLACEMENT_METERS) return true
 
         // Update the location when we can monitor geofences but no fences were loaded yet.
         // This typically happens when tracking the user's location and later upgrading to background permission.
@@ -1026,6 +1026,8 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
             return
         }
 
+        localStorage.enteredRegions = localStorage.enteredRegions + region.id
+
         val payload = RegionTriggerPayload(
             deviceID = device.id,
             region = region.id,
@@ -1035,7 +1037,6 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
             .post("/trigger/re.notifica.trigger.region.Enter", payload)
             .response(object : NotificareCallback<Response> {
                 override fun onSuccess(result: Response) {
-                    localStorage.enteredRegions = localStorage.enteredRegions + region.id
                     NotificareLogger.debug("Triggered region enter.")
                 }
 
@@ -1051,6 +1052,8 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
             return
         }
 
+        localStorage.enteredRegions = localStorage.enteredRegions - region.id
+
         val payload = RegionTriggerPayload(
             deviceID = device.id,
             region = region.id,
@@ -1060,7 +1063,6 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
             .post("/trigger/re.notifica.trigger.region.Exit", payload)
             .response(object : NotificareCallback<Response> {
                 override fun onSuccess(result: Response) {
-                    localStorage.enteredRegions = localStorage.enteredRegions - region.id
                     NotificareLogger.debug("Triggered region exit.")
                 }
 
@@ -1076,6 +1078,8 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
             return
         }
 
+        localStorage.enteredBeacons = localStorage.enteredBeacons + beacon.id
+
         val payload = BeaconTriggerPayload(
             deviceID = device.id,
             beacon = beacon.id,
@@ -1085,7 +1089,6 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
             .post("/trigger/re.notifica.trigger.beacon.Enter", payload)
             .response(object : NotificareCallback<Response> {
                 override fun onSuccess(result: Response) {
-                    localStorage.enteredBeacons = localStorage.enteredBeacons + beacon.id
                     NotificareLogger.debug("Triggered beacon enter.")
                 }
 
@@ -1101,6 +1104,8 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
             return
         }
 
+        localStorage.enteredBeacons = localStorage.enteredBeacons - beacon.id
+
         val payload = BeaconTriggerPayload(
             deviceID = device.id,
             beacon = beacon.id,
@@ -1110,7 +1115,6 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
             .post("/trigger/re.notifica.trigger.beacon.Exit", payload)
             .response(object : NotificareCallback<Response> {
                 override fun onSuccess(result: Response) {
-                    localStorage.enteredBeacons = localStorage.enteredBeacons - beacon.id
                     NotificareLogger.debug("Triggered beacon exit.")
                 }
 
@@ -1140,9 +1144,18 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
     private fun stopRegionSession(region: NotificareRegion) {
         NotificareLogger.debug("Stopping session for region '${region.name}'.")
 
-        val session = localStorage.regionSessions[region.id] ?: run {
+        var session = localStorage.regionSessions[region.id] ?: run {
             NotificareLogger.warning("Skipping region session end since no session exists for region '${region.name}'.")
             return
+        }
+
+        // Remove the session from local storage.
+        localStorage.removeRegionSession(session)
+
+        if (session.locations.size > MAX_REGION_SESSION_LOCATIONS) {
+            session = session.copy(
+                locations = session.locations.takeEvenlySpaced(MAX_REGION_SESSION_LOCATIONS).toMutableList(),
+            )
         }
 
         // Submit the event for processing.
@@ -1154,9 +1167,6 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
                 override fun onFailure(e: Exception) {}
             }
         )
-
-        // Remove the session from local storage.
-        localStorage.removeRegionSession(session)
     }
 
     private fun startBeaconSession(beacon: NotificareBeacon) {
@@ -1191,6 +1201,9 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
             return
         }
 
+        // Remove the session from local storage.
+        localStorage.removeBeaconSession(session)
+
         // Submit the event for processing.
         Notificare.events().logBeaconSession(
             session,
@@ -1200,9 +1213,6 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
                 override fun onFailure(e: Exception) {}
             }
         )
-
-        // Remove the session from local storage.
-        localStorage.removeBeaconSession(session)
     }
 
     private fun clearRegions() {
