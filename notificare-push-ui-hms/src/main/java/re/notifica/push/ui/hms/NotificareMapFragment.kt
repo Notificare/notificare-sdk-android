@@ -99,12 +99,7 @@ public class NotificareMapFragment : SupportMapFragment(), OnMapReadyCallback {
             val marker = notificationMarkers.first()
 
             view?.waitForLayout {
-                map.moveCamera(
-                    CameraUpdateFactory.newLatLngZoom(
-                        LatLng(marker.latitude, marker.longitude),
-                        17f
-                    )
-                )
+                map.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(marker.latitude, marker.longitude), 17f))
             }
 
             return
