@@ -16,11 +16,7 @@ import re.notifica.push.ui.notifications.fragments.base.NotificationFragment
 @Keep
 public class NotificareRateFragment : NotificationFragment() {
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return super.onCreateView(inflater, container, savedInstanceState).also {
             try {
                 val uri = Uri.parse("market://details?id=${inflater.context.packageName}")
