@@ -49,8 +49,7 @@ public class ScannableActivity : AppCompatActivity() {
             ScanMode.NFC -> setupNfcAdapter()
             ScanMode.QR_CODE -> {
                 val manager = Notificare.scannablesImplementation().serviceManager ?: run {
-                    val error =
-                        IllegalStateException("No scannables dependencies have been detected.")
+                    val error = IllegalStateException("No scannables dependencies have been detected.")
                     Notificare.scannablesImplementation().notifyListeners(error)
 
                     finish()

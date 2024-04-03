@@ -48,9 +48,7 @@ internal object NotificareScannablesImpl : NotificareModule(), NotificareScannab
                 return false
             }
 
-            val manager = Notificare.requireContext().getSystemService(
-                Context.NFC_SERVICE
-            ) as? NfcManager
+            val manager = Notificare.requireContext().getSystemService(Context.NFC_SERVICE) as? NfcManager
             val adapter = manager?.defaultAdapter ?: return false
 
             return adapter.isEnabled
