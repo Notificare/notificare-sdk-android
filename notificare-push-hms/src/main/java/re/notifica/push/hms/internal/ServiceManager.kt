@@ -35,9 +35,7 @@ public class ServiceManager : ServiceManager() {
                 // read from agconnect-services.json
                 val options = AGConnectOptionsBuilder().build(context)
                 val appId = options.getString("client/app_id")
-                val token = HmsInstanceId.getInstance(
-                    context
-                ).getToken(appId, HmsMessaging.DEFAULT_TOKEN_SCOPE)
+                val token = HmsInstanceId.getInstance(context).getToken(appId, HmsMessaging.DEFAULT_TOKEN_SCOPE)
 
                 if (token != null && token.isNotEmpty()) {
                     Notificare.coroutineScope.launch {
@@ -45,10 +43,7 @@ public class ServiceManager : ServiceManager() {
                             Notificare.pushInternal().registerPushToken(transport, token = token)
                             NotificareLogger.debug("Registered the device with a HMS token.")
                         } catch (e: Exception) {
-                            NotificareLogger.debug(
-                                "Failed to register the device with a HMS token.",
-                                e
-                            )
+                            NotificareLogger.debug("Failed to register the device with a HMS token.", e)
                         }
                     }
                 } else {
