@@ -5,7 +5,5 @@
     <ID>ConstructorParameterNaming:RawUserInboxResponse.kt$RawUserInboxResponse.RawUserInboxItem$val _id: String</ID>
     <ID>ThrowsCount:NotificareUserInboxImpl.kt$NotificareUserInboxImpl$@Throws private fun checkPrerequisites()</ID>
     <ID>TooGenericExceptionCaught:UserInboxResponseAdapter.kt$UserInboxResponseAdapter$e: Exception</ID>
-    <ID>WildcardImport:NotificareUserInboxImpl.kt$import re.notifica.*</ID>
-    <ID>WildcardImport:UserInboxResponseAdapter.kt$import com.squareup.moshi.*</ID>
   </CurrentIssues>
 </SmellBaseline>
