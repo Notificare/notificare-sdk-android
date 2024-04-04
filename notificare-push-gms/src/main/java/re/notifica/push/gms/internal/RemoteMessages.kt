@@ -10,9 +10,7 @@ import re.notifica.push.models.NotificareSystemRemoteMessage
 import re.notifica.push.models.NotificareUnknownNotification
 import re.notifica.push.models.NotificareUnknownRemoteMessage
 
-internal fun NotificareUnknownRemoteMessage(
-    message: RemoteMessage
-): NotificareUnknownRemoteMessage {
+internal fun NotificareUnknownRemoteMessage(message: RemoteMessage): NotificareUnknownRemoteMessage {
     return NotificareUnknownRemoteMessage(
         messageId = message.messageId,
         sentTime = message.sentTime,
@@ -80,9 +78,7 @@ internal fun NotificareSystemRemoteMessage(message: RemoteMessage): NotificareSy
     )
 }
 
-internal fun NotificareNotificationRemoteMessage(
-    message: RemoteMessage
-): NotificareNotificationRemoteMessage {
+internal fun NotificareNotificationRemoteMessage(message: RemoteMessage): NotificareNotificationRemoteMessage {
     val ignoreKeys = listOf(
         "id", "notification_id", "notification_type", "notification_channel", "notification_group", "alert",
         "alert_title", "alert_subtitle", "attachment", "action_category", "inbox_item_id", "inbox_item_visible",

@@ -32,10 +32,7 @@ public class ServiceManager : ServiceManager() {
 
                 Notificare.coroutineScope.launch {
                     try {
-                        Notificare.pushInternal().registerPushToken(
-                            transport,
-                            token = requireNotNull(task.result)
-                        )
+                        Notificare.pushInternal().registerPushToken(transport, token = requireNotNull(task.result))
                         NotificareLogger.debug("Registered the device with a FCM token.")
                     } catch (e: Exception) {
                         NotificareLogger.debug("Failed to register the device with a FCM token.", e)
