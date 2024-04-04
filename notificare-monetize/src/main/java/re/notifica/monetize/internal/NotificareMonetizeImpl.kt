@@ -144,10 +144,7 @@ internal object NotificareMonetizeImpl : NotificareModule(), NotificareMonetize,
                     try {
                         adapter.fromJson(entity.purchaseJson)
                     } catch (e: Exception) {
-                        NotificareLogger.warning(
-                            "Failed to decode stored purchase '${entity.id}'.",
-                            e
-                        )
+                        NotificareLogger.warning("Failed to decode stored purchase '${entity.id}'.", e)
                         null
                     }
                 }
@@ -221,16 +218,13 @@ internal object NotificareMonetizeImpl : NotificareModule(), NotificareMonetize,
 
     // region Notificare Internal Monetize
 
-    override suspend fun verifyPurchase(purchase: NotificarePurchaseVerification): Unit =
-        withContext(
-            Dispatchers.IO
-        ) {
-            val device = Notificare.device().currentDevice ?: throw NotificareDeviceUnavailableException()
+    override suspend fun verifyPurchase(purchase: NotificarePurchaseVerification): Unit = withContext(Dispatchers.IO) {
+        val device = Notificare.device().currentDevice ?: throw NotificareDeviceUnavailableException()
 
-            NotificareRequest.Builder()
-                .post("/purchase/fordevice/${device.id}", purchase)
-                .response()
-        }
+        NotificareRequest.Builder()
+            .post("/purchase/fordevice/${device.id}", purchase)
+            .response()
+    }
 
     // endregion
 
@@ -248,9 +242,7 @@ internal object NotificareMonetizeImpl : NotificareModule(), NotificareMonetize,
 
         if (application.services[NotificareApplication.ServiceKeys.IN_APP_PURCHASE] != true) {
             NotificareLogger.warning("Notificare in-app purchase functionality is not enabled.")
-            throw NotificareServiceUnavailableException(
-                service = NotificareApplication.ServiceKeys.IN_APP_PURCHASE
-            )
+            throw NotificareServiceUnavailableException(service = NotificareApplication.ServiceKeys.IN_APP_PURCHASE)
         }
     }
 }
