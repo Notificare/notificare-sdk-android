@@ -108,11 +108,7 @@ public open class NotificareGeoIntentReceiver : BroadcastReceiver() {
         )
     }
 
-    protected open fun onBeaconsRanged(
-        context: Context,
-        region: NotificareRegion,
-        beacons: List<NotificareBeacon>
-    ) {
+    protected open fun onBeaconsRanged(context: Context, region: NotificareRegion, beacons: List<NotificareBeacon>) {
         NotificareLogger.debug(
             "Ranged beacons, please override onBeaconsRanged if you want to receive these intents."
         )

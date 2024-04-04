@@ -20,14 +20,13 @@
     <ID>MagicNumber:LocationUtils.kt$360.0</ID>
     <ID>MagicNumber:LocationUtils.kt$90.0</ID>
     <ID>MatchingDeclarationName:Exceptions.kt$NotificareLocationHardwareUnavailableException : Exception</ID>
+    <ID>MaxLineLength:LocalStorage.kt$LocalStorage$"Cannot update the beacon session for region with major '${entry.key}' since the corresponding region is not being monitored."</ID>
     <ID>MaxLineLength:LocalStorage.kt$LocalStorage$"Cannot update the beacon session for region with major '${entry.key}' since there's no ongoing session."</ID>
-    <ID>MaxLineLength:LocalStorage.kt$LocalStorage$NotificareLogger.warning("Cannot update the beacon session for region with major '${entry.key}' since the corresponding region is not being monitored.")</ID>
     <ID>MaxLineLength:LocationUtils.kt$// we have, most likely, just jumped the dateline (could do further validation to this effect if needed). normalise the numbers.</ID>
     <ID>MaxLineLength:LocationUtils.kt$if</ID>
+    <ID>MaxLineLength:NotificareGeoImpl.kt$NotificareGeoImpl$"Cannot start the session for beacon '${beacon.name}' since the corresponding region is not being monitored."</ID>
     <ID>MaxLineLength:NotificareGeoImpl.kt$NotificareGeoImpl$"The monitored regions limit cannot exceed the OS limit of $MAX_MONITORED_REGIONS_LIMIT. Using the OS limit for geofences."</ID>
-    <ID>MaxLineLength:NotificareGeoImpl.kt$NotificareGeoImpl$NotificareLogger.warning("Cannot start the session for beacon '${beacon.name}' since the corresponding region is not being monitored.")</ID>
-    <ID>MaxLineLength:NotificareGeoImpl.kt$NotificareGeoImpl$NotificareLogger.warning("Received a ranging beacons event for non-cached beacon '${b.major}:${b.minor}'.")</ID>
-    <ID>MaxLineLength:NotificareGeoImpl.kt$NotificareGeoImpl$if (hasBackgroundLocationPermission &amp;&amp; hasPreciseLocationPermission &amp;&amp; localStorage.monitoredRegions.isEmpty()) return true</ID>
+    <ID>MaxLineLength:NotificareGeoImpl.kt$NotificareGeoImpl$if</ID>
     <ID>NestedBlockDepth:LocationUtils.kt$private fun NotificareRegion.AdvancedGeometry.contains(location: Location): Boolean</ID>
     <ID>ReturnCount:LocationUtils.kt$internal fun NotificareBeaconSession.canInsertBeacon(beacon: NotificareBeacon): Boolean</ID>
     <ID>ReturnCount:NotificareGeoImpl.kt$NotificareGeoImpl$private fun shouldUpdateLocation(location: Location): Boolean</ID>

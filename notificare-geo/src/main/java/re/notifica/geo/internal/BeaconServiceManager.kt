@@ -28,9 +28,7 @@ public abstract class BeaconServiceManager(
 
             return try {
                 val klass = Class.forName(FQN)
-                klass.getConstructor(
-                    String::class.java
-                ).newInstance(proximityUUID) as? BeaconServiceManager
+                klass.getConstructor(String::class.java).newInstance(proximityUUID) as? BeaconServiceManager
             } catch (e: Exception) {
                 null
             }

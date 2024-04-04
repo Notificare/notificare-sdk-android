@@ -1,21 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <baseline version="1.0">
     <file name="src/main/java/re/notifica/geo/internal/LocationUtils.kt">
-        <error line="3" column="1" source="standard:import-ordering" />
+        <error line="60" column="1" source="standard:max-line-length" />
     </file>
     <file name="src/main/java/re/notifica/geo/internal/NotificareGeoImpl.kt">
-        <error line="3" column="1" source="standard:import-ordering" />
-        <error line="1154" column="1" source="standard:indent" />
-        <error line="1155" column="1" source="standard:indent" />
-        <error line="1155" column="9" source="standard:wrapping" />
-        <error line="1155" column="10" source="standard:argument-list-wrapping" />
-        <error line="1199" column="1" source="standard:indent" />
-        <error line="1200" column="1" source="standard:indent" />
-        <error line="1200" column="9" source="standard:wrapping" />
-        <error line="1200" column="10" source="standard:argument-list-wrapping" />
+        <error line="225" column="1" source="standard:max-line-length" />
+        <error line="794" column="1" source="standard:max-line-length" />
+        <error line="1142" column="1" source="standard:max-line-length" />
+        <error line="1165" column="1" source="standard:max-line-length" />
     </file>
     <file name="src/main/java/re/notifica/geo/internal/storage/LocalStorage.kt">
-        <error line="3" column="1" source="standard:import-ordering" />
-        <error line="298" column="46" source="standard:wrapping" />
+        <error line="254" column="1" source="standard:max-line-length" />
+        <error line="271" column="1" source="standard:max-line-length" />
     </file>
 </baseline>
