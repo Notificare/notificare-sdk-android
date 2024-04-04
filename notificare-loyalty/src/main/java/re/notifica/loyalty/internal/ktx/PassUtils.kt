@@ -40,10 +40,7 @@ internal fun NotificarePass.PassbookField.formatDate(): String? {
     }
 
     val outputFormat: DateFormat = when {
-        dateStyle != null && timeStyle != null -> DateFormat.getDateTimeInstance(
-            dateStyle,
-            timeStyle
-        )
+        dateStyle != null && timeStyle != null -> DateFormat.getDateTimeInstance(dateStyle, timeStyle)
         dateStyle != null -> DateFormat.getDateInstance(dateStyle)
         timeStyle != null -> DateFormat.getTimeInstance(timeStyle)
         else -> return null
@@ -103,9 +100,7 @@ internal fun NotificarePass.Companion.parseDate(
     return getDateFormat(dateStr)?.parse(dateStr)
 }
 
-internal fun NotificarePass.getUpdatedFields(
-    oldPass: NotificarePass
-): List<NotificarePass.PassbookField> {
+internal fun NotificarePass.getUpdatedFields(oldPass: NotificarePass): List<NotificarePass.PassbookField> {
     val auxiliaryFields = auxiliaryFields
         .filter { newField ->
             val oldField = oldPass.auxiliaryFields.firstOrNull { it.key == newField.key }
@@ -165,16 +160,12 @@ private fun getDateFormat(dateStr: String): DateFormat? {
             dateStr.matches("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}[+\\-]\\d{2}:\\d{2}$".toRegex()) ||
             dateStr.matches("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}[+\\-]\\d{4}$".toRegex()) -> "yyyy-MM-dd'T'HH:mmZ"
 
-        dateStr.matches(
-            "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}$".toRegex()
-        ) -> "yyyy-MM-dd'T'HH:mm:ss"
+        dateStr.matches("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}$".toRegex()) -> "yyyy-MM-dd'T'HH:mm:ss"
         dateStr.matches("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$".toRegex()) ||
             dateStr.matches("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}[+\\-]\\d{2}:\\d{2}$".toRegex()) ||
             dateStr.matches("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}[+\\-]\\d{4}$".toRegex()) -> "yyyy-MM-dd'T'HH:mm:ssZ"
 
-        dateStr.matches(
-            "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}.\\d{3}$".toRegex()
-        ) -> "yyyy-MM-dd'T'HH:mm:ss.SSS"
+        dateStr.matches("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}.\\d{3}$".toRegex()) -> "yyyy-MM-dd'T'HH:mm:ss.SSS"
         dateStr.matches("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}.\\d{3}Z$".toRegex()) ||
             dateStr.matches("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}.\\d{3}[+\\-]\\d{2}:\\d{2}$".toRegex()) ||
             dateStr.matches("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}.\\d{3}[+\\-]\\d{4}$".toRegex()) -> "yyyy-MM-dd'T'HH:mm:ss.SSSZ"

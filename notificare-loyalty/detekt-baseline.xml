@@ -6,7 +6,6 @@
     <ID>CyclomaticComplexMethod:PassUtils.kt$internal fun NotificarePass.PassbookField.formatDate(): String?</ID>
     <ID>InstanceOfCheckForException:NotificareLoyaltyImpl.kt$NotificareLoyaltyImpl$e is NetworkException.ValidationException</ID>
     <ID>LargeClass:NotificareLoyaltyImpl.kt$NotificareLoyaltyImpl : NotificareModuleNotificareLoyaltyNotificareLoyaltyIntegrationListener</ID>
-    <ID>LongMethod:NotificareLoyaltyImpl.kt$NotificareLoyaltyImpl$private fun generateRelevanceNotification(pass: NotificarePass, relevanceText: String)</ID>
     <ID>MagicNumber:NotificareLoyaltyImpl.kt$NotificareLoyaltyImpl$1000</ID>
     <ID>MagicNumber:NotificareLoyaltyImpl.kt$NotificareLoyaltyImpl$200</ID>
     <ID>MagicNumber:NotificareLoyaltyImpl.kt$NotificareLoyaltyImpl$204</ID>
@@ -17,7 +16,7 @@
     <ID>MatchingDeclarationName:Payloads.kt$RegisterPassPayload</ID>
     <ID>MaxLineLength:NotificareLoyaltyImpl.kt$NotificareLoyaltyImpl$// val deleteIntent = Intent(Notificare.shared().getApplicationContext(), Notificare.shared().getIntentReceiver())</ID>
     <ID>MaxLineLength:NotificareLoyaltyImpl.kt$NotificareLoyaltyImpl$NotificareLogger.debug("Skipping location relevance for pass ${pass.serial} because the geo module is not available.")</ID>
-    <ID>MaxLineLength:NotificareLoyaltyImpl.kt$NotificareLoyaltyImpl$NotificareLogger.debug("Skipping location relevance for pass ${pass.serial} because there is no last known location.")</ID>
+    <ID>MaxLineLength:NotificareLoyaltyImpl.kt$NotificareLoyaltyImpl$internal</ID>
     <ID>MaxLineLength:NotificareLoyaltyImpl.kt$NotificareLoyaltyImpl$return passbookBeacon.major == nearbyBeacon.major &amp;&amp; (passbookBeacon.minor == null || passbookBeacon.minor == nearbyBeacon.minor)</ID>
     <ID>MaxLineLength:PassUtils.kt$dateStr.matches("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}.\\d{3}[+\\-]\\d{4}$".toRegex())</ID>
     <ID>MaxLineLength:PassUtils.kt$dateStr.matches("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}[+\\-]\\d{4}$".toRegex())</ID>
