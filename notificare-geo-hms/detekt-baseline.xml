@@ -2,7 +2,6 @@
 <SmellBaseline>
   <ManuallySuppressedIssues></ManuallySuppressedIssues>
   <CurrentIssues>
-    <ID>MaxLineLength:ServiceManager.kt$ServiceManager$GeofenceRequest.ENTER_INIT_CONVERSION or GeofenceRequest.DWELL_INIT_CONVERSION or GeofenceRequest.EXIT_INIT_CONVERSION</ID>
     <ID>TooGenericExceptionCaught:ServiceManager.kt$ServiceManager$e: Exception</ID>
   </CurrentIssues>
 </SmellBaseline>

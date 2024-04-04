@@ -114,9 +114,7 @@ public class ServiceManager : ServiceManager() {
                 .setInterval(Notificare.DEFAULT_LOCATION_UPDATES_INTERVAL)
                 .setFastestInterval(Notificare.DEFAULT_LOCATION_UPDATES_FASTEST_INTERVAL)
                 .setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY)
-                .setSmallestDisplacement(
-                    Notificare.DEFAULT_LOCATION_UPDATES_SMALLEST_DISPLACEMENT.toFloat()
-                )
+                .setSmallestDisplacement(Notificare.DEFAULT_LOCATION_UPDATES_SMALLEST_DISPLACEMENT.toFloat())
 
             fusedLocationClient.requestLocationUpdates(request, locationPendingIntent)
                 .addOnSuccessListener {
@@ -154,9 +152,7 @@ public class ServiceManager : ServiceManager() {
                     region.geometry.coordinate.longitude,
                     region.distance.toFloat()
                 )
-                .setConversions(
-                    Geofence.ENTER_GEOFENCE_CONVERSION or Geofence.EXIT_GEOFENCE_CONVERSION
-                )
+                .setConversions(Geofence.ENTER_GEOFENCE_CONVERSION or Geofence.EXIT_GEOFENCE_CONVERSION)
                 .setValidContinueTime(Geofence.GEOFENCE_NEVER_EXPIRE)
                 .setNotificationInterval(Notificare.DEFAULT_GEOFENCE_RESPONSIVENESS)
                 .build()
@@ -165,7 +161,9 @@ public class ServiceManager : ServiceManager() {
         val request = GeofenceRequest.Builder()
             .createGeofenceList(geofences)
             .setInitConversions(
-                GeofenceRequest.ENTER_INIT_CONVERSION or GeofenceRequest.DWELL_INIT_CONVERSION or GeofenceRequest.EXIT_INIT_CONVERSION
+                GeofenceRequest.ENTER_INIT_CONVERSION
+                    or GeofenceRequest.DWELL_INIT_CONVERSION
+                    or GeofenceRequest.EXIT_INIT_CONVERSION
             )
             .build()
 
