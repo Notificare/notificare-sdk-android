@@ -21,11 +21,7 @@ public open class InAppMessagingFullscreenFragment : InAppMessagingBaseFragment(
     override val enterAnimation: Int = R.anim.notificare_iam_fullscreen_enter_animation
     override val exitAnimation: Int = R.anim.notificare_iam_fullscreen_exit_animation
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = NotificareInAppMessageFullscreenFragmentBinding.inflate(inflater, container, false)
         return binding.root
     }

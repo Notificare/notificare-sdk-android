@@ -34,10 +34,7 @@ public open class InAppMessagingActivity : AppCompatActivity() {
             ?: throw IllegalStateException("Cannot create the UI without the associated in-app message.")
 
         if (savedInstanceState != null) {
-            val backgroundTimestamp = if (savedInstanceState.containsKey(
-                    INTENT_EXTRA_BACKGROUND_TIMESTAMP
-                )
-            ) {
+            val backgroundTimestamp = if (savedInstanceState.containsKey(INTENT_EXTRA_BACKGROUND_TIMESTAMP)) {
                 savedInstanceState.getLong(INTENT_EXTRA_BACKGROUND_TIMESTAMP)
             } else {
                 null

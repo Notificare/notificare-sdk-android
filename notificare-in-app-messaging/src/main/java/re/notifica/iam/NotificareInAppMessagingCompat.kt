@@ -23,9 +23,7 @@ public object NotificareInAppMessagingCompat {
     }
 
     @JvmStatic
-    public fun removeLifecycleListener(
-        listener: NotificareInAppMessaging.MessageLifecycleListener
-    ) {
+    public fun removeLifecycleListener(listener: NotificareInAppMessaging.MessageLifecycleListener) {
         Notificare.inAppMessaging().removeLifecycleListener(listener)
     }
 }

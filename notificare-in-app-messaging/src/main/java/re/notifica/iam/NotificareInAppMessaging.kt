@@ -37,10 +37,7 @@ public interface NotificareInAppMessaging {
         }
 
         @MainThread
-        public fun onActionExecuted(
-            message: NotificareInAppMessage,
-            action: NotificareInAppMessage.Action
-        ) {
+        public fun onActionExecuted(message: NotificareInAppMessage, action: NotificareInAppMessage.Action) {
             NotificareLogger.debug(
                 "Action executed, please override onActionExecuted if you want to receive these events."
             )

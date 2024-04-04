@@ -19,7 +19,6 @@
     <ID>MaxLineLength:NotificareInAppMessaging.kt$NotificareInAppMessaging.MessageLifecycleListener$"Message finished presenting, please override onMessageFinishedPresenting if you want to receive these events."</ID>
     <ID>MaxLineLength:NotificareInAppMessagingImpl.kt$NotificareInAppMessagingImpl$"Skipping context evaluation since in-app messages on ${activity::class.java.simpleName} are being suppressed."</ID>
     <ID>MaxLineLength:NotificareInAppMessagingImpl.kt$NotificareInAppMessagingImpl$"The current in-app message should have been dismissed for being in the background for longer than the grace period."</ID>
-    <ID>MaxLineLength:NotificareInAppMessagingImpl.kt$NotificareInAppMessagingImpl$NotificareLogger.debug("Waiting ${message.delaySeconds} seconds before presenting the in-app message.")</ID>
     <ID>ReturnCount:InAppMessagingCardFragment.kt$InAppMessagingCardFragment$private fun canShowAction(action: NotificareInAppMessage.Action?): Boolean</ID>
     <ID>ReturnCount:NotificareInAppMessagingImpl.kt$NotificareInAppMessagingImpl$private fun onApplicationForeground(activity: Activity)</ID>
     <ID>ReturnCount:NotificareInAppMessagingImpl.kt$NotificareInAppMessagingImpl$private fun present(message: NotificareInAppMessage)</ID>

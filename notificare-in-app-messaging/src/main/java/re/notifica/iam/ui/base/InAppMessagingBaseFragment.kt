@@ -124,9 +124,7 @@ public abstract class InAppMessagingBaseFragment : Fragment() {
 
             try {
                 startActivity(intent)
-                NotificareLogger.info(
-                    "In-app message action '${actionType.rawValue}' successfully processed."
-                )
+                NotificareLogger.info("In-app message action '${actionType.rawValue}' successfully processed.")
 
                 onMainThread {
                     Notificare.inAppMessagingImplementation().lifecycleListeners.forEach {
@@ -134,10 +132,7 @@ public abstract class InAppMessagingBaseFragment : Fragment() {
                     }
                 }
             } catch (e: Exception) {
-                NotificareLogger.warning(
-                    "Could not find an activity capable of opening the URL.",
-                    e
-                )
+                NotificareLogger.warning("Could not find an activity capable of opening the URL.", e)
 
                 onMainThread {
                     Notificare.inAppMessagingImplementation().lifecycleListeners.forEach {
