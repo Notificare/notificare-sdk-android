@@ -18,11 +18,7 @@ public class NotificareWebPassFragment : NotificationFragment() {
 
     private lateinit var binding: NotificareNotificationWebPassFragmentBinding
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = NotificareNotificationWebPassFragmentBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -41,14 +37,18 @@ public class NotificareWebPassFragment : NotificationFragment() {
         setupContent()
     }
 
-
     private fun setupContent() {
         val content = notification.content.firstOrNull()
         val passUrlStr = content?.data as? String
         val application = Notificare.application
         val host = Notificare.servicesInfo?.pushHost
 
-        if (content?.type != NotificareNotification.Content.TYPE_PK_PASS || passUrlStr == null || application == null || host == null) {
+        if (
+            content?.type != NotificareNotification.Content.TYPE_PK_PASS ||
+            passUrlStr == null ||
+            application == null ||
+            host == null
+        ) {
             onMainThread {
                 Notificare.pushUIInternal().lifecycleListeners.forEach { it.onNotificationFailedToPresent(notification) }
             }

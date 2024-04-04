@@ -112,10 +112,7 @@ public open class NotificationActivity : AppCompatActivity(), NotificationContai
         }
     }
 
-    override fun onNotificationFragmentActionFailed(
-        notification: NotificareNotification,
-        reason: String?
-    ) {
+    override fun onNotificationFragmentActionFailed(notification: NotificareNotification, reason: String?) {
         binding.notificareProgress.isVisible = false
 
         if (checkNotNull(Notificare.options).showNotificationToasts) {

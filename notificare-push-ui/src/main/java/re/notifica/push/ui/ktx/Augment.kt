@@ -33,7 +33,9 @@ internal fun Notificare.loyaltyIntegration(): NotificareLoyaltyIntegration? {
     }
 
     val integration = instance as? NotificareLoyaltyIntegration ?: run {
-        NotificareLogger.debug("Loyalty module instance does not comply with the NotificareLoyaltyIntegration interface.")
+        NotificareLogger.debug(
+            "Loyalty module instance does not comply with the NotificareLoyaltyIntegration interface."
+        )
         return null
     }
 

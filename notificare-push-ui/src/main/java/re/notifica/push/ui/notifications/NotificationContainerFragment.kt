@@ -103,11 +103,7 @@ public class NotificationContainerFragment
         }
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = NotificareNotificationContainerFragmentBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -116,7 +112,12 @@ public class NotificationContainerFragment
         super.onViewCreated(view, savedInstanceState)
 
         // Inform user that this type has actions attached
-        if (action == null && notification.type != NotificareNotification.TYPE_ALERT && notification.type != NotificareNotification.TYPE_PASSBOOK && notification.actions.isNotEmpty()) {
+        if (
+            action == null &&
+            notification.type != NotificareNotification.TYPE_ALERT &&
+            notification.type != NotificareNotification.TYPE_PASSBOOK &&
+            notification.actions.isNotEmpty()
+        ) {
             setHasOptionsMenu(true)
         }
 
@@ -131,8 +132,8 @@ public class NotificationContainerFragment
                 klass.getConstructor().newInstance() as Fragment
             } catch (e: Exception) {
                 NotificareLogger.error(
-                    "Failed to dynamically create the concrete notification fragment.",
-                    e
+                    message = "Failed to dynamically create the concrete notification fragment.",
+                    t = e
                 )
 
                 null
@@ -242,7 +243,10 @@ public class NotificationContainerFragment
                 pendingResult = result
                 callback.onNotificationFragmentEndProgress(notification)
 
-                if (result?.requestCode == NotificarePendingResult.CAPTURE_IMAGE_REQUEST_CODE || result?.requestCode == NotificarePendingResult.CAPTURE_IMAGE_AND_KEYBOARD_REQUEST_CODE) {
+                if (
+                    result?.requestCode == NotificarePendingResult.CAPTURE_IMAGE_REQUEST_CODE ||
+                    result?.requestCode == NotificarePendingResult.CAPTURE_IMAGE_AND_KEYBOARD_REQUEST_CODE
+                ) {
                     if (result.imageUri != null) {
                         // We need to wait for the image coming back from the camera activity.
                         takePictureLauncher.launch(result.imageUri)
@@ -465,10 +469,7 @@ public class NotificationContainerFragment
 
         public fun onNotificationFragmentActionCanceled(notification: NotificareNotification)
 
-        public fun onNotificationFragmentActionFailed(
-            notification: NotificareNotification,
-            reason: String?
-        )
+        public fun onNotificationFragmentActionFailed(notification: NotificareNotification, reason: String?)
 
         public fun onNotificationFragmentActionSucceeded(notification: NotificareNotification)
     }

@@ -20,11 +20,7 @@ public class NotificareImageFragment : NotificationFragment() {
 
     private lateinit var binding: NotificareNotificationImageFragmentBinding
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = NotificareNotificationImageFragmentBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -76,11 +72,7 @@ public class NotificareImageFragment : NotificationFragment() {
                     ?: throw IllegalArgumentException("Missing required notification content parameter.")
         }
 
-        override fun onCreateView(
-            inflater: LayoutInflater,
-            container: ViewGroup?,
-            savedInstanceState: Bundle?
-        ): View {
+        override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
             return ImageView(inflater.context)
         }
 

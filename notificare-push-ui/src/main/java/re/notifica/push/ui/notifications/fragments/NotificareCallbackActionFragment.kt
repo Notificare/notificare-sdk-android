@@ -86,7 +86,10 @@ public class NotificareCallbackActionFragment private constructor() : Fragment()
 
         if (messageEditText != null) {
             messageEditText?.requestFocus()
-            activity?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE or WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
+            activity?.window?.setSoftInputMode(
+                WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE or
+                    WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
+            )
         }
 
         sendButton?.setOnClickListener(::onSendClicked)
@@ -189,7 +192,9 @@ public class NotificareCallbackActionFragment private constructor() : Fragment()
                 sampleSize *= 2
             }
 
-            NotificareLogger.debug("Reading bitmap image of ${options.outWidth}x${options.outHeight} pixels with sampleSize $sampleSize")
+            NotificareLogger.debug(
+                "Reading bitmap image of ${options.outWidth}x${options.outHeight} pixels with sampleSize $sampleSize"
+            )
             return sampleSize
         }
 

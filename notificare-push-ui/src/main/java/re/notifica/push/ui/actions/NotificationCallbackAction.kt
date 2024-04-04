@@ -101,9 +101,7 @@ internal class NotificationCallbackAction(
             return null
         }
 
-        val mediaStorageDir = Notificare.requireContext().getExternalFilesDir(
-            Environment.DIRECTORY_PICTURES
-        )
+        val mediaStorageDir = Notificare.requireContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES)
 
         // Create a media file name
         val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(Date())

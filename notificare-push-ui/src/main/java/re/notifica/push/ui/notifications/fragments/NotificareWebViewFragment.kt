@@ -18,11 +18,7 @@ public class NotificareWebViewFragment : NotificationFragment() {
 
     private lateinit var binding: NotificareNotificationWebViewFragmentBinding
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = NotificareNotificationWebViewFragmentBinding.inflate(inflater, container, false)
         return binding.root
     }

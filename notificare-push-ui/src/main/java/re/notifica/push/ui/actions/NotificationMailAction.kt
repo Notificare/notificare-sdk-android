@@ -40,9 +40,7 @@ internal class NotificationMailAction(
                     )
                 )
             } catch (e: ActivityNotFoundException) {
-                throw Exception(
-                    context.getString(R.string.notificare_action_error_no_email_clients)
-                )
+                throw Exception(context.getString(R.string.notificare_action_error_no_email_clients))
             }
 
             Notificare.createNotificationReply(notification, action)

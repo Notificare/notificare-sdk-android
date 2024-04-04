@@ -17,11 +17,7 @@ public class NotificareUrlFragment : NotificationFragment() {
 
     private lateinit var binding: NotificareNotificationUrlFragmentBinding
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = NotificareNotificationUrlFragmentBinding.inflate(inflater, container, false)
         return binding.root
     }

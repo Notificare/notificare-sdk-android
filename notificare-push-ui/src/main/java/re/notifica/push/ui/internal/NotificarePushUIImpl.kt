@@ -52,7 +52,6 @@ internal object NotificarePushUIImpl : NotificareModule(), NotificarePushUI, Not
     private var serviceManager: ServiceManager? = null
     private val _lifecycleListeners = mutableListOf<NotificarePushUI.NotificationLifecycleListener>()
 
-
     // region Notificare Module
 
     override fun configure() {
@@ -83,7 +82,9 @@ internal object NotificarePushUIImpl : NotificareModule(), NotificarePushUI, Not
 
         when (type) {
             NotificareNotification.NotificationType.NONE -> {
-                NotificareLogger.debug("Attempting to present a notification of type 'none'. These should be handled by the application instead.")
+                NotificareLogger.debug(
+                    "Attempting to present a notification of type 'none'. These should be handled by the application instead."
+                )
             }
             NotificareNotification.NotificationType.URL_SCHEME -> {
                 onMainThread {
@@ -177,18 +178,24 @@ internal object NotificarePushUIImpl : NotificareModule(), NotificarePushUI, Not
 
         return when (type) {
             NotificareNotification.NotificationType.NONE -> {
-                NotificareLogger.debug("Attempting to create a fragment for a notification of type 'none'. This type contains to visual interface.")
+                NotificareLogger.debug(
+                    "Attempting to create a fragment for a notification of type 'none'. This type contains to visual interface."
+                )
                 return null
             }
             NotificareNotification.NotificationType.ALERT -> NotificareAlertFragment::class.java.canonicalName
             NotificareNotification.NotificationType.IN_APP_BROWSER -> {
-                NotificareLogger.debug("Attempting to create a fragment for a notification of type 'InAppBrowser'. This type contains no visual interface.")
+                NotificareLogger.debug(
+                    "Attempting to create a fragment for a notification of type 'InAppBrowser'. This type contains no visual interface."
+                )
                 return null
             }
             NotificareNotification.NotificationType.WEB_VIEW -> NotificareWebViewFragment::class.java.canonicalName
             NotificareNotification.NotificationType.URL -> NotificareUrlFragment::class.java.canonicalName
             NotificareNotification.NotificationType.URL_SCHEME -> {
-                NotificareLogger.debug("Attempting to create a fragment for a notification of type 'UrlScheme'. This type contains no visual interface.")
+                NotificareLogger.debug(
+                    "Attempting to create a fragment for a notification of type 'UrlScheme'. This type contains no visual interface."
+                )
                 return null
             }
             NotificareNotification.NotificationType.IMAGE -> NotificareImageFragment::class.java.canonicalName
@@ -198,7 +205,9 @@ internal object NotificarePushUIImpl : NotificareModule(), NotificarePushUI, Not
             NotificareNotification.NotificationType.RATE,
             NotificareNotification.NotificationType.STORE -> {
                 val manager = serviceManager ?: run {
-                    NotificareLogger.warning("No push-ui dependencies have been detected. Please include one of the platform-specific push-ui packages.")
+                    NotificareLogger.warning(
+                        "No push-ui dependencies have been detected. Please include one of the platform-specific push-ui packages."
+                    )
                     return null
                 }
 
@@ -236,7 +245,11 @@ internal object NotificarePushUIImpl : NotificareModule(), NotificarePushUI, Not
 
     private fun presentDeepLink(activity: Activity, notification: NotificareNotification, url: Uri) {
         val intent = Intent(Intent.ACTION_VIEW, url).apply {
-            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS)
+            addFlags(
+                Intent.FLAG_ACTIVITY_NEW_TASK or
+                    Intent.FLAG_ACTIVITY_CLEAR_TOP or
+                    Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS
+            )
             setPackage(activity.applicationContext.packageName)
         }
 

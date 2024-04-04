@@ -17,17 +17,14 @@
     <ID>MaxLineLength:NotificareCallbackActionFragment.kt$NotificareCallbackActionFragment$activity?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE or WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)</ID>
     <ID>MaxLineLength:NotificareCallbackActionFragment.kt$NotificareCallbackActionFragment.Companion$NotificareLogger.debug("Reading bitmap image of ${options.outWidth}x${options.outHeight} pixels with sampleSize $sampleSize")</ID>
     <ID>MaxLineLength:NotificareImageFragment.kt$NotificareImageFragment$Notificare.pushUIInternal().lifecycleListeners.forEach { it.onNotificationFailedToPresent(notification) }</ID>
-    <ID>MaxLineLength:NotificareOptions.kt$"Invalid color resource provided for 're.notifica.push.ui.custom_tabs_navigation_bar_divider_color'."</ID>
+    <ID>MaxLineLength:NotificareOptions.kt$message = "Invalid color resource provided for 're.notifica.push.ui.custom_tabs_navigation_bar_color'."</ID>
+    <ID>MaxLineLength:NotificareOptions.kt$message = "Invalid color resource provided for 're.notifica.push.ui.custom_tabs_navigation_bar_divider_color'."</ID>
     <ID>MaxLineLength:NotificarePushUI.kt$NotificarePushUI.NotificationLifecycleListener$"Action failed to execute, please override onActionFailedToExecute if you want to receive these events."</ID>
+    <ID>MaxLineLength:NotificarePushUI.kt$NotificarePushUI.NotificationLifecycleListener$"Notification failed to present, please override onNotificationFailedToPresent if you want to receive these events."</ID>
+    <ID>MaxLineLength:NotificarePushUI.kt$NotificarePushUI.NotificationLifecycleListener$"Notification finished presenting, please override onNotificationFinishedPresenting if you want to receive these events."</ID>
+    <ID>MaxLineLength:NotificarePushUI.kt$NotificarePushUI.NotificationLifecycleListener$"Notification url clicked, please override onNotificationUrlClicked if you want to receive these events."</ID>
+    <ID>MaxLineLength:NotificarePushUI.kt$NotificarePushUI.NotificationLifecycleListener$"Notification will present, please override onNotificationWillPresent if you want to receive these events."</ID>
     <ID>MaxLineLength:NotificarePushUI.kt$NotificarePushUI.NotificationLifecycleListener$// NotificareLogger.debug("Action did not execute, please override onActionNotExecuted if you want to receive these events.")</ID>
-    <ID>MaxLineLength:NotificarePushUI.kt$NotificarePushUI.NotificationLifecycleListener$NotificareLogger.debug("Action executed, please override onActionExecuted if you want to receive these events.")</ID>
-    <ID>MaxLineLength:NotificarePushUI.kt$NotificarePushUI.NotificationLifecycleListener$NotificareLogger.debug("Action will execute, please override onActionWillExecute if you want to receive these events.")</ID>
-    <ID>MaxLineLength:NotificarePushUI.kt$NotificarePushUI.NotificationLifecycleListener$NotificareLogger.debug("Notification failed to present, please override onNotificationFailedToPresent if you want to receive these events.")</ID>
-    <ID>MaxLineLength:NotificarePushUI.kt$NotificarePushUI.NotificationLifecycleListener$NotificareLogger.debug("Notification finished presenting, please override onNotificationFinishedPresenting if you want to receive these events.")</ID>
-    <ID>MaxLineLength:NotificarePushUI.kt$NotificarePushUI.NotificationLifecycleListener$NotificareLogger.debug("Notification presented, please override onNotificationPresented if you want to receive these events.")</ID>
-    <ID>MaxLineLength:NotificarePushUI.kt$NotificarePushUI.NotificationLifecycleListener$NotificareLogger.debug("Notification url clicked, please override onNotificationUrlClicked if you want to receive these events.")</ID>
-    <ID>MaxLineLength:NotificarePushUI.kt$NotificarePushUI.NotificationLifecycleListener$NotificareLogger.debug("Notification will present, please override onNotificationWillPresent if you want to receive these events.")</ID>
-    <ID>MaxLineLength:NotificarePushUI.kt$NotificarePushUI.NotificationLifecycleListener$NotificareLogger.warning("Action received, please override onCustomActionReceived if you want to receive these events.")</ID>
     <ID>MaxLineLength:NotificarePushUIImpl.kt$NotificarePushUIImpl$NotificareLogger.debug("Attempting to create a fragment for a notification of type 'InAppBrowser'. This type contains no visual interface.")</ID>
     <ID>MaxLineLength:NotificarePushUIImpl.kt$NotificarePushUIImpl$NotificareLogger.debug("Attempting to create a fragment for a notification of type 'UrlScheme'. This type contains no visual interface.")</ID>
     <ID>MaxLineLength:NotificarePushUIImpl.kt$NotificarePushUIImpl$NotificareLogger.debug("Attempting to create a fragment for a notification of type 'none'. This type contains to visual interface.")</ID>
@@ -71,7 +68,7 @@
     <ID>TooGenericExceptionThrown:NotificationBrowserAction.kt$NotificationBrowserAction$throw Exception(context.getString(R.string.notificare_action_failed))</ID>
     <ID>TooGenericExceptionThrown:NotificationCustomAction.kt$NotificationCustomAction$throw Exception(context.getString(R.string.notificare_action_failed))</ID>
     <ID>TooGenericExceptionThrown:NotificationInAppBrowserAction.kt$NotificationInAppBrowserAction$throw Exception(context.getString(R.string.notificare_action_failed))</ID>
-    <ID>TooGenericExceptionThrown:NotificationMailAction.kt$NotificationMailAction$throw Exception( context.getString(R.string.notificare_action_error_no_email_clients) )</ID>
+    <ID>TooGenericExceptionThrown:NotificationMailAction.kt$NotificationMailAction$throw Exception(context.getString(R.string.notificare_action_error_no_email_clients))</ID>
     <ID>TooGenericExceptionThrown:NotificationMailAction.kt$NotificationMailAction$throw Exception(context.getString(R.string.notificare_action_failed))</ID>
     <ID>TooGenericExceptionThrown:NotificationSmsAction.kt$NotificationSmsAction$throw Exception(context.getString(R.string.notificare_action_error_no_sms_clients))</ID>
     <ID>TooGenericExceptionThrown:NotificationSmsAction.kt$NotificationSmsAction$throw Exception(context.getString(R.string.notificare_action_failed))</ID>
