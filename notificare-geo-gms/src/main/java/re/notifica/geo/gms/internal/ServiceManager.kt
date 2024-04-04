@@ -130,9 +130,7 @@ public class ServiceManager : ServiceManager() {
             val request = LocationRequest.Builder(Notificare.DEFAULT_LOCATION_UPDATES_INTERVAL)
                 .setMinUpdateIntervalMillis(Notificare.DEFAULT_LOCATION_UPDATES_FASTEST_INTERVAL)
                 .setPriority(Priority.PRIORITY_BALANCED_POWER_ACCURACY)
-                .setMinUpdateDistanceMeters(
-                    Notificare.DEFAULT_LOCATION_UPDATES_SMALLEST_DISPLACEMENT.toFloat()
-                )
+                .setMinUpdateDistanceMeters(Notificare.DEFAULT_LOCATION_UPDATES_SMALLEST_DISPLACEMENT.toFloat())
                 .build()
 
             fusedLocationClient.requestLocationUpdates(request, locationPendingIntent)
@@ -173,9 +171,7 @@ public class ServiceManager : ServiceManager() {
                     region.geometry.coordinate.longitude,
                     region.distance.toFloat()
                 )
-                .setTransitionTypes(
-                    Geofence.GEOFENCE_TRANSITION_ENTER or Geofence.GEOFENCE_TRANSITION_EXIT
-                )
+                .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER or Geofence.GEOFENCE_TRANSITION_EXIT)
                 .setExpirationDuration(Geofence.NEVER_EXPIRE)
                 .setNotificationResponsiveness(Notificare.DEFAULT_GEOFENCE_RESPONSIVENESS)
                 .build()
@@ -184,7 +180,9 @@ public class ServiceManager : ServiceManager() {
         val request = GeofencingRequest.Builder()
             .addGeofences(geofences)
             .setInitialTrigger(
-                GeofencingRequest.INITIAL_TRIGGER_ENTER or GeofencingRequest.INITIAL_TRIGGER_DWELL or GeofencingRequest.INITIAL_TRIGGER_EXIT
+                GeofencingRequest.INITIAL_TRIGGER_ENTER
+                    or GeofencingRequest.INITIAL_TRIGGER_DWELL
+                    or GeofencingRequest.INITIAL_TRIGGER_EXIT
             )
             .build()
 
