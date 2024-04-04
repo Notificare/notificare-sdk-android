@@ -31,10 +31,7 @@ public object NotificareInboxCompat {
     }
 
     @JvmStatic
-    public fun open(
-        item: NotificareInboxItem,
-        callback: NotificareCallback<NotificareNotification>
-    ) {
+    public fun open(item: NotificareInboxItem, callback: NotificareCallback<NotificareNotification>) {
         Notificare.inbox().open(item, callback)
     }
 
