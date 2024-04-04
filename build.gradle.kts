@@ -46,13 +46,14 @@ subprojects {
         version = rootProject.libs.versions.maven.artifactVersion.get()
 
         val properties = loadProperties("local.properties")
-        val awsS3AccessKeyId = System.getenv("AWS_ACCESS_KEY_ID") ?: properties.getProperty("aws.s3.access_key_id")
-        val awsS3SecretAccessKey = System.getenv("AWS_SECRET_ACCESS_KEY") ?: properties.getProperty("aws.s3.secret_access_key")
+        val awsS3AccessKeyId = System.getenv("AWS_ACCESS_KEY_ID")
+            ?: properties.getProperty("aws.s3.access_key_id")
+
+        val awsS3SecretAccessKey = System.getenv("AWS_SECRET_ACCESS_KEY")
+            ?: properties.getProperty("aws.s3.secret_access_key")
 
         val artifactChannel =
-            if (Regex(
-                    "/^([0-9]+)\\.([0-9]+)\\.([0-9]+)\$/"
-                ).matches(version.toString())
+            if (Regex("/^([0-9]+)\\.([0-9]+)\\.([0-9]+)\$/").matches(version.toString())
             ) {
                 "releases"
             } else {
