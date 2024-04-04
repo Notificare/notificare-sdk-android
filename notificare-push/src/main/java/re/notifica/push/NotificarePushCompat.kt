@@ -112,7 +112,7 @@ public object NotificarePushCompat {
     }
 
     @JvmStatic
-    public fun endLiveActivity(activityId: String, callback: NotificareCallback<Unit>,) {
+    public fun endLiveActivity(activityId: String, callback: NotificareCallback<Unit>) {
         Notificare.push().endLiveActivity(activityId, callback)
     }
 }

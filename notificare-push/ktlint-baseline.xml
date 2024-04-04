@@ -1,12 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <baseline version="1.0">
-    <file name="src/main/java/re/notifica/push/NotificarePush.kt">
-        <error line="29" column="96" source="standard:parameter-list-spacing" />
+    <file name="src/main/java/re/notifica/push/NotificarePushIntentReceiver.kt">
+        <error line="114" column="1" source="standard:max-line-length" />
+        <error line="120" column="1" source="standard:max-line-length" />
+        <error line="142" column="1" source="standard:max-line-length" />
     </file>
-    <file name="src/main/java/re/notifica/push/NotificarePushCompat.kt">
-        <error line="115" column="86" source="standard:parameter-list-spacing" />
+    <file name="src/main/java/re/notifica/push/internal/InboxIntegration.kt">
+        <error line="32" column="1" source="standard:max-line-length" />
+        <error line="70" column="1" source="standard:max-line-length" />
+        <error line="99" column="1" source="standard:max-line-length" />
     </file>
     <file name="src/main/java/re/notifica/push/internal/NotificarePushImpl.kt">
-        <error line="360" column="88" source="standard:parameter-list-spacing" />
+        <error line="405" column="1" source="standard:max-line-length" />
     </file>
 </baseline>

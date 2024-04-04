@@ -92,10 +92,7 @@ public open class NotificarePushIntentReceiver : BroadcastReceiver() {
     }
 
     @Deprecated("Use onNotificationReceived(context, notification, deliveryMechanism) instead.")
-    protected open fun onNotificationReceived(
-        context: Context,
-        notification: NotificareNotification
-    ) {
+    protected open fun onNotificationReceived(context: Context, notification: NotificareNotification) {
     }
 
     protected open fun onNotificationReceived(
@@ -112,28 +109,19 @@ public open class NotificarePushIntentReceiver : BroadcastReceiver() {
         onNotificationReceived(context, notification)
     }
 
-    protected open fun onSystemNotificationReceived(
-        context: Context,
-        notification: NotificareSystemNotification
-    ) {
+    protected open fun onSystemNotificationReceived(context: Context, notification: NotificareSystemNotification) {
         NotificareLogger.info(
             "Received a system notification, please override onSystemNotificationReceived if you want to receive these intents."
         )
     }
 
-    protected open fun onUnknownNotificationReceived(
-        context: Context,
-        notification: NotificareUnknownNotification
-    ) {
+    protected open fun onUnknownNotificationReceived(context: Context, notification: NotificareUnknownNotification) {
         NotificareLogger.info(
             "Received an unknown notification, please override onUnknownNotificationReceived if you want to receive these intents."
         )
     }
 
-    protected open fun onNotificationOpened(
-        context: Context,
-        notification: NotificareNotification
-    ) {
+    protected open fun onNotificationOpened(context: Context, notification: NotificareNotification) {
         NotificareLogger.debug(
             "Opened a notification, please override onNotificationOpened if you want to receive these intents."
         )
@@ -149,10 +137,7 @@ public open class NotificarePushIntentReceiver : BroadcastReceiver() {
         )
     }
 
-    protected open fun onLiveActivityUpdate(
-        context: Context,
-        update: NotificareLiveActivityUpdate
-    ) {
+    protected open fun onLiveActivityUpdate(context: Context, update: NotificareLiveActivityUpdate) {
         NotificareLogger.debug(
             "Received a live activity update, please override onLiveActivityUpdate if you want to receive these intents."
         )

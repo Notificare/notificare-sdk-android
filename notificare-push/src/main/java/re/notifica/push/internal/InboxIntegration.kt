@@ -38,10 +38,7 @@ internal object InboxIntegration {
         }
     }
 
-    fun addItemToInbox(
-        message: NotificareNotificationRemoteMessage,
-        notification: NotificareNotification
-    ) {
+    fun addItemToInbox(message: NotificareNotificationRemoteMessage, notification: NotificareNotification) {
         if (message.inboxItemId == null) {
             NotificareLogger.debug(
                 "Received a remote message without an inbox item id. Inbox functionality is disabled."
