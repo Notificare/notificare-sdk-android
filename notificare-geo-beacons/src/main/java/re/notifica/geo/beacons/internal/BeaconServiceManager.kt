@@ -68,8 +68,7 @@ public class BeaconServiceManager(
 
     override fun startMonitoring(region: NotificareRegion, beacons: List<NotificareBeacon>) {
         // Start monitoring the main region.
-        val mainBeacon =
-            NotificareBeacon(region.id, region.name, requireNotNull(region.major), null)
+        val mainBeacon = NotificareBeacon(region.id, region.name, requireNotNull(region.major), null)
         startMonitoring(mainBeacon)
 
         // Start monitoring every beacon.
@@ -180,11 +179,7 @@ public class BeaconServiceManager(
         NotificareLogger.debug(
             "Entered beacon region ${region.id1} / ${region.id2} / ${region.id3}"
         )
-        Notificare.geoInternal().handleBeaconEnter(
-            region.uniqueId,
-            region.id2.toInt(),
-            region.id3?.toInt()
-        )
+        Notificare.geoInternal().handleBeaconEnter(region.uniqueId, region.id2.toInt(), region.id3?.toInt())
 
 //        if (region.id3 == null) {
 //            // This is the main region. There's no minor.
@@ -194,11 +189,7 @@ public class BeaconServiceManager(
 
     override fun didExitRegion(region: Region) {
         NotificareLogger.debug("Exited beacon region ${region.id1} / ${region.id2} / ${region.id3}")
-        Notificare.geoInternal().handleBeaconExit(
-            region.uniqueId,
-            region.id2.toInt(),
-            region.id3?.toInt()
-        )
+        Notificare.geoInternal().handleBeaconExit(region.uniqueId, region.id2.toInt(), region.id3?.toInt())
 
 //        if (region.id3 == null) {
 //            // This is the main region. There's no minor.
@@ -224,10 +215,7 @@ public class BeaconServiceManager(
 
     // region RangeNotifier
 
-    override fun didRangeBeaconsInRegion(
-        beacons: MutableCollection<org.altbeacon.beacon.Beacon>?,
-        region: Region?
-    ) {
+    override fun didRangeBeaconsInRegion(beacons: MutableCollection<org.altbeacon.beacon.Beacon>?, region: Region?) {
         if (beacons == null || region == null) return
 
         Notificare.geoInternal().handleRangingBeacons(
