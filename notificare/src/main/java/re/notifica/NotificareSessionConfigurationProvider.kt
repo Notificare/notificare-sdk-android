@@ -25,13 +25,8 @@ internal class NotificareSessionConfigurationProvider : ContentProvider() {
         return true
     }
 
-    override fun query(
-        p0: Uri,
-        p1: Array<out String>?,
-        p2: String?,
-        p3: Array<out String>?,
-        p4: String?
-    ): Cursor? = null
+    override fun query(p0: Uri, p1: Array<out String>?, p2: String?, p3: Array<out String>?, p4: String?): Cursor? =
+        null
 
     override fun getType(uri: Uri): String? = null
 
@@ -39,10 +34,5 @@ internal class NotificareSessionConfigurationProvider : ContentProvider() {
 
     override fun delete(uri: Uri, selection: String?, selectionArgs: Array<String>?): Int = 0
 
-    override fun update(
-        uri: Uri,
-        values: ContentValues?,
-        selection: String?,
-        selectionArgs: Array<String>?
-    ): Int = 0
+    override fun update(uri: Uri, values: ContentValues?, selection: String?, selectionArgs: Array<String>?): Int = 0
 }

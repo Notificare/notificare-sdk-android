@@ -12,11 +12,7 @@ import re.notifica.InternalNotificareApi
 public annotation class EncodeNulls
 
 internal class EncodeNullsFactory : JsonAdapter.Factory {
-    override fun create(
-        type: Type,
-        annotations: MutableSet<out Annotation>,
-        moshi: Moshi
-    ): JsonAdapter<*>? {
+    override fun create(type: Type, annotations: MutableSet<out Annotation>, moshi: Moshi): JsonAdapter<*>? {
         val rawType = type.rawType
         if (!rawType.isAnnotationPresent(EncodeNulls::class.java)) {
             return null

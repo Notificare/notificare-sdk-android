@@ -34,10 +34,7 @@ internal class SharedPreferencesMigration(
     fun migrate() {
         val preferences = NotificareSharedPreferences(context)
 
-        val v2SavedState = context.getSharedPreferences(
-            V2_SAVED_STATE_FILENAME,
-            Context.MODE_PRIVATE
-        )
+        val v2SavedState = context.getSharedPreferences(V2_SAVED_STATE_FILENAME, Context.MODE_PRIVATE)
         val v2Settings = context.getSharedPreferences(V2_SETTINGS_FILENAME, Context.MODE_PRIVATE)
 
         if (v2SavedState.contains("registeredDevice")) {
@@ -65,42 +62,14 @@ internal class SharedPreferencesMigration(
                     val device = NotificareDevice(
                         id = json.getString("deviceID"),
                         userId = if (!json.isNull("userID")) json.getString("userID") else null,
-                        userName = if (!json.isNull(
-                                "userName"
-                            )
-                        ) {
-                            json.getString("userName")
-                        } else {
-                            null
-                        },
-                        timeZoneOffset = if (!json.isNull(
-                                "timeZoneOffset"
-                            )
-                        ) {
-                            json.getDouble("timeZoneOffset")
-                        } else {
-                            0.toDouble()
-                        },
+                        userName = if (!json.isNull("userName")) json.getString("userName") else null,
+                        timeZoneOffset = if (!json.isNull("timeZoneOffset")) json.getDouble("timeZoneOffset") else 0.toDouble(),
                         osVersion = json.getString("osVersion"),
                         sdkVersion = json.getString("sdkVersion"),
                         appVersion = json.getString("appVersion"),
                         deviceString = json.getString("deviceString"),
-                        language = if (!json.isNull(
-                                "language"
-                            )
-                        ) {
-                            json.getString("language")
-                        } else {
-                            NotificareUtils.deviceLanguage
-                        },
-                        region = if (!json.isNull(
-                                "region"
-                            )
-                        ) {
-                            json.getString("region")
-                        } else {
-                            NotificareUtils.deviceRegion
-                        },
+                        language = if (!json.isNull("language")) json.getString("language") else NotificareUtils.deviceLanguage,
+                        region = if (!json.isNull("region")) json.getString("region") else NotificareUtils.deviceRegion,
                         transport = when (json.optString("transport", "Notificare")) {
                             "Notificare" -> NotificareTransport.NOTIFICARE
                             "GCM" -> NotificareTransport.GCM

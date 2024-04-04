@@ -2,10 +2,7 @@ package re.notifica.internal.network
 
 import okhttp3.Response
 
-public sealed class NetworkException(message: String?, cause: Throwable?) : Exception(
-    message,
-    cause
-) {
+public sealed class NetworkException(message: String?, cause: Throwable?) : Exception(message, cause) {
 
     public class ParsingException(
         message: String = "Unable to parse JSON.",

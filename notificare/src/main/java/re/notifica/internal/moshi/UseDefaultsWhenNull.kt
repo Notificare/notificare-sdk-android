@@ -14,11 +14,7 @@ import re.notifica.InternalNotificareApi
 public annotation class UseDefaultsWhenNull
 
 internal class UseDefaultsWhenNullFactory : JsonAdapter.Factory {
-    override fun create(
-        type: Type,
-        annotations: MutableSet<out Annotation>,
-        moshi: Moshi
-    ): JsonAdapter<*>? {
+    override fun create(type: Type, annotations: MutableSet<out Annotation>, moshi: Moshi): JsonAdapter<*>? {
         if (!Types.getRawType(type).isAnnotationPresent(UseDefaultsWhenNull::class.java)) {
             return null
         }

@@ -17,10 +17,7 @@ public interface NotificareDeviceModule {
 
     public suspend fun updatePreferredLanguage(preferredLanguage: String?)
 
-    public fun updatePreferredLanguage(
-        preferredLanguage: String?,
-        callback: NotificareCallback<Unit>
-    )
+    public fun updatePreferredLanguage(preferredLanguage: String?, callback: NotificareCallback<Unit>)
 
     public suspend fun fetchTags(): List<String>
 

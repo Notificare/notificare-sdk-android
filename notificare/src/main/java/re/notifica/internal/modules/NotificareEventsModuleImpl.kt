@@ -68,10 +68,8 @@ internal object NotificareEventsModuleImpl :
         log(event)
     }
 
-    override fun logApplicationException(
-        throwable: Throwable,
-        callback: NotificareCallback<Unit>
-    ): Unit = toCallbackFunction(::logApplicationException)(throwable, callback)
+    override fun logApplicationException(throwable: Throwable, callback: NotificareCallback<Unit>): Unit =
+        toCallbackFunction(::logApplicationException)(throwable, callback)
 
     override suspend fun logNotificationOpen(id: String) {
         log(
@@ -90,22 +88,14 @@ internal object NotificareEventsModuleImpl :
         log("re.notifica.event.custom.$event", data)
     }
 
-    override fun logCustom(
-        event: String,
-        data: NotificareEventData?,
-        callback: NotificareCallback<Unit>
-    ): Unit = toCallbackFunction(::logCustom)(event, data, callback)
+    override fun logCustom(event: String, data: NotificareEventData?, callback: NotificareCallback<Unit>): Unit =
+        toCallbackFunction(::logCustom)(event, data, callback)
 
     // endregion
 
     // region Notificare Internal Events Module
 
-    override suspend fun log(
-        event: String,
-        data: NotificareEventData?,
-        sessionId: String?,
-        notificationId: String?
-    ) {
+    override suspend fun log(event: String, data: NotificareEventData?, sessionId: String?, notificationId: String?) {
         val device = Notificare.device().currentDevice
             ?: throw NotificareDeviceUnavailableException()
 
@@ -199,10 +189,7 @@ internal object NotificareEventsModuleImpl :
             )
     }
 
-    internal fun createThrowableEvent(
-        throwable: Throwable,
-        device: NotificareDevice
-    ): NotificareEvent {
+    internal fun createThrowableEvent(throwable: Throwable, device: NotificareDevice): NotificareEvent {
         val timestamp = System.currentTimeMillis()
 
         return NotificareEvent(

@@ -101,11 +101,7 @@ public data class NotificareNotification(
         public fun getLocalizedLabel(context: Context): String {
             val prefix = Notificare.options?.notificationActionLabelPrefix ?: ""
             val resourceName = "$prefix$label"
-            val resource = context.resources.getIdentifier(
-                resourceName,
-                "string",
-                context.packageName
-            )
+            val resource = context.resources.getIdentifier(resourceName, "string", context.packageName)
 
             return if (resource == 0) label else context.getString(resource)
         }

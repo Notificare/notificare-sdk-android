@@ -24,11 +24,7 @@ public object NotificareEventsCompat {
     }
 
     @JvmStatic
-    public fun logCustom(
-        event: String,
-        data: NotificareEventData?,
-        callback: NotificareCallback<Unit>
-    ) {
+    public fun logCustom(event: String, data: NotificareEventData?, callback: NotificareCallback<Unit>) {
         Notificare.events().logCustom(event, data, callback)
     }
 }

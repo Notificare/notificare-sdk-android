@@ -117,15 +117,10 @@ internal object NotificareDeviceModuleImpl :
         register(device.transport, device.id, userId, userName)
     }
 
-    override fun register(
-        userId: String?,
-        userName: String?,
-        callback: NotificareCallback<Unit>
-    ): Unit = toCallbackFunction(::register)(userId, userName, callback)
+    override fun register(userId: String?, userName: String?, callback: NotificareCallback<Unit>): Unit =
+        toCallbackFunction(::register)(userId, userName, callback)
 
-    override suspend fun updatePreferredLanguage(preferredLanguage: String?): Unit = withContext(
-        Dispatchers.IO
-    ) {
+    override suspend fun updatePreferredLanguage(preferredLanguage: String?): Unit = withContext(Dispatchers.IO) {
         checkPrerequisites()
 
         if (preferredLanguage != null) {
@@ -135,9 +130,7 @@ internal object NotificareDeviceModuleImpl :
                 !Locale.getISOLanguages().contains(parts[0]) ||
                 !Locale.getISOCountries().contains(parts[1])
             ) {
-                throw IllegalArgumentException(
-                    "Invalid preferred language value: $preferredLanguage"
-                )
+                throw IllegalArgumentException("Invalid preferred language value: $preferredLanguage")
             }
 
             val language = parts[0]
@@ -156,10 +149,8 @@ internal object NotificareDeviceModuleImpl :
         }
     }
 
-    override fun updatePreferredLanguage(
-        preferredLanguage: String?,
-        callback: NotificareCallback<Unit>
-    ): Unit = toCallbackFunction(::updatePreferredLanguage)(preferredLanguage, callback)
+    override fun updatePreferredLanguage(preferredLanguage: String?, callback: NotificareCallback<Unit>): Unit =
+        toCallbackFunction(::updatePreferredLanguage)(preferredLanguage, callback)
 
     override suspend fun fetchTags(): List<String> = withContext(Dispatchers.IO) {
         checkPrerequisites()
@@ -172,8 +163,7 @@ internal object NotificareDeviceModuleImpl :
             .tags
     }
 
-    override fun fetchTags(callback: NotificareCallback<List<String>>): Unit =
-        toCallbackFunction(::fetchTags)(callback)
+    override fun fetchTags(callback: NotificareCallback<List<String>>): Unit = toCallbackFunction(::fetchTags)(callback)
 
     override suspend fun addTag(tag: String): Unit = withContext(Dispatchers.IO) {
         addTags(listOf(tag))
@@ -222,12 +212,9 @@ internal object NotificareDeviceModuleImpl :
             .response()
     }
 
-    override fun clearTags(callback: NotificareCallback<Unit>): Unit =
-        toCallbackFunction(::clearTags)(callback)
+    override fun clearTags(callback: NotificareCallback<Unit>): Unit = toCallbackFunction(::clearTags)(callback)
 
-    override suspend fun fetchDoNotDisturb(): NotificareDoNotDisturb? = withContext(
-        Dispatchers.IO
-    ) {
+    override suspend fun fetchDoNotDisturb(): NotificareDoNotDisturb? = withContext(Dispatchers.IO) {
         checkPrerequisites()
 
         val device = checkNotNull(currentDevice)
@@ -245,9 +232,7 @@ internal object NotificareDeviceModuleImpl :
     override fun fetchDoNotDisturb(callback: NotificareCallback<NotificareDoNotDisturb?>): Unit =
         toCallbackFunction(::fetchDoNotDisturb)(callback)
 
-    override suspend fun updateDoNotDisturb(dnd: NotificareDoNotDisturb): Unit = withContext(
-        Dispatchers.IO
-    ) {
+    override suspend fun updateDoNotDisturb(dnd: NotificareDoNotDisturb): Unit = withContext(Dispatchers.IO) {
         checkPrerequisites()
 
         val device = checkNotNull(currentDevice)
@@ -259,10 +244,8 @@ internal object NotificareDeviceModuleImpl :
         currentDevice = device.copy(dnd = dnd)
     }
 
-    override fun updateDoNotDisturb(
-        dnd: NotificareDoNotDisturb,
-        callback: NotificareCallback<Unit>
-    ): Unit = toCallbackFunction(::updateDoNotDisturb)(dnd, callback)
+    override fun updateDoNotDisturb(dnd: NotificareDoNotDisturb, callback: NotificareCallback<Unit>): Unit =
+        toCallbackFunction(::updateDoNotDisturb)(dnd, callback)
 
     override suspend fun clearDoNotDisturb(): Unit = withContext(Dispatchers.IO) {
         checkPrerequisites()
@@ -298,9 +281,7 @@ internal object NotificareDeviceModuleImpl :
     override fun fetchUserData(callback: NotificareCallback<NotificareUserData>): Unit =
         toCallbackFunction(::fetchUserData)(callback)
 
-    override suspend fun updateUserData(userData: NotificareUserData): Unit = withContext(
-        Dispatchers.IO
-    ) {
+    override suspend fun updateUserData(userData: NotificareUserData): Unit = withContext(Dispatchers.IO) {
         checkPrerequisites()
 
         val device = checkNotNull(currentDevice)
@@ -312,10 +293,8 @@ internal object NotificareDeviceModuleImpl :
         currentDevice = device.copy(userData = userData)
     }
 
-    override fun updateUserData(
-        userData: NotificareUserData,
-        callback: NotificareCallback<Unit>
-    ): Unit = toCallbackFunction(::updateUserData)(userData, callback)
+    override fun updateUserData(userData: NotificareUserData, callback: NotificareCallback<Unit>): Unit =
+        toCallbackFunction(::updateUserData)(userData, callback)
 
     // endregion
 
@@ -378,12 +357,7 @@ internal object NotificareDeviceModuleImpl :
         }
     }
 
-    private suspend fun register(
-        transport: NotificareTransport,
-        token: String,
-        userId: String?,
-        userName: String?
-    ) {
+    private suspend fun register(transport: NotificareTransport, token: String, userId: String?, userName: String?) {
         if (registrationChanged(token, userId, userName)) {
             val currentDevice = currentDevice
 
@@ -580,9 +554,7 @@ internal object NotificareDeviceModuleImpl :
     }
 }
 
-private fun DeviceRegistrationPayload.toStoredDevice(
-    previous: NotificareDevice?
-): NotificareDevice {
+private fun DeviceRegistrationPayload.toStoredDevice(previous: NotificareDevice?): NotificareDevice {
     return NotificareDevice(
         id = this.deviceId,
         userId = this.userId,

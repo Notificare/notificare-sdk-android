@@ -70,9 +70,7 @@ internal class ProcessEventsWorker(context: Context, params: WorkerParameters) :
                     Notificare.database.events().delete(entity)
                 }
             } else {
-                NotificareLogger.debug(
-                    "Failed to process event due to an unrecoverable error. Discarding it..."
-                )
+                NotificareLogger.debug("Failed to process event due to an unrecoverable error. Discarding it...")
                 Notificare.database.events().delete(entity)
             }
         }

@@ -75,32 +75,28 @@ public object NotificareUtils {
             .map { it.name.lowercase() }
     }
 
-    public suspend fun loadBitmap(url: String): Bitmap =
-        suspendCancellableCoroutine { continuation ->
-            Glide.with(Notificare.requireContext())
-                .asBitmap()
-                .load(url)
-                .into(object : CustomTarget<Bitmap>() {
-                    override fun onResourceReady(
-                        resource: Bitmap,
-                        transition: Transition<in Bitmap>?
-                    ) {
-                        if (continuation.isActive) {
-                            continuation.resume(resource)
-                        }
+    public suspend fun loadBitmap(url: String): Bitmap = suspendCancellableCoroutine { continuation ->
+        Glide.with(Notificare.requireContext())
+            .asBitmap()
+            .load(url)
+            .into(object : CustomTarget<Bitmap>() {
+                override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
+                    if (continuation.isActive) {
+                        continuation.resume(resource)
                     }
+                }
 
-                    override fun onLoadFailed(errorDrawable: Drawable?) {
-                        if (continuation.isActive) {
-                            continuation.resumeWithException(
-                                RuntimeException("Failed to load the bit at $url")
-                            )
-                        }
+                override fun onLoadFailed(errorDrawable: Drawable?) {
+                    if (continuation.isActive) {
+                        continuation.resumeWithException(
+                            RuntimeException("Failed to load the bit at $url")
+                        )
                     }
+                }
 
-                    override fun onLoadCleared(placeholder: Drawable?) {}
-                })
-        }
+                override fun onLoadCleared(placeholder: Drawable?) {}
+            })
+    }
 
     public fun loadImage(url: String, view: ImageView) {
         Glide.with(Notificare.requireContext())

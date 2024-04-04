@@ -21,10 +21,7 @@ public object NotificareDeviceCompat {
     }
 
     @JvmStatic
-    public fun updatePreferredLanguage(
-        preferredLanguage: String?,
-        callback: NotificareCallback<Unit>
-    ) {
+    public fun updatePreferredLanguage(preferredLanguage: String?, callback: NotificareCallback<Unit>) {
         Notificare.device().updatePreferredLanguage(preferredLanguage, callback)
     }
 

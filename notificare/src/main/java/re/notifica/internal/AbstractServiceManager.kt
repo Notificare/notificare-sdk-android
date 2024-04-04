@@ -41,9 +41,7 @@ public abstract class AbstractServiceManager {
                 implementation = implementation(gms)
 
                 if (implementation != null && implementation.available) {
-                    NotificareLogger.debug(
-                        "Detected GMS peer dependency. Setting it as the target platform."
-                    )
+                    NotificareLogger.debug("Detected GMS peer dependency. Setting it as the target platform.")
                     return implementation
                 }
             }
@@ -52,9 +50,7 @@ public abstract class AbstractServiceManager {
                 implementation = implementation(hms)
 
                 if (implementation != null && implementation.available) {
-                    NotificareLogger.debug(
-                        "Detected HMS peer dependency. Setting it as the target platform."
-                    )
+                    NotificareLogger.debug("Detected HMS peer dependency. Setting it as the target platform.")
                     return implementation
                 }
             }
