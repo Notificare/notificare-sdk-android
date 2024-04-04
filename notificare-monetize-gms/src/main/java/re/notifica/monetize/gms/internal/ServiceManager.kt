@@ -179,9 +179,7 @@ public class ServiceManager : ServiceManager(), BillingClientStateListener, Purc
                     try {
                         for (purchase in purchases.filter { it.purchaseState == Purchase.PurchaseState.PURCHASED }) {
                             try {
-                                NotificareLogger.debug(
-                                    "Verifying purchase order '${purchase.orderId}'."
-                                )
+                                NotificareLogger.debug("Verifying purchase order '${purchase.orderId}'.")
                                 processPurchase(purchase)
 
                                 onPurchaseFinished(NotificarePurchase.from(purchase))
@@ -193,10 +191,7 @@ public class ServiceManager : ServiceManager(), BillingClientStateListener, Purc
                             }
                         }
                     } catch (e: Exception) {
-                        NotificareLogger.error(
-                            "Something went wrong while processing the purchases.",
-                            e
-                        )
+                        NotificareLogger.error("Something went wrong while processing the purchases.", e)
                     }
                 }
             }
@@ -207,9 +202,7 @@ public class ServiceManager : ServiceManager(), BillingClientStateListener, Purc
 
     // endregion
 
-    private suspend fun fetchProducts(): List<FetchProductsResponse.Product> = withContext(
-        Dispatchers.IO
-    ) {
+    private suspend fun fetchProducts(): List<FetchProductsResponse.Product> = withContext(Dispatchers.IO) {
         NotificareRequest.Builder()
             .get("/product/active")
             .responseDecodable(FetchProductsResponse::class)
@@ -217,34 +210,30 @@ public class ServiceManager : ServiceManager(), BillingClientStateListener, Purc
             .filter { it.isGooglePlay }
     }
 
-    private suspend fun fetchProductDetails(identifiers: List<String>): List<ProductDetails> =
-        withContext(Dispatchers.IO) {
-            val params = QueryProductDetailsParams.newBuilder()
-                .setProductList(
-                    identifiers.map {
-                        QueryProductDetailsParams.Product.newBuilder()
-                            .setProductId(it)
-                            .setProductType(BillingClient.ProductType.INAPP)
-                            .build()
-                    }
-                )
-                .build()
+    private suspend fun fetchProductDetails(identifiers: List<String>): List<ProductDetails> = withContext(Dispatchers.IO) {
+        val params = QueryProductDetailsParams.newBuilder()
+            .setProductList(
+                identifiers.map {
+                    QueryProductDetailsParams.Product.newBuilder()
+                        .setProductId(it)
+                        .setProductType(BillingClient.ProductType.INAPP)
+                        .build()
+                }
+            )
+            .build()
 
-            val result = billingClient.queryProductDetails(params)
+        val result = billingClient.queryProductDetails(params)
 
-            if (result.billingResult.responseCode != BillingClient.BillingResponseCode.OK) {
-                throw BillingException(
-                    result.billingResult.responseCode,
-                    result.billingResult.debugMessage
-                )
-            }
-
-            val productDetailsList = result.productDetailsList ?: run {
-                throw RuntimeException("Fetch product details succeeded with an undefined list.")
-            }
-
-            return@withContext productDetailsList
+        if (result.billingResult.responseCode != BillingClient.BillingResponseCode.OK) {
+            throw BillingException(result.billingResult.responseCode, result.billingResult.debugMessage)
         }
+
+        val productDetailsList = result.productDetailsList ?: run {
+            throw RuntimeException("Fetch product details succeeded with an undefined list.")
+        }
+
+        return@withContext productDetailsList
+    }
 
     private suspend fun processPurchase(purchase: Purchase): Unit = withContext(Dispatchers.IO) {
         if (purchase.products.size > 1) {
@@ -291,10 +280,7 @@ public class ServiceManager : ServiceManager(), BillingClientStateListener, Purc
                 NotificareLogger.warning("Something went wrong while consuming the purchase.")
                 NotificareLogger.debug("$result")
 
-                throw BillingException(
-                    result.billingResult.responseCode,
-                    result.billingResult.debugMessage
-                )
+                throw BillingException(result.billingResult.responseCode, result.billingResult.debugMessage)
             }
 
             return@withContext
