@@ -18,7 +18,7 @@ if [ -s $diff ]; then
   git apply -R $diff
 fi
 
-./gradlew --quiet ktlintFormat -PinternalKtlintGitFilter="$CHANGED_FILES"
+./gradlew --quiet ktlintCheck -PinternalKtlintGitFilter="$CHANGED_FILES"
 gradle_command_exit_code=$?
 
 echo "Completed ktlint run."
