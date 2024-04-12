@@ -3,13 +3,19 @@ package re.notifica.sample
 import android.app.Application
 import android.os.Build
 import android.os.StrictMode
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
 import re.notifica.Notificare
 import re.notifica.geo.ktx.geo
+import re.notifica.ktx.device
+import re.notifica.models.NotificareApplication
 import re.notifica.push.ktx.push
 import re.notifica.sample.live_activities.LiveActivitiesController
 import timber.log.Timber
 
-class MainApplication : Application() {
+class MainApplication : Application(), Notificare.Listener {
+    private val applicationScope = MainScope()
+
     override fun onCreate() {
         enableStrictMode()
         super.onCreate()
@@ -26,7 +32,13 @@ class MainApplication : Application() {
             LiveActivitiesController.registerLiveActivitiesChannel()
         }
 
+        Notificare.addListener(this)
+
         Notificare.launch()
+    }
+
+    override fun onReady(application: NotificareApplication) {
+        registerUser()
     }
 
     private fun enableStrictMode() {
@@ -48,5 +60,20 @@ class MainApplication : Application() {
                 .penaltyDeath()
                 .build()
         )
+    }
+
+    private fun registerUser() {
+        applicationScope.launch {
+            val userId = getString(R.string.sample_user_id).ifBlank { null }
+            val userName = getString(R.string.sample_user_name).ifBlank { null }
+
+            try {
+                Timber.i("Registering device")
+                Notificare.device().register(userId, userName)
+                Timber.i("Registered device successfully.")
+            } catch (e: Exception) {
+                Timber.e(e, "Failed to register device.")
+            }
+        }
     }
 }
