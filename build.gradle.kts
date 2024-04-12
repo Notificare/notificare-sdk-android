@@ -28,7 +28,7 @@ subprojects {
         val awsS3SecretAccessKey = System.getenv("AWS_SECRET_ACCESS_KEY") ?: properties.getProperty("aws.s3.secret_access_key")
 
         val artifactChannel =
-            if (Regex("/^([0-9]+)\\.([0-9]+)\\.([0-9]+)\$/").matches(version.toString())) "releases" else "prereleases"
+            if (Regex("^([0-9]+)\\.([0-9]+)\\.([0-9]+)\$").matches(version.toString())) "releases" else "prereleases"
 
         afterEvaluate {
             configure<PublishingExtension> {
