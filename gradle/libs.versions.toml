@@ -30,6 +30,7 @@ altbeacon = "2.20.3"
 google-services = "4.4.0"
 google-firebase = "32.7.0"
 google-androidBillingClient = "5.2.1"
+google-androidInstallReferrer = "2.2"
 google-playServices-base = "18.2.0"
 google-playServices-location = "21.0.1"
 google-playServices-maps = "18.2.0"
@@ -79,6 +80,7 @@ altbeacon = { module = "org.altbeacon:android-beacon-library", version.ref = "al
 google-firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "google-firebase" }
 google-firebase-messaging = { module = "com.google.firebase:firebase-messaging-ktx" }
 google-androidBillingClient = { module = "com.android.billingclient:billing-ktx", version.ref = "google-androidBillingClient" }
+google-androidInstallReferrer = { module = "com.android.installreferrer:installreferrer", version.ref = "google-androidInstallReferrer" }
 google-playServices-base = { module = "com.google.android.gms:play-services-base", version.ref = "google-playServices-base" }
 google-playServices-location = { module = "com.google.android.gms:play-services-location", version.ref = "google-playServices-location"}
 google-playServices-maps = { module = "com.google.android.gms:play-services-maps", version.ref = "google-playServices-maps" }

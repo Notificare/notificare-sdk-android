@@ -7,9 +7,17 @@ import android.content.Intent
 import android.content.res.Resources
 import android.net.Uri
 import android.os.Build
+import android.os.RemoteException
 import androidx.annotation.MainThread
 import androidx.core.app.NotificationManagerCompat
-import kotlinx.coroutines.*
+import com.android.installreferrer.api.InstallReferrerClient
+import com.android.installreferrer.api.InstallReferrerClient.InstallReferrerResponse
+import com.android.installreferrer.api.InstallReferrerStateListener
+import com.android.installreferrer.api.ReferrerDetails
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import re.notifica.internal.*
 import re.notifica.internal.common.onMainThread
 import re.notifica.internal.ktx.coroutineScope
@@ -68,6 +76,8 @@ public object Notificare {
 
     // Listeners
     private val listeners = hashSetOf<Listener>()
+
+    private var installReferrerDetails: ReferrerDetails? = null
 
     // region Public API
 
@@ -504,6 +514,70 @@ public object Notificare {
         return true
     }
 
+    public suspend fun canEvaluateDeferredLink(): Boolean = withContext(Dispatchers.IO) {
+        if (sharedPreferences.deferredLinkChecked != false) {
+            return@withContext false
+        }
+
+        val context = requireContext()
+        val referrerDetails = getInstallReferrerDetails(context)
+        val installReferrer = referrerDetails?.installReferrer ?: return@withContext false
+        val deferredLink = parseDeferredLink(installReferrer)
+
+        return@withContext deferredLink != null
+    }
+
+    @JvmStatic
+    public fun canEvaluateDeferredLink(
+        callback: NotificareCallback<Boolean>,
+    ): Unit = toCallbackFunction(::canEvaluateDeferredLink)(callback)
+
+    public suspend fun evaluateDeferredLink(): Boolean = withContext(Dispatchers.IO) {
+        if (sharedPreferences.deferredLinkChecked != false) {
+            NotificareLogger.debug("Deferred link already evaluated.")
+            return@withContext false
+        }
+
+        try {
+            NotificareLogger.debug("Checking for a deferred link.")
+
+            val context = requireContext()
+
+            val referrerDetails = getInstallReferrerDetails(context)
+            val installReferrer = referrerDetails?.installReferrer ?: run {
+                NotificareLogger.debug("Install referrer information not found.")
+                return@withContext false
+            }
+
+            val deferredLink = parseDeferredLink(installReferrer) ?: run {
+                NotificareLogger.debug("Install referrer has no Notificare deferred link.")
+                return@withContext false
+            }
+
+            val dynamicLink = fetchDynamicLink(deferredLink)
+
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(dynamicLink.target))
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS)
+                .setPackage(context.packageName)
+
+            if (intent.resolveActivity(context.packageManager) == null) {
+                NotificareLogger.warning("Cannot open a deep link that's not supported by the application.")
+                return@withContext false
+            }
+
+            context.startActivity(intent)
+        } finally {
+            sharedPreferences.deferredLinkChecked = true
+        }
+
+        return@withContext true
+    }
+
+    @JvmStatic
+    public fun evaluateDeferredLink(
+        callback: NotificareCallback<Boolean>,
+    ): Unit = toCallbackFunction(::evaluateDeferredLink)(callback)
+
     // endregion
 
     private fun configure(context: Context, servicesInfo: NotificareServicesInfo) {
@@ -541,6 +615,13 @@ public object Notificare {
             }
 
             sharedPreferences.migrated = true
+        }
+
+        // The default value of the deferred link depends on whether Notificare has a registered device.
+        // Having a registered device means the app ran at least once and we should stop checking for
+        // deferred links.
+        if (sharedPreferences.deferredLinkChecked == null) {
+            sharedPreferences.deferredLinkChecked = sharedPreferences.device != null
         }
 
         NotificareLogger.debug("Notificare configured all services.")
@@ -603,6 +684,58 @@ public object Notificare {
         }
 
         return uri
+    }
+
+    private fun parseDeferredLink(referrer: String): Uri? {
+        var uri = Uri.Builder().encodedQuery(referrer).build()
+        var link = uri.getQueryParameter("ntc_link")
+        if (link != null) return Uri.parse(link)
+
+        uri = Uri.parse(referrer)
+        link = uri.getQueryParameter("ntc_link")
+        if (link != null) return Uri.parse(link)
+
+        return null
+    }
+
+    private suspend fun getInstallReferrerDetails(
+        context: Context
+    ): ReferrerDetails? = withContext(Dispatchers.IO) {
+        val referrerDetails = installReferrerDetails
+        if (referrerDetails != null) return@withContext referrerDetails
+
+        val deferredReferrerDetails = CompletableDeferred<ReferrerDetails?>()
+
+        val client = InstallReferrerClient.newBuilder(context.applicationContext).build()
+        client.startConnection(object : InstallReferrerStateListener {
+            override fun onInstallReferrerSetupFinished(responseCode: Int) {
+                if (responseCode == InstallReferrerResponse.OK) {
+                    try {
+                        val referrer = client.installReferrer
+                        deferredReferrerDetails.complete(referrer)
+                    } catch (e: RemoteException) {
+                        NotificareLogger.error("Failed to acquire the install referrer.", e)
+                        deferredReferrerDetails.complete(null)
+                    }
+                } else {
+                    NotificareLogger.error("Unable to acquire the install referrer. Play Store responded with code '$responseCode'.")
+                    deferredReferrerDetails.complete(null)
+                }
+
+                client.endConnection()
+            }
+
+            override fun onInstallReferrerServiceDisconnected() {
+                if (!deferredReferrerDetails.isCompleted) {
+                    NotificareLogger.warning("Lost connection to the Play Store before acquiring the install referrer.")
+                    deferredReferrerDetails.complete(null)
+                }
+            }
+        })
+
+        return@withContext deferredReferrerDetails.await().also {
+            installReferrerDetails = it
+        }
     }
 
     @Deprecated(
