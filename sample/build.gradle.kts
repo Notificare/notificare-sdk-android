@@ -25,6 +25,8 @@ android {
 
         manifestPlaceholders["googleMapsApiKey"] = properties.getProperty("google.maps.key")
 
+        resValue("string", "sample_user_id", properties.getProperty("userId"))
+        resValue("string", "sample_user_name", properties.getProperty("userName"))
     }
 
     signingConfigs {
