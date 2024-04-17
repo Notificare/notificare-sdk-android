@@ -22,7 +22,6 @@ class CoffeeBrewerDismissalWorker(
                     )
                 }
             Result.success()
-
         } catch (e: Exception) {
             Result.failure()
         }

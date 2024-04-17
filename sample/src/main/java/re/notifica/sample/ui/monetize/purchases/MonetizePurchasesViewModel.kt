@@ -20,10 +20,9 @@ class MonetizePurchasesViewModel : ViewModel() {
         viewModelScope.launch {
             Notificare.monetize().observablePurchases
                 .asFlow()
-                .collect() { purchases ->
+                .collect { purchases ->
                     _purchasesList.postValue(purchases)
                 }
         }
     }
-
 }

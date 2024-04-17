@@ -1,6 +1,11 @@
 package re.notifica.sample.ui.main
 
-import androidx.lifecycle.*
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.asFlow
+import androidx.lifecycle.asLiveData
+import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import re.notifica.Notificare
@@ -12,12 +17,16 @@ import re.notifica.models.NotificareDevice
 import re.notifica.models.NotificareDoNotDisturb
 import re.notifica.models.NotificareTime
 import re.notifica.push.ktx.push
-import re.notifica.sample.ktx.*
+import re.notifica.sample.core.BaseViewModel
+import re.notifica.sample.ktx.LocationPermission
+import re.notifica.sample.ktx.hasBackgroundTrackingCapabilities
+import re.notifica.sample.ktx.hasBluetoothCapabilities
+import re.notifica.sample.ktx.hasForegroundTrackingCapabilities
+import re.notifica.sample.ktx.hasNotificationsPermission
 import re.notifica.sample.live_activities.LiveActivitiesController
 import re.notifica.sample.live_activities.models.CoffeeBrewerContentState
 import re.notifica.sample.live_activities.models.CoffeeBrewingState
 import re.notifica.sample.models.ApplicationInfo
-import re.notifica.sample.core.BaseViewModel
 import timber.log.Timber
 
 class MainViewModel : BaseViewModel(), DefaultLifecycleObserver, Notificare.Listener {
@@ -98,7 +107,10 @@ class MainViewModel : BaseViewModel(), DefaultLifecycleObserver, Notificare.List
 
     private val checkLocationPermission: LocationPermission
         get() {
-            if (Notificare.geo().hasForegroundTrackingCapabilities && Notificare.geo().hasBackgroundTrackingCapabilities) {
+            if (
+                Notificare.geo().hasForegroundTrackingCapabilities &&
+                Notificare.geo().hasBackgroundTrackingCapabilities
+            ) {
                 return LocationPermission.BACKGROUND
             }
 
@@ -124,7 +136,7 @@ class MainViewModel : BaseViewModel(), DefaultLifecycleObserver, Notificare.List
     private val appInfo: ApplicationInfo?
         get() {
             val application = Notificare.application
-            if(application != null) {
+            if (application != null) {
                 return ApplicationInfo(application.name, application.id)
             }
 
