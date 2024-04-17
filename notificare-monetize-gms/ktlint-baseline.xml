@@ -3,9 +3,5 @@
     <file name="src/main/java/re/notifica/monetize/gms/internal/ServiceManager.kt">
         <error line="122" column="1" source="standard:max-line-length" />
         <error line="175" column="1" source="standard:max-line-length" />
-        <error line="213" column="1" source="standard:max-line-length" />
-        <error line="213" column="96" source="standard:function-signature" />
-        <error line="213" column="108" source="standard:argument-list-wrapping" />
-        <error line="213" column="122" source="standard:argument-list-wrapping" />
     </file>
 </baseline>

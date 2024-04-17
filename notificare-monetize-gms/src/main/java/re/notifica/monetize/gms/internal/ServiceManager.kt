@@ -184,10 +184,7 @@ public class ServiceManager : ServiceManager(), BillingClientStateListener, Purc
 
                                 onPurchaseFinished(NotificarePurchase.from(purchase))
                             } catch (e: Exception) {
-                                NotificareLogger.error(
-                                    "Failed to process purchase order '${purchase.orderId}'.",
-                                    e
-                                )
+                                NotificareLogger.error("Failed to process purchase order '${purchase.orderId}'.", e)
                             }
                         }
                     } catch (e: Exception) {
@@ -210,7 +207,9 @@ public class ServiceManager : ServiceManager(), BillingClientStateListener, Purc
             .filter { it.isGooglePlay }
     }
 
-    private suspend fun fetchProductDetails(identifiers: List<String>): List<ProductDetails> = withContext(Dispatchers.IO) {
+    private suspend fun fetchProductDetails(
+        identifiers: List<String>
+    ): List<ProductDetails> = withContext(Dispatchers.IO) {
         val params = QueryProductDetailsParams.newBuilder()
             .setProductList(
                 identifiers.map {
