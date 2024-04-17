@@ -19,11 +19,8 @@
     <ID>MagicNumber:SharedPreferencesMigration.kt$SharedPreferencesMigration$7</ID>
     <ID>MatchingDeclarationName:Annotations.kt$InternalNotificareApi</ID>
     <ID>MatchingDeclarationName:NotificareNetworkException.kt$NetworkException : Exception</ID>
-    <ID>MaxLineLength:Notificare.kt$Notificare$NotificareLogger.debug("/==================================================================================/")</ID>
-    <ID>MaxLineLength:Notificare.kt$Notificare$val notificationManager = requireContext().getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager</ID>
     <ID>MaxLineLength:NotificareDeviceModuleImpl.kt$NotificareDeviceModuleImpl$// We will log the Install &amp; Registration events here since this will execute only one time at the start.</ID>
     <ID>MaxLineLength:NotificareNotification.kt$NotificareNotification.Action.Companion$message = "The WebView action type becomes a backwards compatible alias. Use the InAppBrowser action type instead."</ID>
-    <ID>MaxLineLength:NotificareRequest.kt$NotificareRequest$?:</ID>
     <ID>MaxLineLength:NotificareUtils.kt$NotificareUtils$get() = "$applicationName/$applicationVersion Notificare/${Notificare.SDK_VERSION} Android/${Build.VERSION.RELEASE}"</ID>
     <ID>MaxLineLength:SharedPreferencesMigration.kt$SharedPreferencesMigration$language = if (!json.isNull("language")) json.getString("language") else NotificareUtils.deviceLanguage</ID>
     <ID>MaxLineLength:SharedPreferencesMigration.kt$SharedPreferencesMigration$timeZoneOffset = if (!json.isNull("timeZoneOffset")) json.getDouble("timeZoneOffset") else 0.toDouble()</ID>
@@ -61,7 +58,7 @@
     <ID>UseCheckOrError:Notificare.kt$Notificare$throw IllegalStateException("Cannot find context for Notificare.")</ID>
     <ID>UseCheckOrError:NotificareConfigurationProvider.kt$NotificareConfigurationProvider$throw IllegalStateException("Cannot find context from the provider.")</ID>
     <ID>UseCheckOrError:NotificareSessionConfigurationProvider.kt$NotificareSessionConfigurationProvider$throw IllegalStateException("Cannot find context from the provider.")</ID>
-    <ID>UseRequire:Notificare.kt$Notificare$throw IllegalArgumentException( "Notificare cannot be configured without an application key and secret." )</ID>
+    <ID>UseRequire:Notificare.kt$Notificare$throw IllegalArgumentException("Notificare cannot be configured without an application key and secret.")</ID>
     <ID>UseRequire:NotificareDeviceModuleImpl.kt$NotificareDeviceModuleImpl$throw IllegalArgumentException("Invalid preferred language value: $preferredLanguage")</ID>
     <ID>UseRequire:NotificareDeviceModuleImpl.kt$NotificareDeviceModuleImpl$throw IllegalArgumentException("Invalid transport '$transport'.")</ID>
     <ID>UseRequire:NotificareTime.kt$NotificareTime$throw IllegalArgumentException("Invalid time '$hours:$minutes'.")</ID>

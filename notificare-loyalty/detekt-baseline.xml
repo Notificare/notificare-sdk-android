@@ -15,9 +15,6 @@
     <ID>MagicNumber:PassUtils.kt$3</ID>
     <ID>MatchingDeclarationName:Payloads.kt$RegisterPassPayload</ID>
     <ID>MaxLineLength:NotificareLoyaltyImpl.kt$NotificareLoyaltyImpl$// val deleteIntent = Intent(Notificare.shared().getApplicationContext(), Notificare.shared().getIntentReceiver())</ID>
-    <ID>MaxLineLength:NotificareLoyaltyImpl.kt$NotificareLoyaltyImpl$NotificareLogger.debug("Skipping location relevance for pass ${pass.serial} because the geo module is not available.")</ID>
-    <ID>MaxLineLength:NotificareLoyaltyImpl.kt$NotificareLoyaltyImpl$internal</ID>
-    <ID>MaxLineLength:NotificareLoyaltyImpl.kt$NotificareLoyaltyImpl$return passbookBeacon.major == nearbyBeacon.major &amp;&amp; (passbookBeacon.minor == null || passbookBeacon.minor == nearbyBeacon.minor)</ID>
     <ID>MaxLineLength:PassUtils.kt$dateStr.matches("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}.\\d{3}[+\\-]\\d{4}$".toRegex())</ID>
     <ID>MaxLineLength:PassUtils.kt$dateStr.matches("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}[+\\-]\\d{4}$".toRegex())</ID>
     <ID>ReturnCount:NotificareLoyaltyImpl.kt$NotificareLoyaltyImpl$private fun checkPassRelevanceBeacon( passbookBeacon: NotificarePass.PassbookBeacon, nearbyBeacon: NotificareGeoIntegration.Beacon, ): Boolean</ID>
