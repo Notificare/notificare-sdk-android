@@ -13,7 +13,6 @@
     <ID>MagicNumber:NotificareCallbackActionFragment.kt$NotificareCallbackActionFragment.Companion$270</ID>
     <ID>MagicNumber:NotificareCallbackActionFragment.kt$NotificareCallbackActionFragment.Companion$90</ID>
     <ID>MaxLineLength:NotificareCallbackActionFragment.kt$NotificareCallbackActionFragment$NotificarePendingResult.CAPTURE_IMAGE_AND_KEYBOARD_REQUEST_CODE -&gt; R.layout.notificare_action_callback_camera_keyboard</ID>
-    <ID>MaxLineLength:NotificareImageFragment.kt$NotificareImageFragment$Notificare.pushUIInternal().lifecycleListeners.forEach { it.onNotificationFailedToPresent(notification) }</ID>
     <ID>MaxLineLength:NotificareOptions.kt$"Invalid color resource provided for 're.notifica.push.ui.custom_tabs_navigation_bar_divider_color'."</ID>
     <ID>MaxLineLength:NotificarePushUI.kt$NotificarePushUI.NotificationLifecycleListener$"Action failed to execute, please override onActionFailedToExecute if you want to receive these events."</ID>
     <ID>MaxLineLength:NotificarePushUI.kt$NotificarePushUI.NotificationLifecycleListener$"Notification failed to present, please override onNotificationFailedToPresent if you want to receive these events."</ID>
@@ -26,13 +25,8 @@
     <ID>MaxLineLength:NotificarePushUIImpl.kt$NotificarePushUIImpl$"Attempting to create a fragment for a notification of type 'none'. This type contains to visual interface."</ID>
     <ID>MaxLineLength:NotificarePushUIImpl.kt$NotificarePushUIImpl$"Attempting to present a notification of type 'none'. These should be handled by the application instead."</ID>
     <ID>MaxLineLength:NotificarePushUIImpl.kt$NotificarePushUIImpl$"No push-ui dependencies have been detected. Please include one of the platform-specific push-ui packages."</ID>
-    <ID>MaxLineLength:NotificareUrlFragment.kt$NotificareUrlFragment$Notificare.pushUIInternal().lifecycleListeners.forEach { it.onNotificationFailedToPresent(notification) }</ID>
-    <ID>MaxLineLength:NotificareWebPassFragment.kt$NotificareWebPassFragment$Notificare.pushUIInternal().lifecycleListeners.forEach { it.onNotificationFailedToPresent(notification) }</ID>
-    <ID>MaxLineLength:NotificareWebViewFragment.kt$NotificareWebViewFragment$Notificare.pushUIInternal().lifecycleListeners.forEach { it.onNotificationFailedToPresent(notification) }</ID>
     <ID>MaxLineLength:NotificationCallbackAction.kt$NotificationCallbackAction$?:</ID>
     <ID>MaxLineLength:NotificationContainerFragment.kt$NotificationContainerFragment$// if (notification.getType().equals(NotificareNotification.TYPE_ALERT) || notification.getType().equals(NotificareNotification.TYPE_PASSBOOK)) {</ID>
-    <ID>MaxLineLength:NotificationDialog.kt$NotificationDialog$builder.setNeutralButton(R.string.notificare_dialog_cancel_button) { _, _ -&gt; callback?.onNotificationDialogCancelClick() }</ID>
-    <ID>MaxLineLength:NotificationDialog.kt$NotificationDialog$builder.setNeutralButton(R.string.notificare_dialog_ok_button) { _, _ -&gt; callback?.onNotificationDialogOkClick() }</ID>
     <ID>MaxLineLength:NotificationWebViewClient.kt$NotificationWebViewClient$// Normal HTTP links will be handled by the webView itself, unless they match any of the app's intent filters</ID>
     <ID>ReturnCount:Augment.kt$internal fun Notificare.loyaltyIntegration(): NotificareLoyaltyIntegration?</ID>
     <ID>ReturnCount:NotificareCallbackActionFragment.kt$NotificareCallbackActionFragment$private fun renderImage(): Boolean</ID>
