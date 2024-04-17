@@ -45,13 +45,15 @@ public class NotificareRequest private constructor(
         private val client = OkHttpClient.Builder()
             // .authenticator(NotificareBasicAuthenticator())
             .addInterceptor(NotificareHeadersInterceptor())
-            .addInterceptor(HttpLoggingInterceptor().apply {
-                level = if (Notificare.options?.debugLoggingEnabled == true) {
-                    HttpLoggingInterceptor.Level.BASIC
-                } else {
-                    HttpLoggingInterceptor.Level.NONE
+            .addInterceptor(
+                HttpLoggingInterceptor().apply {
+                    level = if (Notificare.options?.debugLoggingEnabled == true) {
+                        HttpLoggingInterceptor.Level.BASIC
+                    } else {
+                        HttpLoggingInterceptor.Level.NONE
+                    }
                 }
-            })
+            )
             .build()
     }
 
@@ -93,7 +95,9 @@ public class NotificareRequest private constructor(
         val response = response(closeResponse = false)
 
         val body = response.body
-            ?: throw IllegalArgumentException("The response contains an empty body. Cannot parse into '${klass.simpleName}'.")
+            ?: throw IllegalArgumentException(
+                "The response contains an empty body. Cannot parse into '${klass.simpleName}'."
+            )
 
         return withContext(Dispatchers.IO) {
             try {
@@ -244,7 +248,8 @@ public class NotificareRequest private constructor(
             return build().response(true)
         }
 
-        public fun response(callback: NotificareCallback<Response>): Unit = toCallbackFunction(::response)(callback)
+        public fun response(callback: NotificareCallback<Response>): Unit =
+            toCallbackFunction(::response)(callback)
 
         public suspend fun responseString(): String {
             return build().responseString()

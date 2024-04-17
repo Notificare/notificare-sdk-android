@@ -1,25 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <baseline version="1.0">
-    <file name="src/main/java/re/notifica/Notificare.kt">
-        <error line="185" column="1" source="standard:max-line-length" />
-        <error line="185" column="40" source="standard:argument-list-wrapping" />
-        <error line="185" column="126" source="standard:argument-list-wrapping" />
-        <error line="190" column="1" source="standard:max-line-length" />
-        <error line="190" column="40" source="standard:argument-list-wrapping" />
-        <error line="190" column="126" source="standard:argument-list-wrapping" />
-        <error line="193" column="1" source="standard:max-line-length" />
-        <error line="193" column="40" source="standard:argument-list-wrapping" />
-        <error line="193" column="126" source="standard:argument-list-wrapping" />
-        <error line="437" column="1" source="standard:max-line-length" />
-        <error line="437" column="73" source="standard:argument-list-wrapping" />
-        <error line="437" column="101" source="standard:argument-list-wrapping" />
-        <error line="487" column="51" source="standard:wrapping" />
-        <error line="487" column="57" source="standard:wrapping" />
-        <error line="495" column="9" source="standard:wrapping" />
-        <error line="505" column="26" source="standard:wrapping" />
-        <error line="505" column="30" source="standard:wrapping" />
-        <error line="517" column="9" source="standard:wrapping" />
-    </file>
     <file name="src/main/java/re/notifica/internal/NotificareUtils.kt">
         <error line="70" column="1" source="standard:max-line-length" />
     </file>
@@ -30,11 +10,6 @@
         <error line="27" column="41" source="standard:annotation" />
         <error line="37" column="16" source="standard:annotation" />
         <error line="37" column="41" source="standard:annotation" />
-    </file>
-    <file name="src/main/java/re/notifica/internal/network/request/NotificareRequest.kt">
-        <error line="48" column="29" source="standard:wrapping" />
-        <error line="54" column="13" source="standard:wrapping" />
-        <error line="96" column="1" source="standard:max-line-length" />
     </file>
     <file name="src/main/java/re/notifica/internal/storage/SharedPreferencesMigration.kt">
         <error line="66" column="1" source="standard:max-line-length" />

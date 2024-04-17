@@ -182,15 +182,21 @@ public object Notificare {
                 val enabledServices = application.services.filter { it.value }.map { it.key }
                 val enabledModules = NotificareUtils.getEnabledPeerModules()
 
-                NotificareLogger.debug("/==================================================================================/")
+                NotificareLogger.debug(
+                    "/==================================================================================/"
+                )
                 NotificareLogger.debug("Notificare SDK is ready to use for application")
                 NotificareLogger.debug("App name: ${application.name}")
                 NotificareLogger.debug("App ID: ${application.id}")
                 NotificareLogger.debug("App services: ${enabledServices.joinToString(", ")}")
-                NotificareLogger.debug("/==================================================================================/")
+                NotificareLogger.debug(
+                    "/==================================================================================/"
+                )
                 NotificareLogger.debug("SDK version: $SDK_VERSION")
                 NotificareLogger.debug("SDK modules: ${enabledModules.joinToString(", ")}")
-                NotificareLogger.debug("/==================================================================================/")
+                NotificareLogger.debug(
+                    "/==================================================================================/"
+                )
 
                 // We're done launching. Send a broadcast.
                 requireContext().sendBroadcast(
@@ -241,9 +247,7 @@ public object Notificare {
                         try {
                             this.unlaunch()
                         } catch (e: Exception) {
-                            NotificareLogger.debug(
-                                "Failed to un-launch ${module.name.lowercase()}': $e"
-                            )
+                            NotificareLogger.debug("Failed to un-launch ${module.name.lowercase()}': $e")
                             throw e
                         }
                     }
@@ -392,39 +396,43 @@ public object Notificare {
             .response()
     }
 
-    public suspend fun callNotificationReplyWebhook(uri: Uri, data: Map<String, String>): Unit =
-        withContext(Dispatchers.IO) {
-            val params = mutableMapOf<String, String?>()
+    public suspend fun callNotificationReplyWebhook(
+        uri: Uri,
+        data: Map<String, String>
+    ): Unit = withContext(Dispatchers.IO) {
+        val params = mutableMapOf<String, String?>()
 
-            // Add all query parameters to the POST body.
-            uri.queryParameterNames.forEach {
-                params[it] = uri.getQueryParameter(it)
-            }
-
-            // Add our standard properties.
-            params["userID"] = device().currentDevice?.userId
-            params["deviceID"] = device().currentDevice?.id
-
-            // Add all the items passed via data.
-            params.putAll(data)
-
-            NotificareRequest.Builder()
-                .post(uri.toString(), params)
-                .response()
+        // Add all query parameters to the POST body.
+        uri.queryParameterNames.forEach {
+            params[it] = uri.getQueryParameter(it)
         }
 
-    public suspend fun uploadNotificationReplyAsset(payload: ByteArray, contentType: String): String =
-        withContext(Dispatchers.IO) {
-            if (!isConfigured) throw NotificareNotConfiguredException()
+        // Add our standard properties.
+        params["userID"] = device().currentDevice?.userId
+        params["deviceID"] = device().currentDevice?.id
 
-            val response = NotificareRequest.Builder()
-                .header("Content-Type", contentType)
-                .post("/upload/reply", payload)
-                .responseDecodable(NotificareUploadResponse::class)
+        // Add all the items passed via data.
+        params.putAll(data)
 
-            val host = checkNotNull(servicesInfo).pushHost
-            "$host/upload${response.filename}"
-        }
+        NotificareRequest.Builder()
+            .post(uri.toString(), params)
+            .response()
+    }
+
+    public suspend fun uploadNotificationReplyAsset(
+        payload: ByteArray,
+        contentType: String
+    ): String = withContext(Dispatchers.IO) {
+        if (!isConfigured) throw NotificareNotConfiguredException()
+
+        val response = NotificareRequest.Builder()
+            .header("Content-Type", contentType)
+            .post("/upload/reply", payload)
+            .responseDecodable(NotificareUploadResponse::class)
+
+        val host = checkNotNull(servicesInfo).pushHost
+        "$host/upload${response.filename}"
+    }
 
     @InternalNotificareApi
     public fun removeNotificationFromNotificationCenter(notification: NotificareNotification) {
@@ -434,7 +442,8 @@ public object Notificare {
     @JvmStatic
     public fun cancelNotification(id: String) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            val notificationManager = requireContext().getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager
+            val notificationManager =
+                requireContext().getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager
 
             if (notificationManager != null) {
                 val groupKey = notificationManager.activeNotifications.find {
@@ -484,15 +493,18 @@ public object Notificare {
     public fun handleTestDeviceIntent(intent: Intent): Boolean {
         val nonce = parseTestDeviceNonce(intent) ?: return false
 
-        deviceImplementation().registerTestDevice(nonce, object : NotificareCallback<Unit> {
-            override fun onSuccess(result: Unit) {
-                NotificareLogger.info("Device registered for testing.")
-            }
+        deviceImplementation().registerTestDevice(
+            nonce,
+            object : NotificareCallback<Unit> {
+                override fun onSuccess(result: Unit) {
+                    NotificareLogger.info("Device registered for testing.")
+                }
 
-            override fun onFailure(e: Exception) {
-                NotificareLogger.error("Failed to register the device for testing.", e)
+                override fun onFailure(e: Exception) {
+                    NotificareLogger.error("Failed to register the device for testing.", e)
+                }
             }
-        })
+        )
 
         return true
     }
@@ -502,19 +514,22 @@ public object Notificare {
         val uri = parseDynamicLink(intent) ?: return false
 
         NotificareLogger.debug("Handling a dynamic link.")
-        fetchDynamicLink(uri, object : NotificareCallback<NotificareDynamicLink> {
-            override fun onSuccess(result: NotificareDynamicLink) {
-                activity.startActivity(
-                    Intent()
-                        .setAction(Intent.ACTION_VIEW)
-                        .setData(Uri.parse(result.target))
-                )
-            }
+        fetchDynamicLink(
+            uri,
+            object : NotificareCallback<NotificareDynamicLink> {
+                override fun onSuccess(result: NotificareDynamicLink) {
+                    activity.startActivity(
+                        Intent()
+                            .setAction(Intent.ACTION_VIEW)
+                            .setData(Uri.parse(result.target))
+                    )
+                }
 
-            override fun onFailure(e: Exception) {
-                NotificareLogger.warning("Failed to fetch the dynamic link.", e)
+                override fun onFailure(e: Exception) {
+                    NotificareLogger.warning("Failed to fetch the dynamic link.", e)
+                }
             }
-        })
+        )
 
         return true
     }
@@ -528,9 +543,7 @@ public object Notificare {
         }
 
         if (servicesInfo.applicationKey.isBlank() || servicesInfo.applicationSecret.isBlank()) {
-            throw IllegalArgumentException(
-                "Notificare cannot be configured without an application key and secret."
-            )
+            throw IllegalArgumentException("Notificare cannot be configured without an application key and secret.")
         }
 
         this.context = WeakReference(context.applicationContext)

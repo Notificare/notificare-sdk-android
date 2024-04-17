@@ -41,10 +41,11 @@ public fun <T> toCallbackFunction(fn: suspend () -> T): (callback: NotificareCal
 }
 
 @InternalNotificareApi
-public fun <A, T> toCallbackFunction(fn: suspend (A) -> T): (a: A, callback: NotificareCallback<T>) -> Unit =
-    { a, callback ->
-        awaitSuspend(suspend { fn(a) }, callback)
-    }
+public fun <A, T> toCallbackFunction(
+    fn: suspend (A) -> T
+): (a: A, callback: NotificareCallback<T>) -> Unit = { a, callback ->
+    awaitSuspend(suspend { fn(a) }, callback)
+}
 
 @InternalNotificareApi
 public fun <A, B, T> toCallbackFunction(

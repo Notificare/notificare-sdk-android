@@ -108,9 +108,7 @@ internal object NotificareDeviceModuleImpl :
             return "$preferredLanguage-$preferredRegion"
         }
 
-    override suspend fun register(userId: String?, userName: String?): Unit = withContext(
-        Dispatchers.IO
-    ) {
+    override suspend fun register(userId: String?, userName: String?): Unit = withContext(Dispatchers.IO) {
         checkPrerequisites()
 
         val device = checkNotNull(currentDevice)
@@ -163,7 +161,8 @@ internal object NotificareDeviceModuleImpl :
             .tags
     }
 
-    override fun fetchTags(callback: NotificareCallback<List<String>>): Unit = toCallbackFunction(::fetchTags)(callback)
+    override fun fetchTags(callback: NotificareCallback<List<String>>): Unit =
+        toCallbackFunction(::fetchTags)(callback)
 
     override suspend fun addTag(tag: String): Unit = withContext(Dispatchers.IO) {
         addTags(listOf(tag))
@@ -212,7 +211,8 @@ internal object NotificareDeviceModuleImpl :
             .response()
     }
 
-    override fun clearTags(callback: NotificareCallback<Unit>): Unit = toCallbackFunction(::clearTags)(callback)
+    override fun clearTags(callback: NotificareCallback<Unit>): Unit =
+        toCallbackFunction(::clearTags)(callback)
 
     override suspend fun fetchDoNotDisturb(): NotificareDoNotDisturb? = withContext(Dispatchers.IO) {
         checkPrerequisites()
@@ -317,19 +317,21 @@ internal object NotificareDeviceModuleImpl :
         )
     }
 
-    override suspend fun registerPushToken(transport: NotificareTransport, token: String): Unit =
-        withContext(Dispatchers.IO) {
-            if (transport == NotificareTransport.NOTIFICARE) {
-                throw IllegalArgumentException("Invalid transport '$transport'.")
-            }
-
-            register(
-                transport = transport,
-                token = token,
-                userId = currentDevice?.userId,
-                userName = currentDevice?.userName,
-            )
+    override suspend fun registerPushToken(
+        transport: NotificareTransport,
+        token: String
+    ): Unit = withContext(Dispatchers.IO) {
+        if (transport == NotificareTransport.NOTIFICARE) {
+            throw IllegalArgumentException("Invalid transport '$transport'.")
         }
+
+        register(
+            transport = transport,
+            token = token,
+            userId = currentDevice?.userId,
+            userName = currentDevice?.userName,
+        )
+    }
 
     // endregion
 
@@ -362,11 +364,8 @@ internal object NotificareDeviceModuleImpl :
             val currentDevice = currentDevice
 
             val oldDeviceId =
-                if (currentDevice?.id != null && currentDevice.id != token) {
-                    currentDevice.id
-                } else {
-                    null
-                }
+                if (currentDevice?.id != null && currentDevice.id != token) currentDevice.id
+                else null
 
             val deviceRegistration = DeviceRegistrationPayload(
                 deviceId = token,

@@ -30,9 +30,7 @@ public open class NotificareIntentReceiver : BroadcastReceiver() {
     }
 
     protected open fun onReady(context: Context, application: NotificareApplication) {
-        NotificareLogger.info(
-            "Notificare is ready, please override onReady if you want to receive these intents."
-        )
+        NotificareLogger.info("Notificare is ready, please override onReady if you want to receive these intents.")
     }
 
     protected open fun onUnlaunched(context: Context) {

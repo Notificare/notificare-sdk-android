@@ -88,9 +88,7 @@ public object NotificareUtils {
 
                 override fun onLoadFailed(errorDrawable: Drawable?) {
                     if (continuation.isActive) {
-                        continuation.resumeWithException(
-                            RuntimeException("Failed to load the bit at $url")
-                        )
+                        continuation.resumeWithException(RuntimeException("Failed to load the bit at $url"))
                     }
                 }
 

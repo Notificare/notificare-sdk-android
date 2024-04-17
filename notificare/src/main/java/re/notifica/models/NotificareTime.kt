@@ -30,9 +30,7 @@ public data class NotificareTime(
             val hours = parts[0].toIntOrNull()
             val minutes = parts[1].toIntOrNull()
 
-            if (hours == null || minutes == null) {
-                throw IllegalArgumentException("Invalid time string.")
-            }
+            if (hours == null || minutes == null) throw IllegalArgumentException("Invalid time string.")
 
             return Pair(hours, minutes)
         }

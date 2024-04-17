@@ -25,8 +25,13 @@ internal class NotificareSessionConfigurationProvider : ContentProvider() {
         return true
     }
 
-    override fun query(p0: Uri, p1: Array<out String>?, p2: String?, p3: Array<out String>?, p4: String?): Cursor? =
-        null
+    override fun query(
+        p0: Uri,
+        p1: Array<out String>?,
+        p2: String?,
+        p3: Array<out String>?,
+        p4: String?
+    ): Cursor? = null
 
     override fun getType(uri: Uri): String? = null
 

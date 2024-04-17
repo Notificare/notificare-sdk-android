@@ -170,9 +170,7 @@ internal object NotificareEventsModuleImpl :
     }
 
     private fun scheduleUploadWorker() {
-        NotificareLogger.debug(
-            "Scheduling a worker to process stored events when there's connectivity."
-        )
+        NotificareLogger.debug("Scheduling a worker to process stored events when there's connectivity.")
 
         WorkManager
             .getInstance(Notificare.requireContext())
