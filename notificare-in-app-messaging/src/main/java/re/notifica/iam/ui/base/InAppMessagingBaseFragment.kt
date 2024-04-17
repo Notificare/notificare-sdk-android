@@ -147,6 +147,6 @@ public abstract class InAppMessagingBaseFragment : Fragment() {
 
     protected enum class Transition {
         ENTER,
-        EXIT
+        EXIT;
     }
 }

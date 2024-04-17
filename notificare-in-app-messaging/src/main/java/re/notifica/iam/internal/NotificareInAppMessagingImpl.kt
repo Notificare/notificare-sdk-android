@@ -192,9 +192,7 @@ internal object NotificareInAppMessagingImpl : NotificareModule(), NotificareInA
                 processInAppMessage(message)
             } catch (e: Exception) {
                 if (e is NetworkException.ValidationException && e.response.code == 404) {
-                    NotificareLogger.debug(
-                        "There is no in-app message for '${context.rawValue}' context to process."
-                    )
+                    NotificareLogger.debug("There is no in-app message for '${context.rawValue}' context to process.")
 
                     if (context == ApplicationContext.LAUNCH) {
                         evaluateContext(ApplicationContext.FOREGROUND)
@@ -295,18 +293,19 @@ internal object NotificareInAppMessagingImpl : NotificareModule(), NotificareInA
         }
     }
 
-    private suspend fun fetchInAppMessage(context: ApplicationContext): NotificareInAppMessage =
-        withContext(Dispatchers.IO) {
-            val device = Notificare.device().currentDevice
-                ?: throw NotificareDeviceUnavailableException()
+    private suspend fun fetchInAppMessage(
+        context: ApplicationContext
+    ): NotificareInAppMessage = withContext(Dispatchers.IO) {
+        val device = Notificare.device().currentDevice
+            ?: throw NotificareDeviceUnavailableException()
 
-            NotificareRequest.Builder()
-                .get("/inappmessage/forcontext/${context.rawValue}")
-                .query("deviceID", device.id)
-                .responseDecodable(InAppMessageResponse::class)
-                .message
-                .toModel()
-        }
+        NotificareRequest.Builder()
+            .get("/inappmessage/forcontext/${context.rawValue}")
+            .query("deviceID", device.id)
+            .responseDecodable(InAppMessageResponse::class)
+            .message
+            .toModel()
+    }
 
     // TODO: checkPrerequisites()
 }
