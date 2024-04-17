@@ -64,7 +64,7 @@ internal fun NotificareSystemRemoteMessage(message: RemoteMessage): NotificareSy
         "system",
         "systemType",
         "x-sender",
-        "attachment"
+        "attachment",
     )
 
     return NotificareSystemRemoteMessage(
