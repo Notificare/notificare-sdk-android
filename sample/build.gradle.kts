@@ -6,7 +6,9 @@ plugins {
     alias(libs.plugins.google.ksp)
     alias(libs.plugins.notificare.services)
     alias(libs.plugins.google.services)
-    //alias(libs.plugins.huawei.agconnect)
+    alias(libs.plugins.ktlint)
+    alias(libs.plugins.detekt)
+    // alias(libs.plugins.huawei.agconnect)
 }
 
 val properties = loadProperties("local.properties")
@@ -98,6 +100,25 @@ android {
         jvmTarget = "1.8"
     }
 }
+
+ktlint {
+    debug.set(true)
+    verbose.set(true)
+    android.set(true)
+    baseline.set(file("ktlint-baseline.xml"))
+}
+
+val ktlintTaskProvider = tasks.named("ktlintCheck")
+tasks.getByName("preBuild").finalizedBy(ktlintTaskProvider)
+
+detekt {
+    config.setFrom(rootProject.files("config/detekt/detekt.yml"))
+    buildUponDefaultConfig = true
+    baseline = file("detekt-baseline.xml")
+}
+
+val detektTaskProvider = tasks.named("detekt")
+tasks.getByName("preBuild").finalizedBy(detektTaskProvider)
 
 dependencies {
     implementation(libs.kotlinx.coroutines)
