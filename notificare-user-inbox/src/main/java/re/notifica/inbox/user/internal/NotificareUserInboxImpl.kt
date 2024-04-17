@@ -61,8 +61,10 @@ internal object NotificareUserInboxImpl : NotificareModule(), NotificareUserInbo
         return@withContext notification
     }
 
-    override fun open(item: NotificareUserInboxItem, callback: NotificareCallback<NotificareNotification>): Unit =
-        toCallbackFunction(::open)(item, callback)
+    override fun open(
+        item: NotificareUserInboxItem,
+        callback: NotificareCallback<NotificareNotification>
+    ): Unit = toCallbackFunction(::open)(item, callback)
 
     override suspend fun markAsRead(item: NotificareUserInboxItem): Unit = withContext(Dispatchers.IO) {
         checkPrerequisites()
@@ -70,8 +72,10 @@ internal object NotificareUserInboxImpl : NotificareModule(), NotificareUserInbo
         Notificare.events().logNotificationOpen(item.notification.id)
     }
 
-    override fun markAsRead(item: NotificareUserInboxItem, callback: NotificareCallback<Unit>): Unit =
-        toCallbackFunction(::markAsRead)(item, callback)
+    override fun markAsRead(
+        item: NotificareUserInboxItem,
+        callback: NotificareCallback<Unit>
+    ): Unit = toCallbackFunction(::markAsRead)(item, callback)
 
     override suspend fun remove(item: NotificareUserInboxItem): Unit = withContext(Dispatchers.IO) {
         checkPrerequisites()
@@ -79,8 +83,10 @@ internal object NotificareUserInboxImpl : NotificareModule(), NotificareUserInbo
         removeUserInboxItem(item)
     }
 
-    override fun remove(item: NotificareUserInboxItem, callback: NotificareCallback<Unit>): Unit =
-        toCallbackFunction(::remove)(item, callback)
+    override fun remove(
+        item: NotificareUserInboxItem,
+        callback: NotificareCallback<Unit>
+    ): Unit = toCallbackFunction(::remove)(item, callback)
 
     // endregion
 
@@ -112,19 +118,20 @@ internal object NotificareUserInboxImpl : NotificareModule(), NotificareUserInbo
         }
     }
 
-    private suspend fun fetchUserInboxNotification(item: NotificareUserInboxItem): NotificareNotification =
-        withContext(Dispatchers.IO) {
-            if (!Notificare.isConfigured) throw NotificareNotConfiguredException()
+    private suspend fun fetchUserInboxNotification(
+        item: NotificareUserInboxItem
+    ): NotificareNotification = withContext(Dispatchers.IO) {
+        if (!Notificare.isConfigured) throw NotificareNotConfiguredException()
 
-            val device = Notificare.device().currentDevice
-                ?: throw NotificareDeviceUnavailableException()
+        val device = Notificare.device().currentDevice
+            ?: throw NotificareDeviceUnavailableException()
 
-            NotificareRequest.Builder()
-                .get("/notification/userinbox/${item.id}/fordevice/${device.id}")
-                .responseDecodable(NotificationResponse::class)
-                .notification
-                .toModel()
-        }
+        NotificareRequest.Builder()
+            .get("/notification/userinbox/${item.id}/fordevice/${device.id}")
+            .responseDecodable(NotificationResponse::class)
+            .notification
+            .toModel()
+    }
 
     private suspend fun removeUserInboxItem(item: NotificareUserInboxItem): Unit = withContext(Dispatchers.IO) {
         if (!Notificare.isConfigured) throw NotificareNotConfiguredException()
