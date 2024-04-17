@@ -33,9 +33,7 @@ public class NotificareRateFragment : NotificationFragment() {
                     }
                 }
             } catch (e: ActivityNotFoundException) {
-                val uri = Uri.parse(
-                    "https://play.google.com/store/apps/details?id=${inflater.context.packageName}"
-                )
+                val uri = Uri.parse("https://play.google.com/store/apps/details?id=${inflater.context.packageName}")
                 val rateIntent = Intent(Intent.ACTION_VIEW, uri)
 
                 callback.onNotificationFragmentStartActivity(rateIntent)
