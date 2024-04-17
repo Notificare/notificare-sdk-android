@@ -91,9 +91,7 @@ public open class NotificareGeoIntentReceiver : BroadcastReceiver() {
     }
 
     protected open fun onRegionExited(context: Context, region: NotificareRegion) {
-        NotificareLogger.debug(
-            "Exited a region, please override onRegionExited if you want to receive these intents."
-        )
+        NotificareLogger.debug("Exited a region, please override onRegionExited if you want to receive these intents.")
     }
 
     protected open fun onBeaconEntered(context: Context, beacon: NotificareBeacon) {
@@ -103,14 +101,10 @@ public open class NotificareGeoIntentReceiver : BroadcastReceiver() {
     }
 
     protected open fun onBeaconExited(context: Context, beacon: NotificareBeacon) {
-        NotificareLogger.debug(
-            "Exited a beacon, please override onBeaconExited if you want to receive these intents."
-        )
+        NotificareLogger.debug("Exited a beacon, please override onBeaconExited if you want to receive these intents.")
     }
 
     protected open fun onBeaconsRanged(context: Context, region: NotificareRegion, beacons: List<NotificareBeacon>) {
-        NotificareLogger.debug(
-            "Ranged beacons, please override onBeaconsRanged if you want to receive these intents."
-        )
+        NotificareLogger.debug("Ranged beacons, please override onBeaconsRanged if you want to receive these intents.")
     }
 }

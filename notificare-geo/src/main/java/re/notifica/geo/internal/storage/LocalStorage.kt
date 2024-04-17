@@ -236,9 +236,7 @@ internal class LocalStorage(context: Context) {
 
     fun updateBeaconSession(beacons: List<NotificareBeacon>, location: Location?) {
         if (beacons.isEmpty()) {
-            NotificareLogger.debug(
-                "Cannot update beacon session without at least one ranged beacon."
-            )
+            NotificareLogger.debug("Cannot update beacon session without at least one ranged beacon.")
             return
         }
 

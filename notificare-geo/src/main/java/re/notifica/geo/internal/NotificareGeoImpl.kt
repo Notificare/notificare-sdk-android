@@ -177,9 +177,7 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
                 return false
             }
 
-            val bluetoothManager = context.getSystemService(
-                Context.BLUETOOTH_SERVICE
-            ) as BluetoothManager?
+            val bluetoothManager = context.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager?
             if (bluetoothManager?.adapter?.isEnabled != true) {
                 NotificareLogger.warning("Beacons functionality requires the bluetooth adapter to be enabled.")
                 return false
@@ -193,9 +191,7 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
             }
 
             if (beaconServiceManager == null) {
-                NotificareLogger.warning(
-                    "Beacons functionality requires the notificare-geo-beacons peer module."
-                )
+                NotificareLogger.warning("Beacons functionality requires the notificare-geo-beacons peer module.")
                 return false
             }
 
@@ -249,9 +245,7 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
         beaconServiceManager = BeaconServiceManager.create()
 
         if (beaconServiceManager == null) {
-            NotificareLogger.info(
-                "To enable beacon support, include the notificare-geo-beacons peer dependency."
-            )
+            NotificareLogger.info("To enable beacon support, include the notificare-geo-beacons peer dependency.")
         }
     }
 
@@ -649,14 +643,13 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
         }
 
         val cachedBeacons = beacons.mapNotNull { b ->
-            val beacon = localStorage.monitoredBeacons.firstOrNull {
-                it.major == b.major && it.minor == b.minor
-            } ?: run {
-                NotificareLogger.warning(
-                    "Received a ranging beacons event for non-cached beacon '${b.major}:${b.minor}'."
-                )
-                return@mapNotNull null
-            }
+            val beacon = localStorage.monitoredBeacons.firstOrNull { it.major == b.major && it.minor == b.minor }
+                ?: run {
+                    NotificareLogger.warning(
+                        "Received a ranging beacons event for non-cached beacon '${b.major}:${b.minor}'."
+                    )
+                    return@mapNotNull null
+                }
 
             if (b.proximity == null || b.proximity < 0) {
                 // Ignore invalid proximity values.
@@ -798,9 +791,7 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
         return false
     }
 
-    private suspend fun updateLocation(location: Location, country: String?): Unit = withContext(
-        Dispatchers.IO
-    ) {
+    private suspend fun updateLocation(location: Location, country: String?): Unit = withContext(Dispatchers.IO) {
         val device = Notificare.device().currentDevice ?: run {
             NotificareLogger.warning("Unable to update location without a device.")
             throw IllegalStateException("Unable to update location without a device.")
@@ -884,16 +875,12 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
 
     private suspend fun monitorRegions(regions: List<NotificareRegion>) {
         if (!hasBackgroundLocationPermission) {
-            NotificareLogger.debug(
-                "Background location permission not granted. Skipping geofencing functionality."
-            )
+            NotificareLogger.debug("Background location permission not granted. Skipping geofencing functionality.")
             return
         }
 
         if (!hasPreciseLocationPermission) {
-            NotificareLogger.debug(
-                "Precise location permission not granted. Skipping geofencing functionality."
-            )
+            NotificareLogger.debug("Precise location permission not granted. Skipping geofencing functionality.")
             return
         }
 
@@ -974,10 +961,7 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
                     }
 
                     override fun onFailure(e: Exception) {
-                        NotificareLogger.error(
-                            "Failed to fetch beacons for region '${region.name}'.",
-                            e
-                        )
+                        NotificareLogger.error("Failed to fetch beacons for region '${region.name}'.", e)
                     }
                 }
             )
@@ -1223,9 +1207,7 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
         }
     }
 
-    private suspend fun getLocationAddresses(location: Location): List<Address> = withContext(
-        Dispatchers.IO
-    ) {
+    private suspend fun getLocationAddresses(location: Location): List<Address> = withContext(Dispatchers.IO) {
         val geocoder = geocoder ?: return@withContext listOf()
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {

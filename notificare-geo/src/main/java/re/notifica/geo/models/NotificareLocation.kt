@@ -28,11 +28,8 @@ public data class NotificareLocation(
     public companion object {
         public operator fun invoke(location: Location): NotificareLocation {
             val verticalAccuracy: Double =
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    location.verticalAccuracyMeters.toDouble()
-                } else {
-                    0.0
-                }
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) location.verticalAccuracyMeters.toDouble()
+                else 0.0
 
             return NotificareLocation(
                 latitude = location.latitude,
