@@ -171,7 +171,7 @@ public data class NotificarePass(
         LIMIT,
 
         @Json(name = "always")
-        ALWAYS
+        ALWAYS;
     }
 
     @Parcelize
@@ -190,7 +190,7 @@ public data class NotificarePass(
         GENERIC,
 
         @Json(name = "card")
-        CARD
+        CARD;
     }
 
     @Parcelize

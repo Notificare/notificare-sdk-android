@@ -77,7 +77,11 @@ import re.notifica.models.NotificareApplication
 import re.notifica.models.NotificareNotification
 
 @Keep
-internal object NotificareLoyaltyImpl : NotificareModule(), NotificareLoyalty, NotificareLoyaltyIntegration, Notificare.Listener {
+internal object NotificareLoyaltyImpl :
+    NotificareModule(),
+    NotificareLoyalty,
+    NotificareLoyaltyIntegration,
+    Notificare.Listener {
 
     private lateinit var database: LoyaltyDatabase
     private lateinit var localStorage: LocalStorage
@@ -270,16 +274,19 @@ internal object NotificareLoyaltyImpl : NotificareModule(), NotificareLoyalty, N
             return
         }
 
-        fetchPassBySerial(serial, object : NotificareCallback<NotificarePass> {
-            override fun onSuccess(result: NotificarePass) {
-                present(activity, result, callback)
-            }
+        fetchPassBySerial(
+            serial,
+            object : NotificareCallback<NotificarePass> {
+                override fun onSuccess(result: NotificarePass) {
+                    present(activity, result, callback)
+                }
 
-            override fun onFailure(e: Exception) {
-                NotificareLogger.error("Failed to fetch the pass with serial '$serial'.", e)
-                callback.onFailure(e)
+                override fun onFailure(e: Exception) {
+                    NotificareLogger.error("Failed to fetch the pass with serial '$serial'.", e)
+                    callback.onFailure(e)
+                }
             }
-        })
+        )
     }
 
     // endregion
@@ -628,14 +635,14 @@ internal object NotificareLoyaltyImpl : NotificareModule(), NotificareLoyalty, N
         }
 
         if (pass.isExpired) {
-            NotificareLogger.debug(
-                "Skipping location relevance for pass ${pass.serial} because the pass has expired."
-            )
+            NotificareLogger.debug("Skipping location relevance for pass ${pass.serial} because the pass has expired.")
             return null
         }
 
         val enteredBeacons = Notificare.geoIntegration()?.geoEnteredBeacons ?: run {
-            NotificareLogger.debug("Skipping location relevance for pass ${pass.serial} because the geo module is not available.")
+            NotificareLogger.debug(
+                "Skipping location relevance for pass ${pass.serial} because the geo module is not available."
+            )
             return null
         }
 
@@ -662,14 +669,13 @@ internal object NotificareLoyaltyImpl : NotificareModule(), NotificareLoyalty, N
         if (passbookBeacon.proximityUUID != proximityUUID) return false
         if (passbookBeacon.major == null) return true
 
-        return passbookBeacon.major == nearbyBeacon.major && (passbookBeacon.minor == null || passbookBeacon.minor == nearbyBeacon.minor)
+        return passbookBeacon.major == nearbyBeacon.major &&
+            (passbookBeacon.minor == null || passbookBeacon.minor == nearbyBeacon.minor)
     }
 
     private fun checkPassRelevanceLocation(pass: NotificarePass): NotificarePass.PassbookLocation? {
         if (pass.isExpired) {
-            NotificareLogger.debug(
-                "Skipping location relevance for pass ${pass.serial} because the pass has expired."
-            )
+            NotificareLogger.debug("Skipping location relevance for pass ${pass.serial} because the pass has expired.")
             return null
         }
 
@@ -785,11 +791,7 @@ internal object NotificareLoyaltyImpl : NotificareModule(), NotificareLoyalty, N
             .build()
 
         WorkManager.getInstance(Notificare.requireContext())
-            .enqueueUniqueWork(
-                "re.notifica.loyalty.tasks.PassRelevanceUpdate",
-                ExistingWorkPolicy.REPLACE,
-                task
-            )
+            .enqueueUniqueWork("re.notifica.loyalty.tasks.PassRelevanceUpdate", ExistingWorkPolicy.REPLACE, task)
     }
 
     internal fun handleScheduledPassRelevanceUpdate() {
@@ -921,10 +923,7 @@ internal object NotificareLoyaltyImpl : NotificareModule(), NotificareLoyalty, N
         val options = checkNotNull(Notificare.options)
         val notificationManager = NotificationManagerCompat.from(Notificare.requireContext())
 
-        val builder = NotificationCompat.Builder(
-            Notificare.requireContext(),
-            options.passNotificationChannel
-        ).apply {
+        val builder = NotificationCompat.Builder(Notificare.requireContext(), options.passNotificationChannel).apply {
             setAutoCancel(true)
             setSmallIcon(options.passNotificationSmallIcon)
             setContentTitle(pass.description)

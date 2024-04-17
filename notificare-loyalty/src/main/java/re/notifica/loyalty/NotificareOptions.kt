@@ -54,11 +54,8 @@ public val NotificareOptions.passRelevanceText: String
         if (str != null) return str
 
         val id = metadata.getInt("re.notifica.loyalty.pass_relevance_text", 0)
-        return if (id == 0) {
-            context.getString(R.string.notificare_passbook_location_relevance_text)
-        } else {
-            context.getString(id)
-        }
+        return if (id == 0) context.getString(R.string.notificare_passbook_location_relevance_text)
+        else context.getString(id)
     }
 
 public val NotificareOptions.passRelevanceHours: Int
