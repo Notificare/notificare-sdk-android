@@ -74,9 +74,7 @@ public class BeaconServiceManager(
         // Start monitoring every beacon.
         beacons.forEach { startMonitoring(it) }
 
-        NotificareLogger.debug(
-            "Started monitoring ${beacons.size} individual beacons in region '${region.name}'."
-        )
+        NotificareLogger.debug("Started monitoring ${beacons.size} individual beacons in region '${region.name}'.")
     }
 
     private fun startMonitoring(beacon: NotificareBeacon) {
@@ -115,9 +113,7 @@ public class BeaconServiceManager(
             .onEach { beaconManager.stopMonitoring(it) }
 
         if (beacons.isNotEmpty()) {
-            NotificareLogger.debug(
-                "Stopped monitoring ${beacons.size} individual beacons in region '${region.name}'."
-            )
+            NotificareLogger.debug("Stopped monitoring ${beacons.size} individual beacons in region '${region.name}'.")
         }
     }
 
@@ -176,9 +172,7 @@ public class BeaconServiceManager(
     // region MonitorNotifier
 
     override fun didEnterRegion(region: Region) {
-        NotificareLogger.debug(
-            "Entered beacon region ${region.id1} / ${region.id2} / ${region.id3}"
-        )
+        NotificareLogger.debug("Entered beacon region ${region.id1} / ${region.id2} / ${region.id3}")
         Notificare.geoInternal().handleBeaconEnter(region.uniqueId, region.id2.toInt(), region.id3?.toInt())
 
 //        if (region.id3 == null) {
@@ -198,9 +192,7 @@ public class BeaconServiceManager(
     }
 
     override fun didDetermineStateForRegion(state: Int, region: Region) {
-        NotificareLogger.debug(
-            "State $state for region ${region.id1} / ${region.id2} / ${region.id3}"
-        )
+        NotificareLogger.debug("State $state for region ${region.id1} / ${region.id2} / ${region.id3}")
 
         if (region.id3 == null) {
             // This is the main region. There's no minor.

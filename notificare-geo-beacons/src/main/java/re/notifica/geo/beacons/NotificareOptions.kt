@@ -12,10 +12,7 @@ private const val DEFAULT_NOTIFICATION_CHANNEL: String = "notificare_channel_def
 
 public val NotificareOptions.beaconForegroundScanInterval: Long
     get() {
-        return metadata.getLong(
-            "re.notifica.geo.beacons.foreground_scan_interval",
-            DEFAULT_FOREGROUND_SCAN_INTERVAL
-        )
+        return metadata.getLong("re.notifica.geo.beacons.foreground_scan_interval", DEFAULT_FOREGROUND_SCAN_INTERVAL)
     }
 
 public val NotificareOptions.beaconBackgroundScanInterval: Long
@@ -44,10 +41,7 @@ public val NotificareOptions.beaconForegroundServiceEnabled: Boolean
 
 public val NotificareOptions.beaconServiceNotificationChannel: String
     get() {
-        return metadata.getString(
-            "re.notifica.geo.beacons.service_notification_channel",
-            DEFAULT_NOTIFICATION_CHANNEL
-        )
+        return metadata.getString("re.notifica.geo.beacons.service_notification_channel", DEFAULT_NOTIFICATION_CHANNEL)
     }
 
 public val NotificareOptions.beaconServiceNotificationSmallIcon: Int
@@ -57,22 +51,14 @@ public val NotificareOptions.beaconServiceNotificationSmallIcon: Int
 
 public val NotificareOptions.beaconServiceNotificationContentTitle: String?
     get() {
-        return metadata.getString(
-            "re.notifica.geo.beacons.service_notification_content_title",
-            null
-        )
+        return metadata.getString("re.notifica.geo.beacons.service_notification_content_title", null)
     }
 
 public val NotificareOptions.beaconServiceNotificationContentText: String
     get() {
-        val defaultText = Notificare.requireContext().getString(
-            R.string.notificare_beacons_notification_content_text
-        )
+        val defaultText = Notificare.requireContext().getString(R.string.notificare_beacons_notification_content_text)
 
-        return metadata.getString(
-            "re.notifica.geo.beacons.service_notification_content_text",
-            defaultText
-        )
+        return metadata.getString("re.notifica.geo.beacons.service_notification_content_text", defaultText)
     }
 
 public val NotificareOptions.beaconServiceNotificationProgress: Boolean
