@@ -32,9 +32,7 @@ public fun NotificareEventsModule.logNotificationInfluenced(id: String, callback
     toCallbackFunction(::logNotificationInfluenced)(id, callback)
 
 @Suppress("unused")
-public suspend fun NotificareEventsModule.logPushRegistration(): Unit = withContext(
-    Dispatchers.IO
-) {
+public suspend fun NotificareEventsModule.logPushRegistration(): Unit = withContext(Dispatchers.IO) {
     Notificare.eventsInternal().log(
         event = "re.notifica.event.push.Registration",
         data = null,

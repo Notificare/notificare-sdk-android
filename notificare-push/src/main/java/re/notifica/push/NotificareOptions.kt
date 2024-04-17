@@ -30,11 +30,9 @@ public val NotificareOptions.notificationSmallIcon: Int?
 
 public val NotificareOptions.notificationAccentColor: Int?
     get() {
-        return if (metadata.containsKey("re.notifica.push.notification_accent_color")) {
+        return if (metadata.containsKey("re.notifica.push.notification_accent_color"))
             metadata.getInt("re.notifica.push.notification_accent_color", 0)
-        } else {
-            null
-        }
+        else null
     }
 
 public val NotificareOptions.notificationLightsColor: String?

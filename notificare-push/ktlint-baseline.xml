@@ -11,6 +11,6 @@
         <error line="99" column="1" source="standard:max-line-length" />
     </file>
     <file name="src/main/java/re/notifica/push/internal/NotificarePushImpl.kt">
-        <error line="405" column="1" source="standard:max-line-length" />
+        <error line="407" column="1" source="standard:max-line-length" />
     </file>
 </baseline>

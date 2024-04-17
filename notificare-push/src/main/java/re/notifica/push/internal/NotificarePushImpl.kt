@@ -165,9 +165,7 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
         if (token != null && token != Notificare.device().currentDevice?.id) {
             if (sharedPreferences.remoteNotificationsEnabled) {
                 if (manager != null) {
-                    NotificareLogger.info(
-                        "Found a postponed registration token. Performing a device registration."
-                    )
+                    NotificareLogger.info("Found a postponed registration token. Performing a device registration.")
                     registerPushToken(manager.transport, token, performReadinessCheck = false)
 
                     // NOTE: the notification settings are updated after a push token registration.
@@ -309,24 +307,26 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
         return true
     }
 
-    override suspend fun registerLiveActivity(activityId: String, topics: List<String>): Unit =
-        withContext(Dispatchers.IO) {
-            val device = Notificare.device().currentDevice
-                ?: throw NotificareDeviceUnavailableException()
+    override suspend fun registerLiveActivity(
+        activityId: String,
+        topics: List<String>
+    ): Unit = withContext(Dispatchers.IO) {
+        val device = Notificare.device().currentDevice
+            ?: throw NotificareDeviceUnavailableException()
 
-            // TODO: fetch current FCM token
+        // TODO: fetch current FCM token
 
-            val payload = CreateLiveActivityPayload(
-                activity = activityId,
-                token = device.id,
-                deviceID = device.id,
-                topics = topics,
-            )
+        val payload = CreateLiveActivityPayload(
+            activity = activityId,
+            token = device.id,
+            deviceID = device.id,
+            topics = topics,
+        )
 
-            NotificareRequest.Builder()
-                .post("/live-activity", payload)
-                .response()
-        }
+        NotificareRequest.Builder()
+            .post("/live-activity", payload)
+            .response()
+    }
 
     override fun registerLiveActivity(
         activityId: String,
@@ -351,8 +351,10 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
             .response()
     }
 
-    override fun endLiveActivity(activityId: String, callback: NotificareCallback<Unit>): Unit =
-        toCallbackFunction(::endLiveActivity)(activityId, callback)
+    override fun endLiveActivity(
+        activityId: String,
+        callback: NotificareCallback<Unit>
+    ): Unit = toCallbackFunction(::endLiveActivity)(activityId, callback)
 
     // endregion
 
@@ -468,11 +470,8 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
             // Notify the consumer's custom activity about the notification open event.
             val notificationIntent = Intent()
                 .setAction(
-                    if (action == null) {
-                        Notificare.INTENT_ACTION_NOTIFICATION_OPENED
-                    } else {
-                        Notificare.INTENT_ACTION_ACTION_OPENED
-                    }
+                    if (action == null) Notificare.INTENT_ACTION_NOTIFICATION_OPENED
+                    else Notificare.INTENT_ACTION_ACTION_OPENED
                 )
                 .putExtra(Notificare.INTENT_EXTRA_NOTIFICATION, notification)
                 .putExtra(Notificare.INTENT_EXTRA_ACTION, action)
@@ -483,9 +482,7 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
                 // Notification handled by custom activity in package
                 Notificare.requireContext().startActivity(notificationIntent)
             } else if (intentReceiver.simpleName == NotificarePushIntentReceiver::class.java.simpleName) {
-                NotificareLogger.warning(
-                    "Could not find an activity with the '${notificationIntent.action}' action."
-                )
+                NotificareLogger.warning("Could not find an activity with the '${notificationIntent.action}' action.")
             }
         }
     }
