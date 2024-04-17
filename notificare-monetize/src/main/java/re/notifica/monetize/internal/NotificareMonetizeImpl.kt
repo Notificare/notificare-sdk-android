@@ -155,15 +155,13 @@ internal object NotificareMonetizeImpl : NotificareModule(), NotificareMonetize,
     override suspend fun launch() {
         checkNotNull(serviceManager) {
             "No monetize dependencies have been detected. Please include one of the platform-specific monetize packages."
-        }
-            .startConnection()
+        }.startConnection()
     }
 
     override suspend fun unlaunch() {
         checkNotNull(serviceManager) {
             "No monetize dependencies have been detected. Please include one of the platform-specific monetize packages."
-        }
-            .stopConnection()
+        }.stopConnection()
 
         database.purchases().clear()
 
@@ -198,8 +196,7 @@ internal object NotificareMonetizeImpl : NotificareModule(), NotificareMonetize,
 
         checkNotNull(serviceManager) {
             "No monetize dependencies have been detected. Please include one of the platform-specific monetize packages."
-        }
-            .refresh()
+        }.refresh()
     }
 
     override fun refresh(callback: NotificareCallback<Unit>): Unit =
@@ -210,8 +207,7 @@ internal object NotificareMonetizeImpl : NotificareModule(), NotificareMonetize,
 
         checkNotNull(serviceManager) {
             "No monetize dependencies have been detected. Please include one of the platform-specific monetize packages."
-        }
-            .startPurchaseFlow(activity, product)
+        }.startPurchaseFlow(activity, product)
     }
 
     // endregion
