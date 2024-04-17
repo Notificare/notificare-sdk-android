@@ -84,8 +84,8 @@ public interface NotificarePushUI {
             error: Exception?,
         ) {
             NotificareLogger.debug(
-                message = "Action failed to execute, please override onActionFailedToExecute if you want to receive these events.",
-                t = error
+                "Action failed to execute, please override onActionFailedToExecute if you want to receive these events.",
+                error
             )
         }
 

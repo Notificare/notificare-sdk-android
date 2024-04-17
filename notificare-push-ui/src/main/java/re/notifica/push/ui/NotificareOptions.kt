@@ -66,8 +66,8 @@ public val NotificareOptions.customTabsToolbarColor: Int?
                 return Notificare.requireContext().getColor(resource)
             } catch (e: NotFoundException) {
                 NotificareLogger.warning(
-                    message = "Invalid color resource provided for 're.notifica.push.ui.custom_tabs_toolbar_color'.",
-                    t = e
+                    "Invalid color resource provided for 're.notifica.push.ui.custom_tabs_toolbar_color'.",
+                    e
                 )
             }
         }
@@ -85,8 +85,8 @@ public val NotificareOptions.customTabsNavigationBarColor: Int?
                 return Notificare.requireContext().getColor(resource)
             } catch (e: NotFoundException) {
                 NotificareLogger.warning(
-                    message = "Invalid color resource provided for 're.notifica.push.ui.custom_tabs_navigation_bar_color'.",
-                    t = e
+                    "Invalid color resource provided for 're.notifica.push.ui.custom_tabs_navigation_bar_color'.",
+                    e
                 )
             }
         }
@@ -104,8 +104,8 @@ public val NotificareOptions.customTabsNavigationBarDividerColor: Int?
                 return Notificare.requireContext().getColor(resource)
             } catch (e: NotFoundException) {
                 NotificareLogger.warning(
-                    message = "Invalid color resource provided for 're.notifica.push.ui.custom_tabs_navigation_bar_divider_color'.",
-                    t = e
+                    "Invalid color resource provided for 're.notifica.push.ui.custom_tabs_navigation_bar_divider_color'.",
+                    e
                 )
             }
         }

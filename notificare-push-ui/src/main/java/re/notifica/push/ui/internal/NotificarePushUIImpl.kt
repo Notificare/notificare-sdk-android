@@ -277,19 +277,22 @@ internal object NotificarePushUIImpl : NotificareModule(), NotificarePushUI, Not
             return
         }
 
-        integration.handlePassPresentation(activity, notification, object : NotificareCallback<Unit> {
-            override fun onSuccess(result: Unit) {
-                onMainThread {
-                    lifecycleListeners.forEach { it.onNotificationPresented(notification) }
+        integration.handlePassPresentation(
+            activity, notification,
+            object : NotificareCallback<Unit> {
+                override fun onSuccess(result: Unit) {
+                    onMainThread {
+                        lifecycleListeners.forEach { it.onNotificationPresented(notification) }
+                    }
                 }
-            }
 
-            override fun onFailure(e: Exception) {
-                onMainThread {
-                    lifecycleListeners.forEach { it.onNotificationFailedToPresent(notification) }
+                override fun onFailure(e: Exception) {
+                    onMainThread {
+                        lifecycleListeners.forEach { it.onNotificationFailedToPresent(notification) }
+                    }
                 }
             }
-        })
+        )
     }
 
     private fun handleInAppBrowser(activity: Activity, notification: NotificareNotification) {

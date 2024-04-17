@@ -53,7 +53,7 @@ public class NotificareCallbackActionFragment private constructor() : Fragment()
 
         pendingResult = savedInstanceState?.parcelable(EXTRA_PENDING_RESULT)
             ?: arguments?.parcelable(EXTRA_PENDING_RESULT)
-                ?: throw IllegalArgumentException("Missing required pending result parameter.")
+            ?: throw IllegalArgumentException("Missing required pending result parameter.")
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {

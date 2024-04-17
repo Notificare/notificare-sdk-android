@@ -33,7 +33,7 @@ import re.notifica.push.ui.notifications.fragments.NotificareCallbackActionFragm
 import re.notifica.push.ui.notifications.fragments.base.NotificationFragment
 
 public class NotificationContainerFragment
-    : Fragment(), NotificationFragment.Callback, NotificationDialog.Callback, NotificationActionsDialog.Callback {
+: Fragment(), NotificationFragment.Callback, NotificationDialog.Callback, NotificationActionsDialog.Callback {
 
     private lateinit var binding: NotificareNotificationContainerFragmentBinding
     private lateinit var notification: NotificareNotification
@@ -87,7 +87,7 @@ public class NotificationContainerFragment
 
         notification = savedInstanceState?.parcelable(Notificare.INTENT_EXTRA_NOTIFICATION)
             ?: arguments?.parcelable(Notificare.INTENT_EXTRA_NOTIFICATION)
-                ?: throw IllegalArgumentException("Missing required notification parameter.")
+            ?: throw IllegalArgumentException("Missing required notification parameter.")
 
         action = savedInstanceState?.parcelable(Notificare.INTENT_EXTRA_ACTION)
             ?: arguments?.parcelable(Notificare.INTENT_EXTRA_ACTION)
@@ -132,8 +132,8 @@ public class NotificationContainerFragment
                 klass.getConstructor().newInstance() as Fragment
             } catch (e: Exception) {
                 NotificareLogger.error(
-                    message = "Failed to dynamically create the concrete notification fragment.",
-                    t = e
+                    "Failed to dynamically create the concrete notification fragment.",
+                    e
                 )
 
                 null

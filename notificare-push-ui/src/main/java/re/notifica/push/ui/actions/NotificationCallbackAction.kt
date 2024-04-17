@@ -37,11 +37,8 @@ internal class NotificationCallbackAction(
                     ?: throw IllegalStateException(context.getString(R.string.notificare_action_camera_failed)) // Cannot save file.
 
                 val requestCode =
-                    if (action.keyboard) {
-                        NotificarePendingResult.CAPTURE_IMAGE_AND_KEYBOARD_REQUEST_CODE
-                    } else {
-                        NotificarePendingResult.CAPTURE_IMAGE_REQUEST_CODE
-                    }
+                    if (action.keyboard) NotificarePendingResult.CAPTURE_IMAGE_AND_KEYBOARD_REQUEST_CODE
+                    else NotificarePendingResult.CAPTURE_IMAGE_REQUEST_CODE
 
                 NotificarePendingResult(
                     notification = notification,

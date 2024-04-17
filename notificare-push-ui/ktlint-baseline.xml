@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <baseline version="1.0">
     <file name="src/main/java/re/notifica/push/ui/NotificareOptions.kt">
-        <error line="88" column="1" source="standard:max-line-length" />
         <error line="107" column="1" source="standard:max-line-length" />
     </file>
     <file name="src/main/java/re/notifica/push/ui/NotificarePushUI.kt">
@@ -11,54 +10,16 @@
         <error line="58" column="1" source="standard:max-line-length" />
         <error line="87" column="1" source="standard:max-line-length" />
     </file>
-    <file name="src/main/java/re/notifica/push/ui/NotificationActivity.kt">
-        <error line="25" column="1" source="standard:indent" />
-    </file>
     <file name="src/main/java/re/notifica/push/ui/internal/NotificarePushUIImpl.kt">
         <error line="86" column="1" source="standard:max-line-length" />
         <error line="182" column="1" source="standard:max-line-length" />
         <error line="189" column="1" source="standard:max-line-length" />
         <error line="197" column="1" source="standard:max-line-length" />
         <error line="209" column="1" source="standard:max-line-length" />
-        <error line="280" column="44" source="standard:wrapping" />
-        <error line="280" column="67" source="standard:wrapping" />
-        <error line="292" column="9" source="standard:wrapping" />
-        <error line="347" column="43" source="standard:annotation" />
-    </file>
-    <file name="src/main/java/re/notifica/push/ui/notifications/NotificationContainerFragment.kt">
-        <error line="36" column="1" source="standard:indent" />
-        <error line="90" column="1" source="standard:indent" />
-    </file>
-    <file name="src/main/java/re/notifica/push/ui/notifications/NotificationDialog.kt">
-        <error line="73" column="1" source="standard:max-line-length" />
-        <error line="73" column="38" source="standard:argument-list-wrapping" />
-        <error line="73" column="78" source="standard:argument-list-wrapping" />
-        <error line="76" column="1" source="standard:max-line-length" />
-        <error line="76" column="38" source="standard:argument-list-wrapping" />
-        <error line="76" column="74" source="standard:argument-list-wrapping" />
+        <error line="281" column="23" source="standard:argument-list-wrapping" />
+        <error line="350" column="43" source="standard:annotation" />
     </file>
     <file name="src/main/java/re/notifica/push/ui/notifications/fragments/NotificareCallbackActionFragment.kt">
-        <error line="56" column="1" source="standard:indent" />
         <error line="63" column="1" source="standard:max-line-length" />
-    </file>
-    <file name="src/main/java/re/notifica/push/ui/notifications/fragments/NotificareImageFragment.kt">
-        <error line="37" column="1" source="standard:max-line-length" />
-        <error line="37" column="107" source="standard:argument-list-wrapping" />
-        <error line="37" column="119" source="standard:argument-list-wrapping" />
-        <error line="72" column="1" source="standard:indent" />
-    </file>
-    <file name="src/main/java/re/notifica/push/ui/notifications/fragments/NotificareUrlFragment.kt">
-        <error line="43" column="1" source="standard:max-line-length" />
-    </file>
-    <file name="src/main/java/re/notifica/push/ui/notifications/fragments/NotificareWebPassFragment.kt">
-        <error line="53" column="1" source="standard:max-line-length" />
-        <error line="53" column="107" source="standard:argument-list-wrapping" />
-        <error line="53" column="119" source="standard:argument-list-wrapping" />
-    </file>
-    <file name="src/main/java/re/notifica/push/ui/notifications/fragments/NotificareWebViewFragment.kt">
-        <error line="44" column="1" source="standard:max-line-length" />
-    </file>
-    <file name="src/main/java/re/notifica/push/ui/notifications/fragments/base/NotificationFragment.kt">
-        <error line="26" column="1" source="standard:indent" />
     </file>
 </baseline>

@@ -41,7 +41,9 @@ public class NotificareWebViewFragment : NotificationFragment() {
         val content = notification.content.firstOrNull { it.type == NotificareNotification.Content.TYPE_HTML }
         val html = content?.data as? String ?: run {
             onMainThread {
-                Notificare.pushUIInternal().lifecycleListeners.forEach { it.onNotificationFailedToPresent(notification) }
+                Notificare.pushUIInternal().lifecycleListeners.forEach {
+                    it.onNotificationFailedToPresent(notification)
+                }
             }
 
             return

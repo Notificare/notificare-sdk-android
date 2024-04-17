@@ -50,7 +50,9 @@ public class NotificareWebPassFragment : NotificationFragment() {
             host == null
         ) {
             onMainThread {
-                Notificare.pushUIInternal().lifecycleListeners.forEach { it.onNotificationFailedToPresent(notification) }
+                Notificare.pushUIInternal().lifecycleListeners.forEach {
+                    it.onNotificationFailedToPresent(notification)
+                }
             }
 
             return

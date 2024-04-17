@@ -23,7 +23,7 @@ public open class NotificationFragment : Fragment() {
 
         notification = savedInstanceState?.parcelable(Notificare.INTENT_EXTRA_NOTIFICATION)
             ?: arguments?.parcelable(Notificare.INTENT_EXTRA_NOTIFICATION)
-                ?: throw IllegalArgumentException("Missing required notification parameter.")
+            ?: throw IllegalArgumentException("Missing required notification parameter.")
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
