@@ -1,7 +1,6 @@
 package re.notifica.monetize.internal
 
 import android.app.Activity
-import androidx.lifecycle.LiveData
 import re.notifica.InternalNotificareApi
 import re.notifica.internal.AbstractServiceManager
 import re.notifica.monetize.models.NotificareProduct

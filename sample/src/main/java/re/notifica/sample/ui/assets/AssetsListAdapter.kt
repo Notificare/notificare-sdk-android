@@ -10,7 +10,6 @@ import re.notifica.assets.models.NotificareAsset
 import re.notifica.sample.R
 import re.notifica.sample.databinding.ItemAssetBinding
 
-
 class AssetsListAdapter(
     private val onAssetClicked: (NotificareAsset) -> Unit
 ) : ListAdapter<NotificareAsset, RecyclerView.ViewHolder>(AssetsDiffCallback()) {

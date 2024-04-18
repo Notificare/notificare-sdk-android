@@ -22,7 +22,7 @@ public open class NotificationActivity : AppCompatActivity(), NotificationContai
     override fun onCreate(savedInstanceState: Bundle?) {
         notification = savedInstanceState?.parcelable(Notificare.INTENT_EXTRA_NOTIFICATION)
             ?: intent.parcelable(Notificare.INTENT_EXTRA_NOTIFICATION)
-                ?: throw IllegalArgumentException("Missing required notification parameter.")
+            ?: throw IllegalArgumentException("Missing required notification parameter.")
 
         action = savedInstanceState?.parcelable(Notificare.INTENT_EXTRA_ACTION)
             ?: intent.parcelable(Notificare.INTENT_EXTRA_ACTION)
@@ -112,10 +112,7 @@ public open class NotificationActivity : AppCompatActivity(), NotificationContai
         }
     }
 
-    override fun onNotificationFragmentActionFailed(
-        notification: NotificareNotification,
-        reason: String?
-    ) {
+    override fun onNotificationFragmentActionFailed(notification: NotificareNotification, reason: String?) {
         binding.notificareProgress.isVisible = false
 
         if (checkNotNull(Notificare.options).showNotificationToasts) {

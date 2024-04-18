@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import java.util.Date
 import kotlinx.coroutines.launch
 import re.notifica.Notificare
 import re.notifica.inbox.ktx.inboxImplementation
@@ -12,7 +13,6 @@ import re.notifica.internal.NotificareLogger
 import re.notifica.internal.ktx.coroutineScope
 import re.notifica.internal.ktx.parcelable
 import re.notifica.models.NotificareNotification
-import java.util.*
 
 internal class NotificareInboxSystemReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {

@@ -2,12 +2,12 @@ package re.notifica.internal.network.push
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
+import java.util.Date
 import re.notifica.InternalNotificareApi
 import re.notifica.models.NotificareApplication
 import re.notifica.models.NotificareDoNotDisturb
 import re.notifica.models.NotificareDynamicLink
 import re.notifica.models.NotificareNotification
-import java.util.*
 
 @JsonClass(generateAdapter = true)
 internal data class ApplicationResponse(

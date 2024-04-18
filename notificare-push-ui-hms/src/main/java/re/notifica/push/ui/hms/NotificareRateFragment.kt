@@ -26,10 +26,16 @@ public class NotificareRateFragment : NotificationFragment() {
                 callback.onNotificationFragmentFinished()
 
                 onMainThread {
-                    Notificare.pushUIInternal().lifecycleListeners.forEach { it.onNotificationPresented(notification) }
+                    Notificare.pushUIInternal().lifecycleListeners.forEach {
+                        it.onNotificationPresented(
+                            notification
+                        )
+                    }
                 }
             } catch (e: ActivityNotFoundException) {
-                callback.onNotificationFragmentActionFailed(resources.getString(R.string.notificare_app_gallery_intent_failed))
+                callback.onNotificationFragmentActionFailed(
+                    resources.getString(R.string.notificare_app_gallery_intent_failed)
+                )
                 callback.onNotificationFragmentFinished()
 
                 onMainThread {

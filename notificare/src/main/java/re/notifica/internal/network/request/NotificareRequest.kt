@@ -1,11 +1,25 @@
 package re.notifica.internal.network.request
 
+import java.io.IOException
+import kotlin.coroutines.Continuation
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
+import kotlin.coroutines.suspendCoroutine
+import kotlin.reflect.KClass
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import okhttp3.*
+import okhttp3.Call
+import okhttp3.Callback
+import okhttp3.Credentials
+import okhttp3.FormBody
+import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.Response
 import okhttp3.internal.EMPTY_REQUEST
 import okhttp3.logging.HttpLoggingInterceptor
 import re.notifica.InternalNotificareApi
@@ -16,12 +30,6 @@ import re.notifica.internal.ktx.toCallbackFunction
 import re.notifica.internal.moshi
 import re.notifica.internal.network.NetworkException
 import re.notifica.internal.network.NotificareHeadersInterceptor
-import java.io.IOException
-import kotlin.coroutines.Continuation
-import kotlin.coroutines.resume
-import kotlin.coroutines.resumeWithException
-import kotlin.coroutines.suspendCoroutine
-import kotlin.reflect.KClass
 
 @InternalNotificareApi
 public class NotificareRequest private constructor(
@@ -37,13 +45,15 @@ public class NotificareRequest private constructor(
         private val client = OkHttpClient.Builder()
             // .authenticator(NotificareBasicAuthenticator())
             .addInterceptor(NotificareHeadersInterceptor())
-            .addInterceptor(HttpLoggingInterceptor().apply {
-                level = if (Notificare.options?.debugLoggingEnabled == true) {
-                    HttpLoggingInterceptor.Level.BASIC
-                } else {
-                    HttpLoggingInterceptor.Level.NONE
+            .addInterceptor(
+                HttpLoggingInterceptor().apply {
+                    level = if (Notificare.options?.debugLoggingEnabled == true) {
+                        HttpLoggingInterceptor.Level.BASIC
+                    } else {
+                        HttpLoggingInterceptor.Level.NONE
+                    }
                 }
-            })
+            )
             .build()
     }
 
@@ -85,7 +95,9 @@ public class NotificareRequest private constructor(
         val response = response(closeResponse = false)
 
         val body = response.body
-            ?: throw IllegalArgumentException("The response contains an empty body. Cannot parse into '${klass.simpleName}'.")
+            ?: throw IllegalArgumentException(
+                "The response contains an empty body. Cannot parse into '${klass.simpleName}'."
+            )
 
         return withContext(Dispatchers.IO) {
             try {
@@ -102,11 +114,7 @@ public class NotificareRequest private constructor(
         }
     }
 
-    private fun handleResponse(
-        response: Response,
-        closeResponse: Boolean,
-        continuation: Continuation<Response>
-    ) {
+    private fun handleResponse(response: Response, closeResponse: Boolean, continuation: Continuation<Response>) {
         try {
             if (response.code !in validStatusCodes) {
                 // Forcefully close the body. Decodable responses will not proceed.
@@ -211,7 +219,6 @@ public class NotificareRequest private constructor(
             this.validStatusCodes = validStatusCodes
             return this
         }
-
 
         @Throws(IllegalArgumentException::class)
         public fun build(): NotificareRequest {

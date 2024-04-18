@@ -4,6 +4,10 @@ import android.content.Context
 import android.net.Uri
 import android.os.Environment
 import androidx.core.content.FileProvider
+import java.io.File
+import java.io.IOException
+import java.text.SimpleDateFormat
+import java.util.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -17,10 +21,6 @@ import re.notifica.push.ui.actions.base.NotificationAction
 import re.notifica.push.ui.ktx.pushUIImplementation
 import re.notifica.push.ui.ktx.pushUIInternal
 import re.notifica.push.ui.models.NotificarePendingResult
-import java.io.File
-import java.io.IOException
-import java.text.SimpleDateFormat
-import java.util.*
 
 internal class NotificationCallbackAction(
     context: Context,
@@ -129,7 +129,12 @@ internal class NotificationCallbackAction(
                 )
 
                 onMainThread {
-                    Notificare.pushUIInternal().lifecycleListeners.forEach { it.onActionExecuted(notification, action) }
+                    Notificare.pushUIInternal().lifecycleListeners.forEach {
+                        it.onActionExecuted(
+                            notification,
+                            action
+                        )
+                    }
                 }
 
                 return@withContext

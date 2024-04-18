@@ -4,12 +4,16 @@ import android.content.Context
 import android.location.Location
 import androidx.core.content.edit
 import com.squareup.moshi.Types
+import java.util.Date
 import re.notifica.Notificare
 import re.notifica.geo.internal.canInsertBeacon
-import re.notifica.geo.models.*
+import re.notifica.geo.models.NotificareBeacon
+import re.notifica.geo.models.NotificareBeaconSession
+import re.notifica.geo.models.NotificareLocation
+import re.notifica.geo.models.NotificareRegion
+import re.notifica.geo.models.NotificareRegionSession
 import re.notifica.internal.NotificareLogger
 import re.notifica.internal.moshi
-import java.util.*
 
 private const val PREFERENCES_FILE_NAME = "re.notifica.geo.preferences"
 private const val PREFERENCE_LOCATION_SERVICES_ENABLED = "re.notifica.geo.preferences.location_services_enabled"
@@ -162,7 +166,6 @@ internal class LocalStorage(context: Context) {
             }
         }
 
-
     fun addRegionSession(session: NotificareRegionSession) {
         regionSessions = regionSessions.toMutableMap().apply {
             put(session.regionId, session)
@@ -225,7 +228,6 @@ internal class LocalStorage(context: Context) {
             }
         }
 
-
     fun addBeaconSession(session: NotificareBeaconSession) {
         beaconSessions = beaconSessions.toMutableMap().apply {
             put(session.regionId, session)
@@ -246,7 +248,9 @@ internal class LocalStorage(context: Context) {
             .groupBy { it.major }
             .mapKeys { entry ->
                 val region = monitoredRegions.values.firstOrNull { it.major == entry.key } ?: run {
-                    NotificareLogger.warning("Cannot update the beacon session for region with major '${entry.key}' since the corresponding region is not being monitored.")
+                    NotificareLogger.warning(
+                        "Cannot update the beacon session for region with major '${entry.key}' since the corresponding region is not being monitored."
+                    )
                     return@mapKeys null
                 }
 
@@ -261,7 +265,9 @@ internal class LocalStorage(context: Context) {
             .map { entry ->
                 val region = entry.key
                 val session = beaconSessions[region.id] ?: run {
-                    NotificareLogger.warning("Cannot update the beacon session for region with major '${entry.key}' since there's no ongoing session.")
+                    NotificareLogger.warning(
+                        "Cannot update the beacon session for region with major '${entry.key}' since there's no ongoing session."
+                    )
                     return@map null
                 }
 

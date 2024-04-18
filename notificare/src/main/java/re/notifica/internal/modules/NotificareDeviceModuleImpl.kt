@@ -2,8 +2,19 @@ package re.notifica.internal.modules
 
 import android.content.Intent
 import androidx.annotation.Keep
-import kotlinx.coroutines.*
-import re.notifica.*
+import java.util.Calendar
+import java.util.Date
+import java.util.GregorianCalendar
+import java.util.Locale
+import java.util.UUID
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import re.notifica.Notificare
+import re.notifica.NotificareCallback
+import re.notifica.NotificareDeviceModule
+import re.notifica.NotificareInternalDeviceModule
+import re.notifica.NotificareNotReadyException
 import re.notifica.internal.NotificareLogger
 import re.notifica.internal.NotificareModule
 import re.notifica.internal.NotificareUtils
@@ -12,7 +23,14 @@ import re.notifica.internal.common.toByteArray
 import re.notifica.internal.common.toHex
 import re.notifica.internal.ktx.coroutineScope
 import re.notifica.internal.ktx.toCallbackFunction
-import re.notifica.internal.network.push.*
+import re.notifica.internal.network.push.DeviceDoNotDisturbResponse
+import re.notifica.internal.network.push.DeviceRegistrationPayload
+import re.notifica.internal.network.push.DeviceTagsPayload
+import re.notifica.internal.network.push.DeviceTagsResponse
+import re.notifica.internal.network.push.DeviceUpdateLanguagePayload
+import re.notifica.internal.network.push.DeviceUpdateTimeZonePayload
+import re.notifica.internal.network.push.DeviceUserDataResponse
+import re.notifica.internal.network.push.TestDeviceRegistrationPayload
 import re.notifica.internal.network.request.NotificareRequest
 import re.notifica.ktx.eventsImplementation
 import re.notifica.ktx.session
@@ -20,10 +38,11 @@ import re.notifica.models.NotificareDevice
 import re.notifica.models.NotificareDoNotDisturb
 import re.notifica.models.NotificareTransport
 import re.notifica.models.NotificareUserData
-import java.util.*
 
 @Keep
-internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDeviceModule,
+internal object NotificareDeviceModuleImpl :
+    NotificareModule(),
+    NotificareDeviceModule,
     NotificareInternalDeviceModule {
 
     // region Notificare Module

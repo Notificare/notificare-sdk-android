@@ -27,7 +27,9 @@ import re.notifica.push.ui.ktx.pushUI
 import re.notifica.sample.databinding.ActivitySampleBinding
 import timber.log.Timber
 
-class SampleActivity : AppCompatActivity(), NotificarePushUI.NotificationLifecycleListener,
+class SampleActivity :
+    AppCompatActivity(),
+    NotificarePushUI.NotificationLifecycleListener,
     NotificareMonetize.Listener {
 
     private lateinit var binding: ActivitySampleBinding
@@ -56,7 +58,6 @@ class SampleActivity : AppCompatActivity(), NotificarePushUI.NotificationLifecyc
         Notificare.pushUI().addLifecycleListener(this)
         Notificare.inAppMessaging().addLifecycleListener(messageLifecycleListener)
     }
-
 
     override fun onDestroy() {
         super.onDestroy()

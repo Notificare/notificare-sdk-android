@@ -17,11 +17,7 @@ public class NotificareUrlFragment : NotificationFragment() {
 
     private lateinit var binding: NotificareNotificationUrlFragmentBinding
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = NotificareNotificationUrlFragmentBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -44,7 +40,9 @@ public class NotificareUrlFragment : NotificationFragment() {
         val content = notification.content.firstOrNull()
         val url = content?.data as? String ?: run {
             onMainThread {
-                Notificare.pushUIInternal().lifecycleListeners.forEach { it.onNotificationFailedToPresent(notification) }
+                Notificare.pushUIInternal().lifecycleListeners.forEach {
+                    it.onNotificationFailedToPresent(notification)
+                }
             }
 
             return

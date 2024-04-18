@@ -42,7 +42,6 @@ public class QrCodeScannerFragment : Fragment(R.layout.notificare_scannable_qr_c
         }
     }
 
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -63,7 +62,6 @@ public class QrCodeScannerFragment : Fragment(R.layout.notificare_scannable_qr_c
         super.onDestroy()
         cameraSource?.release()
     }
-
 
     private fun setupScanner() {
         val detector = BarcodeDetector.Builder(requireContext())

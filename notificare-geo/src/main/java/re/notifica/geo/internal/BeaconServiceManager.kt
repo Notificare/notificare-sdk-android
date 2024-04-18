@@ -35,7 +35,6 @@ public abstract class BeaconServiceManager(
         }
     }
 
-
     public data class Beacon(
         val major: Int,
         val minor: Int,

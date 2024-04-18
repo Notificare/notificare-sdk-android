@@ -31,7 +31,7 @@ public open class InAppMessagingActivity : AppCompatActivity() {
 
         message = savedInstanceState?.parcelable(Notificare.INTENT_EXTRA_IN_APP_MESSAGE)
             ?: intent.parcelable(Notificare.INTENT_EXTRA_IN_APP_MESSAGE)
-                ?: throw IllegalStateException("Cannot create the UI without the associated in-app message.")
+            ?: throw IllegalStateException("Cannot create the UI without the associated in-app message.")
 
         if (savedInstanceState != null) {
             val backgroundTimestamp = if (savedInstanceState.containsKey(INTENT_EXTRA_BACKGROUND_TIMESTAMP)) {
@@ -44,7 +44,9 @@ public open class InAppMessagingActivity : AppCompatActivity() {
                 Notificare.inAppMessagingImplementation().hasExpiredBackgroundPeriod(backgroundTimestamp)
 
             if (expired) {
-                NotificareLogger.debug("Dismissing the current in-app message for being in the background for longer than the grace period.")
+                NotificareLogger.debug(
+                    "Dismissing the current in-app message for being in the background for longer than the grace period."
+                )
                 return finish()
             }
         }
@@ -72,7 +74,9 @@ public open class InAppMessagingActivity : AppCompatActivity() {
             Notificare.inAppMessagingImplementation().hasExpiredBackgroundPeriod(backgroundTimestamp)
 
         if (expired) {
-            NotificareLogger.debug("Dismissing the current in-app message for being in the background for longer than the grace period.")
+            NotificareLogger.debug(
+                "Dismissing the current in-app message for being in the background for longer than the grace period."
+            )
             return finish()
         }
     }

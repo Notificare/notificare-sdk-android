@@ -7,7 +7,12 @@ import android.os.Build
 import androidx.annotation.Keep
 import com.huawei.hms.api.ConnectionResult
 import com.huawei.hms.api.HuaweiApiAvailability
-import com.huawei.hms.location.*
+import com.huawei.hms.location.FusedLocationProviderClient
+import com.huawei.hms.location.Geofence
+import com.huawei.hms.location.GeofenceRequest
+import com.huawei.hms.location.GeofenceService
+import com.huawei.hms.location.LocationRequest
+import com.huawei.hms.location.LocationServices
 import kotlinx.coroutines.Deferred
 import re.notifica.InternalNotificareApi
 import re.notifica.Notificare
@@ -15,7 +20,12 @@ import re.notifica.geo.hms.LocationReceiver
 import re.notifica.geo.hms.internal.ktx.asDeferred
 import re.notifica.geo.hms.ktx.geoInternal
 import re.notifica.geo.internal.ServiceManager
-import re.notifica.geo.ktx.*
+import re.notifica.geo.ktx.DEFAULT_GEOFENCE_RESPONSIVENESS
+import re.notifica.geo.ktx.DEFAULT_LOCATION_UPDATES_FASTEST_INTERVAL
+import re.notifica.geo.ktx.DEFAULT_LOCATION_UPDATES_INTERVAL
+import re.notifica.geo.ktx.DEFAULT_LOCATION_UPDATES_SMALLEST_DISPLACEMENT
+import re.notifica.geo.ktx.INTENT_ACTION_GEOFENCE_TRANSITION
+import re.notifica.geo.ktx.INTENT_ACTION_INTERNAL_LOCATION_UPDATED
 import re.notifica.geo.models.NotificareRegion
 import re.notifica.internal.NotificareLogger
 
@@ -33,7 +43,6 @@ public class ServiceManager : ServiceManager() {
     override val available: Boolean
         get() = HuaweiApiAvailability.getInstance()
             .isHuaweiMobileServicesAvailable(Notificare.requireContext()) == ConnectionResult.SUCCESS
-
 
     init {
         val context = Notificare.requireContext()
@@ -87,7 +96,6 @@ public class ServiceManager : ServiceManager() {
 
         // endregion
     }
-
 
     override fun enableLocationUpdates() {
         fusedLocationClient.lastLocation.addOnSuccessListener { location ->
@@ -152,7 +160,11 @@ public class ServiceManager : ServiceManager() {
 
         val request = GeofenceRequest.Builder()
             .createGeofenceList(geofences)
-            .setInitConversions(GeofenceRequest.ENTER_INIT_CONVERSION or GeofenceRequest.DWELL_INIT_CONVERSION or GeofenceRequest.EXIT_INIT_CONVERSION)
+            .setInitConversions(
+                GeofenceRequest.ENTER_INIT_CONVERSION
+                    or GeofenceRequest.DWELL_INIT_CONVERSION
+                    or GeofenceRequest.EXIT_INIT_CONVERSION
+            )
             .build()
 
         try {

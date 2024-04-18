@@ -10,7 +10,6 @@ public interface NotificareGeoIntegration {
 
     public val geoEnteredBeacons: List<Beacon>
 
-
     public data class Beacon(
         val major: Int,
         val minor: Int?,

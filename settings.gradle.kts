@@ -2,6 +2,7 @@ pluginManagement {
     repositories {
         google()
         mavenCentral()
+        gradlePluginPortal()
         maven(url = "https://maven.notifica.re/releases")
         maven(url = "https://developer.huawei.com/repo")
     }

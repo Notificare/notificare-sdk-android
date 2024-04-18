@@ -26,10 +26,7 @@ public interface NotificarePush {
 
     public fun handleTrampolineIntent(intent: Intent): Boolean
 
-    public suspend fun registerLiveActivity(
-        activityId: String,
-        topics: List<String> = listOf(),
-    )
+    public suspend fun registerLiveActivity(activityId: String, topics: List<String> = listOf())
 
     public fun registerLiveActivity(
         activityId: String,

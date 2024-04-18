@@ -8,7 +8,6 @@ import re.notifica.internal.modules.NotificareDeviceModuleImpl
 import re.notifica.internal.modules.NotificareEventsModuleImpl
 import re.notifica.internal.modules.NotificareSessionModuleImpl
 
-
 @Suppress("unused")
 public fun Notificare.device(): NotificareDeviceModule {
     return NotificareDeviceModuleImpl
@@ -18,7 +17,6 @@ public fun Notificare.device(): NotificareDeviceModule {
 public fun Notificare.events(): NotificareEventsModule {
     return NotificareEventsModuleImpl
 }
-
 
 internal fun Notificare.deviceImplementation(): NotificareDeviceModuleImpl {
     return device() as NotificareDeviceModuleImpl

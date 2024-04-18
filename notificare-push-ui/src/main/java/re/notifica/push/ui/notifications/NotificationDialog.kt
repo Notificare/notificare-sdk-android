@@ -70,10 +70,14 @@ public class NotificationDialog : DialogFragment() {
             }
 
             builder.setView(binding.root)
-            builder.setNeutralButton(R.string.notificare_dialog_cancel_button) { _, _ -> callback?.onNotificationDialogCancelClick() }
+            builder.setNeutralButton(R.string.notificare_dialog_cancel_button) { _, _ ->
+                callback?.onNotificationDialogCancelClick()
+            }
         } else {
             builder.setMessage(notification.message)
-            builder.setNeutralButton(R.string.notificare_dialog_ok_button) { _, _ -> callback?.onNotificationDialogOkClick() }
+            builder.setNeutralButton(R.string.notificare_dialog_ok_button) { _, _ ->
+                callback?.onNotificationDialogOkClick()
+            }
         }
 
         val dialog = builder.create()

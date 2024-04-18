@@ -26,7 +26,11 @@ public class NotificareRateFragment : NotificationFragment() {
                 callback.onNotificationFragmentFinished()
 
                 onMainThread {
-                    Notificare.pushUIInternal().lifecycleListeners.forEach { it.onNotificationPresented(notification) }
+                    Notificare.pushUIInternal().lifecycleListeners.forEach {
+                        it.onNotificationPresented(
+                            notification
+                        )
+                    }
                 }
             } catch (e: ActivityNotFoundException) {
                 val uri = Uri.parse("https://play.google.com/store/apps/details?id=${inflater.context.packageName}")

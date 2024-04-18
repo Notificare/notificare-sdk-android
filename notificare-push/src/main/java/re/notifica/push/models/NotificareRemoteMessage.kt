@@ -1,9 +1,9 @@
 package re.notifica.push.models
 
 import android.os.Parcelable
+import java.util.Date
 import kotlinx.parcelize.Parcelize
 import re.notifica.models.NotificareNotification
-import java.util.*
 
 public interface NotificareRemoteMessage {
     public val messageId: String?

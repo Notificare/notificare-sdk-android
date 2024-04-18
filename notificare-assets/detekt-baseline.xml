@@ -1,0 +1,8 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues></ManuallySuppressedIssues>
+  <CurrentIssues>
+    <ID>MatchingDeclarationName:Responses.kt$FetchAssetsResponse</ID>
+    <ID>ThrowsCount:NotificareAssetsImpl.kt$NotificareAssetsImpl$@Throws private fun checkPrerequisites()</ID>
+  </CurrentIssues>
+</SmellBaseline>

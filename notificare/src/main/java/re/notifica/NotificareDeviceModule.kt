@@ -11,7 +11,6 @@ public interface NotificareDeviceModule {
 
     public val preferredLanguage: String?
 
-
     public suspend fun register(userId: String?, userName: String?)
 
     public fun register(userId: String?, userName: String?, callback: NotificareCallback<Unit>)

@@ -19,7 +19,6 @@ public abstract class NotificareModule {
 
     public open suspend fun unlaunch() {}
 
-
     @InternalNotificareApi
     public enum class Module(private val fqn: String) {
         // Default modules
@@ -74,5 +73,4 @@ public abstract class NotificareModule {
                 }
             }
     }
-
 }

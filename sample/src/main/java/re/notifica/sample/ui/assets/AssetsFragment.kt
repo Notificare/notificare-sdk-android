@@ -1,7 +1,12 @@
 package re.notifica.sample.ui.assets
 
 import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import androidx.appcompat.widget.SearchView
 import androidx.core.os.bundleOf
 import androidx.core.view.MenuHost
@@ -13,8 +18,8 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import re.notifica.assets.models.NotificareAsset
 import re.notifica.sample.R
-import re.notifica.sample.databinding.FragmentAssetsBinding
 import re.notifica.sample.core.BaseFragment
+import re.notifica.sample.databinding.FragmentAssetsBinding
 
 class AssetsFragment : BaseFragment() {
     private lateinit var binding: FragmentAssetsBinding
@@ -38,37 +43,43 @@ class AssetsFragment : BaseFragment() {
     }
 
     private fun setupMenu() {
-        (requireActivity() as MenuHost).addMenuProvider(object : MenuProvider {
-            override fun onPrepareMenu(menu: Menu) {
-                // Handle for example visibility of menu items
-            }
-
-            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-                menuInflater.inflate(R.menu.assets_menu, menu)
-            }
-
-            override fun onMenuItemSelected(item: MenuItem): Boolean {
-                when (item.itemId) {
-                    R.id.assets_search -> {
-                        val searchView = item.actionView as SearchView
-
-                        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-                            override fun onQueryTextSubmit(query: String): Boolean {
-                                getAssets(query)
-
-                                return false
-                            }
-
-                            override fun onQueryTextChange(s: String): Boolean {
-                                return false
-                            }
-                        })
-                    }
+        (requireActivity() as MenuHost).addMenuProvider(
+            object : MenuProvider {
+                override fun onPrepareMenu(menu: Menu) {
+                    // Handle for example visibility of menu items
                 }
 
-                return true
-            }
-        }, viewLifecycleOwner, Lifecycle.State.RESUMED)
+                override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                    menuInflater.inflate(R.menu.assets_menu, menu)
+                }
+
+                override fun onMenuItemSelected(item: MenuItem): Boolean {
+                    when (item.itemId) {
+                        R.id.assets_search -> {
+                            val searchView = item.actionView as SearchView
+
+                            searchView.setOnQueryTextListener(
+                                object : SearchView.OnQueryTextListener {
+                                    override fun onQueryTextSubmit(query: String): Boolean {
+                                        getAssets(query)
+
+                                        return false
+                                    }
+
+                                    override fun onQueryTextChange(s: String): Boolean {
+                                        return false
+                                    }
+                                }
+                            )
+                        }
+                    }
+
+                    return true
+                }
+            },
+            viewLifecycleOwner,
+            Lifecycle.State.RESUMED
+        )
     }
 
     private fun setupList() {

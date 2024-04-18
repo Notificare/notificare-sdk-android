@@ -2,7 +2,21 @@ package re.notifica.monetize.gms.internal
 
 import android.app.Activity
 import androidx.annotation.Keep
-import com.android.billingclient.api.*
+import com.android.billingclient.api.AcknowledgePurchaseParams
+import com.android.billingclient.api.BillingClient
+import com.android.billingclient.api.BillingClientStateListener
+import com.android.billingclient.api.BillingFlowParams
+import com.android.billingclient.api.BillingResult
+import com.android.billingclient.api.ConsumeParams
+import com.android.billingclient.api.ProductDetails
+import com.android.billingclient.api.Purchase
+import com.android.billingclient.api.PurchasesUpdatedListener
+import com.android.billingclient.api.QueryProductDetailsParams
+import com.android.billingclient.api.QueryPurchasesParams
+import com.android.billingclient.api.acknowledgePurchase
+import com.android.billingclient.api.consumePurchase
+import com.android.billingclient.api.queryProductDetails
+import com.android.billingclient.api.queryPurchasesAsync
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import kotlinx.coroutines.Dispatchers
@@ -38,9 +52,8 @@ public class ServiceManager : ServiceManager(), BillingClientStateListener, Purc
             .build()
     }
 
-    private var products = mapOf<String, NotificareProduct>()       // where K is the Google product identifier
-    private var productDetails = mapOf<String, ProductDetails>()    // where K is the Google product identifier
-
+    private var products = mapOf<String, NotificareProduct>() // where K is the Google product identifier
+    private var productDetails = mapOf<String, ProductDetails>() // where K is the Google product identifier
 
     override val available: Boolean
         get() = GoogleApiAvailability.getInstance()
@@ -105,7 +118,9 @@ public class ServiceManager : ServiceManager(), BillingClientStateListener, Purc
         if (result.billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
             return@withContext result.purchasesList.map { NotificarePurchase.from(it) }
         } else {
-            NotificareLogger.error("Failed to query purchases with error code '${result.billingResult.responseCode}': ${result.billingResult.debugMessage}")
+            NotificareLogger.error(
+                "Failed to query purchases with error code '${result.billingResult.responseCode}': ${result.billingResult.debugMessage}"
+            )
             throw Exception("Failed to query purchases.")
         }
     }
@@ -150,9 +165,15 @@ public class ServiceManager : ServiceManager(), BillingClientStateListener, Purc
                 }
 
                 NotificareLogger.info("Processing purchases event.")
-                NotificareLogger.debug("${purchases.count { it.purchaseState == Purchase.PurchaseState.PURCHASED }} purchased items.")
-                NotificareLogger.debug("${purchases.count { it.purchaseState == Purchase.PurchaseState.PENDING }} pending items.")
-                NotificareLogger.debug("${purchases.count { it.purchaseState == Purchase.PurchaseState.UNSPECIFIED_STATE }} undefined state items.")
+                NotificareLogger.debug(
+                    "${purchases.count { it.purchaseState == Purchase.PurchaseState.PURCHASED }} purchased items."
+                )
+                NotificareLogger.debug(
+                    "${purchases.count { it.purchaseState == Purchase.PurchaseState.PENDING }} pending items."
+                )
+                NotificareLogger.debug(
+                    "${purchases.count { it.purchaseState == Purchase.PurchaseState.UNSPECIFIED_STATE }} undefined state items."
+                )
 
                 Notificare.coroutineScope.launch {
                     try {
@@ -177,7 +198,6 @@ public class ServiceManager : ServiceManager(), BillingClientStateListener, Purc
     }
 
     // endregion
-
 
     private suspend fun fetchProducts(): List<FetchProductsResponse.Product> = withContext(Dispatchers.IO) {
         NotificareRequest.Builder()
@@ -216,7 +236,9 @@ public class ServiceManager : ServiceManager(), BillingClientStateListener, Purc
 
     private suspend fun processPurchase(purchase: Purchase): Unit = withContext(Dispatchers.IO) {
         if (purchase.products.size > 1) {
-            NotificareLogger.warning("Detected a purchase with multiple products. Notificare only supports single-product purchases.")
+            NotificareLogger.warning(
+                "Detected a purchase with multiple products. Notificare only supports single-product purchases."
+            )
         }
 
         val identifier = purchase.products.firstOrNull() ?: run {

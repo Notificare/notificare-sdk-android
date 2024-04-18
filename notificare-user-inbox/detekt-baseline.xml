@@ -1,0 +1,9 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues></ManuallySuppressedIssues>
+  <CurrentIssues>
+    <ID>ConstructorParameterNaming:RawUserInboxResponse.kt$RawUserInboxResponse.RawUserInboxItem$val _id: String</ID>
+    <ID>ThrowsCount:NotificareUserInboxImpl.kt$NotificareUserInboxImpl$@Throws private fun checkPrerequisites()</ID>
+    <ID>TooGenericExceptionCaught:UserInboxResponseAdapter.kt$UserInboxResponseAdapter$e: Exception</ID>
+  </CurrentIssues>
+</SmellBaseline>

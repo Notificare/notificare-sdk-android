@@ -2,16 +2,17 @@ package re.notifica.internal.storage
 
 import android.content.Context
 import androidx.core.content.edit
+import java.util.Calendar
+import java.util.Date
 import org.json.JSONObject
 import re.notifica.Notificare
 import re.notifica.internal.NotificareLogger
+import re.notifica.internal.NotificareModule
 import re.notifica.internal.NotificareUtils
 import re.notifica.internal.moshi
 import re.notifica.internal.storage.preferences.NotificareSharedPreferences
 import re.notifica.models.NotificareDevice
 import re.notifica.models.NotificareTransport
-import re.notifica.internal.NotificareModule
-import java.util.*
 
 internal class SharedPreferencesMigration(
     private val context: Context,

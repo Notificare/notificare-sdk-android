@@ -16,11 +16,30 @@ import re.notifica.internal.NotificareModule
 import re.notifica.internal.common.onMainThread
 import re.notifica.internal.ktx.coroutineScope
 import re.notifica.models.NotificareNotification
-import re.notifica.push.ui.*
-import re.notifica.push.ui.actions.*
+import re.notifica.push.ui.NotificareInternalPushUI
+import re.notifica.push.ui.NotificarePushUI
+import re.notifica.push.ui.NotificationActivity
+import re.notifica.push.ui.actions.NotificationAppAction
+import re.notifica.push.ui.actions.NotificationBrowserAction
+import re.notifica.push.ui.actions.NotificationCallbackAction
+import re.notifica.push.ui.actions.NotificationCustomAction
+import re.notifica.push.ui.actions.NotificationInAppBrowserAction
+import re.notifica.push.ui.actions.NotificationMailAction
+import re.notifica.push.ui.actions.NotificationSmsAction
+import re.notifica.push.ui.actions.NotificationTelephoneAction
 import re.notifica.push.ui.actions.base.NotificationAction
+import re.notifica.push.ui.customTabsColorScheme
+import re.notifica.push.ui.customTabsNavigationBarColor
+import re.notifica.push.ui.customTabsNavigationBarDividerColor
+import re.notifica.push.ui.customTabsShowTitle
+import re.notifica.push.ui.customTabsToolbarColor
 import re.notifica.push.ui.ktx.loyaltyIntegration
-import re.notifica.push.ui.notifications.fragments.*
+import re.notifica.push.ui.notifications.fragments.NotificareAlertFragment
+import re.notifica.push.ui.notifications.fragments.NotificareImageFragment
+import re.notifica.push.ui.notifications.fragments.NotificareUrlFragment
+import re.notifica.push.ui.notifications.fragments.NotificareVideoFragment
+import re.notifica.push.ui.notifications.fragments.NotificareWebPassFragment
+import re.notifica.push.ui.notifications.fragments.NotificareWebViewFragment
 
 @Keep
 internal object NotificarePushUIImpl : NotificareModule(), NotificarePushUI, NotificareInternalPushUI {
@@ -32,7 +51,6 @@ internal object NotificarePushUIImpl : NotificareModule(), NotificarePushUI, Not
 
     private var serviceManager: ServiceManager? = null
     private val _lifecycleListeners = mutableListOf<NotificarePushUI.NotificationLifecycleListener>()
-
 
     // region Notificare Module
 
@@ -64,7 +82,9 @@ internal object NotificarePushUIImpl : NotificareModule(), NotificarePushUI, Not
 
         when (type) {
             NotificareNotification.NotificationType.NONE -> {
-                NotificareLogger.debug("Attempting to present a notification of type 'none'. These should be handled by the application instead.")
+                NotificareLogger.debug(
+                    "Attempting to present a notification of type 'none'. These should be handled by the application instead."
+                )
             }
             NotificareNotification.NotificationType.URL_SCHEME -> {
                 onMainThread {
@@ -158,18 +178,24 @@ internal object NotificarePushUIImpl : NotificareModule(), NotificarePushUI, Not
 
         return when (type) {
             NotificareNotification.NotificationType.NONE -> {
-                NotificareLogger.debug("Attempting to create a fragment for a notification of type 'none'. This type contains to visual interface.")
+                NotificareLogger.debug(
+                    "Attempting to create a fragment for a notification of type 'none'. This type contains to visual interface."
+                )
                 return null
             }
             NotificareNotification.NotificationType.ALERT -> NotificareAlertFragment::class.java.canonicalName
             NotificareNotification.NotificationType.IN_APP_BROWSER -> {
-                NotificareLogger.debug("Attempting to create a fragment for a notification of type 'InAppBrowser'. This type contains no visual interface.")
+                NotificareLogger.debug(
+                    "Attempting to create a fragment for a notification of type 'InAppBrowser'. This type contains no visual interface."
+                )
                 return null
             }
             NotificareNotification.NotificationType.WEB_VIEW -> NotificareWebViewFragment::class.java.canonicalName
             NotificareNotification.NotificationType.URL -> NotificareUrlFragment::class.java.canonicalName
             NotificareNotification.NotificationType.URL_SCHEME -> {
-                NotificareLogger.debug("Attempting to create a fragment for a notification of type 'UrlScheme'. This type contains no visual interface.")
+                NotificareLogger.debug(
+                    "Attempting to create a fragment for a notification of type 'UrlScheme'. This type contains no visual interface."
+                )
                 return null
             }
             NotificareNotification.NotificationType.IMAGE -> NotificareImageFragment::class.java.canonicalName
@@ -179,7 +205,9 @@ internal object NotificarePushUIImpl : NotificareModule(), NotificarePushUI, Not
             NotificareNotification.NotificationType.RATE,
             NotificareNotification.NotificationType.STORE -> {
                 val manager = serviceManager ?: run {
-                    NotificareLogger.warning("No push-ui dependencies have been detected. Please include one of the platform-specific push-ui packages.")
+                    NotificareLogger.warning(
+                        "No push-ui dependencies have been detected. Please include one of the platform-specific push-ui packages."
+                    )
                     return null
                 }
 
@@ -217,7 +245,11 @@ internal object NotificarePushUIImpl : NotificareModule(), NotificarePushUI, Not
 
     private fun presentDeepLink(activity: Activity, notification: NotificareNotification, url: Uri) {
         val intent = Intent(Intent.ACTION_VIEW, url).apply {
-            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS)
+            addFlags(
+                Intent.FLAG_ACTIVITY_NEW_TASK or
+                    Intent.FLAG_ACTIVITY_CLEAR_TOP or
+                    Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS
+            )
             setPackage(activity.applicationContext.packageName)
         }
 
@@ -245,19 +277,22 @@ internal object NotificarePushUIImpl : NotificareModule(), NotificarePushUI, Not
             return
         }
 
-        integration.handlePassPresentation(activity, notification, object : NotificareCallback<Unit> {
-            override fun onSuccess(result: Unit) {
-                onMainThread {
-                    lifecycleListeners.forEach { it.onNotificationPresented(notification) }
+        integration.handlePassPresentation(
+            activity, notification,
+            object : NotificareCallback<Unit> {
+                override fun onSuccess(result: Unit) {
+                    onMainThread {
+                        lifecycleListeners.forEach { it.onNotificationPresented(notification) }
+                    }
                 }
-            }
 
-            override fun onFailure(e: Exception) {
-                onMainThread {
-                    lifecycleListeners.forEach { it.onNotificationFailedToPresent(notification) }
+                override fun onFailure(e: Exception) {
+                    onMainThread {
+                        lifecycleListeners.forEach { it.onNotificationFailedToPresent(notification) }
+                    }
                 }
             }
-        })
+        )
     }
 
     private fun handleInAppBrowser(activity: Activity, notification: NotificareNotification) {

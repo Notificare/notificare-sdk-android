@@ -20,11 +20,7 @@ public class NotificareImageFragment : NotificationFragment() {
 
     private lateinit var binding: NotificareNotificationImageFragmentBinding
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = NotificareNotificationImageFragmentBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -38,11 +34,15 @@ public class NotificareImageFragment : NotificationFragment() {
 
         if (notification.content.isEmpty()) {
             onMainThread {
-                Notificare.pushUIInternal().lifecycleListeners.forEach { it.onNotificationFailedToPresent(notification) }
+                Notificare.pushUIInternal().lifecycleListeners.forEach {
+                    it.onNotificationFailedToPresent(notification)
+                }
             }
         } else {
             onMainThread {
-                Notificare.pushUIInternal().lifecycleListeners.forEach { it.onNotificationPresented(notification) }
+                Notificare.pushUIInternal().lifecycleListeners.forEach {
+                    it.onNotificationPresented(notification)
+                }
             }
         }
     }
@@ -73,14 +73,10 @@ public class NotificareImageFragment : NotificationFragment() {
 
             content = savedInstanceState?.parcelable(SAVED_STATE_CONTENT)
                 ?: arguments?.parcelable(SAVED_STATE_CONTENT)
-                    ?: throw IllegalArgumentException("Missing required notification content parameter.")
+                ?: throw IllegalArgumentException("Missing required notification content parameter.")
         }
 
-        override fun onCreateView(
-            inflater: LayoutInflater,
-            container: ViewGroup?,
-            savedInstanceState: Bundle?
-        ): View {
+        override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
             return ImageView(inflater.context)
         }
 

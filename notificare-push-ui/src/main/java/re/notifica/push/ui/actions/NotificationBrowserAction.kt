@@ -35,7 +35,12 @@ internal class NotificationBrowserAction(
             Notificare.createNotificationReply(notification, action)
 
             onMainThread {
-                Notificare.pushUIInternal().lifecycleListeners.forEach { it.onActionExecuted(notification, action) }
+                Notificare.pushUIInternal().lifecycleListeners.forEach {
+                    it.onActionExecuted(
+                        notification,
+                        action
+                    )
+                }
             }
         } else {
             throw Exception(context.getString(R.string.notificare_action_failed))

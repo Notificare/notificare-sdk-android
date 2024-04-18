@@ -7,7 +7,12 @@ import androidx.lifecycle.MutableLiveData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import re.notifica.*
+import re.notifica.Notificare
+import re.notifica.NotificareApplicationUnavailableException
+import re.notifica.NotificareCallback
+import re.notifica.NotificareDeviceUnavailableException
+import re.notifica.NotificareNotReadyException
+import re.notifica.NotificareServiceUnavailableException
 import re.notifica.internal.NotificareLogger
 import re.notifica.internal.NotificareModule
 import re.notifica.internal.common.onMainThread
@@ -148,13 +153,15 @@ internal object NotificareMonetizeImpl : NotificareModule(), NotificareMonetize,
     }
 
     override suspend fun launch() {
-        checkNotNull(serviceManager) { "No monetize dependencies have been detected. Please include one of the platform-specific monetize packages." }
-            .startConnection()
+        checkNotNull(serviceManager) {
+            "No monetize dependencies have been detected. Please include one of the platform-specific monetize packages."
+        }.startConnection()
     }
 
     override suspend fun unlaunch() {
-        checkNotNull(serviceManager) { "No monetize dependencies have been detected. Please include one of the platform-specific monetize packages." }
-            .stopConnection()
+        checkNotNull(serviceManager) {
+            "No monetize dependencies have been detected. Please include one of the platform-specific monetize packages."
+        }.stopConnection()
 
         database.purchases().clear()
 
@@ -187,8 +194,9 @@ internal object NotificareMonetizeImpl : NotificareModule(), NotificareMonetize,
     override suspend fun refresh(): Unit = withContext(Dispatchers.IO) {
         checkPrerequisites()
 
-        checkNotNull(serviceManager) { "No monetize dependencies have been detected. Please include one of the platform-specific monetize packages." }
-            .refresh()
+        checkNotNull(serviceManager) {
+            "No monetize dependencies have been detected. Please include one of the platform-specific monetize packages."
+        }.refresh()
     }
 
     override fun refresh(callback: NotificareCallback<Unit>): Unit =
@@ -197,8 +205,9 @@ internal object NotificareMonetizeImpl : NotificareModule(), NotificareMonetize,
     override fun startPurchaseFlow(activity: Activity, product: NotificareProduct) {
         checkPrerequisites()
 
-        checkNotNull(serviceManager) { "No monetize dependencies have been detected. Please include one of the platform-specific monetize packages." }
-            .startPurchaseFlow(activity, product)
+        checkNotNull(serviceManager) {
+            "No monetize dependencies have been detected. Please include one of the platform-specific monetize packages."
+        }.startPurchaseFlow(activity, product)
     }
 
     // endregion

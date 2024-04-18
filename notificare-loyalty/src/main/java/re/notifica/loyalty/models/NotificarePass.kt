@@ -3,6 +3,8 @@ package re.notifica.loyalty.models
 import android.os.Parcelable
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
+import java.text.ParseException
+import java.util.Date
 import kotlinx.parcelize.Parcelize
 import kotlinx.parcelize.WriteWith
 import org.json.JSONObject
@@ -10,9 +12,13 @@ import re.notifica.Notificare
 import re.notifica.internal.ktx.cast
 import re.notifica.internal.moshi
 import re.notifica.internal.parcelize.NotificareExtraParceler
-import re.notifica.loyalty.internal.ktx.*
-import java.text.ParseException
-import java.util.*
+import re.notifica.loyalty.internal.ktx.formatCurrency
+import re.notifica.loyalty.internal.ktx.formatDate
+import re.notifica.loyalty.internal.ktx.formatNumber
+import re.notifica.loyalty.internal.ktx.isCurrencyField
+import re.notifica.loyalty.internal.ktx.isDateField
+import re.notifica.loyalty.internal.ktx.isNumberField
+import re.notifica.loyalty.internal.ktx.parseDate
 
 @Parcelize
 @JsonClass(generateAdapter = true)
@@ -140,7 +146,6 @@ public data class NotificarePass(
             return list.filterIsInstance(Map::class.java)
                 .mapNotNull { PassbookField.from(it.cast()) }
         }
-
 
     public fun toJson(): JSONObject {
         val jsonStr = adapter.toJson(this)
@@ -286,7 +291,6 @@ public data class NotificarePass(
                 val template = changeMessage.replace("%@", "%s")
                 return String.format(template, formattedValue)
             }
-
 
         internal companion object {
             internal fun from(data: Map<String, Any>): PassbookField? {

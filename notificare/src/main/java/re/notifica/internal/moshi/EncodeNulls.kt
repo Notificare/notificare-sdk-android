@@ -3,8 +3,8 @@ package re.notifica.internal.moshi
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.rawType
-import re.notifica.InternalNotificareApi
 import java.lang.reflect.Type
+import re.notifica.InternalNotificareApi
 
 @InternalNotificareApi
 @Target(AnnotationTarget.CLASS)

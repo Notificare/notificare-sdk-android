@@ -1,8 +1,8 @@
 package re.notifica.monetize.gms.internal.ktx
 
 import com.android.billingclient.api.Purchase
+import java.util.Date
 import re.notifica.monetize.models.NotificarePurchase
-import java.util.*
 
 internal fun NotificarePurchase.Companion.from(purchase: Purchase): NotificarePurchase {
     return NotificarePurchase(

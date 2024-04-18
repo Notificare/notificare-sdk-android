@@ -5,7 +5,13 @@ import android.app.Application
 import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.annotation.Keep
-import kotlinx.coroutines.*
+import java.lang.ref.WeakReference
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import re.notifica.Notificare
 import re.notifica.NotificareDeviceUnavailableException
 import re.notifica.iam.NotificareInAppMessaging
@@ -21,7 +27,6 @@ import re.notifica.internal.ktx.coroutineScope
 import re.notifica.internal.network.NetworkException
 import re.notifica.internal.network.request.NotificareRequest
 import re.notifica.ktx.device
-import java.lang.ref.WeakReference
 
 @Keep
 internal object NotificareInAppMessagingImpl : NotificareModule(), NotificareInAppMessaging {
@@ -105,7 +110,9 @@ internal object NotificareInAppMessagingImpl : NotificareModule(), NotificareInA
                 backgroundTimestamp = System.currentTimeMillis()
 
                 if (delayedMessageJob != null) {
-                    NotificareLogger.info("Clearing delayed in-app message from being presented when going to the background.")
+                    NotificareLogger.info(
+                        "Clearing delayed in-app message from being presented when going to the background."
+                    )
                     delayedMessageJob?.cancel()
                     delayedMessageJob = null
                 }
@@ -137,7 +144,9 @@ internal object NotificareInAppMessagingImpl : NotificareModule(), NotificareInA
         this.backgroundTimestamp = null
 
         if (hasExpiredBackgroundPeriod) {
-            NotificareLogger.debug("The current in-app message should have been dismissed for being in the background for longer than the grace period.")
+            NotificareLogger.debug(
+                "The current in-app message should have been dismissed for being in the background for longer than the grace period."
+            )
             isShowingMessage = false
         }
 
@@ -147,7 +156,9 @@ internal object NotificareInAppMessagingImpl : NotificareModule(), NotificareInA
         }
 
         if (isShowingMessage) {
-            NotificareLogger.debug("Skipping context evaluation since there is another in-app message being presented.")
+            NotificareLogger.debug(
+                "Skipping context evaluation since there is another in-app message being presented."
+            )
             return
         }
 
@@ -162,7 +173,9 @@ internal object NotificareInAppMessagingImpl : NotificareModule(), NotificareInA
         if (info.metaData != null) {
             val suppressed = info.metaData.getBoolean(MANIFEST_SUPPRESS_MESSAGES_ACTIVITY_KEY, false)
             if (suppressed) {
-                NotificareLogger.debug("Skipping context evaluation since in-app messages on ${activity::class.java.simpleName} are being suppressed.")
+                NotificareLogger.debug(
+                    "Skipping context evaluation since in-app messages on ${activity::class.java.simpleName} are being suppressed."
+                )
                 return
             }
         }
@@ -201,7 +214,9 @@ internal object NotificareInAppMessagingImpl : NotificareModule(), NotificareInA
             // the app goes into the background.
             delayedMessageJob = Notificare.coroutineScope.launch {
                 try {
-                    NotificareLogger.debug("Waiting ${message.delaySeconds} seconds before presenting the in-app message.")
+                    NotificareLogger.debug(
+                        "Waiting ${message.delaySeconds} seconds before presenting the in-app message."
+                    )
                     delay(message.delaySeconds * 1000L)
                     present(message)
                 } catch (e: Exception) {
@@ -291,7 +306,6 @@ internal object NotificareInAppMessagingImpl : NotificareModule(), NotificareInA
             .message
             .toModel()
     }
-
 
     // TODO: checkPrerequisites()
 }

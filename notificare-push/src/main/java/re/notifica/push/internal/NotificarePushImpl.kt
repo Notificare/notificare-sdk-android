@@ -20,8 +20,18 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.RemoteInput
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
-import androidx.lifecycle.*
-import kotlinx.coroutines.*
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ProcessLifecycleOwner
+import java.net.URLEncoder
+import java.util.Date
+import java.util.concurrent.atomic.AtomicInteger
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import org.json.JSONObject
 import re.notifica.Notificare
 import re.notifica.NotificareCallback
@@ -39,14 +49,46 @@ import re.notifica.ktx.events
 import re.notifica.models.NotificareApplication
 import re.notifica.models.NotificareNotification
 import re.notifica.models.NotificareTransport
-import re.notifica.push.*
+import re.notifica.push.NotificareInternalPush
+import re.notifica.push.NotificarePush
+import re.notifica.push.NotificarePushIntentReceiver
+import re.notifica.push.R
+import re.notifica.push.automaticDefaultChannelEnabled
+import re.notifica.push.defaultChannelId
 import re.notifica.push.internal.network.push.CreateLiveActivityPayload
 import re.notifica.push.internal.network.push.DeviceUpdateNotificationSettingsPayload
-import re.notifica.push.ktx.*
-import re.notifica.push.models.*
-import java.net.URLEncoder
-import java.util.*
-import java.util.concurrent.atomic.AtomicInteger
+import re.notifica.push.ktx.INTENT_ACTION_ACTION_OPENED
+import re.notifica.push.ktx.INTENT_ACTION_LIVE_ACTIVITY_UPDATE
+import re.notifica.push.ktx.INTENT_ACTION_NOTIFICATION_OPENED
+import re.notifica.push.ktx.INTENT_ACTION_NOTIFICATION_RECEIVED
+import re.notifica.push.ktx.INTENT_ACTION_QUICK_RESPONSE
+import re.notifica.push.ktx.INTENT_ACTION_REMOTE_MESSAGE_OPENED
+import re.notifica.push.ktx.INTENT_ACTION_SYSTEM_NOTIFICATION_RECEIVED
+import re.notifica.push.ktx.INTENT_ACTION_TOKEN_CHANGED
+import re.notifica.push.ktx.INTENT_ACTION_UNKNOWN_NOTIFICATION_RECEIVED
+import re.notifica.push.ktx.INTENT_EXTRA_DELIVERY_MECHANISM
+import re.notifica.push.ktx.INTENT_EXTRA_LIVE_ACTIVITY_UPDATE
+import re.notifica.push.ktx.INTENT_EXTRA_REMOTE_MESSAGE
+import re.notifica.push.ktx.INTENT_EXTRA_TEXT_RESPONSE
+import re.notifica.push.ktx.INTENT_EXTRA_TOKEN
+import re.notifica.push.ktx.deviceInternal
+import re.notifica.push.ktx.logNotificationInfluenced
+import re.notifica.push.ktx.logNotificationReceived
+import re.notifica.push.ktx.logPushRegistration
+import re.notifica.push.ktx.loyaltyIntegration
+import re.notifica.push.models.NotificareLiveActivityUpdate
+import re.notifica.push.models.NotificareNotificationDeliveryMechanism
+import re.notifica.push.models.NotificareNotificationRemoteMessage
+import re.notifica.push.models.NotificareRemoteMessage
+import re.notifica.push.models.NotificareSystemNotification
+import re.notifica.push.models.NotificareSystemRemoteMessage
+import re.notifica.push.models.NotificareUnknownRemoteMessage
+import re.notifica.push.notificationAccentColor
+import re.notifica.push.notificationAutoCancel
+import re.notifica.push.notificationLightsColor
+import re.notifica.push.notificationLightsOff
+import re.notifica.push.notificationLightsOn
+import re.notifica.push.notificationSmallIcon
 
 @Keep
 internal object NotificarePushImpl : NotificareModule(), NotificarePush, NotificareInternalPush {
@@ -62,7 +104,6 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
 
     internal var serviceManager: ServiceManager? = null
         private set
-
 
     // region Notificare Module
 
@@ -140,7 +181,9 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
                     NotificareLogger.debug("Found a postponed registration token but no service manager.")
                 }
             } else {
-                NotificareLogger.debug("Processing a postponed push token before enableRemoteNotifications() has been called.")
+                NotificareLogger.debug(
+                    "Processing a postponed push token before enableRemoteNotifications() has been called."
+                )
             }
         }
 
@@ -218,7 +261,9 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
         }
 
         val manager = serviceManager ?: run {
-            NotificareLogger.warning("No push dependencies have been detected. Please include one of the platform-specific push packages.")
+            NotificareLogger.warning(
+                "No push dependencies have been detected. Please include one of the platform-specific push packages."
+            )
             return
         }
 
@@ -289,9 +334,7 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
         callback: NotificareCallback<Unit>,
     ): Unit = toCallbackFunction(::registerLiveActivity)(activityId, topics, callback)
 
-    override suspend fun endLiveActivity(
-        activityId: String
-    ): Unit = withContext(Dispatchers.IO) {
+    override suspend fun endLiveActivity(activityId: String): Unit = withContext(Dispatchers.IO) {
         val device = Notificare.device().currentDevice
             ?: throw NotificareDeviceUnavailableException()
 
@@ -310,7 +353,7 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
 
     override fun endLiveActivity(
         activityId: String,
-        callback: NotificareCallback<Unit>,
+        callback: NotificareCallback<Unit>
     ): Unit = toCallbackFunction(::endLiveActivity)(activityId, callback)
 
     // endregion
@@ -360,7 +403,9 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
 
     override fun handleRemoteMessage(message: NotificareRemoteMessage) {
         if (!Notificare.isConfigured) {
-            NotificareLogger.warning("Cannot process remote messages before Notificare is configured. Invoke Notificare.configure() when the application starts.")
+            NotificareLogger.warning(
+                "Cannot process remote messages before Notificare is configured. Invoke Notificare.configure() when the application starts."
+            )
             return
         }
 
@@ -522,7 +567,9 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
                 "re.notifica.notification.system.Inbox" -> InboxIntegration.reloadInbox()
                 "re.notifica.notification.system.LiveActivity" -> {
                     val activity = message.extra["activity"] ?: run {
-                        NotificareLogger.warning("Cannot parse a live activity system notification without the 'activity' property.")
+                        NotificareLogger.warning(
+                            "Cannot parse a live activity system notification without the 'activity' property."
+                        )
                         return
                     }
 
@@ -826,7 +873,9 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
                 )
 
                 if (identifier != 0) {
-                    builder.setSound(Uri.parse("android.resource://${Notificare.requireContext().packageName}/$identifier"))
+                    builder.setSound(
+                        Uri.parse("android.resource://${Notificare.requireContext().packageName}/$identifier")
+                    )
                 }
             }
         }
@@ -840,7 +889,7 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
 
                 builder.setLights(color, onMs, offMs)
             } catch (e: IllegalArgumentException) {
-                NotificareLogger.warning("The color '${lightsColor}' could not be parsed.")
+                NotificareLogger.warning("The color '$lightsColor' could not be parsed.")
             }
         }
 

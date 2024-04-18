@@ -33,7 +33,7 @@ public abstract class InAppMessagingBaseFragment : Fragment() {
 
         message = savedInstanceState?.parcelable(Notificare.INTENT_EXTRA_IN_APP_MESSAGE)
             ?: arguments?.parcelable(Notificare.INTENT_EXTRA_IN_APP_MESSAGE)
-                ?: throw IllegalStateException("Cannot create the UI without the associated in-app message.")
+            ?: throw IllegalStateException("Cannot create the UI without the associated in-app message.")
     }
 
     @CallSuper

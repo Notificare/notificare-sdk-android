@@ -1,0 +1,35 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues></ManuallySuppressedIssues>
+  <CurrentIssues>
+    <ID>CyclomaticComplexMethod:AssetDetailsFragment.kt$AssetDetailsFragment$private fun loadAssetDetails()</ID>
+    <ID>EmptyFunctionBlock:MonetizeFragment.kt$MonetizeFragment.&lt;no name provided&gt;${}</ID>
+    <ID>LongMethod:MainFragment.kt$MainFragment$private fun setupListeners()</ID>
+    <ID>LongMethod:MainFragment.kt$MainFragment$private fun setupObservers()</ID>
+    <ID>MagicNumber:MainFragment.kt$MainFragment$99</ID>
+    <ID>MatchingDeclarationName:LiveActivityDismissalWorker.kt$CoffeeBrewerDismissalWorker : Worker</ID>
+    <ID>MatchingDeclarationName:MainUiState.kt$CoffeeBrewerUiState</ID>
+    <ID>MaxLineLength:BeaconsListAdapter.kt$BeaconsListAdapter.ItemViewHolder$NotificareBeacon.Proximity.IMMEDIATE -&gt; binding.proximity.setImageResource(R.drawable.ic_signal_wifi_4_bar)</ID>
+    <ID>PackageNaming:CoffeeBrewerContentState.kt$package re.notifica.sample.live_activities.models</ID>
+    <ID>PackageNaming:CoffeeBrewingState.kt$package re.notifica.sample.live_activities.models</ID>
+    <ID>PackageNaming:CoffeeLiveNotification.kt$package re.notifica.sample.live_activities.ui</ID>
+    <ID>PackageNaming:LiveActivitiesController.kt$package re.notifica.sample.live_activities</ID>
+    <ID>PackageNaming:LiveActivity.kt$package re.notifica.sample.live_activities</ID>
+    <ID>ReturnCount:MainFragment.kt$MainFragment$private fun enableLocationUpdates()</ID>
+    <ID>ReturnCount:MainFragment.kt$MainFragment$private fun ensureBackgroundLocationPermission(): Boolean</ID>
+    <ID>ReturnCount:MainFragment.kt$MainFragment$private fun ensureBluetoothScanPermission(): Boolean</ID>
+    <ID>ReturnCount:MainFragment.kt$MainFragment$private fun ensureForegroundLocationPermission(): Boolean</ID>
+    <ID>ReturnCount:MainFragment.kt$MainFragment$private fun ensureNotificationsPermission(): Boolean</ID>
+    <ID>ReturnCount:MainFragment.kt$MainFragment$private fun shouldOpenSettings(permissionType: PermissionType): Boolean</ID>
+    <ID>ReturnCount:SampleActivity.kt$SampleActivity$private fun handleIntent(intent: Intent)</ID>
+    <ID>SwallowedException:LiveActivityDismissalWorker.kt$CoffeeBrewerDismissalWorker$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:AssetsViewModel.kt$AssetsViewModel$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:EventsViewModel.kt$EventsViewModel$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:InboxViewModel.kt$InboxViewModel$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:LiveActivityDismissalWorker.kt$CoffeeBrewerDismissalWorker$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:MainApplication.kt$MainApplication$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:MainViewModel.kt$MainViewModel$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:SamplePushIntentReceiver.kt$SamplePushIntentReceiver$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:TagsViewModel.kt$TagsViewModel$e: Exception</ID>
+  </CurrentIssues>
+</SmellBaseline>

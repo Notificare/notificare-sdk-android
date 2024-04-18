@@ -1,0 +1,13 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues></ManuallySuppressedIssues>
+  <CurrentIssues>
+    <ID>CyclomaticComplexMethod:NotificareStoreFragment.kt$NotificareStoreFragment$override fun onViewCreated(view: View, savedInstanceState: Bundle?)</ID>
+    <ID>LongMethod:NotificareStoreFragment.kt$NotificareStoreFragment$override fun onViewCreated(view: View, savedInstanceState: Bundle?)</ID>
+    <ID>MagicNumber:NotificareMapFragment.kt$NotificareMapFragment$17f</ID>
+    <ID>MagicNumber:NotificareMapFragment.kt$NotificareMapFragment$50</ID>
+    <ID>NestedBlockDepth:NotificareStoreFragment.kt$NotificareStoreFragment$override fun onViewCreated(view: View, savedInstanceState: Bundle?)</ID>
+    <ID>SwallowedException:NotificareRateFragment.kt$NotificareRateFragment$e: ActivityNotFoundException</ID>
+    <ID>SwallowedException:NotificareStoreFragment.kt$NotificareStoreFragment$e: ActivityNotFoundException</ID>
+  </CurrentIssues>
+</SmellBaseline>

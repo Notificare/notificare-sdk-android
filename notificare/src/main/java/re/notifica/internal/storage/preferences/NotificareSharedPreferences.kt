@@ -144,6 +144,7 @@ internal class NotificareSharedPreferences(context: Context) {
                     }
                 }
         }
+
         @SuppressLint("ApplySharedPref")
         set(value) {
             sharedPreferences.edit().also {

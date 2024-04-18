@@ -35,7 +35,6 @@ object LiveActivitiesController {
     val coffeeActivityStream: Flow<CoffeeBrewerContentState?>
         get() = dataStore.coffeeBrewerContentStateStream
 
-
     fun setup(context: Context) {
         val applicationContext = context.applicationContext
 

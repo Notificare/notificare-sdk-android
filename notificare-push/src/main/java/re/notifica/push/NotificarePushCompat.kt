@@ -4,7 +4,19 @@ import android.content.Intent
 import androidx.lifecycle.LiveData
 import re.notifica.Notificare
 import re.notifica.NotificareCallback
-import re.notifica.push.ktx.*
+import re.notifica.push.ktx.INTENT_ACTION_ACTION_OPENED
+import re.notifica.push.ktx.INTENT_ACTION_NOTIFICATION_OPENED
+import re.notifica.push.ktx.INTENT_ACTION_NOTIFICATION_RECEIVED
+import re.notifica.push.ktx.INTENT_ACTION_QUICK_RESPONSE
+import re.notifica.push.ktx.INTENT_ACTION_REMOTE_MESSAGE_OPENED
+import re.notifica.push.ktx.INTENT_ACTION_SYSTEM_NOTIFICATION_RECEIVED
+import re.notifica.push.ktx.INTENT_ACTION_UNKNOWN_NOTIFICATION_RECEIVED
+import re.notifica.push.ktx.INTENT_EXTRA_DELIVERY_MECHANISM
+import re.notifica.push.ktx.INTENT_EXTRA_LIVE_ACTIVITY_UPDATE
+import re.notifica.push.ktx.INTENT_EXTRA_REMOTE_MESSAGE
+import re.notifica.push.ktx.INTENT_EXTRA_TEXT_RESPONSE
+import re.notifica.push.ktx.INTENT_EXTRA_TOKEN
+import re.notifica.push.ktx.push
 
 public object NotificarePushCompat {
 
@@ -100,10 +112,7 @@ public object NotificarePushCompat {
     }
 
     @JvmStatic
-    public fun endLiveActivity(
-        activityId: String,
-        callback: NotificareCallback<Unit>,
-    ) {
+    public fun endLiveActivity(activityId: String, callback: NotificareCallback<Unit>) {
         Notificare.push().endLiveActivity(activityId, callback)
     }
 }

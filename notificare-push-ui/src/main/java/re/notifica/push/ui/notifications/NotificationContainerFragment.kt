@@ -5,7 +5,12 @@ import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
@@ -28,7 +33,7 @@ import re.notifica.push.ui.notifications.fragments.NotificareCallbackActionFragm
 import re.notifica.push.ui.notifications.fragments.base.NotificationFragment
 
 public class NotificationContainerFragment
-    : Fragment(), NotificationFragment.Callback, NotificationDialog.Callback, NotificationActionsDialog.Callback {
+: Fragment(), NotificationFragment.Callback, NotificationDialog.Callback, NotificationActionsDialog.Callback {
 
     private lateinit var binding: NotificareNotificationContainerFragmentBinding
     private lateinit var notification: NotificareNotification
@@ -82,7 +87,7 @@ public class NotificationContainerFragment
 
         notification = savedInstanceState?.parcelable(Notificare.INTENT_EXTRA_NOTIFICATION)
             ?: arguments?.parcelable(Notificare.INTENT_EXTRA_NOTIFICATION)
-                ?: throw IllegalArgumentException("Missing required notification parameter.")
+            ?: throw IllegalArgumentException("Missing required notification parameter.")
 
         action = savedInstanceState?.parcelable(Notificare.INTENT_EXTRA_ACTION)
             ?: arguments?.parcelable(Notificare.INTENT_EXTRA_ACTION)
@@ -98,11 +103,7 @@ public class NotificationContainerFragment
         }
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = NotificareNotificationContainerFragmentBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -111,7 +112,12 @@ public class NotificationContainerFragment
         super.onViewCreated(view, savedInstanceState)
 
         // Inform user that this type has actions attached
-        if (action == null && notification.type != NotificareNotification.TYPE_ALERT && notification.type != NotificareNotification.TYPE_PASSBOOK && notification.actions.isNotEmpty()) {
+        if (
+            action == null &&
+            notification.type != NotificareNotification.TYPE_ALERT &&
+            notification.type != NotificareNotification.TYPE_PASSBOOK &&
+            notification.actions.isNotEmpty()
+        ) {
             setHasOptionsMenu(true)
         }
 
@@ -237,7 +243,10 @@ public class NotificationContainerFragment
                 pendingResult = result
                 callback.onNotificationFragmentEndProgress(notification)
 
-                if (result?.requestCode == NotificarePendingResult.CAPTURE_IMAGE_REQUEST_CODE || result?.requestCode == NotificarePendingResult.CAPTURE_IMAGE_AND_KEYBOARD_REQUEST_CODE) {
+                if (
+                    result?.requestCode == NotificarePendingResult.CAPTURE_IMAGE_REQUEST_CODE ||
+                    result?.requestCode == NotificarePendingResult.CAPTURE_IMAGE_AND_KEYBOARD_REQUEST_CODE
+                ) {
                     if (result.imageUri != null) {
                         // We need to wait for the image coming back from the camera activity.
                         takePictureLauncher.launch(result.imageUri)
@@ -460,10 +469,7 @@ public class NotificationContainerFragment
 
         public fun onNotificationFragmentActionCanceled(notification: NotificareNotification)
 
-        public fun onNotificationFragmentActionFailed(
-            notification: NotificareNotification,
-            reason: String?
-        )
+        public fun onNotificationFragmentActionFailed(notification: NotificareNotification, reason: String?)
 
         public fun onNotificationFragmentActionSucceeded(notification: NotificareNotification)
     }

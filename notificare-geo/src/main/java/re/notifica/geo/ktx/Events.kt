@@ -1,5 +1,6 @@
 package re.notifica.geo.ktx
 
+import java.util.Date
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import re.notifica.Notificare
@@ -8,7 +9,6 @@ import re.notifica.NotificareEventsModule
 import re.notifica.geo.models.NotificareBeaconSession
 import re.notifica.geo.models.NotificareRegionSession
 import re.notifica.internal.ktx.toCallbackFunction
-import java.util.*
 
 @Suppress("unused")
 internal suspend fun NotificareEventsModule.logRegionSession(
@@ -44,7 +44,6 @@ internal fun NotificareEventsModule.logRegionSession(
     session: NotificareRegionSession,
     callback: NotificareCallback<Unit>,
 ): Unit = toCallbackFunction(::logRegionSession)(session, callback)
-
 
 @Suppress("unused")
 internal suspend fun NotificareEventsModule.logBeaconSession(

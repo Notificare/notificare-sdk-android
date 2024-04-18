@@ -16,7 +16,6 @@ public inline fun <reified T : Enum<T>> Intent.getEnumExtra(name: String): T? {
         ?.let { T::class.java.enumConstants?.get(it) }
 }
 
-
 @InternalNotificareApi
 public inline fun <reified T : Enum<T>> Bundle.putEnum(name: String, value: T?) {
     if (value != null) {

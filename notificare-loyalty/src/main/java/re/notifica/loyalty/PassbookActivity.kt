@@ -86,35 +86,43 @@ public open class PassbookActivity : AppCompatActivity() {
                 return true
             }
             R.id.notificare_action_add_pass_to_wallet -> {
-                Notificare.loyalty().addPass(checkNotNull(pass), object : NotificareCallback<Unit> {
-                    override fun onSuccess(result: Unit) {
-                        finish()
-                    }
+                Notificare.loyalty().addPass(
+                    checkNotNull(pass),
+                    object : NotificareCallback<Unit> {
+                        override fun onSuccess(result: Unit) {
+                            finish()
+                        }
 
-                    override fun onFailure(e: Exception) {
-                        AlertDialog.Builder(this@PassbookActivity)
-                            .setTitle(NotificareUtils.applicationName)
-                            .setMessage(R.string.notificare_passbook_error_adding_pass)
-                            .setPositiveButton(R.string.notificare_dialog_ok_button) { _, _ -> finish() }
-                            .show()
+                        override fun onFailure(e: Exception) {
+                            AlertDialog.Builder(this@PassbookActivity)
+                                .setTitle(NotificareUtils.applicationName)
+                                .setMessage(R.string.notificare_passbook_error_adding_pass)
+                                .setPositiveButton(R.string.notificare_dialog_ok_button) { _, _ -> finish() }
+                                .show()
+                        }
                     }
-                })
+                )
                 return true
             }
             R.id.notificare_action_remove_pass_from_wallet -> {
-                Notificare.loyalty().removePass(checkNotNull(pass), object : NotificareCallback<Unit> {
-                    override fun onSuccess(result: Unit) {
-                        finish()
-                    }
+                Notificare.loyalty().removePass(
+                    checkNotNull(pass),
+                    object : NotificareCallback<Unit> {
+                        override fun onSuccess(result: Unit) {
+                            finish()
+                        }
 
-                    override fun onFailure(e: Exception) {
-                        AlertDialog.Builder(this@PassbookActivity)
-                            .setTitle(NotificareUtils.applicationName)
-                            .setMessage(R.string.notificare_passbook_error_removing_pass)
-                            .setPositiveButton(R.string.notificare_dialog_ok_button) { _, _ -> finish() }
-                            .show()
+                        override fun onFailure(e: Exception) {
+                            AlertDialog.Builder(this@PassbookActivity)
+                                .setTitle(NotificareUtils.applicationName)
+                                .setMessage(R.string.notificare_passbook_error_removing_pass)
+                                .setPositiveButton(
+                                    R.string.notificare_dialog_ok_button
+                                ) { _, _ -> finish() }
+                                .show()
+                        }
                     }
-                })
+                )
                 return true
             }
         }
@@ -126,7 +134,6 @@ public open class PassbookActivity : AppCompatActivity() {
         super.onSaveInstanceState(outState)
         pass?.let { outState.putParcelable(Notificare.INTENT_EXTRA_PASSBOOK, it) }
     }
-
 
     protected open fun handlePass(pass: NotificarePass) {
         this.pass = pass
@@ -152,15 +159,18 @@ public open class PassbookActivity : AppCompatActivity() {
     }
 
     protected open fun handlePassSerial(serial: String) {
-        Notificare.loyaltyImplementation().fetchPassBySerial(serial, object : NotificareCallback<NotificarePass> {
-            override fun onSuccess(result: NotificarePass) {
-                handlePass(result)
-            }
+        Notificare.loyaltyImplementation().fetchPassBySerial(
+            serial,
+            object : NotificareCallback<NotificarePass> {
+                override fun onSuccess(result: NotificarePass) {
+                    handlePass(result)
+                }
 
-            override fun onFailure(e: Exception) {
-                handlePassLoadingError(e)
+                override fun onFailure(e: Exception) {
+                    handlePassLoadingError(e)
+                }
             }
-        })
+        )
     }
 
     protected open fun handlePassLoadingError(e: Exception) {
@@ -179,7 +189,7 @@ public open class PassbookActivity : AppCompatActivity() {
         val application = Notificare.application ?: return null
         val appLinksDomain = Notificare.servicesInfo?.appLinksDomain ?: return null
 
-        if (uri.host == "${application.id}.${appLinksDomain}" && pathSegments.size >= 2 && pathSegments[0] == "pass") {
+        if (uri.host == "${application.id}.$appLinksDomain" && pathSegments.size >= 2 && pathSegments[0] == "pass") {
             return pathSegments[1]
         }
 

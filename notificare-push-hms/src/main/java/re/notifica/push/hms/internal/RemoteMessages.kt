@@ -58,8 +58,13 @@ internal fun NotificareUnknownRemoteMessage(message: RemoteMessage): NotificareU
 
 internal fun NotificareSystemRemoteMessage(message: RemoteMessage): NotificareSystemRemoteMessage {
     val ignoreKeys = listOf(
-        "id", "notification_id", "notification_type",
-        "system", "systemType", "x-sender", "attachment"
+        "id",
+        "notification_id",
+        "notification_type",
+        "system",
+        "systemType",
+        "x-sender",
+        "attachment",
     )
 
     return NotificareSystemRemoteMessage(

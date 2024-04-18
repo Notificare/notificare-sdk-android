@@ -1,0 +1,59 @@
+#!/bin/sh
+
+if [ -d "/Applications/Android Studio.app" ]; then
+    # Default Android Studio install location
+    ANDROID_STUDIO_PATH="/Applications/Android Studio.app"
+elif [ -d "$HOME/Applications/Android Studio.app" ]; then
+    # Jetbrains Android Studio install location
+    ANDROID_STUDIO_PATH="$HOME/Applications/Android Studio.app"
+else
+   echo "Unable to find the Android Studio application"
+   exit 1
+fi
+
+JAVA_HOME=$ANDROID_STUDIO_PATH/Contents/jbr/Contents/Home
+export JAVA_HOME
+
+######## KTLINT-GRADLE HOOK START ########
+
+CHANGED_FILES="$(git --no-pager diff --name-status --no-color --cached | awk '$1 != "D" && $NF ~ /\.kts?$/ { print $NF }')"
+
+if [ -z "$CHANGED_FILES" ]; then
+    echo "No Kotlin staged files."
+    exit 0
+fi;
+
+echo "Running ktlint over these files:"
+echo "$CHANGED_FILES"
+
+./gradlew --quiet ktlintCheck -PinternalKtlintGitFilter="$CHANGED_FILES"
+EXIT_CODE=$?
+
+echo "Completed ktlint run."
+
+if [ $EXIT_CODE -ne 0 ]; then
+  exit $EXIT_CODE
+fi
+
+echo "Completed ktlint hook."
+######## KTLINT-GRADLE HOOK END ########
+
+######## DETEKT HOOK START ########
+
+echo "Running detekt check..."
+OUTPUT="/tmp/detekt-$(date +%s)"
+./gradlew detekt > $OUTPUT
+EXIT_CODE=$?
+if [ $EXIT_CODE -ne 0 ]; then
+  cat $OUTPUT
+  rm $OUTPUT
+  echo "***********************************************"
+  echo "                 detekt failed                 "
+  echo " Please fix the above issues before committing "
+  echo "***********************************************"
+  exit $EXIT_CODE
+fi
+echo "Completed detect check"
+rm $OUTPUT
+
+######## DETEKT HOOK END ########

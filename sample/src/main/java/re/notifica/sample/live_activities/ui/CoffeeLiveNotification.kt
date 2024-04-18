@@ -42,7 +42,6 @@ class CoffeeLiveNotification(
             )
         }
 
-
     fun build(): Notification {
         val deletePendingIntent = PendingIntent.getBroadcast(
             context,
@@ -61,7 +60,6 @@ class CoffeeLiveNotification(
             .setDeleteIntent(deletePendingIntent)
             .build()
     }
-
 
     private fun createStandardLayout(): RemoteViews {
         val view = RemoteViews(context.packageName, R.layout.notification_coffee_brewer)

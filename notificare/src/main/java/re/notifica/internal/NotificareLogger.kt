@@ -2,12 +2,12 @@ package re.notifica.internal
 
 import android.os.Build
 import android.util.Log
-import re.notifica.InternalNotificareApi
-import re.notifica.Notificare
-import re.notifica.NotificareConfigurationProvider
 import java.io.PrintWriter
 import java.io.StringWriter
 import java.util.regex.Pattern
+import re.notifica.InternalNotificareApi
+import re.notifica.Notificare
+import re.notifica.NotificareConfigurationProvider
 
 @InternalNotificareApi
 public object NotificareLogger {
@@ -36,7 +36,8 @@ public object NotificareLogger {
         val canLog = hasDebugLoggingEnabled || priority >= Log.INFO
         if (!canLog) return
 
-        @Suppress("NAME_SHADOWING") val message = message
+        @Suppress("NAME_SHADOWING")
+        val message = message
             .let { // transform with stack trace
                 if (t != null) {
                     it + "\n" + getStackTraceString(t)

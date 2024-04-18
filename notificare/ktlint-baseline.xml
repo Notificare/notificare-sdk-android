@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<baseline version="1.0">
+    <file name="src/main/java/re/notifica/internal/NotificareUtils.kt">
+        <error line="70" column="1" source="standard:max-line-length" />
+    </file>
+    <file name="src/main/java/re/notifica/internal/ktx/PackageManager.kt">
+        <error line="17" column="16" source="standard:annotation" />
+        <error line="17" column="41" source="standard:annotation" />
+        <error line="27" column="16" source="standard:annotation" />
+        <error line="27" column="41" source="standard:annotation" />
+        <error line="37" column="16" source="standard:annotation" />
+        <error line="37" column="41" source="standard:annotation" />
+    </file>
+    <file name="src/main/java/re/notifica/internal/storage/SharedPreferencesMigration.kt">
+        <error line="66" column="1" source="standard:max-line-length" />
+        <error line="66" column="59" source="standard:argument-list-wrapping" />
+        <error line="66" column="75" source="standard:argument-list-wrapping" />
+        <error line="66" column="93" source="standard:argument-list-wrapping" />
+        <error line="66" column="109" source="standard:argument-list-wrapping" />
+        <error line="71" column="1" source="standard:max-line-length" />
+        <error line="71" column="53" source="standard:argument-list-wrapping" />
+        <error line="71" column="63" source="standard:argument-list-wrapping" />
+        <error line="71" column="81" source="standard:argument-list-wrapping" />
+        <error line="71" column="91" source="standard:argument-list-wrapping" />
+    </file>
+    <file name="src/main/java/re/notifica/internal/storage/database/ktx/NotificareEvent.kt">
+        <error line="16" column="22" source="standard:discouraged-comment-location" />
+    </file>
+    <file name="src/main/java/re/notifica/models/NotificareNotification.kt">
+        <error line="131" column="1" source="standard:max-line-length" />
+    </file>
+</baseline>

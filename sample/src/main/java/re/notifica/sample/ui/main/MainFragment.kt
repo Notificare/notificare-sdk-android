@@ -155,7 +155,6 @@ class MainFragment : BaseFragment() {
     }
 
     private fun setupListeners() {
-
         // Launch flow
 
         binding.launchCard.launchButton.setOnClickListener {
@@ -399,7 +398,6 @@ class MainFragment : BaseFragment() {
                 }
                 CoffeeBrewingState.SERVED -> {}
             }
-
         }
 
         viewModel.hasLocationUpdatesEnabled.observe(viewLifecycleOwner) { enabled ->
@@ -689,15 +687,19 @@ class MainFragment : BaseFragment() {
                 Timber.d("Opening OS Settings")
                 when (permissionType) {
                     PermissionType.NOTIFICATIONS -> {
-                        openNotificationsSettingsLauncher.launch(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
-                            data = Uri.fromParts("package", requireContext().packageName, null)
-                        })
+                        openNotificationsSettingsLauncher.launch(
+                            Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                                data = Uri.fromParts("package", requireContext().packageName, null)
+                            }
+                        )
                     }
 
                     PermissionType.LOCATION -> {
-                        openLocationSettingsLauncher.launch(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
-                            data = Uri.fromParts("package", requireContext().packageName, null)
-                        })
+                        openLocationSettingsLauncher.launch(
+                            Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                                data = Uri.fromParts("package", requireContext().packageName, null)
+                            }
+                        )
                     }
                 }
             }

@@ -3,13 +3,13 @@ package re.notifica.push.models
 import android.os.Parcelable
 import com.squareup.moshi.JsonClass
 import com.squareup.moshi.Moshi
+import java.util.Date
 import kotlinx.parcelize.Parcelize
 import kotlinx.parcelize.WriteWith
 import org.json.JSONObject
 import re.notifica.Notificare
 import re.notifica.internal.moshi
 import re.notifica.internal.parcelize.NotificareJsonObjectParceler
-import java.util.*
 
 @Parcelize
 @JsonClass(generateAdapter = true)

@@ -7,11 +7,24 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
-import androidx.work.*
+import androidx.work.Constraints
+import androidx.work.ExistingWorkPolicy
+import androidx.work.NetworkType
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
+import androidx.work.workDataOf
+import java.util.Date
+import java.util.SortedSet
+import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import re.notifica.*
+import re.notifica.Notificare
+import re.notifica.NotificareApplicationUnavailableException
+import re.notifica.NotificareCallback
+import re.notifica.NotificareDeviceUnavailableException
+import re.notifica.NotificareNotReadyException
+import re.notifica.NotificareServiceUnavailableException
 import re.notifica.inbox.NotificareInbox
 import re.notifica.inbox.internal.database.InboxDatabase
 import re.notifica.inbox.internal.database.entities.InboxItemEntity
@@ -28,8 +41,6 @@ import re.notifica.ktx.device
 import re.notifica.ktx.events
 import re.notifica.models.NotificareApplication
 import re.notifica.models.NotificareNotification
-import java.util.*
-import java.util.concurrent.TimeUnit
 
 @Keep
 internal object NotificareInboxImpl : NotificareModule(), NotificareInbox {

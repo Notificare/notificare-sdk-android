@@ -72,18 +72,22 @@ public open class NotificareGeoIntentReceiver : BroadcastReceiver() {
                 val beacons: List<NotificareBeacon> = requireNotNull(
                     intent.parcelableArrayList(Notificare.INTENT_EXTRA_RANGED_BEACONS)
                 )
-                
+
                 onBeaconsRanged(context, region, beacons)
             }
         }
     }
 
     protected open fun onLocationUpdated(context: Context, location: NotificareLocation) {
-        NotificareLogger.debug("Location updated, please override onLocationUpdated if you want to receive these intents.")
+        NotificareLogger.debug(
+            "Location updated, please override onLocationUpdated if you want to receive these intents."
+        )
     }
 
     protected open fun onRegionEntered(context: Context, region: NotificareRegion) {
-        NotificareLogger.debug("Entered a region, please override onRegionEntered if you want to receive these intents.")
+        NotificareLogger.debug(
+            "Entered a region, please override onRegionEntered if you want to receive these intents."
+        )
     }
 
     protected open fun onRegionExited(context: Context, region: NotificareRegion) {
@@ -91,7 +95,9 @@ public open class NotificareGeoIntentReceiver : BroadcastReceiver() {
     }
 
     protected open fun onBeaconEntered(context: Context, beacon: NotificareBeacon) {
-        NotificareLogger.debug("Entered a beacon, please override onBeaconEntered if you want to receive these intents.")
+        NotificareLogger.debug(
+            "Entered a beacon, please override onBeaconEntered if you want to receive these intents."
+        )
     }
 
     protected open fun onBeaconExited(context: Context, beacon: NotificareBeacon) {

@@ -91,7 +91,10 @@ internal open class NotificationWebViewClient(
                 checkNotNull(Notificare.options).openActionsQueryParameter
             )
 
-            if (openActionsWindowParameter != null && (openActionsWindowParameter == "1" || openActionsWindowParameter == "true")) {
+            if (
+                openActionsWindowParameter != null &&
+                (openActionsWindowParameter == "1" || openActionsWindowParameter == "true")
+            ) {
                 callback.onNotificationFragmentShowActions()
                 return true
             }

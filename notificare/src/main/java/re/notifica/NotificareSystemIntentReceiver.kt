@@ -3,11 +3,11 @@ package re.notifica
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import java.util.Locale
 import kotlinx.coroutines.launch
 import re.notifica.internal.NotificareLogger
 import re.notifica.internal.ktx.coroutineScope
 import re.notifica.ktx.deviceImplementation
-import java.util.*
 
 internal class NotificareSystemIntentReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
@@ -18,7 +18,9 @@ internal class NotificareSystemIntentReceiver : BroadcastReceiver() {
     }
 
     private fun onTimeZoneChanged() {
-        NotificareLogger.info("Received a time zone change: ${Locale.getDefault().language}-${Locale.getDefault().country}")
+        NotificareLogger.info(
+            "Received a time zone change: ${Locale.getDefault().language}-${Locale.getDefault().country}"
+        )
 
         Notificare.coroutineScope.launch {
             try {
@@ -31,7 +33,9 @@ internal class NotificareSystemIntentReceiver : BroadcastReceiver() {
     }
 
     private fun onLocaleChanged() {
-        NotificareLogger.info("Received a locale change: ${Locale.getDefault().language}-${Locale.getDefault().country}")
+        NotificareLogger.info(
+            "Received a locale change: ${Locale.getDefault().language}-${Locale.getDefault().country}"
+        )
 
         Notificare.coroutineScope.launch {
             try {
