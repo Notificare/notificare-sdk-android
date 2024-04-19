@@ -32,6 +32,8 @@ public open class NotificationActivity : AppCompatActivity(), NotificationContai
             setContentView(it.root)
         }
 
+        if (savedInstanceState != null) return
+
         supportActionBar?.hide()
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
