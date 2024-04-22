@@ -36,7 +36,7 @@ internal class NotificationBrowserAction(
 
             onMainThread {
                 Notificare.pushUIInternal().lifecycleListeners.forEach {
-                    it.onActionExecuted(
+                    it.get()?.onActionExecuted(
                         notification,
                         action
                     )

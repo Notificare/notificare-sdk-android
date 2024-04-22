@@ -46,7 +46,7 @@ public class NotificareVideoFragment : NotificationFragment() {
             else -> {
                 onMainThread {
                     Notificare.pushUIInternal().lifecycleListeners.forEach {
-                        it.onNotificationFailedToPresent(
+                        it.get()?.onNotificationFailedToPresent(
                             notification
                         )
                     }

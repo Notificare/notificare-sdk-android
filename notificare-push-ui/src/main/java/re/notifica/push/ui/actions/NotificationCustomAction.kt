@@ -24,7 +24,7 @@ internal class NotificationCustomAction(
         if (uri != null && uri.scheme != null && uri.host != null) {
             onMainThread {
                 Notificare.pushUIInternal().lifecycleListeners.forEach {
-                    it.onCustomActionReceived(notification, action, uri)
+                    it.get()?.onCustomActionReceived(notification, action, uri)
                 }
             }
 
@@ -32,7 +32,7 @@ internal class NotificationCustomAction(
 
             onMainThread {
                 Notificare.pushUIInternal().lifecycleListeners.forEach {
-                    it.onActionExecuted(notification, action)
+                    it.get()?.onActionExecuted(notification, action)
                 }
             }
         } else {

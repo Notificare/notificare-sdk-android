@@ -35,13 +35,13 @@ public class NotificareImageFragment : NotificationFragment() {
         if (notification.content.isEmpty()) {
             onMainThread {
                 Notificare.pushUIInternal().lifecycleListeners.forEach {
-                    it.onNotificationFailedToPresent(notification)
+                    it.get()?.onNotificationFailedToPresent(notification)
                 }
             }
         } else {
             onMainThread {
                 Notificare.pushUIInternal().lifecycleListeners.forEach {
-                    it.onNotificationPresented(notification)
+                    it.get()?.onNotificationPresented(notification)
                 }
             }
         }

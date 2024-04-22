@@ -47,7 +47,7 @@ internal class NotificationMailAction(
 
             onMainThread {
                 Notificare.pushUIInternal().lifecycleListeners.forEach {
-                    it.onActionExecuted(notification, action)
+                    it.get()?.onActionExecuted(notification, action)
                 }
             }
         } else {

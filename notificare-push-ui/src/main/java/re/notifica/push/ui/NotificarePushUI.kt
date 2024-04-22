@@ -6,6 +6,7 @@ import androidx.annotation.MainThread
 import re.notifica.InternalNotificareApi
 import re.notifica.internal.NotificareLogger
 import re.notifica.models.NotificareNotification
+import java.lang.ref.WeakReference
 
 public interface NotificarePushUI {
 
@@ -104,5 +105,5 @@ public interface NotificarePushUI {
 
 public interface NotificareInternalPushUI {
     @InternalNotificareApi
-    public val lifecycleListeners: List<NotificarePushUI.NotificationLifecycleListener>
+    public val lifecycleListeners: List<WeakReference<NotificarePushUI.NotificationLifecycleListener>>
 }
