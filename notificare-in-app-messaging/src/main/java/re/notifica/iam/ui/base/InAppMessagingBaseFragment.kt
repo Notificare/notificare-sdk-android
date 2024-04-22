@@ -128,7 +128,7 @@ public abstract class InAppMessagingBaseFragment : Fragment() {
 
                 onMainThread {
                     Notificare.inAppMessagingImplementation().lifecycleListeners.forEach {
-                        it.onActionExecuted(message, action)
+                        it.get()?.onActionExecuted(message, action)
                     }
                 }
             } catch (e: Exception) {
@@ -136,7 +136,7 @@ public abstract class InAppMessagingBaseFragment : Fragment() {
 
                 onMainThread {
                     Notificare.inAppMessagingImplementation().lifecycleListeners.forEach {
-                        it.onActionFailedToExecute(message, action, e)
+                        it.get()?.onActionFailedToExecute(message, action, e)
                     }
                 }
             }

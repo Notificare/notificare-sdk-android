@@ -41,7 +41,7 @@ internal object NotificareInAppMessagingImpl : NotificareModule(), NotificareInA
     private var isShowingMessage = false
     private var backgroundTimestamp: Long? = null
 
-    internal val lifecycleListeners = mutableListOf<NotificareInAppMessaging.MessageLifecycleListener>()
+    internal val lifecycleListeners = mutableListOf<WeakReference<NotificareInAppMessaging.MessageLifecycleListener>>()
 
     // region Notificare Module
 
@@ -67,11 +67,14 @@ internal object NotificareInAppMessagingImpl : NotificareModule(), NotificareInA
     }
 
     override fun addLifecycleListener(listener: NotificareInAppMessaging.MessageLifecycleListener) {
-        lifecycleListeners.add(listener)
+        lifecycleListeners.add(WeakReference(listener))
     }
 
     override fun removeLifecycleListener(listener: NotificareInAppMessaging.MessageLifecycleListener) {
-        lifecycleListeners.remove(listener)
+        lifecycleListeners.forEach { reference ->
+            if (reference.get() == null || reference.get() == listener)
+                lifecycleListeners.remove(reference)
+        }
     }
 
     // endregion
@@ -228,7 +231,7 @@ internal object NotificareInAppMessagingImpl : NotificareModule(), NotificareInA
                     NotificareLogger.error("Failed to present the delayed in-app message.", e)
 
                     onMainThread {
-                        lifecycleListeners.forEach { it.onMessageFailedToPresent(message) }
+                        lifecycleListeners.forEach { it.get()?.onMessageFailedToPresent(message) }
                     }
                 }
             }
@@ -249,7 +252,7 @@ internal object NotificareInAppMessagingImpl : NotificareModule(), NotificareInA
             NotificareLogger.warning("Cannot display an in-app message while another is being presented.")
 
             onMainThread {
-                lifecycleListeners.forEach { it.onMessageFailedToPresent(message) }
+                lifecycleListeners.forEach { it.get()?.onMessageFailedToPresent(message) }
             }
 
             return
@@ -259,7 +262,7 @@ internal object NotificareInAppMessagingImpl : NotificareModule(), NotificareInA
             NotificareLogger.debug("Cannot display an in-app message while messages are being suppressed.")
 
             onMainThread {
-                lifecycleListeners.forEach { it.onMessageFailedToPresent(message) }
+                lifecycleListeners.forEach { it.get()?.onMessageFailedToPresent(message) }
             }
 
             return
@@ -269,7 +272,7 @@ internal object NotificareInAppMessagingImpl : NotificareModule(), NotificareInA
             NotificareLogger.warning("Cannot display an in-app message without a reference to the current activity.")
 
             onMainThread {
-                lifecycleListeners.forEach { it.onMessageFailedToPresent(message) }
+                lifecycleListeners.forEach { it.get()?.onMessageFailedToPresent(message) }
             }
 
             return
@@ -281,13 +284,13 @@ internal object NotificareInAppMessagingImpl : NotificareModule(), NotificareInA
                 InAppMessagingActivity.show(activity, message)
 
                 onMainThread {
-                    lifecycleListeners.forEach { it.onMessagePresented(message) }
+                    lifecycleListeners.forEach { it.get()?.onMessagePresented(message) }
                 }
             } catch (e: Exception) {
                 NotificareLogger.error("Failed to present the in-app message.", e)
 
                 onMainThread {
-                    lifecycleListeners.forEach { it.onMessageFailedToPresent(message) }
+                    lifecycleListeners.forEach { it.get()?.onMessageFailedToPresent(message) }
                 }
             }
         }
