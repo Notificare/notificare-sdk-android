@@ -29,6 +29,7 @@ import re.notifica.monetize.internal.database.entities.PurchaseEntity
 import re.notifica.monetize.models.NotificareProduct
 import re.notifica.monetize.models.NotificarePurchase
 import re.notifica.monetize.models.NotificarePurchaseVerification
+import java.lang.ref.WeakReference
 
 @Keep
 internal object NotificareMonetizeImpl : NotificareModule(), NotificareMonetize, NotificareInternalMonetize {
@@ -38,7 +39,7 @@ internal object NotificareMonetizeImpl : NotificareModule(), NotificareMonetize,
     private val _observableProducts = MutableLiveData<List<NotificareProduct>>(listOf())
     private val _observablePurchases = MutableLiveData<List<NotificarePurchase>>(listOf())
 
-    private val listeners = mutableListOf<NotificareMonetize.Listener>()
+    private val listeners = mutableListOf<WeakReference<NotificareMonetize.Listener>>()
 
     // region Notificare Module
 
@@ -50,7 +51,7 @@ internal object NotificareMonetizeImpl : NotificareModule(), NotificareMonetize,
         serviceManager = ServiceManager.create(
             onBillingSetupFinished = {
                 onMainThread {
-                    listeners.forEach { it.onBillingSetupFinished() }
+                    listeners.forEach { it.get()?.onBillingSetupFinished() }
 
                     Notificare.coroutineScope.launch {
                         try {
@@ -76,7 +77,7 @@ internal object NotificareMonetizeImpl : NotificareModule(), NotificareMonetize,
                                     } else {
                                         NotificareLogger.debug("Restoring purchase '${purchase.id}'.")
                                         onMainThread {
-                                            listeners.forEach { it.onPurchaseRestored(purchase) }
+                                            listeners.forEach { it.get()?.onPurchaseRestored(purchase) }
                                         }
                                     }
                                 } catch (e: Exception) {
@@ -91,7 +92,7 @@ internal object NotificareMonetizeImpl : NotificareModule(), NotificareMonetize,
             },
             onBillingSetupFailed = { code, message ->
                 onMainThread {
-                    listeners.forEach { it.onBillingSetupFailed(code, message) }
+                    listeners.forEach { it.get()?.onBillingSetupFailed(code, message) }
                 }
             },
             onProductsUpdated = {
@@ -99,7 +100,7 @@ internal object NotificareMonetizeImpl : NotificareModule(), NotificareMonetize,
             },
             onPurchaseFinished = { purchase ->
                 onMainThread {
-                    listeners.forEach { it.onPurchaseFinished(purchase) }
+                    listeners.forEach { it.get()?.onPurchaseFinished(purchase) }
 
                     Notificare.coroutineScope.launch {
                         try {
@@ -122,12 +123,12 @@ internal object NotificareMonetizeImpl : NotificareModule(), NotificareMonetize,
             },
             onPurchaseCanceled = {
                 onMainThread {
-                    listeners.forEach { it.onPurchaseCanceled() }
+                    listeners.forEach { it.get()?.onPurchaseCanceled() }
                 }
             },
             onPurchaseFailed = { code, message ->
                 onMainThread {
-                    listeners.forEach { it.onPurchaseFailed(code, message) }
+                    listeners.forEach { it.get()?.onPurchaseFailed(code, message) }
                 }
             },
         )
@@ -184,11 +185,14 @@ internal object NotificareMonetizeImpl : NotificareModule(), NotificareMonetize,
     override val observablePurchases: LiveData<List<NotificarePurchase>> = _observablePurchases
 
     override fun addListener(listener: NotificareMonetize.Listener) {
-        listeners.add(listener)
+        listeners.add(WeakReference(listener))
     }
 
     override fun removeListener(listener: NotificareMonetize.Listener) {
-        listeners.remove(listener)
+        listeners.forEach { reference ->
+            if (reference.get() == null || reference.get() == listener)
+                listeners.remove(reference)
+        }
     }
 
     override suspend fun refresh(): Unit = withContext(Dispatchers.IO) {
