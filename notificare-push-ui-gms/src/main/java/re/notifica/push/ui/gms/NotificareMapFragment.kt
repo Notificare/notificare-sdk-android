@@ -72,7 +72,7 @@ public class NotificareMapFragment : SupportMapFragment(), OnMapReadyCallback {
 
         onMainThread {
             Notificare.pushUIInternal().lifecycleListeners.forEach {
-                it.onNotificationPresented(
+                it.get()?.onNotificationPresented(
                     notification
                 )
             }
