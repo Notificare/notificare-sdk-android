@@ -314,7 +314,8 @@ public object Notificare {
     @JvmStatic
     public fun removeListener(listener: Listener) {
         listeners.forEach { reference ->
-            if (reference.get() == null || reference.get() == listener)
+            val referent = reference.get()
+            if (referent == null || referent == listener)
                 listeners.remove(reference)
         }
         NotificareLogger.debug("Removed a Notificare.Listener (${listeners.size} in total).")
