@@ -61,7 +61,8 @@ internal object NotificareScannablesImpl : NotificareModule(), NotificareScannab
 
     override fun removeListener(listener: NotificareScannables.ScannableSessionListener) {
         listeners.forEach { reference ->
-            if (reference.get() == null || reference.get() == listener)
+            val referent = reference.get()
+            if (referent == null || referent == listener)
                 listeners.remove(reference)
         }
     }
