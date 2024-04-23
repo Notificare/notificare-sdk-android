@@ -370,7 +370,8 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
 
     override fun removeListener(listener: NotificareGeo.Listener) {
         listeners.forEach { reference ->
-            if (reference.get() == null || reference.get() == listener)
+            val referent = reference.get()
+            if (referent == null || referent == listener)
                 listeners.remove(reference)
         }
     }
