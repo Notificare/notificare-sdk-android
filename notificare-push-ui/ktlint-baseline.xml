@@ -11,13 +11,13 @@
         <error line="88" column="1" source="standard:max-line-length" />
     </file>
     <file name="src/main/java/re/notifica/push/ui/internal/NotificarePushUIImpl.kt">
-        <error line="90" column="1" source="standard:max-line-length" />
-        <error line="173" column="1" source="standard:max-line-length" />
-        <error line="186" column="1" source="standard:max-line-length" />
-        <error line="193" column="1" source="standard:max-line-length" />
-        <error line="201" column="1" source="standard:max-line-length" />
-        <error line="213" column="1" source="standard:max-line-length" />
-        <error line="355" column="43" source="standard:annotation" />
+        <error line="91" column="1" source="standard:max-line-length" />
+        <error line="174" column="1" source="standard:max-line-length" />
+        <error line="187" column="1" source="standard:max-line-length" />
+        <error line="194" column="1" source="standard:max-line-length" />
+        <error line="202" column="1" source="standard:max-line-length" />
+        <error line="214" column="1" source="standard:max-line-length" />
+        <error line="356" column="43" source="standard:annotation" />
     </file>
     <file name="src/main/java/re/notifica/push/ui/notifications/fragments/NotificareCallbackActionFragment.kt">
         <error line="63" column="1" source="standard:max-line-length" />
