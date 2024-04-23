@@ -27,7 +27,7 @@ public class NotificareRateFragment : NotificationFragment() {
 
                 onMainThread {
                     Notificare.pushUIInternal().lifecycleListeners.forEach {
-                        it.onNotificationPresented(
+                        it.get()?.onNotificationPresented(
                             notification
                         )
                     }
@@ -40,7 +40,7 @@ public class NotificareRateFragment : NotificationFragment() {
 
                 onMainThread {
                     Notificare.pushUIInternal().lifecycleListeners.forEach {
-                        it.onNotificationFailedToPresent(
+                        it.get()?.onNotificationFailedToPresent(
                             notification
                         )
                     }

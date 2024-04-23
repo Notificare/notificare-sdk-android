@@ -69,7 +69,7 @@ public class NotificareStoreFragment : NotificationFragment() {
 
                 onMainThread {
                     Notificare.pushUIInternal().lifecycleListeners.forEach {
-                        it.onNotificationPresented(notification)
+                        it.get()?.onNotificationPresented(notification)
                     }
                 }
             } catch (e: ActivityNotFoundException) {
@@ -80,7 +80,7 @@ public class NotificareStoreFragment : NotificationFragment() {
 
                 onMainThread {
                     Notificare.pushUIInternal().lifecycleListeners.forEach {
-                        it.onNotificationFailedToPresent(notification)
+                        it.get()?.onNotificationFailedToPresent(notification)
                     }
                 }
             }
@@ -92,7 +92,7 @@ public class NotificareStoreFragment : NotificationFragment() {
 
             onMainThread {
                 Notificare.pushUIInternal().lifecycleListeners.forEach {
-                    it.onNotificationFailedToPresent(notification)
+                    it.get()?.onNotificationFailedToPresent(notification)
                 }
             }
         }
