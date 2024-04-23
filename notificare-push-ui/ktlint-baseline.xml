@@ -4,20 +4,20 @@
         <error line="107" column="1" source="standard:max-line-length" />
     </file>
     <file name="src/main/java/re/notifica/push/ui/NotificarePushUI.kt">
-        <error line="30" column="1" source="standard:max-line-length" />
-        <error line="44" column="1" source="standard:max-line-length" />
-        <error line="51" column="1" source="standard:max-line-length" />
-        <error line="58" column="1" source="standard:max-line-length" />
-        <error line="87" column="1" source="standard:max-line-length" />
+        <error line="31" column="1" source="standard:max-line-length" />
+        <error line="45" column="1" source="standard:max-line-length" />
+        <error line="52" column="1" source="standard:max-line-length" />
+        <error line="59" column="1" source="standard:max-line-length" />
+        <error line="88" column="1" source="standard:max-line-length" />
     </file>
     <file name="src/main/java/re/notifica/push/ui/internal/NotificarePushUIImpl.kt">
-        <error line="86" column="1" source="standard:max-line-length" />
-        <error line="182" column="1" source="standard:max-line-length" />
-        <error line="189" column="1" source="standard:max-line-length" />
-        <error line="197" column="1" source="standard:max-line-length" />
-        <error line="209" column="1" source="standard:max-line-length" />
-        <error line="281" column="23" source="standard:argument-list-wrapping" />
-        <error line="350" column="43" source="standard:annotation" />
+        <error line="90" column="1" source="standard:max-line-length" />
+        <error line="173" column="1" source="standard:max-line-length" />
+        <error line="186" column="1" source="standard:max-line-length" />
+        <error line="193" column="1" source="standard:max-line-length" />
+        <error line="201" column="1" source="standard:max-line-length" />
+        <error line="213" column="1" source="standard:max-line-length" />
+        <error line="355" column="43" source="standard:annotation" />
     </file>
     <file name="src/main/java/re/notifica/push/ui/notifications/fragments/NotificareCallbackActionFragment.kt">
         <error line="63" column="1" source="standard:max-line-length" />

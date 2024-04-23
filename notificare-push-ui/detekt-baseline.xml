@@ -25,6 +25,7 @@
     <ID>MaxLineLength:NotificarePushUIImpl.kt$NotificarePushUIImpl$"Attempting to create a fragment for a notification of type 'none'. This type contains to visual interface."</ID>
     <ID>MaxLineLength:NotificarePushUIImpl.kt$NotificarePushUIImpl$"Attempting to present a notification of type 'none'. These should be handled by the application instead."</ID>
     <ID>MaxLineLength:NotificarePushUIImpl.kt$NotificarePushUIImpl$"No push-ui dependencies have been detected. Please include one of the platform-specific push-ui packages."</ID>
+    <ID>MaxLineLength:NotificarePushUIImpl.kt$NotificarePushUIImpl$override val lifecycleListeners: List&lt;WeakReference&lt;NotificarePushUI.NotificationLifecycleListener&gt;&gt; = _lifecycleListeners</ID>
     <ID>MaxLineLength:NotificationCallbackAction.kt$NotificationCallbackAction$?:</ID>
     <ID>MaxLineLength:NotificationContainerFragment.kt$NotificationContainerFragment$// if (notification.getType().equals(NotificareNotification.TYPE_ALERT) || notification.getType().equals(NotificareNotification.TYPE_PASSBOOK)) {</ID>
     <ID>MaxLineLength:NotificationWebViewClient.kt$NotificationWebViewClient$// Normal HTTP links will be handled by the webView itself, unless they match any of the app's intent filters</ID>
