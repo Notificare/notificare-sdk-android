@@ -73,8 +73,9 @@ internal object NotificareInAppMessagingImpl : NotificareModule(), NotificareInA
     override fun removeLifecycleListener(listener: NotificareInAppMessaging.MessageLifecycleListener) {
         lifecycleListeners.forEach { reference ->
             val referent = reference.get()
-            if (referent == null || referent == listener)
+            if (referent == null || referent == listener) {
                 lifecycleListeners.remove(reference)
+            }
         }
     }
 

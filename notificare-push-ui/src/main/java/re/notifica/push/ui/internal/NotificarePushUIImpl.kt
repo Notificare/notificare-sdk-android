@@ -72,8 +72,9 @@ internal object NotificarePushUIImpl : NotificareModule(), NotificarePushUI, Not
     override fun removeLifecycleListener(listener: NotificarePushUI.NotificationLifecycleListener) {
         _lifecycleListeners.forEach { reference ->
             val referent = reference.get()
-            if (referent == null || referent == listener)
+            if (referent == null || referent == listener) {
                 _lifecycleListeners.remove(reference)
+            }
         }
     }
 

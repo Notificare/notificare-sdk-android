@@ -315,8 +315,9 @@ public object Notificare {
     public fun removeListener(listener: Listener) {
         listeners.forEach { reference ->
             val referent = reference.get()
-            if (referent == null || referent == listener)
+            if (referent == null || referent == listener) {
                 listeners.remove(reference)
+            }
         }
         NotificareLogger.debug("Removed a Notificare.Listener (${listeners.size} in total).")
     }

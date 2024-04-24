@@ -191,8 +191,9 @@ internal object NotificareMonetizeImpl : NotificareModule(), NotificareMonetize,
     override fun removeListener(listener: NotificareMonetize.Listener) {
         listeners.forEach { reference ->
             val referent = reference.get()
-            if (referent == null || referent == listener)
+            if (referent == null || referent == listener) {
                 listeners.remove(reference)
+            }
         }
     }
 
