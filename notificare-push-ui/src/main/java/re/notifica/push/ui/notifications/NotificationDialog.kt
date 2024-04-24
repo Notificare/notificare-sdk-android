@@ -53,7 +53,7 @@ public class NotificationDialog : DialogFragment() {
         if (type == NotificareNotification.NotificationType.ALERT && notification.actions.isNotEmpty()) {
             val binding = NotificareAlertDialogBinding.inflate(LayoutInflater.from(context))
 
-            binding.message.text = notification.message
+            builder.setMessage(notification.message)
 
             binding.list.adapter = ArrayAdapter(
                 requireContext(),

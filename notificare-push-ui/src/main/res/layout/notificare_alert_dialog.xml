@@ -7,13 +7,9 @@
     android:orientation="vertical"
     android:showDividers="middle">
 
-    <TextView
-        android:id="@+id/message"
-        style="@style/TextAppearance.AppCompat.Subhead"
+    <View
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="?attr/dialogPreferredPadding"
-        tools:text="Lorem ipsum" />
+        android:layout_height="0dp" />
 
     <ListView
         android:id="@+id/list"
