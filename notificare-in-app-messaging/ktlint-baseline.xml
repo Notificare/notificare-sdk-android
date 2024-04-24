@@ -5,8 +5,8 @@
         <error line="35" column="1" source="standard:max-line-length" />
     </file>
     <file name="src/main/java/re/notifica/iam/internal/NotificareInAppMessagingImpl.kt">
-        <error line="152" column="1" source="standard:max-line-length" />
-        <error line="181" column="1" source="standard:max-line-length" />
+        <error line="153" column="1" source="standard:max-line-length" />
+        <error line="182" column="1" source="standard:max-line-length" />
     </file>
     <file name="src/main/java/re/notifica/iam/ui/InAppMessagingActivity.kt">
         <error line="48" column="1" source="standard:max-line-length" />
