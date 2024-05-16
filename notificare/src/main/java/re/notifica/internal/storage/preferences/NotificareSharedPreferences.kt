@@ -21,6 +21,7 @@ internal class NotificareSharedPreferences(context: Context) {
         private const val PREFERENCE_PREFERRED_LANGUAGE = "re.notifica.preferences.preferred_language"
         private const val PREFERENCE_PREFERRED_REGION = "re.notifica.preferences.preferred_region"
         private const val PREFERENCE_CRASH_REPORT = "re.notifica.preferences.crash_report"
+        private const val PREFERENCE_DEFERRED_LINK_CHECKED = "re.notifica.preferences.deferred_link_checked"
     }
 
     private val sharedPreferences = context.getSharedPreferences(
@@ -154,5 +155,21 @@ internal class NotificareSharedPreferences(context: Context) {
                     Notificare.moshi.adapter(NotificareEvent::class.java).toJson(value)
                 )
             }.commit()
+        }
+
+    var deferredLinkChecked: Boolean?
+        get() {
+            if (!sharedPreferences.contains(PREFERENCE_DEFERRED_LINK_CHECKED)) {
+                return null
+            }
+
+            return sharedPreferences.getBoolean(PREFERENCE_DEFERRED_LINK_CHECKED, false)
+        }
+        set(value) = sharedPreferences.edit {
+            if (value == null) {
+                remove(PREFERENCE_DEFERRED_LINK_CHECKED)
+            } else {
+                putBoolean(PREFERENCE_DEFERRED_LINK_CHECKED, value)
+            }
         }
 }

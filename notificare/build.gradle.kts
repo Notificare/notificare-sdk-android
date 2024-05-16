@@ -52,6 +52,7 @@ dependencies {
     implementation(libs.androidx.activity)
     implementation(libs.androidx.core)
     implementation(libs.androidx.work.runtime)
+    implementation(libs.google.androidInstallReferrer)
 
     // Android: Room
     implementation(libs.bundles.androidx.room)
