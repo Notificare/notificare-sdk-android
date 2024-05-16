@@ -48,16 +48,15 @@ public class NotificationDialog : DialogFragment() {
         if (icon != null) builder.setIcon(icon)
 
         builder.setTitle(notification.title ?: NotificareUtils.applicationName)
+        builder.setMessage(notification.message)
 
         val type = NotificareNotification.NotificationType.from(notification.type)
         if (type == NotificareNotification.NotificationType.ALERT && notification.actions.isNotEmpty()) {
             val binding = NotificareAlertDialogBinding.inflate(LayoutInflater.from(context))
 
-            builder.setMessage(notification.message)
-
             binding.list.adapter = ArrayAdapter(
                 requireContext(),
-                android.R.layout.simple_list_item_1,
+                R.layout.notificare_alert_action_list_item,
                 notification.actions.map {
                     it.getLocalizedLabel(requireContext())
                 }
