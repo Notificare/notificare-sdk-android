@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## Upcoming release
+
+- Fix padding discrepancies in alert dialog with actions
+
 ## 3.8.0
 
 - Prevent processing location updates too close to the last known location
