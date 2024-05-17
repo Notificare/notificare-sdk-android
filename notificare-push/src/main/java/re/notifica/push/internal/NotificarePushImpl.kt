@@ -194,7 +194,7 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
     override suspend fun postLaunch() {
         if (sharedPreferences.remoteNotificationsEnabled) {
             NotificareLogger.debug("Enabling remote notifications automatically.")
-            serviceManager?.requestPushToken()
+            updatePushSubscription()
         }
     }
 
@@ -260,18 +260,16 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
             return
         }
 
-        val manager = serviceManager ?: run {
-            NotificareLogger.warning(
-                "No push dependencies have been detected. Please include one of the platform-specific push packages."
-            )
-            return
-        }
-
         // Keep track of the status in local storage.
         sharedPreferences.remoteNotificationsEnabled = true
 
-        // Request a push provider token.
-        manager.requestPushToken()
+        Notificare.coroutineScope.launch {
+            try {
+                updatePushSubscription()
+            } catch (e: Exception) {
+                NotificareLogger.debug("Failed to register the device with a push token.", e)
+            }
+        }
     }
 
     override fun disableRemoteNotifications() {
@@ -906,6 +904,13 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
                 // Silent failure.
             }
         }
+    }
+
+    private suspend fun updatePushSubscription(): Unit = withContext(Dispatchers.IO) {
+        val serviceManager = checkNotNull(serviceManager)
+
+        val token = serviceManager.getPushToken()
+        registerPushToken(serviceManager.transport, token)
     }
 
     private suspend fun updateNotificationSettings(): Unit = withContext(Dispatchers.IO) {
