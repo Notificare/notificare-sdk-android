@@ -439,7 +439,7 @@ internal object NotificareLoyaltyImpl :
 
         val device = checkNotNull(Notificare.device().currentDevice)
         val payload = RegisterPassPayload(
-            transport = device.transport,
+            transport = "GCM",
         )
 
         NotificareRequest.Builder()
