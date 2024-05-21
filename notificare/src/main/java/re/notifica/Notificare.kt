@@ -260,12 +260,6 @@ public object Notificare {
                     }
                 }
 
-                NotificareLogger.debug("Clearing device tags.")
-                device().clearTags()
-
-                NotificareLogger.debug("Registering a temporary device.")
-                deviceImplementation().registerTemporary()
-
                 NotificareLogger.debug("Removing device.")
                 deviceImplementation().delete()
 
