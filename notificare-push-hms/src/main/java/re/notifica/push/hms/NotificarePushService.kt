@@ -6,13 +6,13 @@ import kotlinx.coroutines.launch
 import re.notifica.Notificare
 import re.notifica.internal.NotificareLogger
 import re.notifica.internal.ktx.coroutineScope
-import re.notifica.models.NotificareTransport
 import re.notifica.push.hms.internal.NotificareNotificationRemoteMessage
 import re.notifica.push.hms.internal.NotificareSystemRemoteMessage
 import re.notifica.push.hms.internal.NotificareUnknownRemoteMessage
 import re.notifica.push.hms.ktx.isNotificareNotification
 import re.notifica.push.hms.ktx.pushInternal
 import re.notifica.push.ktx.push
+import re.notifica.push.models.NotificareTransport
 
 public open class NotificarePushService : HmsMessageService() {
 

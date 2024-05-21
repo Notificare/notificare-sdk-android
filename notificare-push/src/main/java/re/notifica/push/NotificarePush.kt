@@ -4,7 +4,7 @@ import android.content.Intent
 import androidx.lifecycle.LiveData
 import re.notifica.InternalNotificareApi
 import re.notifica.NotificareCallback
-import re.notifica.models.NotificareTransport
+import re.notifica.push.models.NotificareTransport
 import re.notifica.push.models.NotificareRemoteMessage
 
 public interface NotificarePush {
@@ -12,6 +12,12 @@ public interface NotificarePush {
     public var intentReceiver: Class<out NotificarePushIntentReceiver>
 
     public val hasRemoteNotificationsEnabled: Boolean
+
+    public val transport: NotificareTransport?
+
+    public val subscriptionId: String?
+
+    public val observableSubscriptionId: LiveData<String?>
 
     public val allowedUI: Boolean
 
@@ -40,12 +46,9 @@ public interface NotificarePush {
 }
 
 public interface NotificareInternalPush {
+
     @InternalNotificareApi
-    public suspend fun registerPushToken(
-        transport: NotificareTransport,
-        token: String,
-        performReadinessCheck: Boolean = true,
-    )
+    public fun handleNewToken(transport: NotificareTransport, token: String)
 
     @InternalNotificareApi
     public fun handleRemoteMessage(message: NotificareRemoteMessage)

@@ -2,31 +2,20 @@ package re.notifica.push.gms
 
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
-import kotlinx.coroutines.launch
 import re.notifica.Notificare
 import re.notifica.internal.NotificareLogger
-import re.notifica.internal.ktx.coroutineScope
-import re.notifica.models.NotificareTransport
 import re.notifica.push.gms.internal.NotificareNotificationRemoteMessage
 import re.notifica.push.gms.internal.NotificareSystemRemoteMessage
 import re.notifica.push.gms.internal.NotificareUnknownRemoteMessage
 import re.notifica.push.gms.ktx.isNotificareNotification
 import re.notifica.push.gms.ktx.pushInternal
 import re.notifica.push.ktx.push
+import re.notifica.push.models.NotificareTransport
 
 public open class NotificarePushService : FirebaseMessagingService() {
 
     override fun onNewToken(token: String) {
-        NotificareLogger.info("Received a new FCM token.")
-
-        Notificare.coroutineScope.launch {
-            try {
-                Notificare.pushInternal().registerPushToken(NotificareTransport.GCM, token)
-                NotificareLogger.info("Registered the device with a FCM token.")
-            } catch (e: Exception) {
-                NotificareLogger.info("Failed to register the device with a FCM token.", e)
-            }
-        }
+        Notificare.pushInternal().handleNewToken(NotificareTransport.GCM, token)
     }
 
     override fun onMessageReceived(message: RemoteMessage) {

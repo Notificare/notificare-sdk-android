@@ -10,7 +10,7 @@ import com.huawei.hms.push.HmsMessaging
 import kotlinx.coroutines.suspendCancellableCoroutine
 import re.notifica.InternalNotificareApi
 import re.notifica.Notificare
-import re.notifica.models.NotificareTransport
+import re.notifica.push.models.NotificareTransport
 import re.notifica.push.internal.ServiceManager
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
