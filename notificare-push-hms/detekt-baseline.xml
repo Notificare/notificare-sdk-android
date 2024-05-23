@@ -4,6 +4,5 @@
   <CurrentIssues>
     <ID>TooGenericExceptionCaught:NotificarePushService.kt$NotificarePushService$e: Exception</ID>
     <ID>TooGenericExceptionCaught:RemoteMessages.kt$e: Exception</ID>
-    <ID>TooGenericExceptionCaught:ServiceManager.kt$ServiceManager$e: Exception</ID>
   </CurrentIssues>
 </SmellBaseline>
