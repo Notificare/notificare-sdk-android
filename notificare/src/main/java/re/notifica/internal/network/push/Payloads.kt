@@ -3,6 +3,8 @@ package re.notifica.internal.network.push
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 import re.notifica.internal.moshi.EncodeNulls
+import re.notifica.models.NotificareDoNotDisturb
+import re.notifica.models.NotificareUserData
 
 @JsonClass(generateAdapter = true)
 internal data class CreateDevicePayload(
@@ -17,11 +19,8 @@ internal data class CreateDevicePayload(
     val backgroundAppRefresh: Boolean,
 )
 
-@EncodeNulls
 @JsonClass(generateAdapter = true)
 internal data class UpdateDevicePayload(
-    @Json(name = "userID") val userId: String?,
-    val userName: String?,
     val language: String,
     val region: String,
     val platform: String,
@@ -30,6 +29,25 @@ internal data class UpdateDevicePayload(
     val appVersion: String,
     val deviceString: String,
     val timeZoneOffset: Double,
+)
+
+@EncodeNulls
+@JsonClass(generateAdapter = true)
+internal data class UpdateDeviceUserPayload(
+    @Json(name = "userID") val userId: String?,
+    val userName: String?,
+)
+
+@EncodeNulls
+@JsonClass(generateAdapter = true)
+internal data class UpdateDeviceDoNotDisturbPayload(
+    val dnd: NotificareDoNotDisturb?,
+)
+
+@EncodeNulls
+@JsonClass(generateAdapter = true)
+internal data class UpdateDeviceUserDataPayload(
+    val userData: NotificareUserData?,
 )
 
 @JsonClass(generateAdapter = true)

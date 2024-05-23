@@ -26,7 +26,10 @@ import re.notifica.internal.network.push.DeviceUpdateLanguagePayload
 import re.notifica.internal.network.push.DeviceUpdateTimeZonePayload
 import re.notifica.internal.network.push.DeviceUserDataResponse
 import re.notifica.internal.network.push.TestDeviceRegistrationPayload
+import re.notifica.internal.network.push.UpdateDeviceDoNotDisturbPayload
 import re.notifica.internal.network.push.UpdateDevicePayload
+import re.notifica.internal.network.push.UpdateDeviceUserDataPayload
+import re.notifica.internal.network.push.UpdateDeviceUserPayload
 import re.notifica.internal.network.push.UpgradeToLongLivedDevicePayload
 import re.notifica.internal.network.request.NotificareRequest
 import re.notifica.internal.storage.preferences.entities.StoredDevice
@@ -71,10 +74,7 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
         } else {
             val isApplicationUpgrade = storedDevice.appVersion != NotificareUtils.applicationVersion
 
-            updateDevice(
-                userId = storedDevice.userId,
-                userName = storedDevice.userName,
-            )
+            updateDevice()
 
             // Ensure a session exists for the current device.
             Notificare.session().launch()
@@ -130,9 +130,24 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
 
     override suspend fun updateUser(userId: String?, userName: String?): Unit = withContext(Dispatchers.IO) {
         checkPrerequisites()
-        if (storedDevice == null) throw NotificareDeviceUnavailableException()
 
-        updateDevice(userId, userName)
+        val device = storedDevice
+            ?: throw NotificareDeviceUnavailableException()
+
+        val payload = UpdateDeviceUserPayload(
+            userId = userId,
+            userName = userName,
+        )
+
+        NotificareRequest.Builder()
+            .put("/push/${device.id}", payload)
+            .response()
+
+        // Update current device properties.
+        storedDevice = device.copy(
+            userId = userId,
+            userName = userName,
+        )
     }
 
     override fun updateUser(userId: String?, userName: String?, callback: NotificareCallback<Unit>): Unit =
@@ -176,7 +191,7 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
         val device = checkNotNull(storedDevice)
 
         NotificareRequest.Builder()
-            .get("/device/${device.id}/tags")
+            .get("/push/${device.id}/tags")
             .responseDecodable(DeviceTagsResponse::class)
             .tags
     }
@@ -196,7 +211,7 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
 
         val device = checkNotNull(storedDevice)
         NotificareRequest.Builder()
-            .put("/device/${device.id}/addtags", DeviceTagsPayload(tags))
+            .put("/push/${device.id}/addtags", DeviceTagsPayload(tags))
             .response()
     }
 
@@ -215,7 +230,7 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
 
         val device = checkNotNull(storedDevice)
         NotificareRequest.Builder()
-            .put("/device/${device.id}/removetags", DeviceTagsPayload(tags))
+            .put("/push/${device.id}/removetags", DeviceTagsPayload(tags))
             .response()
     }
 
@@ -227,7 +242,7 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
 
         val device = checkNotNull(storedDevice)
         NotificareRequest.Builder()
-            .put("/device/${device.id}/cleartags", null)
+            .put("/push/${device.id}/cleartags", null)
             .response()
     }
 
@@ -239,7 +254,7 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
 
         val device = checkNotNull(storedDevice)
         val dnd = NotificareRequest.Builder()
-            .get("/device/${device.id}/dnd")
+            .get("/push/${device.id}/dnd")
             .responseDecodable(DeviceDoNotDisturbResponse::class)
             .dnd
 
@@ -256,8 +271,13 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
         checkPrerequisites()
 
         val device = checkNotNull(storedDevice)
+
+        val payload = UpdateDeviceDoNotDisturbPayload(
+            dnd = dnd,
+        )
+
         NotificareRequest.Builder()
-            .put("/device/${device.id}/dnd", dnd)
+            .put("/push/${device.id}", payload)
             .response()
 
         // Update current device properties.
@@ -271,8 +291,13 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
         checkPrerequisites()
 
         val device = checkNotNull(storedDevice)
+
+        val payload = UpdateDeviceDoNotDisturbPayload(
+            dnd = null,
+        )
+
         NotificareRequest.Builder()
-            .put("/device/${device.id}/cleardnd", null)
+            .put("/push/${device.id}", payload)
             .response()
 
         // Update current device properties.
@@ -287,7 +312,7 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
 
         val device = checkNotNull(storedDevice)
         val userData = NotificareRequest.Builder()
-            .get("/device/${device.id}/userdata")
+            .get("/push/${device.id}/userdata")
             .responseDecodable(DeviceUserDataResponse::class)
             .userData?.filterNotNull { it.value }
             ?: mapOf()
@@ -305,8 +330,13 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
         checkPrerequisites()
 
         val device = checkNotNull(storedDevice)
+
+        val payload = UpdateDeviceUserDataPayload(
+            userData = userData,
+        )
+
         NotificareRequest.Builder()
-            .put("/device/${device.id}/userdata", userData)
+            .put("/push/${device.id}", payload)
             .response()
 
         // Update current device properties.
@@ -375,17 +405,15 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
         )
     }
 
-    private suspend fun updateDevice(userId: String?, userName: String?): Unit = withContext(Dispatchers.IO) {
+    private suspend fun updateDevice(): Unit = withContext(Dispatchers.IO) {
         val storedDevice = checkNotNull(storedDevice)
 
-        if (!registrationChanged(userId, userName)) {
+        if (!registrationChanged()) {
             NotificareLogger.debug("Skipping device update, nothing changed.")
             return@withContext
         }
 
         val payload = UpdateDevicePayload(
-            userId = userId,
-            userName = userName,
             language = getDeviceLanguage(),
             region = getDeviceRegion(),
             platform = "Android",
@@ -401,8 +429,6 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
             .response()
 
         this@NotificareDeviceModuleImpl.storedDevice = storedDevice.copy(
-            userId = userId,
-            userName = userName,
             timeZoneOffset = payload.timeZoneOffset,
             osVersion = payload.osVersion,
             sdkVersion = payload.sdkVersion,
@@ -471,23 +497,13 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
         )
     }
 
-    private fun registrationChanged(userId: String?, userName: String?): Boolean {
+    private fun registrationChanged(): Boolean {
         val device = storedDevice ?: run {
             NotificareLogger.debug("Registration check: fresh installation")
             return true
         }
 
         var changed = false
-
-        if (device.userId != userId) {
-            NotificareLogger.debug("Registration check: user id changed")
-            changed = true
-        }
-
-        if (device.userName != userName) {
-            NotificareLogger.debug("Registration check: user name changed")
-            changed = true
-        }
 
         if (device.deviceString != NotificareUtils.deviceString) {
             NotificareLogger.debug("Registration check: device string changed")
