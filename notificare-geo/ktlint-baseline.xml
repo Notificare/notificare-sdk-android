@@ -5,9 +5,9 @@
     </file>
     <file name="src/main/java/re/notifica/geo/internal/NotificareGeoImpl.kt">
         <error line="222" column="1" source="standard:max-line-length" />
-        <error line="793" column="1" source="standard:max-line-length" />
-        <error line="1132" column="1" source="standard:max-line-length" />
-        <error line="1155" column="1" source="standard:max-line-length" />
+        <error line="794" column="1" source="standard:max-line-length" />
+        <error line="1133" column="1" source="standard:max-line-length" />
+        <error line="1156" column="1" source="standard:max-line-length" />
     </file>
     <file name="src/main/java/re/notifica/geo/internal/storage/LocalStorage.kt">
         <error line="252" column="1" source="standard:max-line-length" />
