@@ -166,8 +166,8 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
         sharedPreferences.remoteNotificationsEnabled = false
         sharedPreferences.firstRegistration = true
 
-        // Update the local notification settings.
-        // Registering a temporary device automatically reports the allowedUI to the API.
+        transport = null
+        subscriptionId = null
         allowedUI = false
     }
 
