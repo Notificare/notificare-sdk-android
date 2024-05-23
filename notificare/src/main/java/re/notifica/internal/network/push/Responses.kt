@@ -57,6 +57,17 @@ internal data class ApplicationResponse(
 }
 
 @JsonClass(generateAdapter = true)
+internal data class CreateDeviceResponse(
+    val device: Device,
+) {
+
+    @JsonClass(generateAdapter = true)
+    internal data class Device(
+        @Json(name = "deviceID") val deviceId: String,
+    )
+}
+
+@JsonClass(generateAdapter = true)
 internal data class DeviceDoNotDisturbResponse(
     val dnd: NotificareDoNotDisturb?,
 )

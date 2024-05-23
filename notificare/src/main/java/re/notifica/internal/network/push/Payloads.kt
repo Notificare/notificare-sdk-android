@@ -2,25 +2,49 @@ package re.notifica.internal.network.push
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
-import re.notifica.models.NotificareTransport
+import re.notifica.internal.moshi.EncodeNulls
 
 @JsonClass(generateAdapter = true)
-internal data class DeviceRegistrationPayload(
-    @Json(name = "deviceID") val deviceId: String,
-    @Json(name = "oldDeviceID") val oldDeviceId: String?,
-    @Json(name = "userID") val userId: String?,
-    val userName: String?,
+internal data class CreateDevicePayload(
     val language: String,
     val region: String,
     val platform: String,
-    val transport: NotificareTransport,
     val osVersion: String,
     val sdkVersion: String,
     val appVersion: String,
     val deviceString: String,
     val timeZoneOffset: Double,
     val backgroundAppRefresh: Boolean,
-    val allowedUI: Boolean?,
+)
+
+@EncodeNulls
+@JsonClass(generateAdapter = true)
+internal data class UpdateDevicePayload(
+    @Json(name = "userID") val userId: String?,
+    val userName: String?,
+    val language: String,
+    val region: String,
+    val platform: String,
+    val osVersion: String,
+    val sdkVersion: String,
+    val appVersion: String,
+    val deviceString: String,
+    val timeZoneOffset: Double,
+)
+
+@JsonClass(generateAdapter = true)
+internal data class UpgradeToLongLivedDevicePayload(
+    @Json(name = "deviceID") val deviceId: String,
+    val transport: String,
+    val subscriptionId: String?,
+    val language: String,
+    val region: String,
+    val platform: String,
+    val osVersion: String,
+    val sdkVersion: String,
+    val appVersion: String,
+    val deviceString: String,
+    val timeZoneOffset: Double,
 )
 
 @JsonClass(generateAdapter = true)
