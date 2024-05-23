@@ -10,9 +10,21 @@ public interface NotificareDeviceModule {
 
     public val preferredLanguage: String?
 
+    @Deprecated(
+        message = "Use updateUser() instead.",
+        replaceWith = ReplaceWith("updateUser(userId, userName)")
+    )
     public suspend fun register(userId: String?, userName: String?)
 
+    @Deprecated(
+        message = "Use updateUser() instead.",
+        replaceWith = ReplaceWith("updateUser(userId, userName, callback)")
+    )
     public fun register(userId: String?, userName: String?, callback: NotificareCallback<Unit>)
+
+    public suspend fun updateUser(userId: String?, userName: String?)
+
+    public fun updateUser(userId: String?, userName: String?, callback: NotificareCallback<Unit>)
 
     public suspend fun updatePreferredLanguage(preferredLanguage: String?)
 

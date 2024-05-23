@@ -8,6 +8,7 @@ import kotlinx.coroutines.withContext
 import re.notifica.Notificare
 import re.notifica.NotificareCallback
 import re.notifica.NotificareDeviceModule
+import re.notifica.NotificareDeviceUnavailableException
 import re.notifica.NotificareNotReadyException
 import re.notifica.internal.NOTIFICARE_VERSION
 import re.notifica.internal.NotificareLogger
@@ -108,15 +109,34 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
             return "$preferredLanguage-$preferredRegion"
         }
 
+    @Deprecated(
+        message = "Use updateUser() instead.",
+        replaceWith = ReplaceWith("updateUser(userId, userName)"),
+    )
     override suspend fun register(userId: String?, userName: String?): Unit = withContext(Dispatchers.IO) {
-        checkPrerequisites()
-
-        val device = checkNotNull(currentDevice)
-        register(device.transport, device.id, userId, userName)
+        updateUser(
+            userId = userId,
+            userName = userName,
+        )
     }
 
+    @Deprecated(
+        message = "Use updateUser() instead.",
+        replaceWith = ReplaceWith("updateUser(userId, userName, callback)"),
+    )
+    @Suppress("DEPRECATION")
     override fun register(userId: String?, userName: String?, callback: NotificareCallback<Unit>): Unit =
         toCallbackFunction(::register)(userId, userName, callback)
+
+    override suspend fun updateUser(userId: String?, userName: String?): Unit = withContext(Dispatchers.IO) {
+        checkPrerequisites()
+        if (storedDevice == null) throw NotificareDeviceUnavailableException()
+
+        updateDevice(userId, userName)
+    }
+
+    override fun updateUser(userId: String?, userName: String?, callback: NotificareCallback<Unit>): Unit =
+        toCallbackFunction(::updateUser)(userId, userName, callback)
 
     override suspend fun updatePreferredLanguage(preferredLanguage: String?): Unit = withContext(Dispatchers.IO) {
         checkPrerequisites()
