@@ -22,7 +22,7 @@ android {
         applicationId = "re.notifica.sample.app"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
-        versionCode = 4
+        versionCode = 12
         versionName = "3.0.0"
 
         manifestPlaceholders["googleMapsApiKey"] = properties.getProperty("google.maps.key")

@@ -7,14 +7,13 @@ import com.huawei.hms.api.ConnectionResult
 import com.huawei.hms.api.HuaweiApiAvailability
 import com.huawei.hms.common.ApiException
 import com.huawei.hms.push.HmsMessaging
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.suspendCancellableCoroutine
 import re.notifica.InternalNotificareApi
 import re.notifica.Notificare
-import re.notifica.internal.NotificareLogger
-import re.notifica.internal.ktx.coroutineScope
 import re.notifica.models.NotificareTransport
-import re.notifica.push.hms.ktx.pushInternal
 import re.notifica.push.internal.ServiceManager
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 
 @Keep
 @InternalNotificareApi
@@ -27,7 +26,7 @@ public class ServiceManager : ServiceManager() {
     override val transport: NotificareTransport
         get() = NotificareTransport.HMS
 
-    override fun requestPushToken() {
+    override suspend fun getPushToken(): String = suspendCancellableCoroutine { continuation ->
         Thread {
             try {
                 val context = Notificare.requireContext()
@@ -38,19 +37,12 @@ public class ServiceManager : ServiceManager() {
                 val token = HmsInstanceId.getInstance(context).getToken(appId, HmsMessaging.DEFAULT_TOKEN_SCOPE)
 
                 if (token != null && token.isNotEmpty()) {
-                    Notificare.coroutineScope.launch {
-                        try {
-                            Notificare.pushInternal().registerPushToken(transport, token = token)
-                            NotificareLogger.debug("Registered the device with a HMS token.")
-                        } catch (e: Exception) {
-                            NotificareLogger.debug("Failed to register the device with a HMS token.", e)
-                        }
-                    }
+                    continuation.resume(token)
                 } else {
-                    NotificareLogger.error("Failed to retrieve HMS token.")
+                    continuation.resumeWithException(Exception("Failed to retrieve HMS token."))
                 }
             } catch (e: ApiException) {
-                NotificareLogger.error("Failed to retrieve HMS token.", e)
+                continuation.resumeWithException(e)
             }
         }.start()
     }

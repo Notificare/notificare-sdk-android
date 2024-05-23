@@ -35,6 +35,17 @@ class MainApplication : Application(), Notificare.Listener {
         Notificare.addListener(this)
 
         Notificare.launch()
+
+        applicationScope.launch {
+            try {
+                if (Notificare.canEvaluateDeferredLink()) {
+                    val evaluated = Notificare.evaluateDeferredLink()
+                    Timber.i("deferred link evaluation = $evaluated")
+                }
+            } catch (e: Exception) {
+                Timber.e(e, "Failed to evaluate the deferred link.")
+            }
+        }
     }
 
     override fun onReady(application: NotificareApplication) {
