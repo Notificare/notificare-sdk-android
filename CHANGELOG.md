@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## Upcoming release
+
+- Fix padding discrepancies in alert dialog with actions
+
 ## 3.9.0
 
 - Add support for deferred links
