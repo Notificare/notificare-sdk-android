@@ -2,6 +2,7 @@
 
 ## Upcoming release
 
+- Fix padding discrepancies in alert dialog with actions
 - Device identifiers become long-lived
 
 #### Breaking changes
