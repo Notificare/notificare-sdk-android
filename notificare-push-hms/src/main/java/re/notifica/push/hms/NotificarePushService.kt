@@ -12,7 +12,6 @@ import re.notifica.push.hms.internal.NotificareUnknownRemoteMessage
 import re.notifica.push.hms.ktx.isNotificareNotification
 import re.notifica.push.hms.ktx.pushInternal
 import re.notifica.push.ktx.push
-import re.notifica.push.models.NotificareTransport
 
 public open class NotificarePushService : HmsMessageService() {
 
@@ -21,7 +20,7 @@ public open class NotificarePushService : HmsMessageService() {
 
         Notificare.coroutineScope.launch {
             try {
-                Notificare.pushInternal().registerPushToken(NotificareTransport.HMS, token)
+                // Notificare.pushInternal().registerPushToken(NotificareTransport.HMS, token)
                 NotificareLogger.info("Registered the device with a HMS token.")
             } catch (e: Exception) {
                 NotificareLogger.info("Failed to register the device with a HMS token.", e)
