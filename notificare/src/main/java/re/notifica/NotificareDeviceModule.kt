@@ -2,7 +2,6 @@ package re.notifica
 
 import re.notifica.models.NotificareDevice
 import re.notifica.models.NotificareDoNotDisturb
-import re.notifica.models.NotificareTransport
 import re.notifica.models.NotificareUserData
 
 public interface NotificareDeviceModule {
@@ -62,13 +61,4 @@ public interface NotificareDeviceModule {
     public suspend fun updateUserData(userData: NotificareUserData)
 
     public fun updateUserData(userData: NotificareUserData, callback: NotificareCallback<Unit>)
-}
-
-public interface NotificareInternalDeviceModule {
-
-    @InternalNotificareApi
-    public suspend fun registerTemporary()
-
-    @InternalNotificareApi
-    public suspend fun registerPushToken(transport: NotificareTransport, token: String)
 }

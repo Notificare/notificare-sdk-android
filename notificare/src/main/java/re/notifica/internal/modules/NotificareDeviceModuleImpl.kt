@@ -40,10 +40,10 @@ import re.notifica.models.NotificareTransport
 import re.notifica.models.NotificareUserData
 
 @Keep
-internal object NotificareDeviceModuleImpl :
-    NotificareModule(),
-    NotificareDeviceModule,
-    NotificareInternalDeviceModule {
+internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDeviceModule {
+
+    private var storedDevice: StoredDevice?
+        get() = Notificare.sharedPreferences.device
 
     // region Notificare Module
 
