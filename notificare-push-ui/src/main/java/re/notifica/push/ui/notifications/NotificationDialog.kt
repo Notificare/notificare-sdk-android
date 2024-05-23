@@ -56,7 +56,7 @@ public class NotificationDialog : DialogFragment() {
 
             binding.list.adapter = ArrayAdapter(
                 requireContext(),
-                R.layout.notificare_alert_action_list_item,
+                android.R.layout.simple_list_item_1,
                 notification.actions.map {
                     it.getLocalizedLabel(requireContext())
                 }
