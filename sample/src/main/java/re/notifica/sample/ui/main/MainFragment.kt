@@ -317,10 +317,6 @@ class MainFragment : BaseFragment() {
             findNavController().navigate(R.id.action_mainFragment_to_scannablesFragment)
         }
 
-        binding.otherFeaturesCard.monetizeRow.setOnClickListener {
-            findNavController().navigate(R.id.action_mainFragment_to_monetizeFragment)
-        }
-
         binding.otherFeaturesCard.assetsRow.setOnClickListener {
             findNavController().navigate(R.id.action_mainFragment_to_assetsFragment)
         }
