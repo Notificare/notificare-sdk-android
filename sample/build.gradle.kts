@@ -8,7 +8,6 @@ plugins {
     alias(libs.plugins.google.services)
     alias(libs.plugins.ktlint)
     alias(libs.plugins.detekt)
-    // alias(libs.plugins.huawei.agconnect)
 }
 
 val properties = loadProperties("local.properties")
@@ -155,18 +154,14 @@ dependencies {
 
     implementation(project(":notificare-geo"))
     implementation(project(":notificare-geo-gms"))
-    implementation(project(":notificare-geo-hms"))
     implementation(project(":notificare-geo-beacons"))
 
     implementation(project(":notificare-push"))
     implementation(project(":notificare-push-gms"))
-    implementation(project(":notificare-push-hms"))
 
     implementation(project(":notificare-push-ui"))
     implementation(project(":notificare-push-ui-gms"))
-    implementation(project(":notificare-push-ui-hms"))
 
     implementation(project(":notificare-scannables"))
     implementation(project(":notificare-scannables-gms"))
-    implementation(project(":notificare-scannables-hms"))
 }
