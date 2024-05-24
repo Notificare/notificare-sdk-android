@@ -12,6 +12,8 @@
 - `onDeviceRegistered` only triggers once, when the device is created.
 - `NotificareTransport` was moved to the push module.
 - Drops support for the monetize module.
+- Drops support for Huawei Mobile Services.
+- Drops support for v1 passes in-app wallet.
 
 ## 3.9.0
 

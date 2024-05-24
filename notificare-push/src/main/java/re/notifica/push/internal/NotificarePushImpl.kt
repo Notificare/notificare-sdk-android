@@ -75,7 +75,6 @@ import re.notifica.push.ktx.INTENT_EXTRA_TOKEN
 import re.notifica.push.ktx.logNotificationInfluenced
 import re.notifica.push.ktx.logNotificationReceived
 import re.notifica.push.ktx.logPushRegistration
-import re.notifica.push.ktx.loyaltyIntegration
 import re.notifica.push.models.NotificareLiveActivityUpdate
 import re.notifica.push.models.NotificareNotificationDeliveryMechanism
 import re.notifica.push.models.NotificareNotificationRemoteMessage
@@ -540,12 +539,6 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
                             NotificareLogger.error("Failed to update cached application info.", e)
                         }
                     })
-                }
-                "re.notifica.notification.system.Passbook" -> {
-                    Notificare.loyaltyIntegration()?.onPassbookSystemNotificationReceived()
-                }
-                "re.notifica.notification.system.Products" -> {
-                    // TODO: handle Products system notifications
                 }
                 "re.notifica.notification.system.Inbox" -> InboxIntegration.reloadInbox()
                 "re.notifica.notification.system.LiveActivity" -> {
