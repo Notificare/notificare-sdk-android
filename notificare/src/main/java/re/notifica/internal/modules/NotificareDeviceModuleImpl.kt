@@ -467,7 +467,7 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
             timeZoneOffset = currentDevice.timeZoneOffset,
         )
 
-        @Suppress("MagicNumber")
+        @Suppress("detekt:MagicNumber")
         val response = NotificareRequest.Builder()
             .post("/push", payload)
             .responseDecodable { responseCode ->
