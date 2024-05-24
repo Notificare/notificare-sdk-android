@@ -160,7 +160,6 @@ dependencies {
 
     implementation(project(":notificare-push"))
     implementation(project(":notificare-push-gms"))
-    implementation(project(":notificare-push-hms"))
 
     implementation(project(":notificare-push-ui"))
     implementation(project(":notificare-push-ui-gms"))
