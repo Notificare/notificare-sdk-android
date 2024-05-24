@@ -79,11 +79,9 @@ class MainApplication : Application(), Notificare.Listener {
             val userName = getString(R.string.sample_user_name).ifBlank { null }
 
             try {
-                Timber.i("Registering device")
-                Notificare.device().register(userId, userName)
-                Timber.i("Registered device successfully.")
+                Notificare.device().updateUser(userId, userName)
             } catch (e: Exception) {
-                Timber.e(e, "Failed to register device.")
+                Timber.e(e, "Failed to update the user.")
             }
         }
     }
