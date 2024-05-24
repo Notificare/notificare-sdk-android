@@ -11,6 +11,7 @@
 - The `NotificareDevice` data model was reduced to only publicly relevant attributes.
 - `onDeviceRegistered` only triggers once, when the device is created.
 - `NotificareTransport` was moved to the push module.
+- Drops support for the monetize module.
 
 ## 3.9.0
 
