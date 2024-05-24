@@ -155,7 +155,6 @@ dependencies {
 
     implementation(project(":notificare-geo"))
     implementation(project(":notificare-geo-gms"))
-    implementation(project(":notificare-geo-hms"))
     implementation(project(":notificare-geo-beacons"))
 
     implementation(project(":notificare-push"))
