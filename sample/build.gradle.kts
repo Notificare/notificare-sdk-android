@@ -164,9 +164,7 @@ dependencies {
 
     implementation(project(":notificare-push-ui"))
     implementation(project(":notificare-push-ui-gms"))
-    implementation(project(":notificare-push-ui-hms"))
 
     implementation(project(":notificare-scannables"))
     implementation(project(":notificare-scannables-gms"))
-    implementation(project(":notificare-scannables-hms"))
 }
