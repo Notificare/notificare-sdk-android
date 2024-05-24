@@ -4,14 +4,6 @@ pluginManagement {
         mavenCentral()
         gradlePluginPortal()
         maven(url = "https://maven.notifica.re/releases")
-        maven(url = "https://developer.huawei.com/repo")
-    }
-    resolutionStrategy {
-        eachPlugin {
-            if (requested.id.id == "com.huawei.agconnect") {
-                useModule("com.huawei.agconnect:agcp:${requested.version}")
-            }
-        }
     }
 }
 
@@ -20,7 +12,6 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
-        maven(url = "https://developer.huawei.com/repo")
     }
 }
 

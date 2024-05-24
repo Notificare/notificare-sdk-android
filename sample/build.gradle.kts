@@ -8,7 +8,6 @@ plugins {
     alias(libs.plugins.google.services)
     alias(libs.plugins.ktlint)
     alias(libs.plugins.detekt)
-    // alias(libs.plugins.huawei.agconnect)
 }
 
 val properties = loadProperties("local.properties")
