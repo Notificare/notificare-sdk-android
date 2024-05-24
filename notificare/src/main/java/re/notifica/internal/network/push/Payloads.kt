@@ -47,7 +47,7 @@ internal data class UpdateDeviceDoNotDisturbPayload(
 @EncodeNulls
 @JsonClass(generateAdapter = true)
 internal data class UpdateDeviceUserDataPayload(
-    val userData: NotificareUserData?,
+    val userData: NotificareUserData,
 )
 
 @JsonClass(generateAdapter = true)
