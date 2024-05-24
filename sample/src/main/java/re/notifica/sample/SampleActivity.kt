@@ -18,7 +18,6 @@ import re.notifica.iam.NotificareInAppMessaging
 import re.notifica.iam.ktx.inAppMessaging
 import re.notifica.iam.models.NotificareInAppMessage
 import re.notifica.models.NotificareNotification
-import re.notifica.monetize.NotificareMonetize
 import re.notifica.push.ktx.INTENT_ACTION_ACTION_OPENED
 import re.notifica.push.ktx.INTENT_ACTION_NOTIFICATION_OPENED
 import re.notifica.push.ktx.push
@@ -29,8 +28,7 @@ import timber.log.Timber
 
 class SampleActivity :
     AppCompatActivity(),
-    NotificarePushUI.NotificationLifecycleListener,
-    NotificareMonetize.Listener {
+    NotificarePushUI.NotificationLifecycleListener {
 
     private lateinit var binding: ActivitySampleBinding
 

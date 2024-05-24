@@ -88,57 +88,13 @@
             app:layout_constraintTop_toBottomOf="@+id/scannables_row" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/monetize_row"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="16dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/simple_line_scannables">
-
-            <TextView
-                android:id="@+id/monetize_title"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:drawablePadding="8dp"
-                android:text="@string/main_fragment_monetize_title"
-                android:textAppearance="?attr/textAppearanceTitleMedium"
-                app:drawableStartCompat="@drawable/ic_baseline_monetization_on_24"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <ImageView
-                android:id="@+id/monetize_chevron"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_baseline_chevron_right_24"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:tint="?attr/colorOnSurfaceVariant"
-                tools:ignore="ContentDescription" />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <View
-            android:id="@+id/simple_line_monetize"
-            android:layout_width="0dp"
-            android:layout_height="1dp"
-            android:background="@color/material_dynamic_neutral20"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/monetize_row" />
-
-        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/assets_row"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="16dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/simple_line_monetize">
+            app:layout_constraintTop_toBottomOf="@+id/simple_line_scannables">
 
             <TextView
                 android:id="@+id/assets_title"
