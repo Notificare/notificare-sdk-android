@@ -13,8 +13,4 @@ public interface NotificareLoyaltyIntegration {
         notification: NotificareNotification,
         callback: NotificareCallback<Unit>,
     )
-
-    public fun onPassbookSystemNotificationReceived()
-
-    public fun onPassbookLocationRelevanceChanged()
 }
