@@ -70,18 +70,25 @@ android {
     }
 
     applicationVariants.configureEach {
-        if (name == "apiTestDebug") {
-            resValue("string", "notificare_app_links_hostname", "\"618d0f4edc09fbed1864e8d0.applinks-test.notifica.re\"")
-            resValue("string", "notificare_dynamic_link_hostname", "\"sample-app-dev.test.ntc.re\"")
-        } else if (name == "apiTestRelease") {
-            resValue("string", "notificare_app_links_hostname", "\"654d017fc468efc19379921e.applinks-test.notifica.re\"")
-            resValue("string", "notificare_dynamic_link_hostname", "\"sample-app.test.ntc.re\"")
-        } else if (name == "apiProductionDebug") {
-            resValue("string", "notificare_app_links_hostname", "\"61644511218adebf72c5449b.applinks.notifica.re\"")
-            resValue("string", "notificare_dynamic_link_hostname", "\"sample-app-dev.ntc.re\"")
-        } else if (name == "apiProductionRelease") {
-            resValue("string", "notificare_app_links_hostname", "\"6511625f445cc1c81d47fd6f.applinks.notifica.re\"")
-            resValue("string", "notificare_dynamic_link_hostname", "\"sample-app.ntc.re\"")
+        when (name) {
+            "apiTestDebug" -> {
+                @Suppress("ktlint:standard:argument-list-wrapping")
+                resValue("string", "notificare_app_links_hostname", "\"618d0f4edc09fbed1864e8d0.applinks-test.notifica.re\"")
+                resValue("string", "notificare_dynamic_link_hostname", "\"sample-app-dev.test.ntc.re\"")
+            }
+            "apiTestRelease" -> {
+                @Suppress("ktlint:standard:argument-list-wrapping")
+                resValue("string", "notificare_app_links_hostname", "\"654d017fc468efc19379921e.applinks-test.notifica.re\"")
+                resValue("string", "notificare_dynamic_link_hostname", "\"sample-app.test.ntc.re\"")
+            }
+            "apiProductionDebug" -> {
+                resValue("string", "notificare_app_links_hostname", "\"61644511218adebf72c5449b.applinks.notifica.re\"")
+                resValue("string", "notificare_dynamic_link_hostname", "\"sample-app-dev.ntc.re\"")
+            }
+            "apiProductionRelease" -> {
+                resValue("string", "notificare_app_links_hostname", "\"6511625f445cc1c81d47fd6f.applinks.notifica.re\"")
+                resValue("string", "notificare_dynamic_link_hostname", "\"sample-app.ntc.re\"")
+            }
         }
     }
 
