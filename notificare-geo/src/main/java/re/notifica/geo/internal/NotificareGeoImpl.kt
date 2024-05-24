@@ -811,7 +811,7 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
         )
 
         NotificareRequest.Builder()
-            .put("/device/${device.id}", payload)
+            .put("/push/${device.id}", payload)
             .response()
     }
 
@@ -834,7 +834,7 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
         )
 
         NotificareRequest.Builder()
-            .put("/device/${device.id}", payload)
+            .put("/push/${device.id}", payload)
             .response()
     }
 
@@ -851,7 +851,7 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
         )
 
         NotificareRequest.Builder()
-            .put("/device/${device.id}", payload)
+            .put("/push/${device.id}", payload)
             .response(object : NotificareCallback<Response> {
                 override fun onSuccess(result: Response) {
                     NotificareLogger.debug("Bluetooth state updated.")

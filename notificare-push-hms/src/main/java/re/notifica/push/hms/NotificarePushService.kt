@@ -6,7 +6,6 @@ import kotlinx.coroutines.launch
 import re.notifica.Notificare
 import re.notifica.internal.NotificareLogger
 import re.notifica.internal.ktx.coroutineScope
-import re.notifica.models.NotificareTransport
 import re.notifica.push.hms.internal.NotificareNotificationRemoteMessage
 import re.notifica.push.hms.internal.NotificareSystemRemoteMessage
 import re.notifica.push.hms.internal.NotificareUnknownRemoteMessage
@@ -21,7 +20,7 @@ public open class NotificarePushService : HmsMessageService() {
 
         Notificare.coroutineScope.launch {
             try {
-                Notificare.pushInternal().registerPushToken(NotificareTransport.HMS, token)
+                // Notificare.pushInternal().registerPushToken(NotificareTransport.HMS, token)
                 NotificareLogger.info("Registered the device with a HMS token.")
             } catch (e: Exception) {
                 NotificareLogger.info("Failed to register the device with a HMS token.", e)

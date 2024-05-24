@@ -3,6 +3,14 @@
 ## Upcoming release
 
 - Fix padding discrepancies in alert dialog with actions
+- Device identifiers become long-lived
+
+#### Breaking changes
+
+- `NotificareDevice.id` attribute no longer contains the push token. Use `Notificare.push().subscriptionId` instead.
+- The `NotificareDevice` data model was reduced to only publicly relevant attributes.
+- `onDeviceRegistered` only triggers once, when the device is created.
+- `NotificareTransport` was moved to the push module.
 
 ## 3.9.0
 

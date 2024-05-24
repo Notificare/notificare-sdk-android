@@ -1,4 +1,4 @@
-package re.notifica.models
+package re.notifica.push.models
 
 import android.os.Parcelable
 import com.squareup.moshi.Json

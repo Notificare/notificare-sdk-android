@@ -6,8 +6,8 @@ import androidx.core.content.edit
 import re.notifica.Notificare
 import re.notifica.internal.NotificareLogger
 import re.notifica.internal.moshi
+import re.notifica.internal.storage.preferences.entities.StoredDevice
 import re.notifica.models.NotificareApplication
-import re.notifica.models.NotificareDevice
 import re.notifica.models.NotificareEvent
 
 internal class NotificareSharedPreferences(context: Context) {
@@ -65,12 +65,12 @@ internal class NotificareSharedPreferences(context: Context) {
             }.apply()
         }
 
-    var device: NotificareDevice?
+    var device: StoredDevice?
         get() {
             return sharedPreferences.getString(PREFERENCE_DEVICE, null)
                 ?.let {
                     try {
-                        Notificare.moshi.adapter(NotificareDevice::class.java).fromJson(it)
+                        Notificare.moshi.adapter(StoredDevice::class.java).fromJson(it)
                     } catch (e: Exception) {
                         NotificareLogger.warning("Failed to decode the stored device.", e)
 
@@ -82,13 +82,13 @@ internal class NotificareSharedPreferences(context: Context) {
                 }
         }
         set(value) {
-            sharedPreferences.edit().also {
-                if (value == null) it.remove(PREFERENCE_DEVICE)
-                else it.putString(
+            sharedPreferences.edit {
+                if (value == null) remove(PREFERENCE_DEVICE)
+                else putString(
                     PREFERENCE_DEVICE,
-                    Notificare.moshi.adapter(NotificareDevice::class.java).toJson(value)
+                    Notificare.moshi.adapter(StoredDevice::class.java).toJson(value)
                 )
-            }.apply()
+            }
         }
 
     var preferredLanguage: String?

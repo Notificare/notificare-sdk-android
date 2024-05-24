@@ -2,17 +2,12 @@ package re.notifica.internal.storage
 
 import android.content.Context
 import androidx.core.content.edit
-import java.util.Calendar
-import java.util.Date
 import org.json.JSONObject
-import re.notifica.Notificare
 import re.notifica.internal.NotificareLogger
 import re.notifica.internal.NotificareModule
 import re.notifica.internal.NotificareUtils
-import re.notifica.internal.moshi
 import re.notifica.internal.storage.preferences.NotificareSharedPreferences
-import re.notifica.models.NotificareDevice
-import re.notifica.models.NotificareTransport
+import re.notifica.internal.storage.preferences.entities.StoredDevice
 
 internal class SharedPreferencesMigration(
     private val context: Context,
@@ -45,41 +40,31 @@ internal class SharedPreferencesMigration(
                 try {
                     val json = JSONObject(jsonStr)
 
-                    val lastRegistered: Date = try {
-                        val date = if (!json.isNull("lastActive")) {
-                            val adapter = Notificare.moshi.adapter(Date::class.java)
-                            adapter.fromJsonValue(json.getString("lastActive"))
-                        } else {
-                            null
-                        }
-
-                        date ?: Calendar.getInstance().apply { add(Calendar.DAY_OF_YEAR, -7) }.time
-                    } catch (e: Exception) {
-                        NotificareLogger.warning("Failed to parse legacy last registered date.")
-                        Calendar.getInstance().apply { add(Calendar.DAY_OF_YEAR, -7) }.time
-                    }
-
-                    val device = NotificareDevice(
+                    val device = StoredDevice(
                         id = json.getString("deviceID"),
                         userId = if (!json.isNull("userID")) json.getString("userID") else null,
                         userName = if (!json.isNull("userName")) json.getString("userName") else null,
-                        timeZoneOffset = if (!json.isNull("timeZoneOffset")) json.getDouble("timeZoneOffset") else 0.toDouble(),
+                        timeZoneOffset = if (!json.isNull("timeZoneOffset")) {
+                            json.getDouble("timeZoneOffset")
+                        } else {
+                            0.toDouble()
+                        },
                         osVersion = json.getString("osVersion"),
                         sdkVersion = json.getString("sdkVersion"),
                         appVersion = json.getString("appVersion"),
                         deviceString = json.getString("deviceString"),
-                        language = if (!json.isNull("language")) json.getString("language") else NotificareUtils.deviceLanguage,
-                        region = if (!json.isNull("region")) json.getString("region") else NotificareUtils.deviceRegion,
-                        transport = when (json.optString("transport", "Notificare")) {
-                            "Notificare" -> NotificareTransport.NOTIFICARE
-                            "GCM" -> NotificareTransport.GCM
-                            "HMS" -> NotificareTransport.HMS
-                            else -> NotificareTransport.NOTIFICARE
+                        language = if (!json.isNull("language")) {
+                            json.getString("language")
+                        } else {
+                            NotificareUtils.deviceLanguage
+                        },
+                        region = if (!json.isNull("region")) {
+                            json.getString("region")
+                        } else {
+                            NotificareUtils.deviceRegion
                         },
                         dnd = null,
                         userData = mapOf(),
-                        lastRegistered = lastRegistered,
-//                        allowedUI = if (!json.isNull("allowedUI")) json.getBoolean("allowedUI") else false,
                     )
 
                     preferences.device = device
@@ -104,7 +89,7 @@ internal class SharedPreferencesMigration(
         }
 
         // Signal each available module to migrate whatever data it needs.
-        NotificareModule.Module.values().forEach {
+        NotificareModule.Module.entries.forEach {
             it.instance?.migrate(
                 savedState = v2SavedState,
                 settings = v2Settings,

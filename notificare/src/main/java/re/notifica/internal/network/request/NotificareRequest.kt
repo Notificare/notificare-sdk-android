@@ -32,6 +32,9 @@ import re.notifica.internal.network.NetworkException
 import re.notifica.internal.network.NotificareHeadersInterceptor
 
 @InternalNotificareApi
+public typealias DecodableForFn<T> = (responseCode: Int) -> KClass<T>?
+
+@InternalNotificareApi
 public class NotificareRequest private constructor(
     private val request: Request,
     private val validStatusCodes: IntRange,
@@ -81,7 +84,6 @@ public class NotificareRequest private constructor(
 
         return withContext(Dispatchers.IO) {
             try {
-                @Suppress("BlockingMethodInNonBlockingContext")
                 body.string()
             } catch (e: Exception) {
                 throw NetworkException.ParsingException(cause = e)
@@ -103,13 +105,35 @@ public class NotificareRequest private constructor(
             try {
                 val adapter = Notificare.moshi.adapter(klass.java)
 
-                @Suppress("BlockingMethodInNonBlockingContext")
                 adapter.fromJson(body.source())
                     ?: throw NetworkException.ParsingException(message = "JSON parsing resulted in a null object.")
             } catch (e: Exception) {
                 throw NetworkException.ParsingException(cause = e)
             } finally {
                 body.close()
+            }
+        }
+    }
+
+    public suspend fun <T : Any> responseDecodable(
+        decodableFor: DecodableForFn<T>,
+    ): T? = withContext(Dispatchers.IO) {
+        response(closeResponse = false).use { response ->
+            val klass = decodableFor(response.code)
+                ?: return@withContext null
+
+            val body = response.body
+                ?: throw IllegalArgumentException(
+                    "The response contains an empty body. Cannot parse into '${klass.simpleName}'."
+                )
+
+            try {
+                val adapter = Notificare.moshi.adapter(klass.java)
+
+                adapter.fromJson(body.source())
+                    ?: throw NetworkException.ParsingException(message = "JSON parsing resulted in a null object.")
+            } catch (e: Exception) {
+                throw NetworkException.ParsingException(cause = e)
             }
         }
     }
@@ -264,6 +288,10 @@ public class NotificareRequest private constructor(
 
         public fun <T : Any> responseDecodable(klass: KClass<T>, callback: NotificareCallback<T>): Unit =
             toCallbackFunction(suspend { responseDecodable(klass) })(callback)
+
+        public suspend fun <T : Any> responseDecodable(decodableFor: DecodableForFn<T>): T? {
+            return build().responseDecodable(decodableFor)
+        }
 
         @Throws(IllegalArgumentException::class)
         private fun computeCompleteUrl(): HttpUrl {
