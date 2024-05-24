@@ -35,7 +35,6 @@ public abstract class NotificareModule {
         SCANNABLES(fqn = "re.notifica.scannables.internal.NotificareScannablesImpl"),
         GEO(fqn = "re.notifica.geo.internal.NotificareGeoImpl"),
         LOYALTY(fqn = "re.notifica.loyalty.internal.NotificareLoyaltyImpl"),
-        MONETIZE(fqn = "re.notifica.monetize.internal.NotificareMonetizeImpl"),
         IN_APP_MESSAGING(fqn = "re.notifica.iam.internal.NotificareInAppMessagingImpl"),
         USER_INBOX(fqn = "re.notifica.inbox.user.internal.NotificareUserInboxImpl");
 
