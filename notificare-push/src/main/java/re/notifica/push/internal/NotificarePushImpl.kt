@@ -52,6 +52,7 @@ import re.notifica.push.models.NotificareTransport
 import re.notifica.push.NotificareInternalPush
 import re.notifica.push.NotificarePush
 import re.notifica.push.NotificarePushIntentReceiver
+import re.notifica.push.NotificareSubscriptionUnavailable
 import re.notifica.push.R
 import re.notifica.push.automaticDefaultChannelEnabled
 import re.notifica.push.defaultChannelId
@@ -281,7 +282,6 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
                 // Keep track of the status in local storage.
                 sharedPreferences.remoteNotificationsEnabled = false
 
-                // TODO: should we nuke the FCM token?
                 updateDeviceSubscription(
                     transport = NotificareTransport.NOTIFICARE,
                     token = null
@@ -315,11 +315,12 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
         val device = Notificare.device().currentDevice
             ?: throw NotificareDeviceUnavailableException()
 
-        // TODO: fetch current FCM token
+        val subscriptionId = subscriptionId
+            ?: throw NotificareSubscriptionUnavailable()
 
         val payload = CreateLiveActivityPayload(
             activity = activityId,
-            token = device.id,
+            token = subscriptionId,
             deviceID = device.id,
             topics = topics,
         )
