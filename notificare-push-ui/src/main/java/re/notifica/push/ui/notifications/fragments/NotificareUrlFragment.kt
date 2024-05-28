@@ -41,7 +41,7 @@ public class NotificareUrlFragment : NotificationFragment() {
         val url = content?.data as? String ?: run {
             onMainThread {
                 Notificare.pushUIInternal().lifecycleListeners.forEach {
-                    it.onNotificationFailedToPresent(notification)
+                    it.get()?.onNotificationFailedToPresent(notification)
                 }
             }
 

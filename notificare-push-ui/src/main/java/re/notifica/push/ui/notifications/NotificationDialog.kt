@@ -82,7 +82,7 @@ public class NotificationDialog : DialogFragment() {
         val dialog = builder.create()
 
         onMainThread {
-            Notificare.pushUIInternal().lifecycleListeners.forEach { it.onNotificationPresented(notification) }
+            Notificare.pushUIInternal().lifecycleListeners.forEach { it.get()?.onNotificationPresented(notification) }
         }
 
         return dialog

@@ -40,6 +40,7 @@ import re.notifica.push.ui.notifications.fragments.NotificareUrlFragment
 import re.notifica.push.ui.notifications.fragments.NotificareVideoFragment
 import re.notifica.push.ui.notifications.fragments.NotificareWebPassFragment
 import re.notifica.push.ui.notifications.fragments.NotificareWebViewFragment
+import java.lang.ref.WeakReference
 
 @Keep
 internal object NotificarePushUIImpl : NotificareModule(), NotificarePushUI, NotificareInternalPushUI {
@@ -50,7 +51,7 @@ internal object NotificarePushUIImpl : NotificareModule(), NotificarePushUI, Not
         get() = "${Notificare.requireContext().packageName}$CONTENT_FILE_PROVIDER_AUTHORITY_SUFFIX"
 
     private var serviceManager: ServiceManager? = null
-    private val _lifecycleListeners = mutableListOf<NotificarePushUI.NotificationLifecycleListener>()
+    private val _lifecycleListeners = mutableListOf<WeakReference<NotificarePushUI.NotificationLifecycleListener>>()
 
     // region Notificare Module
 
@@ -65,11 +66,17 @@ internal object NotificarePushUIImpl : NotificareModule(), NotificarePushUI, Not
     override var notificationActivity: Class<out NotificationActivity> = NotificationActivity::class.java
 
     override fun addLifecycleListener(listener: NotificarePushUI.NotificationLifecycleListener) {
-        _lifecycleListeners.add(listener)
+        _lifecycleListeners.add(WeakReference(listener))
     }
 
     override fun removeLifecycleListener(listener: NotificarePushUI.NotificationLifecycleListener) {
-        _lifecycleListeners.remove(listener)
+        val iterator = _lifecycleListeners.iterator()
+        while (iterator.hasNext()) {
+            val next = iterator.next().get()
+            if (next == null || next == listener) {
+                iterator.remove()
+            }
+        }
     }
 
     override fun presentNotification(activity: Activity, notification: NotificareNotification) {
@@ -88,28 +95,28 @@ internal object NotificarePushUIImpl : NotificareModule(), NotificarePushUI, Not
             }
             NotificareNotification.NotificationType.URL_SCHEME -> {
                 onMainThread {
-                    lifecycleListeners.forEach { it.onNotificationWillPresent(notification) }
+                    lifecycleListeners.forEach { it.get()?.onNotificationWillPresent(notification) }
                 }
 
                 handleUrlScheme(activity, notification)
             }
             NotificareNotification.NotificationType.PASSBOOK -> {
                 onMainThread {
-                    lifecycleListeners.forEach { it.onNotificationWillPresent(notification) }
+                    lifecycleListeners.forEach { it.get()?.onNotificationWillPresent(notification) }
                 }
 
                 handlePassbook(activity, notification)
             }
             NotificareNotification.NotificationType.IN_APP_BROWSER -> {
                 onMainThread {
-                    lifecycleListeners.forEach { it.onNotificationWillPresent(notification) }
+                    lifecycleListeners.forEach { it.get()?.onNotificationWillPresent(notification) }
                 }
 
                 handleInAppBrowser(activity, notification)
             }
             else -> {
                 onMainThread {
-                    lifecycleListeners.forEach { it.onNotificationWillPresent(notification) }
+                    lifecycleListeners.forEach { it.get()?.onNotificationWillPresent(notification) }
                 }
 
                 openNotificationActivity(activity, notification)
@@ -127,7 +134,7 @@ internal object NotificarePushUIImpl : NotificareModule(), NotificarePushUI, Not
         Notificare.coroutineScope.launch {
             try {
                 onMainThread {
-                    lifecycleListeners.forEach { it.onActionWillExecute(notification, action) }
+                    lifecycleListeners.forEach { it.get()?.onActionWillExecute(notification, action) }
                 }
 
                 if (action.type == NotificareNotification.Action.TYPE_CALLBACK && (action.camera || action.keyboard)) {
@@ -147,7 +154,7 @@ internal object NotificarePushUIImpl : NotificareModule(), NotificarePushUI, Not
 
                     onMainThread {
                         val error = Exception("Unable to create an action handler for '${action.type}'.")
-                        lifecycleListeners.forEach { it.onActionFailedToExecute(notification, action, error) }
+                        lifecycleListeners.forEach { it.get()?.onActionFailedToExecute(notification, action, error) }
                     }
 
                     return@launch
@@ -156,7 +163,7 @@ internal object NotificarePushUIImpl : NotificareModule(), NotificarePushUI, Not
                 handler.execute()
             } catch (e: Exception) {
                 onMainThread {
-                    lifecycleListeners.forEach { it.onActionFailedToExecute(notification, action, e) }
+                    lifecycleListeners.forEach { it.get()?.onActionFailedToExecute(notification, action, e) }
                 }
             }
         }
@@ -166,7 +173,7 @@ internal object NotificarePushUIImpl : NotificareModule(), NotificarePushUI, Not
 
     // region Notificare Internal Push UI
 
-    override val lifecycleListeners: List<NotificarePushUI.NotificationLifecycleListener> = _lifecycleListeners
+    override val lifecycleListeners: List<WeakReference<NotificarePushUI.NotificationLifecycleListener>> = _lifecycleListeners
 
     // endregion
 
@@ -219,7 +226,7 @@ internal object NotificarePushUIImpl : NotificareModule(), NotificarePushUI, Not
     private fun handleUrlScheme(activity: Activity, notification: NotificareNotification) {
         val content = notification.content.firstOrNull { it.type == "re.notifica.content.URL" } ?: run {
             onMainThread {
-                lifecycleListeners.forEach { it.onNotificationFailedToPresent(notification) }
+                lifecycleListeners.forEach { it.get()?.onNotificationFailedToPresent(notification) }
             }
 
             return
@@ -237,7 +244,7 @@ internal object NotificarePushUIImpl : NotificareModule(), NotificarePushUI, Not
                 presentDeepLink(activity, notification, Uri.parse(link.target))
             } catch (e: Exception) {
                 onMainThread {
-                    lifecycleListeners.forEach { it.onNotificationFailedToPresent(notification) }
+                    lifecycleListeners.forEach { it.get()?.onNotificationFailedToPresent(notification) }
                 }
             }
         }
@@ -258,7 +265,7 @@ internal object NotificarePushUIImpl : NotificareModule(), NotificarePushUI, Not
             NotificareLogger.warning("Cannot open a deep link that's not supported by the application.")
 
             onMainThread {
-                lifecycleListeners.forEach { it.onNotificationFailedToPresent(notification) }
+                lifecycleListeners.forEach { it.get()?.onNotificationFailedToPresent(notification) }
             }
 
             return
@@ -267,7 +274,7 @@ internal object NotificarePushUIImpl : NotificareModule(), NotificarePushUI, Not
         activity.startActivity(intent)
 
         onMainThread {
-            lifecycleListeners.forEach { it.onNotificationPresented(notification) }
+            lifecycleListeners.forEach { it.get()?.onNotificationPresented(notification) }
         }
     }
 
@@ -278,17 +285,18 @@ internal object NotificarePushUIImpl : NotificareModule(), NotificarePushUI, Not
         }
 
         integration.handlePassPresentation(
-            activity, notification,
+            activity,
+            notification,
             object : NotificareCallback<Unit> {
                 override fun onSuccess(result: Unit) {
                     onMainThread {
-                        lifecycleListeners.forEach { it.onNotificationPresented(notification) }
+                        lifecycleListeners.forEach { it.get()?.onNotificationPresented(notification) }
                     }
                 }
 
                 override fun onFailure(e: Exception) {
                     onMainThread {
-                        lifecycleListeners.forEach { it.onNotificationFailedToPresent(notification) }
+                        lifecycleListeners.forEach { it.get()?.onNotificationFailedToPresent(notification) }
                     }
                 }
             }
@@ -298,7 +306,7 @@ internal object NotificarePushUIImpl : NotificareModule(), NotificarePushUI, Not
     private fun handleInAppBrowser(activity: Activity, notification: NotificareNotification) {
         val content = notification.content.firstOrNull { it.type == "re.notifica.content.URL" } ?: run {
             onMainThread {
-                lifecycleListeners.forEach { it.onNotificationFailedToPresent(notification) }
+                lifecycleListeners.forEach { it.get()?.onNotificationFailedToPresent(notification) }
             }
 
             return
@@ -308,13 +316,13 @@ internal object NotificarePushUIImpl : NotificareModule(), NotificarePushUI, Not
             createInAppBrowser().launchUrl(activity, Uri.parse(content.data as String))
 
             onMainThread {
-                lifecycleListeners.forEach { it.onNotificationPresented(notification) }
+                lifecycleListeners.forEach { it.get()?.onNotificationPresented(notification) }
             }
         } catch (e: Exception) {
             NotificareLogger.error("Failed launch in-app browser.", e)
 
             onMainThread {
-                lifecycleListeners.forEach { it.onNotificationFailedToPresent(notification) }
+                lifecycleListeners.forEach { it.get()?.onNotificationFailedToPresent(notification) }
             }
         }
     }

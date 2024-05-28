@@ -59,7 +59,9 @@ internal open class NotificationWebViewClient(
 
         if (loadingError == null) {
             onMainThread {
-                Notificare.pushUIInternal().lifecycleListeners.forEach { it.onNotificationPresented(notification) }
+                Notificare.pushUIInternal().lifecycleListeners.forEach {
+                    it.get()?.onNotificationPresented(notification)
+                }
             }
         }
     }
@@ -72,7 +74,9 @@ internal open class NotificationWebViewClient(
         loadingError = error
 
         onMainThread {
-            Notificare.pushUIInternal().lifecycleListeners.forEach { it.onNotificationFailedToPresent(notification) }
+            Notificare.pushUIInternal().lifecycleListeners.forEach {
+                it.get()?.onNotificationFailedToPresent(notification)
+            }
         }
     }
 
@@ -135,7 +139,7 @@ internal open class NotificationWebViewClient(
         if (options.urlSchemes.contains(uri.scheme)) {
             onMainThread {
                 Notificare.pushUIInternal().lifecycleListeners.forEach {
-                    it.onNotificationUrlClicked(notification, uri)
+                    it.get()?.onNotificationUrlClicked(notification, uri)
                 }
             }
 

@@ -42,7 +42,7 @@ public class NotificareWebViewFragment : NotificationFragment() {
         val html = content?.data as? String ?: run {
             onMainThread {
                 Notificare.pushUIInternal().lifecycleListeners.forEach {
-                    it.onNotificationFailedToPresent(notification)
+                    it.get()?.onNotificationFailedToPresent(notification)
                 }
             }
 

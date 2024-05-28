@@ -83,7 +83,7 @@ public object Notificare {
     private var state: NotificareLaunchState = NotificareLaunchState.NONE
 
     // Listeners
-    private val listeners = hashSetOf<Listener>()
+    private val listeners = hashSetOf<WeakReference<Listener>>()
 
     private var installReferrerDetails: ReferrerDetails? = null
 
@@ -214,7 +214,7 @@ public object Notificare {
 
                 onMainThread {
                     // Notify the listeners.
-                    listeners.forEach { it.onReady(application) }
+                    listeners.forEach { it.get()?.onReady(application) }
                 }
 
                 // Loop all possible modules and post-launch the available ones.
@@ -274,7 +274,7 @@ public object Notificare {
 
                 onMainThread {
                     // Notify the listeners.
-                    listeners.forEach { it.onUnlaunched() }
+                    listeners.forEach { it.get()?.onUnlaunched() }
                 }
             } catch (e: Exception) {
                 NotificareLogger.error("Failed to un-launch Notificare.", e)
@@ -293,7 +293,7 @@ public object Notificare {
 
     @JvmStatic
     public fun addListener(listener: Listener) {
-        listeners.add(listener)
+        listeners.add(WeakReference(listener))
         NotificareLogger.debug("Added a new Notificare.Listener (${listeners.size} in total).")
 
         if (isReady) {
@@ -314,7 +314,13 @@ public object Notificare {
 
     @JvmStatic
     public fun removeListener(listener: Listener) {
-        listeners.remove(listener)
+        val iterator = listeners.iterator()
+        while (iterator.hasNext()) {
+            val next = iterator.next().get()
+            if (next == null || next == listener) {
+                iterator.remove()
+            }
+        }
         NotificareLogger.debug("Removed a Notificare.Listener (${listeners.size} in total).")
     }
 

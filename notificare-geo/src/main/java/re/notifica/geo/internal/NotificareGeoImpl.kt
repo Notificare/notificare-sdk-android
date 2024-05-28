@@ -65,6 +65,7 @@ import re.notifica.internal.network.request.NotificareRequest
 import re.notifica.ktx.device
 import re.notifica.ktx.events
 import re.notifica.models.NotificareApplication
+import java.lang.ref.WeakReference
 
 @Keep
 @Suppress("detekt:LargeClass")
@@ -81,7 +82,7 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
     private var serviceManager: ServiceManager? = null
     private var beaconServiceManager: BeaconServiceManager? = null
     private var lastKnownLocation: Location? = null
-    private val listeners = mutableListOf<NotificareGeo.Listener>()
+    private val listeners = mutableListOf<WeakReference<NotificareGeo.Listener>>()
 
     private val hasForegroundLocationPermission: Boolean
         get() {
@@ -363,11 +364,17 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
     }
 
     override fun addListener(listener: NotificareGeo.Listener) {
-        listeners.add(listener)
+        listeners.add(WeakReference(listener))
     }
 
     override fun removeListener(listener: NotificareGeo.Listener) {
-        listeners.remove(listener)
+        val iterator = listeners.iterator()
+        while (iterator.hasNext()) {
+            val next = iterator.next().get()
+            if (next == null || next == listener) {
+                iterator.remove()
+            }
+        }
     }
 
     // endregion
@@ -397,7 +404,7 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
                     startRegionSession(region)
 
                     onMainThread {
-                        listeners.forEach { it.onRegionEntered(region) }
+                        listeners.forEach { it.get()?.onRegionEntered(region) }
                     }
 
                     Notificare.requireContext().sendBroadcast(
@@ -410,7 +417,7 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
                     stopRegionSession(region)
 
                     onMainThread {
-                        listeners.forEach { it.onRegionExited(region) }
+                        listeners.forEach { it.get()?.onRegionExited(region) }
                     }
 
                     Notificare.requireContext().sendBroadcast(
@@ -467,7 +474,7 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
         }
 
         onMainThread {
-            listeners.forEach { it.onLocationUpdated(NotificareLocation(location)) }
+            listeners.forEach { it.get()?.onLocationUpdated(NotificareLocation(location)) }
         }
 
         Notificare.requireContext().sendBroadcast(
@@ -503,7 +510,7 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
                                 startMonitoringBeacons(region)
 
                                 onMainThread {
-                                    listeners.forEach { it.onRegionEntered(region) }
+                                    listeners.forEach { it.get()?.onRegionEntered(region) }
                                 }
 
                                 Notificare.requireContext().sendBroadcast(
@@ -530,7 +537,7 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
                 startRegionSession(region)
 
                 onMainThread {
-                    listeners.forEach { it.onRegionEntered(region) }
+                    listeners.forEach { it.get()?.onRegionEntered(region) }
                 }
 
                 Notificare.requireContext().sendBroadcast(
@@ -558,7 +565,7 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
                 stopRegionSession(region)
 
                 onMainThread {
-                    listeners.forEach { it.onRegionExited(region) }
+                    listeners.forEach { it.get()?.onRegionExited(region) }
                 }
 
                 Notificare.requireContext().sendBroadcast(
@@ -590,7 +597,7 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
             }
 
             onMainThread {
-                listeners.forEach { it.onBeaconEntered(beacon) }
+                listeners.forEach { it.get()?.onBeaconEntered(beacon) }
             }
 
             Notificare.requireContext().sendBroadcast(
@@ -618,7 +625,7 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
             }
 
             onMainThread {
-                listeners.forEach { it.onBeaconExited(beacon) }
+                listeners.forEach { it.get()?.onBeaconExited(beacon) }
             }
 
             Notificare.requireContext().sendBroadcast(
@@ -661,7 +668,7 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
         updateBeaconSessions(cachedBeacons)
 
         onMainThread {
-            listeners.forEach { it.onBeaconsRanged(region, cachedBeacons) }
+            listeners.forEach { it.get()?.onBeaconsRanged(region, cachedBeacons) }
         }
 
         Notificare.requireContext().sendBroadcast(

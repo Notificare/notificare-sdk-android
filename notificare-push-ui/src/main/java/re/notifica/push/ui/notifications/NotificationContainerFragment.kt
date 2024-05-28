@@ -239,7 +239,7 @@ public class NotificationContainerFragment
 
                 onMainThread {
                     Notificare.pushUIInternal().lifecycleListeners.forEach {
-                        it.onActionWillExecute(notification, action)
+                        it.get()?.onActionWillExecute(notification, action)
                     }
                 }
 
@@ -263,7 +263,7 @@ public class NotificationContainerFragment
                         onMainThread {
                             val error = Exception(requireContext().getString(R.string.notificare_action_camera_failed))
                             Notificare.pushUIInternal().lifecycleListeners.forEach {
-                                it.onActionFailedToExecute(
+                                it.get()?.onActionFailedToExecute(
                                     notification,
                                     action,
                                     error
@@ -291,7 +291,7 @@ public class NotificationContainerFragment
 
                 onMainThread {
                     Notificare.pushUIInternal().lifecycleListeners.forEach {
-                        it.onActionFailedToExecute(notification, action, e)
+                        it.get()?.onActionFailedToExecute(notification, action, e)
                     }
                 }
             }

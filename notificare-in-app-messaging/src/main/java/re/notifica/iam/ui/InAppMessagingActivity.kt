@@ -100,7 +100,7 @@ public open class InAppMessagingActivity : AppCompatActivity() {
 
         onMainThread {
             Notificare.inAppMessagingImplementation().lifecycleListeners.forEach {
-                it.onMessageFinishedPresenting(message)
+                it.get()?.onMessageFinishedPresenting(message)
             }
         }
     }

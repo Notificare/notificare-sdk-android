@@ -130,7 +130,7 @@ internal class NotificationCallbackAction(
 
                 onMainThread {
                     Notificare.pushUIInternal().lifecycleListeners.forEach {
-                        it.onActionExecuted(
+                        it.get()?.onActionExecuted(
                             notification,
                             action
                         )
@@ -153,7 +153,7 @@ internal class NotificationCallbackAction(
 
                     onMainThread {
                         Notificare.pushUIInternal().lifecycleListeners.forEach {
-                            it.onActionExecuted(
+                            it.get()?.onActionExecuted(
                                 notification,
                                 action
                             )
@@ -162,7 +162,7 @@ internal class NotificationCallbackAction(
                 } catch (e: Exception) {
                     onMainThread {
                         Notificare.pushUIInternal().lifecycleListeners.forEach {
-                            it.onActionFailedToExecute(
+                            it.get()?.onActionFailedToExecute(
                                 notification,
                                 action,
                                 e

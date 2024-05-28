@@ -54,7 +54,7 @@ public open class NotificationActivity : AppCompatActivity(), NotificationContai
         if (item.itemId == android.R.id.home) {
             onMainThread {
                 Notificare.pushUIImplementation().lifecycleListeners.forEach {
-                    it.onNotificationFinishedPresenting(notification)
+                    it.get()?.onNotificationFinishedPresenting(notification)
                 }
             }
 
@@ -70,7 +70,7 @@ public open class NotificationActivity : AppCompatActivity(), NotificationContai
 
         onMainThread {
             Notificare.pushUIImplementation().lifecycleListeners.forEach {
-                it.onNotificationFinishedPresenting(notification)
+                it.get()?.onNotificationFinishedPresenting(notification)
             }
         }
     }

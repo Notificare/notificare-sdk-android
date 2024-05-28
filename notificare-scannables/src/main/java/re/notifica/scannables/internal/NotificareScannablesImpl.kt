@@ -21,13 +21,14 @@ import re.notifica.scannables.NotificareScannables
 import re.notifica.scannables.ScannableActivity
 import re.notifica.scannables.internal.network.push.FetchScannableResponse
 import re.notifica.scannables.models.NotificareScannable
+import java.lang.ref.WeakReference
 
 @Keep
 internal object NotificareScannablesImpl : NotificareModule(), NotificareScannables {
     internal var serviceManager: ServiceManager? = null
         private set
 
-    private val listeners = mutableListOf<NotificareScannables.ScannableSessionListener>()
+    private val listeners = mutableListOf<WeakReference<NotificareScannables.ScannableSessionListener>>()
 
     // region Notificare Module
 
@@ -55,11 +56,17 @@ internal object NotificareScannablesImpl : NotificareModule(), NotificareScannab
         }
 
     override fun addListener(listener: NotificareScannables.ScannableSessionListener) {
-        listeners.add(listener)
+        listeners.add(WeakReference(listener))
     }
 
     override fun removeListener(listener: NotificareScannables.ScannableSessionListener) {
-        listeners.remove(listener)
+        val iterator = listeners.iterator()
+        while (iterator.hasNext()) {
+            val next = iterator.next().get()
+            if (next == null || next == listener) {
+                iterator.remove()
+            }
+        }
     }
 
     override fun startScannableSession(activity: Activity) {
@@ -102,7 +109,7 @@ internal object NotificareScannablesImpl : NotificareModule(), NotificareScannab
     internal fun notifyListeners(scannable: NotificareScannable) {
         onMainThread {
             listeners.forEach {
-                it.onScannableDetected(scannable)
+                it.get()?.onScannableDetected(scannable)
             }
         }
     }
@@ -110,7 +117,7 @@ internal object NotificareScannablesImpl : NotificareModule(), NotificareScannab
     internal fun notifyListeners(error: Exception) {
         onMainThread {
             listeners.forEach {
-                it.onScannableSessionError(error)
+                it.get()?.onScannableSessionError(error)
             }
         }
     }
