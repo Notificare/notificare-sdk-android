@@ -277,23 +277,21 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
         callback: NotificareCallback<Unit>
     ): Unit = toCallbackFunction(::enableRemoteNotifications)(callback)
 
-    override fun disableRemoteNotifications() {
-        Notificare.coroutineScope.launch {
-            try {
-                // Keep track of the status in local storage.
-                sharedPreferences.remoteNotificationsEnabled = false
+    override suspend fun disableRemoteNotifications(): Unit = withContext(Dispatchers.IO) {
+        // Keep track of the status in local storage.
+        sharedPreferences.remoteNotificationsEnabled = false
 
-                updateDeviceSubscription(
-                    transport = NotificareTransport.NOTIFICARE,
-                    token = null
-                )
+        updateDeviceSubscription(
+            transport = NotificareTransport.NOTIFICARE,
+            token = null
+        )
 
-                NotificareLogger.info("Unregistered from push provider.")
-            } catch (e: Exception) {
-                NotificareLogger.error("Failed to register a temporary device.", e)
-            }
-        }
+        NotificareLogger.info("Unregistered from push provider.")
     }
+
+    override fun disableRemoteNotifications(
+        callback: NotificareCallback<Unit>
+    ): Unit = toCallbackFunction(::disableRemoteNotifications)(callback)
 
     override fun handleTrampolineIntent(intent: Intent): Boolean {
         if (intent.action != Notificare.INTENT_ACTION_REMOTE_MESSAGE_OPENED) {

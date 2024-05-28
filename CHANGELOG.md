@@ -5,14 +5,14 @@
 - Fix padding discrepancies in alert dialog with actions
 - Device identifiers become long-lived
 - Keep weak references for listeners to prevent memory leaks
-- `enableRemoteNotifications()` becomes a suspending function with a callback alternative
+- `enableRemoteNotifications()` and `disableRemoteNotifications()` become suspending functions with a callback alternative
 
 #### Breaking changes
 
 - `NotificareDevice.id` attribute no longer contains the push token. Use `Notificare.push().subscriptionId` instead.
 - The `NotificareDevice` data model was reduced to only publicly relevant attributes.
 - `onDeviceRegistered` only triggers once, when the device is created.
-- `enableRemoteNotifications()` becomes an async function that completes after all the work is done.
+- `enableRemoteNotifications()` and `disableRemoteNotifications()` become suspending functions that complete after all the work is done.
 - `NotificareTransport` was moved to the push module.
 - Drops support for the monetize module.
 - Drops support for Huawei Mobile Services.
