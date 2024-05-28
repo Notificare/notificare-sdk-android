@@ -27,7 +27,9 @@ public interface NotificarePush {
 
     public fun enableRemoteNotifications(callback: NotificareCallback<Unit>)
 
-    public fun disableRemoteNotifications()
+    public suspend fun disableRemoteNotifications()
+
+    public fun disableRemoteNotifications(callback: NotificareCallback<Unit>)
 
     // Augmented in the appropriate peer module.
     // public fun isNotificareNotification(...: RemoteMessage)

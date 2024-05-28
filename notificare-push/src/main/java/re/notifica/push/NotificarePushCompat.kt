@@ -106,8 +106,8 @@ public object NotificarePushCompat {
     }
 
     @JvmStatic
-    public fun disableRemoteNotifications() {
-        Notificare.push().disableRemoteNotifications()
+    public fun disableRemoteNotifications(callback: NotificareCallback<Unit>) {
+        Notificare.push().disableRemoteNotifications(callback)
     }
 
     @JvmStatic
