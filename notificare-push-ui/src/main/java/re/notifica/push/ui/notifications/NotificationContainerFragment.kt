@@ -14,7 +14,9 @@ import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
 import re.notifica.Notificare
@@ -97,10 +99,6 @@ public class NotificationContainerFragment
         } catch (e: ClassCastException) {
             throw ClassCastException("Parent activity must implement NotificationContainerFragment.Callback.")
         }
-
-        if (notification.type != NotificareNotification.TYPE_ALERT && notification.actions.isNotEmpty()) {
-            setHasOptionsMenu(true)
-        }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -118,7 +116,7 @@ public class NotificationContainerFragment
             notification.type != NotificareNotification.TYPE_PASSBOOK &&
             notification.actions.isNotEmpty()
         ) {
-            setHasOptionsMenu(true)
+            setupMenu()
         }
 
         if (savedInstanceState != null) return
@@ -170,25 +168,31 @@ public class NotificationContainerFragment
         outState.putParcelable(Notificare.INTENT_EXTRA_ACTION, action)
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
-        inflater.inflate(R.menu.notificare_menu_notification_fragment, menu)
-    }
+    private fun setupMenu() {
+        requireActivity().addMenuProvider(
+            object : MenuProvider {
+                override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                    menuInflater.inflate(R.menu.notificare_menu_notification_fragment, menu)
+                }
 
-    override fun onPrepareOptionsMenu(menu: Menu) {
-        super.onPrepareOptionsMenu(menu)
-        menu.findItem(R.id.notificare_action_show_actions).isVisible = showActionsMenuItem
-    }
+                override fun onPrepareMenu(menu: Menu) {
+                    super.onPrepareMenu(menu)
+                    menu.findItem(R.id.notificare_action_show_actions).isVisible = showActionsMenuItem
+                }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.notificare_action_show_actions -> {
-                showActionsDialog()
-                return true
-            }
-        }
-
-        return super.onOptionsItemSelected(item)
+                override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                    return when (menuItem.itemId) {
+                        R.id.notificare_action_show_actions -> {
+                            showActionsDialog()
+                            true
+                        }
+                        else -> false
+                    }
+                }
+            },
+            viewLifecycleOwner,
+            Lifecycle.State.RESUMED,
+        )
     }
 
     private fun showActionsDialog() {

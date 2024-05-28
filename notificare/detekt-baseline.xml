@@ -3,8 +3,6 @@
   <ManuallySuppressedIssues></ManuallySuppressedIssues>
   <CurrentIssues>
     <ID>CyclomaticComplexMethod:Notificare.kt$Notificare$@JvmStatic public fun cancelNotification(id: String)</ID>
-    <ID>CyclomaticComplexMethod:NotificareDeviceModuleImpl.kt$NotificareDeviceModuleImpl$private fun registrationChanged(token: String?, userId: String?, userName: String?): Boolean</ID>
-    <ID>CyclomaticComplexMethod:SharedPreferencesMigration.kt$SharedPreferencesMigration$fun migrate()</ID>
     <ID>EmptyFunctionBlock:NotificareSessionModuleImpl.kt$NotificareSessionModuleImpl.&lt;no name provided&gt;${}</ID>
     <ID>EmptyFunctionBlock:NotificareUtils.kt$NotificareUtils.&lt;no name provided&gt;${}</ID>
     <ID>LongMethod:Notificare.kt$Notificare$@JvmStatic public fun launch()</ID>
@@ -16,16 +14,11 @@
     <ID>MagicNumber:NotificareSessionModuleImpl.kt$NotificareSessionModuleImpl.&lt;no name provided&gt;$10000</ID>
     <ID>MagicNumber:NotificareTime.kt$NotificareTime$23</ID>
     <ID>MagicNumber:NotificareTime.kt$NotificareTime$59</ID>
-    <ID>MagicNumber:SharedPreferencesMigration.kt$SharedPreferencesMigration$7</ID>
     <ID>MatchingDeclarationName:Annotations.kt$InternalNotificareApi</ID>
     <ID>MatchingDeclarationName:NotificareNetworkException.kt$NetworkException : Exception</ID>
-    <ID>MaxLineLength:NotificareDeviceModuleImpl.kt$NotificareDeviceModuleImpl$// We will log the Install &amp; Registration events here since this will execute only one time at the start.</ID>
     <ID>MaxLineLength:NotificareNotification.kt$NotificareNotification.Action.Companion$message = "The WebView action type becomes a backwards compatible alias. Use the InAppBrowser action type instead."</ID>
     <ID>MaxLineLength:NotificareUtils.kt$NotificareUtils$get() = "$applicationName/$applicationVersion Notificare/${Notificare.SDK_VERSION} Android/${Build.VERSION.RELEASE}"</ID>
-    <ID>MaxLineLength:SharedPreferencesMigration.kt$SharedPreferencesMigration$language = if (!json.isNull("language")) json.getString("language") else NotificareUtils.deviceLanguage</ID>
-    <ID>MaxLineLength:SharedPreferencesMigration.kt$SharedPreferencesMigration$timeZoneOffset = if (!json.isNull("timeZoneOffset")) json.getDouble("timeZoneOffset") else 0.toDouble()</ID>
     <ID>NestedBlockDepth:Notificare.kt$Notificare$@JvmStatic public fun cancelNotification(id: String)</ID>
-    <ID>NestedBlockDepth:SharedPreferencesMigration.kt$SharedPreferencesMigration$fun migrate()</ID>
     <ID>ReturnCount:AbstractServiceManager.kt$AbstractServiceManager.Factory$public inline fun &lt;reified T : AbstractServiceManager&gt; create(gms: String, hms: String): T</ID>
     <ID>ReturnCount:Notificare.kt$Notificare$private fun parseDynamicLink(intent: Intent): Uri?</ID>
     <ID>ReturnCount:Notificare.kt$Notificare$private fun parseTestDeviceNonce(intent: Intent): String?</ID>
@@ -35,7 +28,6 @@
     <ID>SwallowedException:NotificareModule.kt$NotificareModule.Module$e: Exception</ID>
     <ID>SwallowedException:NotificareSessionModuleImpl.kt$NotificareSessionModuleImpl$e: Exception</ID>
     <ID>SwallowedException:NotificareSessionModuleImpl.kt$NotificareSessionModuleImpl.&lt;no name provided&gt;$e: Exception</ID>
-    <ID>SwallowedException:SharedPreferencesMigration.kt$SharedPreferencesMigration$e: Exception</ID>
     <ID>ThrowingExceptionsWithoutMessageOrCause:NotificareLogger.kt$NotificareLogger$Throwable()</ID>
     <ID>ThrowsCount:NotificareRequest.kt$NotificareRequest$public suspend fun &lt;T : Any&gt; responseDecodable(klass: KClass&lt;T&gt;): T</ID>
     <ID>TooGenericExceptionCaught:AbstractServiceManager.kt$AbstractServiceManager.Factory$e: Exception</ID>
@@ -60,7 +52,6 @@
     <ID>UseCheckOrError:NotificareSessionConfigurationProvider.kt$NotificareSessionConfigurationProvider$throw IllegalStateException("Cannot find context from the provider.")</ID>
     <ID>UseRequire:Notificare.kt$Notificare$throw IllegalArgumentException("Notificare cannot be configured without an application key and secret.")</ID>
     <ID>UseRequire:NotificareDeviceModuleImpl.kt$NotificareDeviceModuleImpl$throw IllegalArgumentException("Invalid preferred language value: $preferredLanguage")</ID>
-    <ID>UseRequire:NotificareDeviceModuleImpl.kt$NotificareDeviceModuleImpl$throw IllegalArgumentException("Invalid transport '$transport'.")</ID>
     <ID>UseRequire:NotificareTime.kt$NotificareTime$throw IllegalArgumentException("Invalid time '$hours:$minutes'.")</ID>
     <ID>UseRequire:NotificareTime.kt$NotificareTime.Companion$throw IllegalArgumentException("Invalid time string.")</ID>
   </CurrentIssues>

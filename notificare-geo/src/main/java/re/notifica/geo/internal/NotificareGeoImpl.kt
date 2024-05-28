@@ -50,7 +50,6 @@ import re.notifica.geo.ktx.INTENT_EXTRA_RANGED_BEACONS
 import re.notifica.geo.ktx.INTENT_EXTRA_REGION
 import re.notifica.geo.ktx.logBeaconSession
 import re.notifica.geo.ktx.logRegionSession
-import re.notifica.geo.ktx.loyaltyIntegration
 import re.notifica.geo.ktx.takeEvenlySpaced
 import re.notifica.geo.models.NotificareBeacon
 import re.notifica.geo.models.NotificareBeaconSession
@@ -62,7 +61,6 @@ import re.notifica.internal.NotificareLogger
 import re.notifica.internal.NotificareModule
 import re.notifica.internal.common.onMainThread
 import re.notifica.internal.ktx.coroutineScope
-import re.notifica.internal.modules.integrations.NotificareGeoIntegration
 import re.notifica.internal.network.request.NotificareRequest
 import re.notifica.ktx.device
 import re.notifica.ktx.events
@@ -70,7 +68,8 @@ import re.notifica.models.NotificareApplication
 import java.lang.ref.WeakReference
 
 @Keep
-internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, NotificareInternalGeo, NotificareGeoIntegration {
+@Suppress("detekt:LargeClass")
+internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, NotificareInternalGeo {
 
     private const val DEFAULT_MONITORED_REGIONS_LIMIT: Int = 10
     private const val MAX_MONITORED_REGIONS_LIMIT: Int = 100
@@ -483,8 +482,6 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
                 .setAction(Notificare.INTENT_ACTION_LOCATION_UPDATED)
                 .putExtra(Notificare.INTENT_EXTRA_LOCATION, NotificareLocation(location))
         )
-
-        Notificare.loyaltyIntegration()?.onPassbookLocationRelevanceChanged()
     }
 
     override fun handleRegionEnter(identifiers: List<String>) {
@@ -609,8 +606,6 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
                     .putExtra(Notificare.INTENT_EXTRA_BEACON, beacon)
             )
         }
-
-        Notificare.loyaltyIntegration()?.onPassbookLocationRelevanceChanged()
     }
 
     override fun handleBeaconExit(uniqueId: String, major: Int, minor: Int?) {
@@ -639,8 +634,6 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
                     .putExtra(Notificare.INTENT_EXTRA_BEACON, beacon)
             )
         }
-
-        Notificare.loyaltyIntegration()?.onPassbookLocationRelevanceChanged()
     }
 
     override fun handleRangingBeacons(regionId: String, beacons: List<BeaconServiceManager.Beacon>) {
@@ -685,22 +678,6 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
                 .putParcelableArrayListExtra(Notificare.INTENT_EXTRA_RANGED_BEACONS, ArrayList(cachedBeacons))
         )
     }
-
-    // endregion
-
-    // region Notificare Geo Integration
-
-    override val geoLastKnownLocation: Location?
-        get() = lastKnownLocation
-
-    override val geoEnteredBeacons: List<NotificareGeoIntegration.Beacon>
-        get() {
-            if (!::localStorage.isInitialized) return emptyList()
-
-            return localStorage.enteredBeacons
-                .mapNotNull { id -> localStorage.monitoredBeacons.firstOrNull { it.id == id } }
-                .map { beacon -> NotificareGeoIntegration.Beacon(beacon.major, beacon.minor) }
-        }
 
     // endregion
 
@@ -818,7 +795,7 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
         )
 
         NotificareRequest.Builder()
-            .put("/device/${device.id}", payload)
+            .put("/push/${device.id}", payload)
             .response()
     }
 
@@ -841,7 +818,7 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
         )
 
         NotificareRequest.Builder()
-            .put("/device/${device.id}", payload)
+            .put("/push/${device.id}", payload)
             .response()
     }
 
@@ -858,7 +835,7 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
         )
 
         NotificareRequest.Builder()
-            .put("/device/${device.id}", payload)
+            .put("/push/${device.id}", payload)
             .response(object : NotificareCallback<Response> {
                 override fun onSuccess(result: Response) {
                     NotificareLogger.debug("Bluetooth state updated.")

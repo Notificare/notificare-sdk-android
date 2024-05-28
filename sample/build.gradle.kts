@@ -8,7 +8,6 @@ plugins {
     alias(libs.plugins.google.services)
     alias(libs.plugins.ktlint)
     alias(libs.plugins.detekt)
-    // alias(libs.plugins.huawei.agconnect)
 }
 
 val properties = loadProperties("local.properties")
@@ -22,7 +21,7 @@ android {
         applicationId = "re.notifica.sample.app"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
-        versionCode = 4
+        versionCode = 12
         versionName = "3.0.0"
 
         manifestPlaceholders["googleMapsApiKey"] = properties.getProperty("google.maps.key")
@@ -71,18 +70,25 @@ android {
     }
 
     applicationVariants.configureEach {
-        if (name == "apiTestDebug") {
-            resValue("string", "notificare_app_links_hostname", "\"618d0f4edc09fbed1864e8d0.applinks-test.notifica.re\"")
-            resValue("string", "notificare_dynamic_link_hostname", "\"sample-app-dev.test.ntc.re\"")
-        } else if (name == "apiTestRelease") {
-            resValue("string", "notificare_app_links_hostname", "\"654d017fc468efc19379921e.applinks-test.notifica.re\"")
-            resValue("string", "notificare_dynamic_link_hostname", "\"sample-app.test.ntc.re\"")
-        } else if (name == "apiProductionDebug") {
-            resValue("string", "notificare_app_links_hostname", "\"61644511218adebf72c5449b.applinks.notifica.re\"")
-            resValue("string", "notificare_dynamic_link_hostname", "\"sample-app-dev.ntc.re\"")
-        } else if (name == "apiProductionRelease") {
-            resValue("string", "notificare_app_links_hostname", "\"6511625f445cc1c81d47fd6f.applinks.notifica.re\"")
-            resValue("string", "notificare_dynamic_link_hostname", "\"sample-app.ntc.re\"")
+        when (name) {
+            "apiTestDebug" -> {
+                @Suppress("ktlint:standard:argument-list-wrapping")
+                resValue("string", "notificare_app_links_hostname", "\"618d0f4edc09fbed1864e8d0.applinks-test.notifica.re\"")
+                resValue("string", "notificare_dynamic_link_hostname", "\"sample-app-dev.test.ntc.re\"")
+            }
+            "apiTestRelease" -> {
+                @Suppress("ktlint:standard:argument-list-wrapping")
+                resValue("string", "notificare_app_links_hostname", "\"654d017fc468efc19379921e.applinks-test.notifica.re\"")
+                resValue("string", "notificare_dynamic_link_hostname", "\"sample-app.test.ntc.re\"")
+            }
+            "apiProductionDebug" -> {
+                resValue("string", "notificare_app_links_hostname", "\"61644511218adebf72c5449b.applinks.notifica.re\"")
+                resValue("string", "notificare_dynamic_link_hostname", "\"sample-app-dev.ntc.re\"")
+            }
+            "apiProductionRelease" -> {
+                resValue("string", "notificare_app_links_hostname", "\"6511625f445cc1c81d47fd6f.applinks.notifica.re\"")
+                resValue("string", "notificare_dynamic_link_hostname", "\"sample-app.ntc.re\"")
+            }
         }
     }
 
@@ -155,21 +161,14 @@ dependencies {
 
     implementation(project(":notificare-geo"))
     implementation(project(":notificare-geo-gms"))
-    implementation(project(":notificare-geo-hms"))
     implementation(project(":notificare-geo-beacons"))
-
-    implementation(project(":notificare-monetize"))
-    implementation(project(":notificare-monetize-gms"))
 
     implementation(project(":notificare-push"))
     implementation(project(":notificare-push-gms"))
-    implementation(project(":notificare-push-hms"))
 
     implementation(project(":notificare-push-ui"))
     implementation(project(":notificare-push-ui-gms"))
-    implementation(project(":notificare-push-ui-hms"))
 
     implementation(project(":notificare-scannables"))
     implementation(project(":notificare-scannables-gms"))
-    implementation(project(":notificare-scannables-hms"))
 }

@@ -25,6 +25,7 @@ import re.notifica.inbox.ktx.inbox
 import re.notifica.models.NotificareDoNotDisturb
 import re.notifica.models.NotificareTime
 import re.notifica.push.ktx.push
+import re.notifica.sample.BuildConfig
 import re.notifica.sample.R
 import re.notifica.sample.databinding.FragmentMainBinding
 import re.notifica.sample.ktx.LocationPermission
@@ -316,10 +317,6 @@ class MainFragment : BaseFragment() {
             findNavController().navigate(R.id.action_mainFragment_to_scannablesFragment)
         }
 
-        binding.otherFeaturesCard.monetizeRow.setOnClickListener {
-            findNavController().navigate(R.id.action_mainFragment_to_monetizeFragment)
-        }
-
         binding.otherFeaturesCard.assetsRow.setOnClickListener {
             findNavController().navigate(R.id.action_mainFragment_to_assetsFragment)
         }
@@ -456,7 +453,7 @@ class MainFragment : BaseFragment() {
             binding.applicationInfoCard.root.isVisible = info != null
 
             if (info != null) {
-                binding.applicationInfoCard.nameStatusLabel.text = info.name
+                binding.applicationInfoCard.nameStatusLabel.text = "${info.name} (${BuildConfig.VERSION_CODE})"
                 binding.applicationInfoCard.identifierStatusLabel.text = info.identifier
             }
         }

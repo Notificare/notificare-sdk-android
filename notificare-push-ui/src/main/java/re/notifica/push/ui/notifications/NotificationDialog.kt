@@ -48,12 +48,11 @@ public class NotificationDialog : DialogFragment() {
         if (icon != null) builder.setIcon(icon)
 
         builder.setTitle(notification.title ?: NotificareUtils.applicationName)
+        builder.setMessage(notification.message)
 
         val type = NotificareNotification.NotificationType.from(notification.type)
         if (type == NotificareNotification.NotificationType.ALERT && notification.actions.isNotEmpty()) {
             val binding = NotificareAlertDialogBinding.inflate(LayoutInflater.from(context))
-
-            binding.message.text = notification.message
 
             binding.list.adapter = ArrayAdapter(
                 requireContext(),

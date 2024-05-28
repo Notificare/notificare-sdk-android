@@ -2,7 +2,6 @@ package re.notifica
 
 import re.notifica.models.NotificareDevice
 import re.notifica.models.NotificareDoNotDisturb
-import re.notifica.models.NotificareTransport
 import re.notifica.models.NotificareUserData
 
 public interface NotificareDeviceModule {
@@ -11,9 +10,21 @@ public interface NotificareDeviceModule {
 
     public val preferredLanguage: String?
 
+    @Deprecated(
+        message = "Use updateUser() instead.",
+        replaceWith = ReplaceWith("updateUser(userId, userName)")
+    )
     public suspend fun register(userId: String?, userName: String?)
 
+    @Deprecated(
+        message = "Use updateUser() instead.",
+        replaceWith = ReplaceWith("updateUser(userId, userName, callback)")
+    )
     public fun register(userId: String?, userName: String?, callback: NotificareCallback<Unit>)
+
+    public suspend fun updateUser(userId: String?, userName: String?)
+
+    public fun updateUser(userId: String?, userName: String?, callback: NotificareCallback<Unit>)
 
     public suspend fun updatePreferredLanguage(preferredLanguage: String?)
 
@@ -62,13 +73,4 @@ public interface NotificareDeviceModule {
     public suspend fun updateUserData(userData: NotificareUserData)
 
     public fun updateUserData(userData: NotificareUserData, callback: NotificareCallback<Unit>)
-}
-
-public interface NotificareInternalDeviceModule {
-
-    @InternalNotificareApi
-    public suspend fun registerTemporary()
-
-    @InternalNotificareApi
-    public suspend fun registerPushToken(transport: NotificareTransport, token: String)
 }

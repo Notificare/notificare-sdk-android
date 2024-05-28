@@ -2,6 +2,10 @@ package re.notifica.push.internal
 
 import android.content.Context
 import androidx.core.content.edit
+import re.notifica.Notificare
+import re.notifica.internal.NotificareLogger
+import re.notifica.internal.moshi
+import re.notifica.push.models.NotificareTransport
 
 internal class NotificareSharedPreferences(context: Context) {
 
@@ -10,6 +14,8 @@ internal class NotificareSharedPreferences(context: Context) {
 
         private const val PREFERENCE_REMOTE_NOTIFICATIONS_ENABLED =
             "re.notifica.push.preferences.remote_notifications_enabled"
+        private const val PREFERENCE_TRANSPORT = "re.notifica.push.preferences.transport"
+        private const val PREFERENCE_SUBSCRIPTION_ID = "re.notifica.push.preferences.subscription_id"
         private const val PREFERENCE_ALLOWED_UI = "re.notifica.push.preferences.allowed_ui"
         private const val PREFERENCE_FIRST_REGISTRATION = "re.notifica.push.preferences.first_registration"
     }
@@ -30,6 +36,40 @@ internal class NotificareSharedPreferences(context: Context) {
             sharedPreferences.edit()
                 .putBoolean(PREFERENCE_REMOTE_NOTIFICATIONS_ENABLED, value)
                 .apply()
+        }
+
+    var transport: NotificareTransport?
+        get() {
+            return sharedPreferences.getString(PREFERENCE_TRANSPORT, null)?.let {
+                try {
+                    Notificare.moshi.adapter(NotificareTransport::class.java).fromJson(it)
+                } catch (e: Exception) {
+                    NotificareLogger.warning("Failed to decode the stored transport.", e)
+
+                    // Remove the corrupted value from local storage.
+                    sharedPreferences.edit { remove(PREFERENCE_TRANSPORT) }
+
+                    null
+                }
+            }
+        }
+        set(value) {
+            sharedPreferences.edit {
+                if (value == null) remove(PREFERENCE_TRANSPORT)
+                else putString(
+                    PREFERENCE_TRANSPORT,
+                    Notificare.moshi.adapter(NotificareTransport::class.java).toJson(value)
+                )
+            }
+        }
+
+    var subscriptionId: String?
+        get() = sharedPreferences.getString(PREFERENCE_SUBSCRIPTION_ID, null)
+        set(value) {
+            sharedPreferences.edit {
+                if (value == null) remove(PREFERENCE_SUBSCRIPTION_ID)
+                else putString(PREFERENCE_SUBSCRIPTION_ID, value)
+            }
         }
 
     var allowedUI: Boolean

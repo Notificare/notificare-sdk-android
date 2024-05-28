@@ -7,7 +7,6 @@ plugins {
     alias(libs.plugins.kotlin.android) apply false
     alias(libs.plugins.notificare.services) apply false
     alias(libs.plugins.google.services) apply false
-    alias(libs.plugins.huawei.agconnect) apply false
     alias(libs.plugins.google.ksp) apply false
     alias(libs.plugins.ktlint)
     alias(libs.plugins.detekt)

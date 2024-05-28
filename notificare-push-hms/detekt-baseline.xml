@@ -1,9 +1,0 @@
-<?xml version="1.0" ?>
-<SmellBaseline>
-  <ManuallySuppressedIssues></ManuallySuppressedIssues>
-  <CurrentIssues>
-    <ID>TooGenericExceptionCaught:NotificarePushService.kt$NotificarePushService$e: Exception</ID>
-    <ID>TooGenericExceptionCaught:RemoteMessages.kt$e: Exception</ID>
-    <ID>TooGenericExceptionCaught:ServiceManager.kt$ServiceManager$e: Exception</ID>
-  </CurrentIssues>
-</SmellBaseline>

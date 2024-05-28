@@ -1,6 +1,7 @@
 package re.notifica.push.internal
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -36,7 +37,6 @@ import org.json.JSONObject
 import re.notifica.Notificare
 import re.notifica.NotificareCallback
 import re.notifica.NotificareDeviceUnavailableException
-import re.notifica.NotificareNotConfiguredException
 import re.notifica.internal.NotificareLogger
 import re.notifica.internal.NotificareModule
 import re.notifica.internal.NotificareUtils
@@ -48,15 +48,17 @@ import re.notifica.ktx.device
 import re.notifica.ktx.events
 import re.notifica.models.NotificareApplication
 import re.notifica.models.NotificareNotification
-import re.notifica.models.NotificareTransport
+import re.notifica.push.models.NotificareTransport
 import re.notifica.push.NotificareInternalPush
 import re.notifica.push.NotificarePush
 import re.notifica.push.NotificarePushIntentReceiver
+import re.notifica.push.NotificareSubscriptionUnavailable
 import re.notifica.push.R
 import re.notifica.push.automaticDefaultChannelEnabled
 import re.notifica.push.defaultChannelId
 import re.notifica.push.internal.network.push.CreateLiveActivityPayload
-import re.notifica.push.internal.network.push.DeviceUpdateNotificationSettingsPayload
+import re.notifica.push.internal.network.push.UpdateDeviceNotificationSettingsPayload
+import re.notifica.push.internal.network.push.UpdateDeviceSubscriptionPayload
 import re.notifica.push.ktx.INTENT_ACTION_ACTION_OPENED
 import re.notifica.push.ktx.INTENT_ACTION_LIVE_ACTIVITY_UPDATE
 import re.notifica.push.ktx.INTENT_ACTION_NOTIFICATION_OPENED
@@ -71,11 +73,9 @@ import re.notifica.push.ktx.INTENT_EXTRA_LIVE_ACTIVITY_UPDATE
 import re.notifica.push.ktx.INTENT_EXTRA_REMOTE_MESSAGE
 import re.notifica.push.ktx.INTENT_EXTRA_TEXT_RESPONSE
 import re.notifica.push.ktx.INTENT_EXTRA_TOKEN
-import re.notifica.push.ktx.deviceInternal
 import re.notifica.push.ktx.logNotificationInfluenced
 import re.notifica.push.ktx.logNotificationReceived
 import re.notifica.push.ktx.logPushRegistration
-import re.notifica.push.ktx.loyaltyIntegration
 import re.notifica.push.models.NotificareLiveActivityUpdate
 import re.notifica.push.models.NotificareNotificationDeliveryMechanism
 import re.notifica.push.models.NotificareNotificationRemoteMessage
@@ -95,8 +95,8 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
 
     internal const val DEFAULT_NOTIFICATION_CHANNEL_ID: String = "notificare_channel_default"
 
-    private var postponedDeviceToken: String? = null
     private val notificationSequence = AtomicInteger()
+    private val _observableSubscriptionId = MutableLiveData<String?>()
     private val _observableAllowedUI = MutableLiveData<Boolean>()
 
     internal lateinit var sharedPreferences: NotificareSharedPreferences
@@ -155,46 +155,10 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
         })
     }
 
-    override suspend fun launch() {
-        val manager = serviceManager
-        val token = postponedDeviceToken?.also {
-            NotificareLogger.debug("Processing postponed push token during launch.")
-            postponedDeviceToken = null
-        }
-
-        if (token != null && token != Notificare.device().currentDevice?.id) {
-            if (sharedPreferences.remoteNotificationsEnabled) {
-                if (manager != null) {
-                    NotificareLogger.info("Found a postponed registration token. Performing a device registration.")
-                    registerPushToken(manager.transport, token, performReadinessCheck = false)
-
-                    // NOTE: the notification settings are updated after a push token registration.
-
-                    Notificare.requireContext().sendBroadcast(
-                        Intent(Notificare.requireContext(), intentReceiver)
-                            .setAction(Notificare.INTENT_ACTION_TOKEN_CHANGED)
-                            .putExtra(Notificare.INTENT_EXTRA_TOKEN, token)
-                    )
-
-                    return
-                } else {
-                    NotificareLogger.debug("Found a postponed registration token but no service manager.")
-                }
-            } else {
-                NotificareLogger.debug(
-                    "Processing a postponed push token before enableRemoteNotifications() has been called."
-                )
-            }
-        }
-
-        // Ensure the definitive allowedUI value has been communicated to the API.
-        updateNotificationSettings()
-    }
-
     override suspend fun postLaunch() {
         if (sharedPreferences.remoteNotificationsEnabled) {
             NotificareLogger.debug("Enabling remote notifications automatically.")
-            serviceManager?.requestPushToken()
+            updateDeviceSubscription()
         }
     }
 
@@ -202,8 +166,8 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
         sharedPreferences.remoteNotificationsEnabled = false
         sharedPreferences.firstRegistration = true
 
-        // Update the local notification settings.
-        // Registering a temporary device automatically reports the allowedUI to the API.
+        transport = null
+        subscriptionId = null
         allowedUI = false
     }
 
@@ -222,6 +186,46 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
             NotificareLogger.warning("Calling this method requires Notificare to have been configured.")
             return false
         }
+
+    override var transport: NotificareTransport?
+        get() {
+            if (::sharedPreferences.isInitialized) {
+                return sharedPreferences.transport
+            }
+
+            NotificareLogger.warning("Calling this method requires Notificare to have been configured.")
+            return null
+        }
+        set(value) {
+            if (::sharedPreferences.isInitialized) {
+                sharedPreferences.transport = value
+                return
+            }
+
+            NotificareLogger.warning("Calling this method requires Notificare to have been configured.")
+        }
+
+    override var subscriptionId: String?
+        get() {
+            if (::sharedPreferences.isInitialized) {
+                return sharedPreferences.subscriptionId
+            }
+
+            NotificareLogger.warning("Calling this method requires Notificare to have been configured.")
+            return null
+        }
+        set(value) {
+            if (::sharedPreferences.isInitialized) {
+                sharedPreferences.subscriptionId = value
+                _observableSubscriptionId.postValue(value)
+                return
+            }
+
+            NotificareLogger.warning("Calling this method requires Notificare to have been configured.")
+        }
+
+    override val observableSubscriptionId: LiveData<String?>
+        get() = _observableSubscriptionId
 
     override var allowedUI: Boolean
         get() {
@@ -260,18 +264,16 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
             return
         }
 
-        val manager = serviceManager ?: run {
-            NotificareLogger.warning(
-                "No push dependencies have been detected. Please include one of the platform-specific push packages."
-            )
-            return
-        }
-
         // Keep track of the status in local storage.
         sharedPreferences.remoteNotificationsEnabled = true
 
-        // Request a push provider token.
-        manager.requestPushToken()
+        Notificare.coroutineScope.launch {
+            try {
+                updateDeviceSubscription()
+            } catch (e: Exception) {
+                NotificareLogger.debug("Failed to register the device with a push token.", e)
+            }
+        }
     }
 
     override fun disableRemoteNotifications() {
@@ -280,11 +282,10 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
                 // Keep track of the status in local storage.
                 sharedPreferences.remoteNotificationsEnabled = false
 
-                Notificare.deviceInternal().registerTemporary()
-
-                // Update the local notification settings.
-                // Registering a temporary device automatically reports the allowedUI to the API.
-                allowedUI = false
+                updateDeviceSubscription(
+                    transport = NotificareTransport.NOTIFICARE,
+                    token = null
+                )
 
                 NotificareLogger.info("Unregistered from push provider.")
             } catch (e: Exception) {
@@ -314,11 +315,12 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
         val device = Notificare.device().currentDevice
             ?: throw NotificareDeviceUnavailableException()
 
-        // TODO: fetch current FCM token
+        val subscriptionId = subscriptionId
+            ?: throw NotificareSubscriptionUnavailable()
 
         val payload = CreateLiveActivityPayload(
             activity = activityId,
-            token = device.id,
+            token = subscriptionId,
             deviceID = device.id,
             topics = topics,
         )
@@ -360,44 +362,25 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
 
     // region Notificare Push Internal
 
-    override suspend fun registerPushToken(
-        transport: NotificareTransport,
-        token: String,
-        performReadinessCheck: Boolean,
-    ): Unit = withContext(Dispatchers.IO) {
-        if (!Notificare.isReady && performReadinessCheck) {
-            NotificareLogger.warning("Notificare is not ready. Postponing token registration...")
-            postponedDeviceToken = token
+    override fun handleNewToken(transport: NotificareTransport, token: String) {
+        NotificareLogger.info("Received a new push token.")
 
-            return@withContext
+        if (!Notificare.isReady) {
+            NotificareLogger.debug("Notificare is not ready. Postponing token registration...")
+            return
         }
 
         if (!sharedPreferences.remoteNotificationsEnabled) {
             NotificareLogger.debug("Received a push token before enableRemoteNotifications() has been called.")
-            return@withContext
+            return
         }
 
-        if (token != Notificare.device().currentDevice?.id) {
-            Notificare.deviceInternal().registerPushToken(transport, token)
-
-            Notificare.requireContext().sendBroadcast(
-                Intent(Notificare.requireContext(), intentReceiver)
-                    .setAction(Notificare.INTENT_ACTION_TOKEN_CHANGED)
-                    .putExtra(Notificare.INTENT_EXTRA_TOKEN, token)
-            )
-        } else {
-            NotificareLogger.debug("Received token has already been registered. Skipping the registration...")
-        }
-
-        try {
-            updateNotificationSettings()
-
-            if (allowedUI && sharedPreferences.firstRegistration) {
-                Notificare.events().logPushRegistration()
-                sharedPreferences.firstRegistration = false
+        Notificare.coroutineScope.launch {
+            try {
+                updateDeviceSubscription(transport, token)
+            } catch (e: Exception) {
+                NotificareLogger.debug("Failed to update the push subscription.", e)
             }
-        } catch (e: Exception) {
-            NotificareLogger.warning("Failed to update the device's notification settings.", e)
         }
     }
 
@@ -558,12 +541,6 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
                         }
                     })
                 }
-                "re.notifica.notification.system.Passbook" -> {
-                    Notificare.loyaltyIntegration()?.onPassbookSystemNotificationReceived()
-                }
-                "re.notifica.notification.system.Products" -> {
-                    // TODO: handle Products system notifications
-                }
                 "re.notifica.notification.system.Inbox" -> InboxIntegration.reloadInbox()
                 "re.notifica.notification.system.LiveActivity" -> {
                     val activity = message.extra["activity"] ?: run {
@@ -661,6 +638,7 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
         }
     }
 
+    @SuppressLint("MissingPermission")
     private fun generateNotification(
         message: NotificareNotificationRemoteMessage,
         notification: NotificareNotification
@@ -901,44 +879,110 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
 
         Notificare.coroutineScope.launch {
             try {
-                updateNotificationSettings()
+                updateDeviceNotificationSettings()
             } catch (e: Exception) {
-                // Silent failure.
+                NotificareLogger.debug("Failed to update user notification settings.", e)
             }
         }
     }
 
-    private suspend fun updateNotificationSettings(): Unit = withContext(Dispatchers.IO) {
-        val granted = NotificationManagerCompat.from(Notificare.requireContext()).areNotificationsEnabled()
-        updateNotificationSettings(granted)
+    private suspend fun updateDeviceSubscription(): Unit = withContext(Dispatchers.IO) {
+        val serviceManager = checkNotNull(serviceManager)
+
+        val transport = serviceManager.transport
+        val token = serviceManager.getPushToken()
+
+        updateDeviceSubscription(transport, token)
     }
 
-    private suspend fun updateNotificationSettings(granted: Boolean): Unit = withContext(Dispatchers.IO) {
-        if (!Notificare.isConfigured) throw NotificareNotConfiguredException()
+    private suspend fun updateDeviceSubscription(
+        transport: NotificareTransport,
+        token: String?,
+    ): Unit = withContext(Dispatchers.IO) {
+        NotificareLogger.debug("Updating push subscription.")
 
-        val device = Notificare.device().currentDevice
-            ?: throw NotificareDeviceUnavailableException()
+        val device = checkNotNull(Notificare.device().currentDevice)
 
-        // The allowedUI is only true when the device has push capabilities and the user accepted the permission.
-        val allowedUI = device.transport != NotificareTransport.NOTIFICARE && granted
+        val previousTransport = this@NotificarePushImpl.transport
+        val previousSubscriptionId = this@NotificarePushImpl.subscriptionId
 
-        if (this@NotificarePushImpl.allowedUI == allowedUI) {
-            NotificareLogger.debug("User notification settings update skipped, nothing changed.")
+        if (previousTransport == transport && previousSubscriptionId == token) {
+            NotificareLogger.debug("Push subscription unmodified. Updating notification settings instead.")
+            updateDeviceNotificationSettings()
             return@withContext
         }
 
+        val isPushCapable = transport != NotificareTransport.NOTIFICARE
+        val allowedUI = isPushCapable && hasNotificationPermission(Notificare.requireContext())
+
+        val payload = UpdateDeviceSubscriptionPayload(
+            transport = transport,
+            subscriptionId = token,
+            allowedUI = allowedUI,
+        )
+
         NotificareRequest.Builder()
-            .put(
-                url = "/device/${device.id}",
-                body = DeviceUpdateNotificationSettingsPayload(
-                    allowedUI = allowedUI,
-                ),
-            )
+            .put("/push/${device.id}", payload)
             .response()
 
-        NotificareLogger.debug("User notification settings updated.")
-
-        // Update current device properties.
+        this@NotificarePushImpl.transport = transport
+        this@NotificarePushImpl.subscriptionId = token
         this@NotificarePushImpl.allowedUI = allowedUI
+
+        // TODO: The TOKEN_CHANGED intent does not support null tokens.
+        //  This requires a new intent or a breaking change in the current one.
+        if (token != null && previousSubscriptionId != token) {
+            Notificare.requireContext().sendBroadcast(
+                Intent(Notificare.requireContext(), intentReceiver)
+                    .setAction(Notificare.INTENT_ACTION_TOKEN_CHANGED)
+                    .putExtra(Notificare.INTENT_EXTRA_TOKEN, token)
+            )
+        }
+
+        ensureLoggedPushRegistration()
+    }
+
+    private suspend fun updateDeviceNotificationSettings(): Unit = withContext(Dispatchers.IO) {
+        NotificareLogger.debug("Updating user notification settings.")
+
+        val device = checkNotNull(Notificare.device().currentDevice)
+
+        val previousAllowedUI = this@NotificarePushImpl.allowedUI
+
+        val transport = transport
+        val isPushCapable = transport != null && transport != NotificareTransport.NOTIFICARE
+        val allowedUI = isPushCapable && hasNotificationPermission(Notificare.requireContext())
+
+        if (previousAllowedUI != allowedUI) {
+            val payload = UpdateDeviceNotificationSettingsPayload(
+                allowedUI = allowedUI,
+            )
+
+            NotificareRequest.Builder()
+                .put("/push/${device.id}", payload)
+                .response()
+
+            NotificareLogger.debug("User notification settings updated.")
+            this@NotificarePushImpl.allowedUI = allowedUI
+        } else {
+            NotificareLogger.debug("User notification settings update skipped, nothing changed.")
+        }
+
+        ensureLoggedPushRegistration()
+    }
+
+    private suspend fun ensureLoggedPushRegistration(): Unit = withContext(Dispatchers.IO) {
+        if (allowedUI && sharedPreferences.firstRegistration) {
+            try {
+                Notificare.events().logPushRegistration()
+                sharedPreferences.firstRegistration = false
+            } catch (e: Exception) {
+                NotificareLogger.warning("Failed to log the push registration event.", e)
+            }
+        }
+    }
+
+    private fun hasNotificationPermission(context: Context): Boolean {
+        return NotificationManagerCompat.from(context).areNotificationsEnabled()
     }
 }
