@@ -303,7 +303,7 @@ class MainViewModel : BaseViewModel(), DefaultLifecycleObserver, Notificare.List
     fun registerDevice(userID: String?, userName: String?) {
         viewModelScope.launch {
             try {
-                Notificare.device().register(userID, userName)
+                Notificare.device().updateUser(userID, userName)
                 _deviceRegistrationData.postValue(deviceData)
 
                 Timber.i("Registered device successfully.")

@@ -16,9 +16,11 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
+import kotlinx.coroutines.launch
 import re.notifica.Notificare
 import re.notifica.geo.ktx.geo
 import re.notifica.inbox.ktx.inbox
@@ -159,11 +161,15 @@ class MainFragment : BaseFragment() {
         // Launch flow
 
         binding.launchCard.launchButton.setOnClickListener {
-            Notificare.launch()
+            lifecycleScope.launch {
+                Notificare.launch()
+            }
         }
 
         binding.launchCard.unlaunchButton.setOnClickListener {
-            Notificare.unlaunch()
+            lifecycleScope.launch {
+                Notificare.unlaunch()
+            }
         }
 
         // End region
