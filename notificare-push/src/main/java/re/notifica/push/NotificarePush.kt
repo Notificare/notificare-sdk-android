@@ -23,7 +23,9 @@ public interface NotificarePush {
 
     public val observableAllowedUI: LiveData<Boolean>
 
-    public fun enableRemoteNotifications()
+    public suspend fun enableRemoteNotifications()
+
+    public fun enableRemoteNotifications(callback: NotificareCallback<Unit>)
 
     public fun disableRemoteNotifications()
 

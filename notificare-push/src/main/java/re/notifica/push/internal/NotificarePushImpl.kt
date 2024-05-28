@@ -35,8 +35,11 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
 import re.notifica.Notificare
+import re.notifica.NotificareApplicationUnavailableException
 import re.notifica.NotificareCallback
 import re.notifica.NotificareDeviceUnavailableException
+import re.notifica.NotificareNotReadyException
+import re.notifica.NotificareServiceUnavailableException
 import re.notifica.internal.NotificareLogger
 import re.notifica.internal.NotificareModule
 import re.notifica.internal.NotificareUtils
@@ -248,33 +251,31 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
 
     override val observableAllowedUI: LiveData<Boolean> = _observableAllowedUI
 
-    override fun enableRemoteNotifications() {
+    override suspend fun enableRemoteNotifications(): Unit = withContext(Dispatchers.IO) {
         if (!Notificare.isReady) {
             NotificareLogger.warning("Notificare is not ready yet.")
-            return
+            throw NotificareNotReadyException()
         }
 
         val application = Notificare.application ?: run {
             NotificareLogger.warning("Notificare is not ready yet.")
-            return
+            throw NotificareApplicationUnavailableException()
         }
 
         if (application.services[NotificareApplication.ServiceKeys.GCM] != true) {
             NotificareLogger.warning("Push notifications service is not enabled.")
-            return
+            throw NotificareServiceUnavailableException(service = NotificareApplication.ServiceKeys.GCM)
         }
 
         // Keep track of the status in local storage.
         sharedPreferences.remoteNotificationsEnabled = true
 
-        Notificare.coroutineScope.launch {
-            try {
-                updateDeviceSubscription()
-            } catch (e: Exception) {
-                NotificareLogger.debug("Failed to register the device with a push token.", e)
-            }
-        }
+        updateDeviceSubscription()
     }
+
+    override fun enableRemoteNotifications(
+        callback: NotificareCallback<Unit>
+    ): Unit = toCallbackFunction(::enableRemoteNotifications)(callback)
 
     override fun disableRemoteNotifications() {
         Notificare.coroutineScope.launch {

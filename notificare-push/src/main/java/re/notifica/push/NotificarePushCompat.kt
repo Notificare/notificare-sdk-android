@@ -88,8 +88,8 @@ public object NotificarePushCompat {
     public val observableAllowedUI: LiveData<Boolean> = Notificare.push().observableAllowedUI
 
     @JvmStatic
-    public fun enableRemoteNotifications() {
-        Notificare.push().enableRemoteNotifications()
+    public fun enableRemoteNotifications(callback: NotificareCallback<Unit>) {
+        Notificare.push().enableRemoteNotifications(callback)
     }
 
     @JvmStatic
