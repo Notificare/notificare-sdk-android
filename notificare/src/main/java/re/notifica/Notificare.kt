@@ -152,88 +152,74 @@ public object Notificare {
         return context?.get() ?: throw IllegalStateException("Cannot find context for Notificare.")
     }
 
-    @JvmStatic
-    public fun launch() {
+    public suspend fun launch(): Unit = withContext(Dispatchers.IO) {
         if (state == NotificareLaunchState.NONE) {
             NotificareLogger.warning("Notificare.configure() has never been called. Cannot launch.")
-            return
+            throw NotificareNotConfiguredException()
         }
 
         if (state > NotificareLaunchState.CONFIGURED) {
             NotificareLogger.warning("Notificare has already been launched. Skipping...")
-            return
+            return@withContext
         }
 
         NotificareLogger.info("Launching Notificare.")
         state = NotificareLaunchState.LAUNCHING
 
-        Notificare.coroutineScope.launch {
-            try {
-                val application = fetchApplication()
+        try {
+            val application = fetchApplication()
 
-                // Loop all possible modules and launch the available ones.
-                NotificareModule.Module.entries.forEach { module ->
-                    module.instance?.run {
-                        NotificareLogger.debug("Launching module: ${module.name.lowercase()}")
-                        try {
-                            this.launch()
-                        } catch (e: Exception) {
-                            NotificareLogger.debug("Failed to launch '${module.name.lowercase()}': $e")
-                            throw e
-                        }
+            // Loop all possible modules and launch the available ones.
+            NotificareModule.Module.entries.forEach { module ->
+                module.instance?.run {
+                    NotificareLogger.debug("Launching module: ${module.name.lowercase()}")
+                    try {
+                        this.launch()
+                    } catch (e: Exception) {
+                        NotificareLogger.debug("Failed to launch '${module.name.lowercase()}': $e")
+                        throw e
                     }
                 }
+            }
 
-                state = NotificareLaunchState.READY
+            state = NotificareLaunchState.READY
+            printLaunchSummary(application)
 
-                val enabledServices = application.services.filter { it.value }.map { it.key }
-                val enabledModules = NotificareUtils.getEnabledPeerModules()
+            // We're done launching. Send a broadcast.
+            requireContext().sendBroadcast(
+                Intent(requireContext(), intentReceiver)
+                    .setAction(INTENT_ACTION_READY)
+                    .putExtra(INTENT_EXTRA_APPLICATION, application)
+            )
 
-                NotificareLogger.debug(
-                    "/==================================================================================/"
-                )
-                NotificareLogger.debug("Notificare SDK is ready to use for application")
-                NotificareLogger.debug("App name: ${application.name}")
-                NotificareLogger.debug("App ID: ${application.id}")
-                NotificareLogger.debug("App services: ${enabledServices.joinToString(", ")}")
-                NotificareLogger.debug(
-                    "/==================================================================================/"
-                )
-                NotificareLogger.debug("SDK version: $SDK_VERSION")
-                NotificareLogger.debug("SDK modules: ${enabledModules.joinToString(", ")}")
-                NotificareLogger.debug(
-                    "/==================================================================================/"
-                )
+            onMainThread {
+                listeners.forEach { it.get()?.onReady(application) }
+            }
+        } catch (e: Exception) {
+            NotificareLogger.error("Failed to launch Notificare.", e)
+            state = NotificareLaunchState.CONFIGURED
+            throw e
+        }
 
-                // We're done launching. Send a broadcast.
-                requireContext().sendBroadcast(
-                    Intent(requireContext(), intentReceiver)
-                        .setAction(INTENT_ACTION_READY)
-                        .putExtra(INTENT_EXTRA_APPLICATION, application)
-                )
-
-                onMainThread {
-                    // Notify the listeners.
-                    listeners.forEach { it.get()?.onReady(application) }
-                }
-
-                // Loop all possible modules and post-launch the available ones.
-                NotificareModule.Module.entries.forEach { module ->
-                    module.instance?.run {
-                        NotificareLogger.debug("Post-launching module: ${module.name.lowercase()}")
-                        try {
-                            this.postLaunch()
-                        } catch (e: Exception) {
-                            NotificareLogger.error("Failed to post-launch '${module.name.lowercase()}': $e")
-                        }
+        launch {
+            // Loop all possible modules and post-launch the available ones.
+            NotificareModule.Module.entries.forEach { module ->
+                module.instance?.run {
+                    NotificareLogger.debug("Post-launching module: ${module.name.lowercase()}")
+                    try {
+                        this.postLaunch()
+                    } catch (e: Exception) {
+                        NotificareLogger.error("Failed to post-launch '${module.name.lowercase()}': $e")
                     }
                 }
-            } catch (e: Exception) {
-                NotificareLogger.error("Failed to launch Notificare.", e)
-                state = NotificareLaunchState.CONFIGURED
             }
         }
     }
+
+    @JvmStatic
+    public fun launch(
+        callback: NotificareCallback<Unit>,
+    ): Unit = toCallbackFunction(::launch)(callback)
 
     @JvmStatic
     public fun unlaunch() {
@@ -610,6 +596,21 @@ public object Notificare {
     ): Unit = toCallbackFunction(::evaluateDeferredLink)(callback)
 
     // endregion
+
+    private fun printLaunchSummary(application: NotificareApplication) {
+        val enabledServices = application.services.filter { it.value }.map { it.key }
+        val enabledModules = NotificareUtils.getEnabledPeerModules()
+
+        NotificareLogger.info("Notificare is ready to use for application.")
+        NotificareLogger.debug("/==================================================================================/")
+        NotificareLogger.debug("App name: ${application.name}")
+        NotificareLogger.debug("App ID: ${application.id}")
+        NotificareLogger.debug("App services: ${enabledServices.joinToString(", ")}")
+        NotificareLogger.debug("/==================================================================================/")
+        NotificareLogger.debug("SDK version: $SDK_VERSION")
+        NotificareLogger.debug("SDK modules: ${enabledModules.joinToString(", ")}")
+        NotificareLogger.debug("/==================================================================================/")
+    }
 
     private fun configure(context: Context, servicesInfo: NotificareServicesInfo) {
         if (isConfigured) {
