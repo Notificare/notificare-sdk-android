@@ -17,6 +17,7 @@ import re.notifica.push.ktx.INTENT_EXTRA_REMOTE_MESSAGE
 import re.notifica.push.ktx.INTENT_EXTRA_TEXT_RESPONSE
 import re.notifica.push.ktx.INTENT_EXTRA_TOKEN
 import re.notifica.push.ktx.push
+import re.notifica.push.models.NotificareTransport
 
 public object NotificarePushCompat {
 
@@ -79,6 +80,18 @@ public object NotificarePushCompat {
     @JvmStatic
     public val hasRemoteNotificationsEnabled: Boolean
         get() = Notificare.push().hasRemoteNotificationsEnabled
+
+    @JvmStatic
+    public val transport: NotificareTransport?
+        get() = Notificare.push().transport
+
+    @JvmStatic
+    public val subscriptionId: String?
+        get() = Notificare.push().subscriptionId
+
+    @JvmStatic
+    public val observableSubscriptionId: LiveData<String?>
+        get() = Notificare.push().observableSubscriptionId
 
     @JvmStatic
     public val allowedUI: Boolean
