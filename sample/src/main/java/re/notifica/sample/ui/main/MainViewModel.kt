@@ -176,13 +176,19 @@ class MainViewModel : BaseViewModel(), DefaultLifecycleObserver, Notificare.List
     }
 
     fun updateRemoteNotificationsStatus(enabled: Boolean) {
-        if (enabled) {
-            Notificare.push().enableRemoteNotifications()
-            if (_hasNotificationsPermissions.value != true) {
-                _hasNotificationsPermissions.postValue(hasNotificationsPermission)
+        viewModelScope.launch {
+            try {
+                if (enabled) {
+                    Notificare.push().enableRemoteNotifications()
+                    if (_hasNotificationsPermissions.value != true) {
+                        _hasNotificationsPermissions.postValue(hasNotificationsPermission)
+                    }
+                } else {
+                    Notificare.push().disableRemoteNotifications()
+                }
+            } catch (e: Exception) {
+                Timber.e(e, "Failed to update remote notifications registration.")
             }
-        } else {
-            Notificare.push().disableRemoteNotifications()
         }
     }
 
