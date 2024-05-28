@@ -34,9 +34,13 @@ class MainApplication : Application(), Notificare.Listener {
 
         Notificare.addListener(this)
 
-        Notificare.launch()
-
         applicationScope.launch {
+            try {
+                Notificare.launch()
+            } catch (e: Exception) {
+                Timber.e(e, "Failed to launch Notificare.")
+            }
+
             try {
                 if (Notificare.canEvaluateDeferredLink()) {
                     val evaluated = Notificare.evaluateDeferredLink()
