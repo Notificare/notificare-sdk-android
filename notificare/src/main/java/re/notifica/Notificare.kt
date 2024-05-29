@@ -27,7 +27,6 @@ import re.notifica.internal.NotificareModule
 import re.notifica.internal.NotificareOptions
 import re.notifica.internal.NotificareUtils
 import re.notifica.internal.common.onMainThread
-import re.notifica.internal.ktx.coroutineScope
 import re.notifica.internal.ktx.toCallbackFunction
 import re.notifica.internal.network.push.ApplicationResponse
 import re.notifica.internal.network.push.CreateNotificationReplyPayload
@@ -221,52 +220,49 @@ public object Notificare {
         callback: NotificareCallback<Unit>,
     ): Unit = toCallbackFunction(::launch)(callback)
 
-    @JvmStatic
-    public fun unlaunch() {
+    public suspend fun unlaunch(): Unit = withContext(Dispatchers.IO) {
         if (!isReady) {
             NotificareLogger.warning("Cannot un-launch Notificare before it has been launched.")
-            return
+            throw NotificareNotReadyException()
         }
 
         NotificareLogger.info("Un-launching Notificare.")
 
-        Notificare.coroutineScope.launch {
-            try {
-                // Loop all possible modules and un-launch the available ones.
-                NotificareModule.Module.entries.reversed().forEach { module ->
-                    module.instance?.run {
-                        NotificareLogger.debug("Un-launching module: ${module.name.lowercase()}.")
+        // Loop all possible modules and un-launch the available ones.
+        NotificareModule.Module.entries.reversed().forEach { module ->
+            module.instance?.run {
+                NotificareLogger.debug("Un-launching module: ${module.name.lowercase()}.")
 
-                        try {
-                            this.unlaunch()
-                        } catch (e: Exception) {
-                            NotificareLogger.debug("Failed to un-launch ${module.name.lowercase()}': $e")
-                            throw e
-                        }
-                    }
+                try {
+                    this.unlaunch()
+                } catch (e: Exception) {
+                    NotificareLogger.debug("Failed to un-launch ${module.name.lowercase()}': $e")
+                    throw e
                 }
-
-                NotificareLogger.debug("Removing device.")
-                deviceImplementation().delete()
-
-                NotificareLogger.info("Un-launched Notificare.")
-                state = NotificareLaunchState.CONFIGURED
-
-                // We're done un-launching. Send a broadcast.
-                requireContext().sendBroadcast(
-                    Intent(requireContext(), intentReceiver)
-                        .setAction(INTENT_ACTION_UNLAUNCHED)
-                )
-
-                onMainThread {
-                    // Notify the listeners.
-                    listeners.forEach { it.get()?.onUnlaunched() }
-                }
-            } catch (e: Exception) {
-                NotificareLogger.error("Failed to un-launch Notificare.", e)
             }
         }
+
+        NotificareLogger.debug("Removing device.")
+        deviceImplementation().delete()
+
+        NotificareLogger.info("Un-launched Notificare.")
+        state = NotificareLaunchState.CONFIGURED
+
+        // We're done un-launching. Send a broadcast.
+        requireContext().sendBroadcast(
+            Intent(requireContext(), intentReceiver)
+                .setAction(INTENT_ACTION_UNLAUNCHED)
+        )
+
+        onMainThread {
+            listeners.forEach { it.get()?.onUnlaunched() }
+        }
     }
+
+    @JvmStatic
+    public fun unlaunch(
+        callback: NotificareCallback<Unit>,
+    ): Unit = toCallbackFunction(::unlaunch)(callback)
 
     @Deprecated(
         message = "Use addListener() instead.",
