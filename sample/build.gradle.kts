@@ -123,9 +123,6 @@ detekt {
     baseline = file("detekt-baseline.xml")
 }
 
-val detektTaskProvider = tasks.named("detekt")
-tasks.getByName("preBuild").finalizedBy(detektTaskProvider)
-
 dependencies {
     implementation(libs.kotlinx.coroutines)
 
