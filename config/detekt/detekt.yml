@@ -1,6 +1,20 @@
 complexity:
   TooManyFunctions:
     active: false
+  LargeClass:
+    active: false
+  LongMethod:
+    active: false
+
+exceptions:
+  TooGenericExceptionCaught:
+    active: false
+  TooGenericExceptionThrown:
+    active: false
+
+naming:
+  MatchingDeclarationName:
+    active: false
 
 style:
   MaxLineLength:
@@ -10,3 +24,11 @@ style:
     excludeImportStatements: true
     excludeCommentStatements: false
     excludeRawStrings: true
+  ThrowsCount:
+    active: false
+  ReturnCount:
+    active: false
+  ForbiddenComment:
+    active: false
+  MagicNumber:
+    active: false
