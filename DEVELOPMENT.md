@@ -2,12 +2,28 @@
 
 ## Getting started
 
+### Configuring auto registration
+
+You have the option to set up a static user for automatic registration on your device. This feature helps the process of targeting your devices during development across various app installations.
+Configure the following variables in `local.properties`
+
+```
+userId=
+userName=
+```
+
 ### IDE Plugins
 
 #### KtLint
 
 Even though KtLint is implemented as a dependency, there is a recommended Android Studio KtLint plugin that formats as you write.
 It is recommended its download, configuring it in Distract Free mode.
+
+#### Detekt
+
+Even though KtLint is implemented as a dependency, there is a recommended Android Studio Detekt plugin that points out problems in code as you write.
+It is recommended its download, configuring to use the Detekt configuration file present in `config/detekt`.
+
 
 ### Git hooks
 
