@@ -1,8 +1,0 @@
-<?xml version="1.0" ?>
-<SmellBaseline>
-  <ManuallySuppressedIssues></ManuallySuppressedIssues>
-  <CurrentIssues>
-    <ID>MagicNumber:BeaconServiceManager.kt$BeaconServiceManager$100</ID>
-    <ID>MagicNumber:BeaconServiceManager.kt$BeaconServiceManager$456</ID>
-  </CurrentIssues>
-</SmellBaseline>

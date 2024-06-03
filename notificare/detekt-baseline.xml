@@ -3,49 +3,14 @@
   <ManuallySuppressedIssues></ManuallySuppressedIssues>
   <CurrentIssues>
     <ID>CyclomaticComplexMethod:Notificare.kt$Notificare$@JvmStatic public fun cancelNotification(id: String)</ID>
-    <ID>EmptyFunctionBlock:NotificareSessionModuleImpl.kt$NotificareSessionModuleImpl.&lt;no name provided&gt;${}</ID>
-    <ID>EmptyFunctionBlock:NotificareUtils.kt$NotificareUtils.&lt;no name provided&gt;${}</ID>
-    <ID>LongMethod:Notificare.kt$Notificare$@JvmStatic public fun launch()</ID>
-    <ID>LongMethod:SharedPreferencesMigration.kt$SharedPreferencesMigration$fun migrate()</ID>
-    <ID>MagicNumber:Hex.kt$16</ID>
-    <ID>MagicNumber:NotificareLogger.kt$NotificareLogger$256</ID>
-    <ID>MagicNumber:NotificareRequest.kt$NotificareRequest.Builder$200</ID>
-    <ID>MagicNumber:NotificareRequest.kt$NotificareRequest.Builder$299</ID>
-    <ID>MagicNumber:NotificareSessionModuleImpl.kt$NotificareSessionModuleImpl.&lt;no name provided&gt;$10000</ID>
-    <ID>MagicNumber:NotificareTime.kt$NotificareTime$23</ID>
-    <ID>MagicNumber:NotificareTime.kt$NotificareTime$59</ID>
-    <ID>MatchingDeclarationName:Annotations.kt$InternalNotificareApi</ID>
-    <ID>MatchingDeclarationName:NotificareNetworkException.kt$NetworkException : Exception</ID>
     <ID>MaxLineLength:NotificareNotification.kt$NotificareNotification.Action.Companion$message = "The WebView action type becomes a backwards compatible alias. Use the InAppBrowser action type instead."</ID>
     <ID>MaxLineLength:NotificareUtils.kt$NotificareUtils$get() = "$applicationName/$applicationVersion Notificare/${Notificare.SDK_VERSION} Android/${Build.VERSION.RELEASE}"</ID>
     <ID>NestedBlockDepth:Notificare.kt$Notificare$@JvmStatic public fun cancelNotification(id: String)</ID>
-    <ID>ReturnCount:AbstractServiceManager.kt$AbstractServiceManager.Factory$public inline fun &lt;reified T : AbstractServiceManager&gt; create(gms: String, hms: String): T</ID>
-    <ID>ReturnCount:Notificare.kt$Notificare$private fun parseDynamicLink(intent: Intent): Uri?</ID>
-    <ID>ReturnCount:Notificare.kt$Notificare$private fun parseTestDeviceNonce(intent: Intent): String?</ID>
-    <ID>ReturnCount:Notificare.kt$Notificare$private fun parseTestDeviceNonceLegacy(intent: Intent): String?</ID>
-    <ID>ReturnCount:NotificareJsonObjectParceler.kt$NotificareJsonObjectParceler$override fun create(parcel: Parcel): JSONObject?</ID>
     <ID>SwallowedException:AbstractServiceManager.kt$AbstractServiceManager.Factory$e: Exception</ID>
     <ID>SwallowedException:NotificareModule.kt$NotificareModule.Module$e: Exception</ID>
     <ID>SwallowedException:NotificareSessionModuleImpl.kt$NotificareSessionModuleImpl$e: Exception</ID>
     <ID>SwallowedException:NotificareSessionModuleImpl.kt$NotificareSessionModuleImpl.&lt;no name provided&gt;$e: Exception</ID>
     <ID>ThrowingExceptionsWithoutMessageOrCause:NotificareLogger.kt$NotificareLogger$Throwable()</ID>
-    <ID>ThrowsCount:NotificareRequest.kt$NotificareRequest$public suspend fun &lt;T : Any&gt; responseDecodable(klass: KClass&lt;T&gt;): T</ID>
-    <ID>TooGenericExceptionCaught:AbstractServiceManager.kt$AbstractServiceManager.Factory$e: Exception</ID>
-    <ID>TooGenericExceptionCaught:Coroutines.kt$e: Exception</ID>
-    <ID>TooGenericExceptionCaught:Notificare.kt$Notificare$e: Exception</ID>
-    <ID>TooGenericExceptionCaught:NotificareCrashReporterModuleImpl.kt$NotificareCrashReporterModuleImpl$e: Exception</ID>
-    <ID>TooGenericExceptionCaught:NotificareDeviceModuleImpl.kt$NotificareDeviceModuleImpl$e: Exception</ID>
-    <ID>TooGenericExceptionCaught:NotificareEventsModuleImpl.kt$NotificareEventsModuleImpl$e: Exception</ID>
-    <ID>TooGenericExceptionCaught:NotificareModule.kt$NotificareModule.Module$e: Exception</ID>
-    <ID>TooGenericExceptionCaught:NotificareRequest.kt$NotificareRequest$e: Exception</ID>
-    <ID>TooGenericExceptionCaught:NotificareRequest.kt$NotificareRequest.Builder$e: Exception</ID>
-    <ID>TooGenericExceptionCaught:NotificareSessionModuleImpl.kt$NotificareSessionModuleImpl$e: Exception</ID>
-    <ID>TooGenericExceptionCaught:NotificareSessionModuleImpl.kt$NotificareSessionModuleImpl.&lt;no name provided&gt;$e: Exception</ID>
-    <ID>TooGenericExceptionCaught:NotificareSharedPreferences.kt$NotificareSharedPreferences$e: Exception</ID>
-    <ID>TooGenericExceptionCaught:NotificareSystemIntentReceiver.kt$NotificareSystemIntentReceiver$e: Exception</ID>
-    <ID>TooGenericExceptionCaught:NotificareUtils.kt$NotificareUtils$e: Exception</ID>
-    <ID>TooGenericExceptionCaught:ProcessEventsWorker.kt$ProcessEventsWorker$e: Exception</ID>
-    <ID>TooGenericExceptionCaught:SharedPreferencesMigration.kt$SharedPreferencesMigration$e: Exception</ID>
     <ID>UseCheckOrError:AbstractServiceManager.kt$AbstractServiceManager.Factory$throw IllegalStateException( "No platform dependencies have been detected. Please include one of the platform-specific packages." )</ID>
     <ID>UseCheckOrError:Notificare.kt$Notificare$throw IllegalStateException("Cannot find context for Notificare.")</ID>
     <ID>UseCheckOrError:NotificareConfigurationProvider.kt$NotificareConfigurationProvider$throw IllegalStateException("Cannot find context from the provider.")</ID>

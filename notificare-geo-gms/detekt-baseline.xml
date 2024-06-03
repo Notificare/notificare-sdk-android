@@ -1,8 +1,0 @@
-<?xml version="1.0" ?>
-<SmellBaseline>
-  <ManuallySuppressedIssues></ManuallySuppressedIssues>
-  <CurrentIssues>
-    <ID>ReturnCount:LocationReceiver.kt$LocationReceiver$override fun onReceive(context: Context, intent: Intent)</ID>
-    <ID>TooGenericExceptionCaught:ServiceManager.kt$ServiceManager$e: Exception</ID>
-  </CurrentIssues>
-</SmellBaseline>
