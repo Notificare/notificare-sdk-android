@@ -1097,9 +1097,13 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
         Notificare.events().logRegionSession(
             session,
             object : NotificareCallback<Unit> {
-                override fun onSuccess(result: Unit) {}
+                override fun onSuccess(result: Unit) {
+                    // no-op
+                }
 
-                override fun onFailure(e: Exception) {}
+                override fun onFailure(e: Exception) {
+                    // no-op
+                }
             }
         )
     }
@@ -1147,9 +1151,13 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
         Notificare.events().logBeaconSession(
             session,
             object : NotificareCallback<Unit> {
-                override fun onSuccess(result: Unit) {}
+                override fun onSuccess(result: Unit) {
+                    // no-op
+                }
 
-                override fun onFailure(e: Exception) {}
+                override fun onFailure(e: Exception) {
+                    // no-op
+                }
             }
         )
     }

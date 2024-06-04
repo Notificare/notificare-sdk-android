@@ -84,7 +84,9 @@ internal object NotificareSessionModuleImpl : NotificareModule() {
 
     internal fun setupLifecycleListeners(application: Application) {
         application.registerActivityLifecycleCallbacks(object : Application.ActivityLifecycleCallbacks {
-            override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {}
+            override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
+                // no-op
+            }
 
             override fun onActivityStarted(activity: Activity) {
                 if (activityCounter == 0) {
@@ -113,9 +115,13 @@ internal object NotificareSessionModuleImpl : NotificareModule() {
                 }
             }
 
-            override fun onActivityResumed(activity: Activity) {}
+            override fun onActivityResumed(activity: Activity) {
+                // no-op
+            }
 
-            override fun onActivityPaused(activity: Activity) {}
+            override fun onActivityPaused(activity: Activity) {
+                // no-op
+            }
 
             override fun onActivityStopped(activity: Activity) {
                 activityCounter--
@@ -130,9 +136,13 @@ internal object NotificareSessionModuleImpl : NotificareModule() {
                 handler.postDelayed(runnable, 10000)
             }
 
-            override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) {}
+            override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) {
+                // no-op
+            }
 
-            override fun onActivityDestroyed(activity: Activity) {}
+            override fun onActivityDestroyed(activity: Activity) {
+                // no-op
+            }
         })
     }
 

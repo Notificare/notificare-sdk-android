@@ -39,9 +39,6 @@ subprojects {
             baseline = file("detekt-baseline.xml")
         }
 
-        val detektTaskProvider = tasks.named("detekt")
-        tasks.getByName("preBuild").finalizedBy(detektTaskProvider)
-
         group = rootProject.libs.versions.maven.artifactGroup.get()
         version = rootProject.libs.versions.maven.artifactVersion.get()
 

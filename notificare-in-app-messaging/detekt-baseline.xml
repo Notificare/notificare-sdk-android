@@ -3,27 +3,13 @@
   <ManuallySuppressedIssues></ManuallySuppressedIssues>
   <CurrentIssues>
     <ID>ConstructorParameterNaming:Responses.kt$InAppMessageResponse.Message$val _id: String</ID>
-    <ID>EmptyFunctionBlock:InAppMessagingBaseFragment.kt$InAppMessagingBaseFragment.&lt;no name provided&gt;${}</ID>
-    <ID>EmptyFunctionBlock:NotificareInAppMessagingImpl.kt$NotificareInAppMessagingImpl.&lt;no name provided&gt;${}</ID>
-    <ID>ForbiddenComment:InAppMessagingBannerFragment.kt$InAppMessagingBannerFragment$// TODO: .placeholder()</ID>
-    <ID>ForbiddenComment:InAppMessagingCardFragment.kt$InAppMessagingCardFragment$// TODO: .placeholder()</ID>
-    <ID>ForbiddenComment:InAppMessagingFullscreenFragment.kt$InAppMessagingFullscreenFragment$// TODO: .placeholder()</ID>
-    <ID>ForbiddenComment:NotificareInAppMessagingImpl.kt$NotificareInAppMessagingImpl$// TODO: checkPrerequisites()</ID>
     <ID>InstanceOfCheckForException:NotificareInAppMessagingImpl.kt$NotificareInAppMessagingImpl$e is CancellationException</ID>
     <ID>InstanceOfCheckForException:NotificareInAppMessagingImpl.kt$NotificareInAppMessagingImpl$e is NetworkException.ValidationException</ID>
-    <ID>MagicNumber:NotificareInAppMessagingImpl.kt$NotificareInAppMessagingImpl$1000L</ID>
-    <ID>MagicNumber:NotificareInAppMessagingImpl.kt$NotificareInAppMessagingImpl$404</ID>
-    <ID>MatchingDeclarationName:Responses.kt$InAppMessageResponse</ID>
     <ID>MaxLineLength:InAppMessagingActivity.kt$InAppMessagingActivity$"Dismissing the current in-app message for being in the background for longer than the grace period."</ID>
     <ID>MaxLineLength:NotificareInAppMessaging.kt$NotificareInAppMessaging.MessageLifecycleListener$"Message failed to present, please override onMessageFailedToPresent if you want to receive these events."</ID>
     <ID>MaxLineLength:NotificareInAppMessaging.kt$NotificareInAppMessaging.MessageLifecycleListener$"Message finished presenting, please override onMessageFinishedPresenting if you want to receive these events."</ID>
     <ID>MaxLineLength:NotificareInAppMessagingImpl.kt$NotificareInAppMessagingImpl$"Skipping context evaluation since in-app messages on ${activity::class.java.simpleName} are being suppressed."</ID>
     <ID>MaxLineLength:NotificareInAppMessagingImpl.kt$NotificareInAppMessagingImpl$"The current in-app message should have been dismissed for being in the background for longer than the grace period."</ID>
-    <ID>ReturnCount:InAppMessagingCardFragment.kt$InAppMessagingCardFragment$private fun canShowAction(action: NotificareInAppMessage.Action?): Boolean</ID>
-    <ID>ReturnCount:NotificareInAppMessagingImpl.kt$NotificareInAppMessagingImpl$private fun onApplicationForeground(activity: Activity)</ID>
-    <ID>ReturnCount:NotificareInAppMessagingImpl.kt$NotificareInAppMessagingImpl$private fun present(message: NotificareInAppMessage)</ID>
-    <ID>TooGenericExceptionCaught:InAppMessagingBaseFragment.kt$InAppMessagingBaseFragment$e: Exception</ID>
-    <ID>TooGenericExceptionCaught:NotificareInAppMessagingImpl.kt$NotificareInAppMessagingImpl$e: Exception</ID>
     <ID>UseCheckOrError:InAppMessagingActivity.kt$InAppMessagingActivity$throw IllegalStateException("Cannot create the UI without the associated in-app message.")</ID>
     <ID>UseCheckOrError:InAppMessagingBaseFragment.kt$InAppMessagingBaseFragment$throw IllegalStateException("Cannot create the UI without the associated in-app message.")</ID>
     <ID>UseCheckOrError:NotificareInAppMessagingConfigurationProvider.kt$NotificareInAppMessagingConfigurationProvider$throw IllegalStateException("Cannot find context from the provider.")</ID>

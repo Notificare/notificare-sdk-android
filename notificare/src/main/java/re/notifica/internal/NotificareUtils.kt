@@ -92,7 +92,9 @@ public object NotificareUtils {
                     }
                 }
 
-                override fun onLoadCleared(placeholder: Drawable?) {}
+                override fun onLoadCleared(placeholder: Drawable?) {
+                    // no-op
+                }
             })
     }
 

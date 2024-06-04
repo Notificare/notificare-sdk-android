@@ -1,8 +1,0 @@
-<?xml version="1.0" ?>
-<SmellBaseline>
-  <ManuallySuppressedIssues></ManuallySuppressedIssues>
-  <CurrentIssues>
-    <ID>EmptyFunctionBlock:QrCodeScannerFragment.kt$QrCodeScannerFragment.&lt;no name provided&gt;${}</ID>
-    <ID>TooGenericExceptionCaught:QrCodeScannerFragment.kt$QrCodeScannerFragment.&lt;no name provided&gt;$e: Exception</ID>
-  </CurrentIssues>
-</SmellBaseline>

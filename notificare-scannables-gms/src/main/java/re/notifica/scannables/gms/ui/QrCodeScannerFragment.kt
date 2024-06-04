@@ -82,7 +82,9 @@ public class QrCodeScannerFragment : Fragment(R.layout.notificare_scannable_qr_c
             .build()
 
         detector.setProcessor(object : Detector.Processor<Barcode> {
-            override fun release() {}
+            override fun release() {
+                // no-op
+            }
 
             override fun receiveDetections(detections: Detector.Detections<Barcode>) {
                 if (detections.detectedItems.isEmpty()) return
@@ -110,7 +112,9 @@ public class QrCodeScannerFragment : Fragment(R.layout.notificare_scannable_qr_c
                 }
             }
 
-            override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {}
+            override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
+                // no-op
+            }
 
             override fun surfaceDestroyed(holder: SurfaceHolder) {
                 cameraSource?.stop()

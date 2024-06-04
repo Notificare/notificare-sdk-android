@@ -84,7 +84,9 @@ internal object NotificareInAppMessagingImpl : NotificareModule(), NotificareInA
 
     internal fun setupLifecycleListeners(application: Application) {
         application.registerActivityLifecycleCallbacks(object : Application.ActivityLifecycleCallbacks {
-            override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {}
+            override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
+                // no-op
+            }
 
             override fun onActivityStarted(activity: Activity) {
                 currentActivity = WeakReference(activity)
@@ -102,9 +104,13 @@ internal object NotificareInAppMessagingImpl : NotificareModule(), NotificareInA
                 }
             }
 
-            override fun onActivityResumed(activity: Activity) {}
+            override fun onActivityResumed(activity: Activity) {
+                // no-op
+            }
 
-            override fun onActivityPaused(activity: Activity) {}
+            override fun onActivityPaused(activity: Activity) {
+                // no-op
+            }
 
             override fun onActivityStopped(activity: Activity) {
                 foregroundActivitiesCounter--
@@ -124,7 +130,9 @@ internal object NotificareInAppMessagingImpl : NotificareModule(), NotificareInA
                 }
             }
 
-            override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) {}
+            override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) {
+                // no-op
+            }
 
             override fun onActivityDestroyed(activity: Activity) {
                 if (activity is InAppMessagingActivity) {
