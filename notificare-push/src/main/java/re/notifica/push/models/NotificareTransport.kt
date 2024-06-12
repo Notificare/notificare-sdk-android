@@ -12,5 +12,11 @@ public enum class NotificareTransport : Parcelable {
     NOTIFICARE,
 
     @Json(name = "GCM")
-    GCM
+    GCM;
+
+    public val rawValue: String
+        get() = when (this) {
+            NOTIFICARE -> "Notificare"
+            GCM -> "GCM"
+        }
 }
