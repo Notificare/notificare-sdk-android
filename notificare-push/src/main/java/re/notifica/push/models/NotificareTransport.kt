@@ -12,8 +12,5 @@ public enum class NotificareTransport : Parcelable {
     NOTIFICARE,
 
     @Json(name = "GCM")
-    GCM,
-
-    @Json(name = "HMS")
-    HMS
+    GCM
 }
