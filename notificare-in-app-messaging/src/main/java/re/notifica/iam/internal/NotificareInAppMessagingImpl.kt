@@ -5,6 +5,7 @@ import android.app.Application
 import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.annotation.Keep
+import com.bumptech.glide.Glide
 import kotlinx.coroutines.*
 import re.notifica.Notificare
 import re.notifica.NotificareDeviceUnavailableException
@@ -260,19 +261,23 @@ internal object NotificareInAppMessagingImpl : NotificareModule(), NotificareInA
             return
         }
 
-        activity.runOnUiThread {
-            try {
-                NotificareLogger.debug("Presenting in-app message '${message.name}'.")
-                InAppMessagingActivity.show(activity, message)
+        Notificare.coroutineScope.launch {
+            ImagePreloader.loadImages(message.image, message.landscapeImage, Glide.with(activity))
 
-                onMainThread {
-                    lifecycleListeners.forEach { it.onMessagePresented(message) }
-                }
-            } catch (e: Exception) {
-                NotificareLogger.error("Failed to present the in-app message.", e)
+            activity.runOnUiThread {
+                try {
+                    NotificareLogger.debug("Presenting in-app message '${message.name}'.")
+                    InAppMessagingActivity.show(activity, message)
 
-                onMainThread {
-                    lifecycleListeners.forEach { it.onMessageFailedToPresent(message) }
+                    onMainThread {
+                        lifecycleListeners.forEach { it.onMessagePresented(message) }
+                    }
+                } catch (e: Exception) {
+                    NotificareLogger.error("Failed to present the in-app message.", e)
+
+                    onMainThread {
+                        lifecycleListeners.forEach { it.onMessageFailedToPresent(message) }
+                    }
                 }
             }
         }

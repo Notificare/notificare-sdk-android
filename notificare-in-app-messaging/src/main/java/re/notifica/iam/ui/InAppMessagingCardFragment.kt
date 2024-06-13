@@ -6,10 +6,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
-import com.bumptech.glide.Glide
 import re.notifica.iam.R
 import re.notifica.iam.databinding.NotificareInAppMessageCardFragmentBinding
-import re.notifica.iam.internal.ktx.getOrientationConstrainedImage
 import re.notifica.iam.models.NotificareInAppMessage
 import re.notifica.iam.ui.base.InAppMessagingBaseFragment
 
@@ -30,13 +28,8 @@ public open class InAppMessagingCardFragment : InAppMessagingBaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val image = message.getOrientationConstrainedImage(requireContext())
-
         binding.imageView.isVisible = image != null
-        Glide.with(binding.imageView)
-            .load(image)
-            // TODO:  .placeholder()
-            .into(binding.imageView)
+        binding.imageView.setImageBitmap(image)
 
         binding.titleView.isVisible = !message.title.isNullOrBlank()
         binding.titleView.text = message.title

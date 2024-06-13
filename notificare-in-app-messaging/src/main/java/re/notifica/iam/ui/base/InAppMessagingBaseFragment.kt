@@ -1,6 +1,7 @@
 package re.notifica.iam.ui.base
 
 import android.content.Intent
+import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
@@ -11,6 +12,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
 import re.notifica.Notificare
+import re.notifica.iam.internal.ImagePreloader
 import re.notifica.iam.ktx.INTENT_EXTRA_IN_APP_MESSAGE
 import re.notifica.iam.ktx.inAppMessagingImplementation
 import re.notifica.iam.ktx.logInAppMessageActionClicked
@@ -23,6 +25,8 @@ import re.notifica.ktx.events
 
 public abstract class InAppMessagingBaseFragment : Fragment() {
     protected lateinit var message: NotificareInAppMessage
+    protected var image: Bitmap? = null
+    protected var landscapeImage: Bitmap? = null
 
     protected abstract val animatedView: View
     protected abstract val enterAnimation: Int
@@ -34,6 +38,9 @@ public abstract class InAppMessagingBaseFragment : Fragment() {
         message = savedInstanceState?.parcelable(Notificare.INTENT_EXTRA_IN_APP_MESSAGE)
             ?: arguments?.parcelable(Notificare.INTENT_EXTRA_IN_APP_MESSAGE)
                 ?: throw IllegalStateException("Cannot create the UI without the associated in-app message.")
+
+        image = ImagePreloader.image
+        landscapeImage = ImagePreloader.landscapeImage
     }
 
     @CallSuper
