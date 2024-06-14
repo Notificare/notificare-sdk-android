@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## Upcoming release
+## 3.9.1
 
 - Preload in-app message's images
 
