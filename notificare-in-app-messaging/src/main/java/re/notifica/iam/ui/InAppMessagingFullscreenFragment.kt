@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.core.view.isVisible
 import re.notifica.iam.R
 import re.notifica.iam.databinding.NotificareInAppMessageFullscreenFragmentBinding
+import re.notifica.iam.internal.caching.NotificareImageCache
 import re.notifica.iam.models.NotificareInAppMessage
 import re.notifica.iam.ui.base.InAppMessagingBaseFragment
 
@@ -28,14 +29,10 @@ public open class InAppMessagingFullscreenFragment : InAppMessagingBaseFragment(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.imageView.isVisible = image != null
+        val image = NotificareImageCache.getOrientationConstrainedImage(requireContext())
 
-        val imageToSet = if (this.resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            landscapeImage ?: image
-        } else {
-            image
-        }
-        binding.imageView.setImageBitmap(imageToSet)
+        binding.imageView.isVisible = image != null
+        binding.imageView.setImageBitmap(image)
 
         binding.contentContainer.isVisible = !message.title.isNullOrBlank() || !message.message.isNullOrBlank()
 

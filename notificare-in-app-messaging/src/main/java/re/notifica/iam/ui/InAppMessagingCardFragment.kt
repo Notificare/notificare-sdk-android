@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.core.view.isVisible
 import re.notifica.iam.R
 import re.notifica.iam.databinding.NotificareInAppMessageCardFragmentBinding
+import re.notifica.iam.internal.caching.NotificareImageCache
 import re.notifica.iam.models.NotificareInAppMessage
 import re.notifica.iam.ui.base.InAppMessagingBaseFragment
 
@@ -27,6 +28,8 @@ public open class InAppMessagingCardFragment : InAppMessagingBaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        val image = NotificareImageCache.getOrientationConstrainedImage(requireContext())
 
         binding.imageView.isVisible = image != null
         binding.imageView.setImageBitmap(image)

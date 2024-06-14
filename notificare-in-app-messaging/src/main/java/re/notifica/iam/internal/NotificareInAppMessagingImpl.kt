@@ -11,6 +11,7 @@ import re.notifica.Notificare
 import re.notifica.NotificareDeviceUnavailableException
 import re.notifica.iam.NotificareInAppMessaging
 import re.notifica.iam.backgroundGracePeriodMillis
+import re.notifica.iam.internal.caching.NotificareImageCache
 import re.notifica.iam.internal.network.push.InAppMessageResponse
 import re.notifica.iam.models.NotificareInAppMessage
 import re.notifica.iam.ui.InAppMessagingActivity
@@ -262,7 +263,12 @@ internal object NotificareInAppMessagingImpl : NotificareModule(), NotificareInA
         }
 
         Notificare.coroutineScope.launch {
-            ImagePreloader.loadImages(message.image, message.landscapeImage, Glide.with(activity))
+            try {
+                NotificareImageCache.loadImages(message.image, message.landscapeImage, Notificare.requireContext())
+            } catch (e: Exception) {
+                NotificareLogger.warning("Failed to load images.", e)
+                return@launch
+            }
 
             activity.runOnUiThread {
                 try {
