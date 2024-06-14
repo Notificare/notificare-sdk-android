@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
 import re.notifica.Notificare
+import re.notifica.iam.internal.caching.NotificareImageCache
 import re.notifica.iam.ktx.INTENT_EXTRA_IN_APP_MESSAGE
 import re.notifica.iam.ktx.inAppMessagingImplementation
 import re.notifica.iam.ktx.logInAppMessageActionClicked
@@ -81,6 +82,7 @@ public abstract class InAppMessagingBaseFragment : Fragment() {
             transition = Transition.EXIT,
             onAnimationFinished = {
                 activity?.finish()
+                NotificareImageCache.clear()
             }
         )
     }

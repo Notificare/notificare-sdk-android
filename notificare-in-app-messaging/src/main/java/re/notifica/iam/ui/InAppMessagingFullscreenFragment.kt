@@ -5,10 +5,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
-import com.bumptech.glide.Glide
 import re.notifica.iam.R
 import re.notifica.iam.databinding.NotificareInAppMessageFullscreenFragmentBinding
-import re.notifica.iam.internal.ktx.getOrientationConstrainedImage
+import re.notifica.iam.internal.caching.NotificareImageCache
 import re.notifica.iam.models.NotificareInAppMessage
 import re.notifica.iam.ui.base.InAppMessagingBaseFragment
 
@@ -29,13 +28,10 @@ public open class InAppMessagingFullscreenFragment : InAppMessagingBaseFragment(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val image = message.getOrientationConstrainedImage(requireContext())
+        val image = NotificareImageCache.getOrientationConstrainedImage(requireContext())
 
         binding.imageView.isVisible = image != null
-        Glide.with(binding.imageView)
-            .load(image)
-            // TODO:  .placeholder()
-            .into(binding.imageView)
+        binding.imageView.setImageBitmap(image)
 
         binding.contentContainer.isVisible = !message.title.isNullOrBlank() || !message.message.isNullOrBlank()
 

@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 3.9.1
+
+- Preload in-app message's images
+
 ## 3.9.0
 
 - Add support for deferred links
