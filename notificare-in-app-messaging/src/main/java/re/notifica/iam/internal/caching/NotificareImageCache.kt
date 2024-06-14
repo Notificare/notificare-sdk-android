@@ -3,43 +3,61 @@ package re.notifica.iam.internal.caching
 import android.content.Context
 import android.content.res.Configuration
 import android.graphics.Bitmap
+import android.net.Uri
 import com.bumptech.glide.Glide
-import com.bumptech.glide.request.FutureTarget
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
-import re.notifica.internal.NotificareLogger
+import re.notifica.iam.models.NotificareInAppMessage
 
 internal object NotificareImageCache {
-    private var image: Bitmap? = null
+    private var portraitImage: Bitmap? = null
     private var landscapeImage: Bitmap? = null
 
-    fun getOrientationConstrainedImage(context: Context): Bitmap? {
+    internal var isLoading: Boolean = false
+        private set
+
+    internal fun getOrientationConstrainedImage(context: Context): Bitmap? {
         return if (context.resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            this.landscapeImage ?: this.image
+            this.landscapeImage ?: this.portraitImage
         } else {
-            this.image ?: this.landscapeImage
+            this.portraitImage ?: this.landscapeImage
         }
     }
 
-    internal suspend fun loadImages(image: String?, landscapeImage: String?, context: Context) {
-        if(!image.isNullOrBlank()) {
-            NotificareImageCache.image = loadImage(image, context)
-        }
-        if (!landscapeImage.isNullOrBlank()) {
-            NotificareImageCache.landscapeImage = loadImage(landscapeImage, context)
-        }
-    }
+    internal suspend fun preloadImages(
+        context: Context,
+        message: NotificareInAppMessage,
+    ): Unit = withContext(Dispatchers.IO) {
+        clear()
 
-    private suspend fun loadImage(url: String, context: Context): Bitmap? {
-        return try {
-            val futureTarget: FutureTarget<Bitmap> = Glide.with(context).asBitmap().load(url).submit()
-            withContext(Dispatchers.IO) {
-                futureTarget.get()
+        try {
+            isLoading = true
+
+            if (!message.image.isNullOrBlank()) {
+                portraitImage = loadImage(context, Uri.parse(message.image))
             }
-        } catch (e: Exception) {
-            NotificareLogger.warning("Failed to load image from $url", e)
-            null
+
+            if (!message.landscapeImage.isNullOrBlank()) {
+                landscapeImage = loadImage(context, Uri.parse(message.landscapeImage))
+            }
+        } finally {
+            isLoading = false
         }
+    }
+
+    internal fun clear() {
+        portraitImage = null
+        landscapeImage = null
+    }
+
+    private suspend fun loadImage(
+        context: Context,
+        uri: Uri
+    ): Bitmap? = withContext(Dispatchers.IO) {
+        Glide.with(context)
+            .asBitmap()
+            .load(uri)
+            .submit()
+            .get()
     }
 }

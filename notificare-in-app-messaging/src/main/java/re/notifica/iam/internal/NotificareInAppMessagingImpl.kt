@@ -231,41 +231,51 @@ internal object NotificareInAppMessagingImpl : NotificareModule(), NotificareInA
     }
 
     private fun present(message: NotificareInAppMessage) {
-        if (isShowingMessage) {
-            NotificareLogger.warning("Cannot display an in-app message while another is being presented.")
-
-            onMainThread {
-                lifecycleListeners.forEach { it.onMessageFailedToPresent(message) }
-            }
-
-            return
-        }
-
-        if (hasMessagesSuppressed) {
-            NotificareLogger.debug("Cannot display an in-app message while messages are being suppressed.")
-
-            onMainThread {
-                lifecycleListeners.forEach { it.onMessageFailedToPresent(message) }
-            }
-
-            return
-        }
-
-        val activity = currentActivity?.get() ?: run {
-            NotificareLogger.warning("Cannot display an in-app message without a reference to the current activity.")
-
-            onMainThread {
-                lifecycleListeners.forEach { it.onMessageFailedToPresent(message) }
-            }
-
-            return
-        }
-
         Notificare.coroutineScope.launch {
+            if (NotificareImageCache.isLoading) {
+                NotificareLogger.debug("Cannot display an in-app message while another is being preloaded.")
+                return@launch
+            }
+
             try {
-                NotificareImageCache.loadImages(message.image, message.landscapeImage, Notificare.requireContext())
+                NotificareImageCache.preloadImages(Notificare.requireContext(), message)
             } catch (e: Exception) {
-                NotificareLogger.warning("Failed to load images.", e)
+                NotificareLogger.error("Failed to preload the in-app message images.", e)
+
+                onMainThread {
+                    lifecycleListeners.forEach { it.onMessageFailedToPresent(message) }
+                }
+
+                return@launch
+            }
+
+            if (isShowingMessage) {
+                NotificareLogger.warning("Cannot display an in-app message while another is being presented.")
+
+                onMainThread {
+                    lifecycleListeners.forEach { it.onMessageFailedToPresent(message) }
+                }
+
+                return@launch
+            }
+
+            if (hasMessagesSuppressed) {
+                NotificareLogger.debug("Cannot display an in-app message while messages are being suppressed.")
+
+                onMainThread {
+                    lifecycleListeners.forEach { it.onMessageFailedToPresent(message) }
+                }
+
+                return@launch
+            }
+
+            val activity = currentActivity?.get() ?: run {
+                NotificareLogger.warning("Cannot display an in-app message without a reference to the current activity.")
+
+                onMainThread {
+                    lifecycleListeners.forEach { it.onMessageFailedToPresent(message) }
+                }
+
                 return@launch
             }
 
