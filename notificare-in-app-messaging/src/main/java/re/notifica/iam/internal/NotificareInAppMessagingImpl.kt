@@ -5,7 +5,6 @@ import android.app.Application
 import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.annotation.Keep
-import com.bumptech.glide.Glide
 import kotlinx.coroutines.*
 import re.notifica.Notificare
 import re.notifica.NotificareDeviceUnavailableException
