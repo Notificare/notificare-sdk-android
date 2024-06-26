@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## Upcoming release
+
+- Fix anonymous device registration
+
 ## 3.9.1
 
 - Preload in-app message's images
