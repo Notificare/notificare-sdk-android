@@ -2,8 +2,10 @@ package re.notifica.internal.network.push
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
+import re.notifica.internal.moshi.EncodeNulls
 import re.notifica.models.NotificareTransport
 
+@EncodeNulls
 @JsonClass(generateAdapter = true)
 internal data class DeviceRegistrationPayload(
     @Json(name = "deviceID") val deviceId: String,
