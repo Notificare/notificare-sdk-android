@@ -9,9 +9,10 @@ internal object NotificationUrlResolver {
         val content = notification.content.firstOrNull { it.type == "re.notifica.content.URL" }
             ?: return UrlResolverResult.NONE
 
-        val url = (content.data as? String)?.let { Uri.parse(it) }
-            ?: return UrlResolverResult.NONE
+        val urlStr = content.data as? String
+        if (urlStr.isNullOrBlank()) return UrlResolverResult.NONE
 
+        val url = Uri.parse(urlStr)
         val isHttpUrl = url.scheme == "http" || url.scheme == "https"
         val isDynamicLink = url.host?.endsWith("ntc.re") == true
 
