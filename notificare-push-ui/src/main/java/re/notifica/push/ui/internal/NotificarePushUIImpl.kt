@@ -73,6 +73,9 @@ internal object NotificarePushUIImpl : NotificareModule(), NotificarePushUI, Not
 
                 handleUrlScheme(activity, notification)
             }
+            NotificareNotification.NotificationType.URL_RESOLVER -> {
+                handleUrlResolver(activity, notification)
+            }
             NotificareNotification.NotificationType.PASSBOOK -> {
                 onMainThread {
                     lifecycleListeners.forEach { it.onNotificationWillPresent(notification) }
@@ -168,6 +171,7 @@ internal object NotificarePushUIImpl : NotificareModule(), NotificarePushUI, Not
             }
             NotificareNotification.NotificationType.WEB_VIEW -> NotificareWebViewFragment::class.java.canonicalName
             NotificareNotification.NotificationType.URL -> NotificareUrlFragment::class.java.canonicalName
+            NotificareNotification.NotificationType.URL_RESOLVER -> NotificareUrlFragment::class.java.canonicalName
             NotificareNotification.NotificationType.URL_SCHEME -> {
                 NotificareLogger.debug("Attempting to create a fragment for a notification of type 'UrlScheme'. This type contains no visual interface.")
                 return null
@@ -236,6 +240,43 @@ internal object NotificarePushUIImpl : NotificareModule(), NotificarePushUI, Not
 
         onMainThread {
             lifecycleListeners.forEach { it.onNotificationPresented(notification) }
+        }
+    }
+
+    private fun handleUrlResolver(activity: Activity, notification: NotificareNotification) {
+        val result = NotificationUrlResolver.resolve(notification)
+
+        when(result) {
+            NotificationUrlResolver.UrlResolverResult.NONE -> {
+                NotificareLogger.debug("Resolving as 'none' notification.")
+            }
+            NotificationUrlResolver.UrlResolverResult.URL_SCHEME -> {
+                NotificareLogger.debug("Resolving as 'url scheme' notification.")
+
+                onMainThread {
+                    lifecycleListeners.forEach { it.onNotificationWillPresent(notification) }
+                }
+
+                handleUrlScheme(activity, notification)
+            }
+            NotificationUrlResolver.UrlResolverResult.WEB_VIEW -> {
+                NotificareLogger.debug("Resolving as 'web view' notification.")
+
+                onMainThread {
+                    lifecycleListeners.forEach { it.onNotificationWillPresent(notification) }
+                }
+
+                openNotificationActivity(activity, notification)
+            }
+            NotificationUrlResolver.UrlResolverResult.IN_APP_BROWSER -> {
+                NotificareLogger.debug("Resolving as 'in-app browser' notification.")
+
+                onMainThread {
+                    lifecycleListeners.forEach { it.onNotificationWillPresent(notification) }
+                }
+
+                handleInAppBrowser(activity, notification)
+            }
         }
     }
 

@@ -39,6 +39,7 @@ public data class NotificareNotification(
         public const val TYPE_IN_APP_BROWSER: String = "re.notifica.notification.InAppBrowser"
         public const val TYPE_WEB_VIEW: String = "re.notifica.notification.WebView"
         public const val TYPE_URL: String = "re.notifica.notification.URL"
+        public const val TYPE_URL_RESOLVER: String = "re.notifica.notification.URLResolver"
         public const val TYPE_URL_SCHEME: String = "re.notifica.notification.URLScheme"
         public const val TYPE_IMAGE: String = "re.notifica.notification.Image"
         public const val TYPE_VIDEO: String = "re.notifica.notification.Video"
@@ -193,6 +194,7 @@ public data class NotificareNotification(
         IN_APP_BROWSER,
         WEB_VIEW,
         URL,
+        URL_RESOLVER,
         URL_SCHEME,
         IMAGE,
         VIDEO,
@@ -209,6 +211,7 @@ public data class NotificareNotification(
                     TYPE_IN_APP_BROWSER -> IN_APP_BROWSER
                     TYPE_WEB_VIEW -> WEB_VIEW
                     TYPE_URL -> URL
+                    TYPE_URL_RESOLVER -> URL_RESOLVER
                     TYPE_URL_SCHEME -> URL_SCHEME
                     TYPE_IMAGE -> IMAGE
                     TYPE_VIDEO -> VIDEO
