@@ -21,6 +21,7 @@ import re.notifica.push.ui.actions.*
 import re.notifica.push.ui.actions.base.NotificationAction
 import re.notifica.push.ui.ktx.loyaltyIntegration
 import re.notifica.push.ui.notifications.fragments.*
+import re.notifica.push.ui.utils.removeQueryParameter
 
 @Keep
 internal object NotificarePushUIImpl : NotificareModule(), NotificarePushUI, NotificareInternalPushUI {
@@ -302,7 +303,8 @@ internal object NotificarePushUIImpl : NotificareModule(), NotificarePushUI, Not
     }
 
     private fun handleInAppBrowser(activity: Activity, notification: NotificareNotification) {
-        val content = notification.content.firstOrNull { it.type == "re.notifica.content.URL" } ?: run {
+        val content = notification.content.firstOrNull { it.type == "re.notifica.content.URL" }
+        val urlStr = content?.data as? String ?: run {
             onMainThread {
                 lifecycleListeners.forEach { it.onNotificationFailedToPresent(notification) }
             }
@@ -310,8 +312,13 @@ internal object NotificarePushUIImpl : NotificareModule(), NotificarePushUI, Not
             return
         }
 
+        val url = Uri.parse(urlStr)
+            .buildUpon()
+            .removeQueryParameter("notificareWebView")
+            .build()
+
         try {
-            createInAppBrowser().launchUrl(activity, Uri.parse(content.data as String))
+            createInAppBrowser().launchUrl(activity, url)
 
             onMainThread {
                 lifecycleListeners.forEach { it.onNotificationPresented(notification) }
