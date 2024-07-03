@@ -39,6 +39,8 @@ timber = "5.0.1"
 notificare-services = "1.0.1"
 ktlint = "12.1.0"
 detekt = "1.23.3"
+junit = "4.13.2"
+robolectric = "4.12.2"
 
 [libraries]
 kotlinx-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinx-coroutines" }
@@ -81,6 +83,8 @@ google-playServices-location = { module = "com.google.android.gms:play-services-
 google-playServices-maps = { module = "com.google.android.gms:play-services-maps", version.ref = "google-playServices-maps" }
 google-playServices-vision = { module = "com.google.android.gms:play-services-vision", version.ref = "google-playServices-vision" }
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
+junit = { module = "junit:junit", version.ref = "junit"}
+robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "android-tools" }
