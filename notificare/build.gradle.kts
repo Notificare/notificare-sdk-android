@@ -68,4 +68,8 @@ dependencies {
     // Glide
     implementation(libs.glide)
     ksp(libs.glide.compiler)
+
+    // Tests
+    testImplementation(libs.junit)
+    testImplementation(libs.robolectric)
 }
