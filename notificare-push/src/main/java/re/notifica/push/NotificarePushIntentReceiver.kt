@@ -91,10 +91,6 @@ public open class NotificarePushIntentReceiver : BroadcastReceiver() {
         )
     }
 
-    @Deprecated("Use onNotificationReceived(context, notification, deliveryMechanism) instead.")
-    protected open fun onNotificationReceived(context: Context, notification: NotificareNotification) {
-    }
-
     protected open fun onNotificationReceived(
         context: Context,
         notification: NotificareNotification,
@@ -103,10 +99,6 @@ public open class NotificarePushIntentReceiver : BroadcastReceiver() {
         NotificareLogger.info(
             "Received a notification, please override onNotificationReceived if you want to receive these intents."
         )
-
-        // Continue executing the deprecated method for backwards compatibility.
-        @Suppress("DEPRECATION")
-        onNotificationReceived(context, notification)
     }
 
     protected open fun onSystemNotificationReceived(context: Context, notification: NotificareSystemNotification) {

@@ -17,6 +17,7 @@
 - Drops support for the monetize module.
 - Drops support for Huawei Mobile Services.
 - Drops support for v1 passes in-app wallet.
+- Removed deprecated `onNotificationReceived(context, notification)`. Use `onNotificationReceived(context, notification, deliveryMechanism)` instead. 
 
 ## 3.9.0
 
