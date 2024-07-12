@@ -18,6 +18,7 @@
 - Drops support for Huawei Mobile Services.
 - Drops support for v1 passes in-app wallet.
 - Removed deprecated `onNotificationReceived(context, notification)`. Use `onNotificationReceived(context, notification, deliveryMechanism)` instead. 
+- Removed `INTENT_ACTION_BEACON_NOTIFICATION_OPENED` from the notificare-geo-beacons module. This intent was previously moved to the notificare-geo module.
 
 ## 3.9.0
 
