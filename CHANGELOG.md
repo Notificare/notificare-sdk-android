@@ -19,6 +19,7 @@
 - Drops support for v1 passes in-app wallet.
 - Removed deprecated `onNotificationReceived(context, notification)`. Use `onNotificationReceived(context, notification, deliveryMechanism)` instead. 
 - Removed `INTENT_ACTION_BEACON_NOTIFICATION_OPENED` from the notificare-geo-beacons module. This intent was previously moved to the notificare-geo module.
+- Removed deprecated `Notificare.OnReadyListener`. Use the more complete `Notificare.Listener` instead.
 
 ## 3.9.0
 

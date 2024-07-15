@@ -264,15 +264,6 @@ public object Notificare {
         callback: NotificareCallback<Unit>,
     ): Unit = toCallbackFunction(::unlaunch)(callback)
 
-    @Deprecated(
-        message = "Use addListener() instead.",
-        replaceWith = ReplaceWith("Notificare.addListener(listener)")
-    )
-    @JvmStatic
-    public fun addOnReadyListener(@Suppress("DEPRECATION") listener: OnReadyListener) {
-        addListener(listener)
-    }
-
     @JvmStatic
     public fun addListener(listener: Listener) {
         listeners.add(WeakReference(listener))
@@ -283,15 +274,6 @@ public object Notificare {
                 listener.onReady(checkNotNull(application))
             }
         }
-    }
-
-    @Deprecated(
-        message = "Use removeListener() instead.",
-        replaceWith = ReplaceWith("Notificare.removeListener(listener)")
-    )
-    @JvmStatic
-    public fun removeOnReadyListener(@Suppress("DEPRECATION") listener: OnReadyListener) {
-        removeListener(listener)
     }
 
     @JvmStatic
@@ -777,14 +759,6 @@ public object Notificare {
         return@withContext deferredReferrerDetails.await().also {
             installReferrerDetails = it
         }
-    }
-
-    @Deprecated(
-        message = "Use the more complete Notificare.Listener instead.",
-        replaceWith = ReplaceWith("Notificare.Listener")
-    )
-    public interface OnReadyListener : Listener {
-        public override fun onReady(application: NotificareApplication)
     }
 
     public interface Listener {
