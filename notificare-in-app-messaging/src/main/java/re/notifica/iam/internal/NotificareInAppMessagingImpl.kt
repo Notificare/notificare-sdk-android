@@ -16,6 +16,7 @@ import re.notifica.Notificare
 import re.notifica.NotificareDeviceUnavailableException
 import re.notifica.iam.NotificareInAppMessaging
 import re.notifica.iam.backgroundGracePeriodMillis
+import re.notifica.iam.internal.caching.NotificareImageCache
 import re.notifica.iam.internal.network.push.InAppMessageResponse
 import re.notifica.iam.models.NotificareInAppMessage
 import re.notifica.iam.ui.InAppMessagingActivity
@@ -259,49 +260,68 @@ internal object NotificareInAppMessagingImpl : NotificareModule(), NotificareInA
     }
 
     private fun present(message: NotificareInAppMessage) {
-        if (isShowingMessage) {
-            NotificareLogger.warning("Cannot display an in-app message while another is being presented.")
-
-            onMainThread {
-                lifecycleListeners.forEach { it.get()?.onMessageFailedToPresent(message) }
+        Notificare.coroutineScope.launch {
+            if (NotificareImageCache.isLoading) {
+                NotificareLogger.debug("Cannot display an in-app message while another is being preloaded.")
+                return@launch
             }
 
-            return
-        }
-
-        if (hasMessagesSuppressed) {
-            NotificareLogger.debug("Cannot display an in-app message while messages are being suppressed.")
-
-            onMainThread {
-                lifecycleListeners.forEach { it.get()?.onMessageFailedToPresent(message) }
-            }
-
-            return
-        }
-
-        val activity = currentActivity?.get() ?: run {
-            NotificareLogger.warning("Cannot display an in-app message without a reference to the current activity.")
-
-            onMainThread {
-                lifecycleListeners.forEach { it.get()?.onMessageFailedToPresent(message) }
-            }
-
-            return
-        }
-
-        activity.runOnUiThread {
             try {
-                NotificareLogger.debug("Presenting in-app message '${message.name}'.")
-                InAppMessagingActivity.show(activity, message)
+                NotificareImageCache.preloadImages(Notificare.requireContext(), message)
+            } catch (e: Exception) {
+                NotificareLogger.error("Failed to preload the in-app message images.", e)
 
                 onMainThread {
-                    lifecycleListeners.forEach { it.get()?.onMessagePresented(message) }
+                    lifecycleListeners.forEach { it.onMessageFailedToPresent(message) }
                 }
-            } catch (e: Exception) {
-                NotificareLogger.error("Failed to present the in-app message.", e)
+
+                return@launch
+            }
+
+            if (isShowingMessage) {
+                NotificareLogger.warning("Cannot display an in-app message while another is being presented.")
+
+                onMainThread {
+                    lifecycleListeners.forEach { it.onMessageFailedToPresent(message) }
+                }
+
+                return@launch
+            }
+
+            if (hasMessagesSuppressed) {
+                NotificareLogger.debug("Cannot display an in-app message while messages are being suppressed.")
+
+                onMainThread {
+                    lifecycleListeners.forEach { it.onMessageFailedToPresent(message) }
+                }
+
+                return@launch
+            }
+
+            val activity = currentActivity?.get() ?: run {
+                NotificareLogger.warning("Cannot display an in-app message without a reference to the current activity.")
 
                 onMainThread {
                     lifecycleListeners.forEach { it.get()?.onMessageFailedToPresent(message) }
+                }
+
+                return@launch
+            }
+
+            activity.runOnUiThread {
+                try {
+                    NotificareLogger.debug("Presenting in-app message '${message.name}'.")
+                    InAppMessagingActivity.show(activity, message)
+
+                    onMainThread {
+                        lifecycleListeners.forEach { it.onMessagePresented(message) }
+                    }
+                } catch (e: Exception) {
+                    NotificareLogger.error("Failed to present the in-app message.", e)
+
+                    onMainThread {
+                        lifecycleListeners.forEach { it.onMessageFailedToPresent(message) }
+                    }
                 }
             }
         }

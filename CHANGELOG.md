@@ -21,6 +21,15 @@
 - Removed `INTENT_ACTION_BEACON_NOTIFICATION_OPENED` from the notificare-geo-beacons module. This intent was previously moved to the notificare-geo module.
 - Removed deprecated `Notificare.OnReadyListener`. Use the more complete `Notificare.Listener` instead.
 
+## 3.10.0
+
+- Add support for the URLResolver notification type
+- Fix anonymous device registration
+
+## 3.9.1
+
+- Preload in-app message's images
+
 ## 3.9.0
 
 - Add support for deferred links

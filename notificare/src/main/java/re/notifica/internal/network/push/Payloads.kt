@@ -6,6 +6,7 @@ import re.notifica.internal.moshi.EncodeNulls
 import re.notifica.models.NotificareDoNotDisturb
 import re.notifica.models.NotificareUserData
 
+@EncodeNulls
 @JsonClass(generateAdapter = true)
 internal data class CreateDevicePayload(
     val language: String,

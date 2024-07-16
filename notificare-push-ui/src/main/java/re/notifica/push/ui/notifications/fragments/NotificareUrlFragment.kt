@@ -1,6 +1,7 @@
 package re.notifica.push.ui.notifications.fragments
 
 import android.annotation.SuppressLint
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -12,6 +13,7 @@ import re.notifica.push.ui.databinding.NotificareNotificationUrlFragmentBinding
 import re.notifica.push.ui.ktx.pushUIInternal
 import re.notifica.push.ui.notifications.fragments.base.NotificationFragment
 import re.notifica.push.ui.utils.NotificationWebViewClient
+import re.notifica.push.ui.utils.removeQueryParameter
 
 public class NotificareUrlFragment : NotificationFragment() {
 
@@ -38,7 +40,7 @@ public class NotificareUrlFragment : NotificationFragment() {
 
     private fun setupContent() {
         val content = notification.content.firstOrNull()
-        val url = content?.data as? String ?: run {
+        val urlStr = content?.data as? String ?: run {
             onMainThread {
                 Notificare.pushUIInternal().lifecycleListeners.forEach {
                     it.get()?.onNotificationFailedToPresent(notification)
@@ -47,6 +49,12 @@ public class NotificareUrlFragment : NotificationFragment() {
 
             return
         }
+
+        val url = Uri.parse(urlStr)
+            .buildUpon()
+            .removeQueryParameter("notificareWebView")
+            .build()
+            .toString()
 
         binding.webView.loadUrl(url)
     }

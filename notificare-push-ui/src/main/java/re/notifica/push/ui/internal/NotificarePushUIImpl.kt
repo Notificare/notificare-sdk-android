@@ -40,6 +40,7 @@ import re.notifica.push.ui.notifications.fragments.NotificareUrlFragment
 import re.notifica.push.ui.notifications.fragments.NotificareVideoFragment
 import re.notifica.push.ui.notifications.fragments.NotificareWebPassFragment
 import re.notifica.push.ui.notifications.fragments.NotificareWebViewFragment
+import re.notifica.push.ui.utils.removeQueryParameter
 import java.lang.ref.WeakReference
 
 @Keep
@@ -99,6 +100,9 @@ internal object NotificarePushUIImpl : NotificareModule(), NotificarePushUI, Not
                 }
 
                 handleUrlScheme(activity, notification)
+            }
+            NotificareNotification.NotificationType.URL_RESOLVER -> {
+                handleUrlResolver(activity, notification)
             }
             NotificareNotification.NotificationType.PASSBOOK -> {
                 onMainThread {
@@ -199,6 +203,7 @@ internal object NotificarePushUIImpl : NotificareModule(), NotificarePushUI, Not
             }
             NotificareNotification.NotificationType.WEB_VIEW -> NotificareWebViewFragment::class.java.canonicalName
             NotificareNotification.NotificationType.URL -> NotificareUrlFragment::class.java.canonicalName
+            NotificareNotification.NotificationType.URL_RESOLVER -> NotificareUrlFragment::class.java.canonicalName
             NotificareNotification.NotificationType.URL_SCHEME -> {
                 NotificareLogger.debug(
                     "Attempting to create a fragment for a notification of type 'UrlScheme'. This type contains no visual interface."
@@ -278,6 +283,43 @@ internal object NotificarePushUIImpl : NotificareModule(), NotificarePushUI, Not
         }
     }
 
+    private fun handleUrlResolver(activity: Activity, notification: NotificareNotification) {
+        val result = NotificationUrlResolver.resolve(notification)
+
+        when(result) {
+            NotificationUrlResolver.UrlResolverResult.NONE -> {
+                NotificareLogger.debug("Resolving as 'none' notification.")
+            }
+            NotificationUrlResolver.UrlResolverResult.URL_SCHEME -> {
+                NotificareLogger.debug("Resolving as 'url scheme' notification.")
+
+                onMainThread {
+                    lifecycleListeners.forEach { it.onNotificationWillPresent(notification) }
+                }
+
+                handleUrlScheme(activity, notification)
+            }
+            NotificationUrlResolver.UrlResolverResult.WEB_VIEW -> {
+                NotificareLogger.debug("Resolving as 'web view' notification.")
+
+                onMainThread {
+                    lifecycleListeners.forEach { it.onNotificationWillPresent(notification) }
+                }
+
+                openNotificationActivity(activity, notification)
+            }
+            NotificationUrlResolver.UrlResolverResult.IN_APP_BROWSER -> {
+                NotificareLogger.debug("Resolving as 'in-app browser' notification.")
+
+                onMainThread {
+                    lifecycleListeners.forEach { it.onNotificationWillPresent(notification) }
+                }
+
+                handleInAppBrowser(activity, notification)
+            }
+        }
+    }
+
     private fun handlePassbook(activity: Activity, notification: NotificareNotification) {
         val integration = Notificare.loyaltyIntegration() ?: run {
             openNotificationActivity(activity, notification)
@@ -304,7 +346,8 @@ internal object NotificarePushUIImpl : NotificareModule(), NotificarePushUI, Not
     }
 
     private fun handleInAppBrowser(activity: Activity, notification: NotificareNotification) {
-        val content = notification.content.firstOrNull { it.type == "re.notifica.content.URL" } ?: run {
+        val content = notification.content.firstOrNull { it.type == "re.notifica.content.URL" }
+        val urlStr = content?.data as? String ?: run {
             onMainThread {
                 lifecycleListeners.forEach { it.get()?.onNotificationFailedToPresent(notification) }
             }
@@ -312,8 +355,13 @@ internal object NotificarePushUIImpl : NotificareModule(), NotificarePushUI, Not
             return
         }
 
+        val url = Uri.parse(urlStr)
+            .buildUpon()
+            .removeQueryParameter("notificareWebView")
+            .build()
+
         try {
-            createInAppBrowser().launchUrl(activity, Uri.parse(content.data as String))
+            createInAppBrowser().launchUrl(activity, url)
 
             onMainThread {
                 lifecycleListeners.forEach { it.get()?.onNotificationPresented(notification) }
