@@ -294,7 +294,7 @@ internal object NotificarePushUIImpl : NotificareModule(), NotificarePushUI, Not
                 NotificareLogger.debug("Resolving as 'url scheme' notification.")
 
                 onMainThread {
-                    lifecycleListeners.forEach { it.onNotificationWillPresent(notification) }
+                    lifecycleListeners.forEach { it.get()?.onNotificationWillPresent(notification) }
                 }
 
                 handleUrlScheme(activity, notification)
@@ -303,7 +303,7 @@ internal object NotificarePushUIImpl : NotificareModule(), NotificarePushUI, Not
                 NotificareLogger.debug("Resolving as 'web view' notification.")
 
                 onMainThread {
-                    lifecycleListeners.forEach { it.onNotificationWillPresent(notification) }
+                    lifecycleListeners.forEach { it.get()?.onNotificationWillPresent(notification) }
                 }
 
                 openNotificationActivity(activity, notification)
@@ -312,7 +312,7 @@ internal object NotificarePushUIImpl : NotificareModule(), NotificarePushUI, Not
                 NotificareLogger.debug("Resolving as 'in-app browser' notification.")
 
                 onMainThread {
-                    lifecycleListeners.forEach { it.onNotificationWillPresent(notification) }
+                    lifecycleListeners.forEach { it.get()?.onNotificationWillPresent(notification) }
                 }
 
                 handleInAppBrowser(activity, notification)

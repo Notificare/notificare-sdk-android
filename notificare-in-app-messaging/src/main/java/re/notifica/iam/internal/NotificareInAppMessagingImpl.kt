@@ -272,7 +272,7 @@ internal object NotificareInAppMessagingImpl : NotificareModule(), NotificareInA
                 NotificareLogger.error("Failed to preload the in-app message images.", e)
 
                 onMainThread {
-                    lifecycleListeners.forEach { it.onMessageFailedToPresent(message) }
+                    lifecycleListeners.forEach { it.get()?.onMessageFailedToPresent(message) }
                 }
 
                 return@launch
@@ -282,7 +282,7 @@ internal object NotificareInAppMessagingImpl : NotificareModule(), NotificareInA
                 NotificareLogger.warning("Cannot display an in-app message while another is being presented.")
 
                 onMainThread {
-                    lifecycleListeners.forEach { it.onMessageFailedToPresent(message) }
+                    lifecycleListeners.forEach { it.get()?.onMessageFailedToPresent(message) }
                 }
 
                 return@launch
@@ -292,7 +292,7 @@ internal object NotificareInAppMessagingImpl : NotificareModule(), NotificareInA
                 NotificareLogger.debug("Cannot display an in-app message while messages are being suppressed.")
 
                 onMainThread {
-                    lifecycleListeners.forEach { it.onMessageFailedToPresent(message) }
+                    lifecycleListeners.forEach { it.get()?.onMessageFailedToPresent(message) }
                 }
 
                 return@launch
@@ -314,13 +314,13 @@ internal object NotificareInAppMessagingImpl : NotificareModule(), NotificareInA
                     InAppMessagingActivity.show(activity, message)
 
                     onMainThread {
-                        lifecycleListeners.forEach { it.onMessagePresented(message) }
+                        lifecycleListeners.forEach { it.get()?.onMessagePresented(message) }
                     }
                 } catch (e: Exception) {
                     NotificareLogger.error("Failed to present the in-app message.", e)
 
                     onMainThread {
-                        lifecycleListeners.forEach { it.onMessageFailedToPresent(message) }
+                        lifecycleListeners.forEach { it.get()?.onMessageFailedToPresent(message) }
                     }
                 }
             }
