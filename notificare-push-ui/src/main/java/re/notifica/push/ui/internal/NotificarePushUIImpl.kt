@@ -229,6 +229,16 @@ internal object NotificarePushUIImpl : NotificareModule(), NotificarePushUI, Not
     }
 
     private fun handleUrlScheme(activity: Activity, notification: NotificareNotification) {
+        val servicesInfo = Notificare.servicesInfo ?: run {
+            NotificareLogger.warning("Notificare is not configured.")
+
+            onMainThread {
+                lifecycleListeners.forEach { it.get()?.onNotificationFailedToPresent(notification) }
+            }
+
+            return
+        }
+
         val content = notification.content.firstOrNull { it.type == "re.notifica.content.URL" } ?: run {
             onMainThread {
                 lifecycleListeners.forEach { it.get()?.onNotificationFailedToPresent(notification) }
@@ -238,7 +248,7 @@ internal object NotificarePushUIImpl : NotificareModule(), NotificarePushUI, Not
         }
 
         val url = Uri.parse(content.data as String)
-        if (url.host?.endsWith("ntc.re") != true) {
+        if (url.host?.endsWith(servicesInfo.hosts.shortLinks) != true) {
             presentDeepLink(activity, notification, url)
             return
         }
@@ -284,9 +294,19 @@ internal object NotificarePushUIImpl : NotificareModule(), NotificarePushUI, Not
     }
 
     private fun handleUrlResolver(activity: Activity, notification: NotificareNotification) {
-        val result = NotificationUrlResolver.resolve(notification)
+        val servicesInfo = Notificare.servicesInfo ?: run {
+            NotificareLogger.warning("Notificare is not configured.")
 
-        when(result) {
+            onMainThread {
+                lifecycleListeners.forEach { it.get()?.onNotificationFailedToPresent(notification) }
+            }
+
+            return
+        }
+
+        val result = NotificationUrlResolver.resolve(notification, servicesInfo)
+
+        when (result) {
             NotificationUrlResolver.UrlResolverResult.NONE -> {
                 NotificareLogger.debug("Resolving as 'none' notification.")
             }

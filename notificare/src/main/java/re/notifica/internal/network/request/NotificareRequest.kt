@@ -298,15 +298,19 @@ public class NotificareRequest private constructor(
             var url = requireNotNull(url) { "Please provide the URL for the request." }
 
             if (!url.startsWith("http://") && !url.startsWith("https://")) {
-                val baseUrl = requireNotNull(baseUrl ?: Notificare.servicesInfo?.pushHost) {
+                var baseUrl = requireNotNull(baseUrl ?: Notificare.servicesInfo?.hosts?.restApi) {
                     "Unable to determine the base url for the request."
                 }
 
-                if (!baseUrl.endsWith("/") && !url.startsWith("/")) {
-                    url = "$baseUrl/$url"
+                if (!baseUrl.startsWith("http://") && !baseUrl.startsWith("https://")) {
+                    baseUrl = "https://$baseUrl"
                 }
 
-                url = "$baseUrl$url"
+                url = if (!baseUrl.endsWith("/") && !url.startsWith("/")) {
+                    "$baseUrl/$url"
+                } else {
+                    "$baseUrl$url"
+                }
             }
 
             if (queryItems.isNotEmpty()) {

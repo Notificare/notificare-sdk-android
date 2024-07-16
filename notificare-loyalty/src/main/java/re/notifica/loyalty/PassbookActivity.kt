@@ -125,7 +125,7 @@ public open class PassbookActivity : AppCompatActivity() {
         val pathSegments = uri.pathSegments ?: return null
 
         val application = Notificare.application ?: return null
-        val appLinksDomain = Notificare.servicesInfo?.appLinksDomain ?: return null
+        val appLinksDomain = Notificare.servicesInfo?.hosts?.appLinks ?: return null
 
         if (uri.host == "${application.id}.$appLinksDomain" && pathSegments.size >= 2 && pathSegments[0] == "pass") {
             return pathSegments[1]
@@ -135,7 +135,7 @@ public open class PassbookActivity : AppCompatActivity() {
     }
 
     private fun showWebPassView(serial: String) {
-        val host = Notificare.servicesInfo?.pushHost ?: return
+        val host = Notificare.servicesInfo?.hosts?.restApi ?: return
         val url = "$host/pass/web/$serial?showWebVersion=1"
 
         webView.loadUrl(url)
