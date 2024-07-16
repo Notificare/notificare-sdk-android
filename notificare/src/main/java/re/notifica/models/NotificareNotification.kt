@@ -204,6 +204,7 @@ public data class NotificareNotification(
         STORE;
 
         public companion object {
+            @Suppress("detekt:CyclomaticComplexMethod")
             public fun from(type: String): NotificationType? {
                 return when (type) {
                     TYPE_NONE -> NONE

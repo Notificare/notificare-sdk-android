@@ -17,6 +17,7 @@ public object NotificareDeviceCompat {
 
     @JvmStatic
     public fun register(userId: String?, userName: String?, callback: NotificareCallback<Unit>) {
+        @Suppress("DEPRECATION")
         Notificare.device().register(userId, userName, callback)
     }
 

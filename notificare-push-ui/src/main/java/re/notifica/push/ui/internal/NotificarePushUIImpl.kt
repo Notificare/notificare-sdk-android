@@ -422,7 +422,7 @@ internal object NotificarePushUIImpl : NotificareModule(), NotificarePushUI, Not
             NotificareNotification.Action.TYPE_MAIL -> NotificationMailAction(activity, notification, action)
             NotificareNotification.Action.TYPE_SMS -> NotificationSmsAction(activity, notification, action)
             NotificareNotification.Action.TYPE_TELEPHONE -> NotificationTelephoneAction(activity, notification, action)
-            @Suppress("DEPRECATION")
+            @Suppress("DEPRECATION", "ktlint:standard:annotation")
             NotificareNotification.Action.TYPE_WEB_VIEW,
             NotificareNotification.Action.TYPE_IN_APP_BROWSER ->
                 NotificationInAppBrowserAction(activity, notification, action)
