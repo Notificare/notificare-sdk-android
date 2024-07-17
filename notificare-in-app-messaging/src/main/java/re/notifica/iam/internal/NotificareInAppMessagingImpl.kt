@@ -299,7 +299,9 @@ internal object NotificareInAppMessagingImpl : NotificareModule(), NotificareInA
             }
 
             val activity = currentActivity?.get() ?: run {
-                NotificareLogger.warning("Cannot display an in-app message without a reference to the current activity.")
+                NotificareLogger.warning(
+                    "Cannot display an in-app message without a reference to the current activity."
+                )
 
                 onMainThread {
                     lifecycleListeners.forEach { it.get()?.onMessageFailedToPresent(message) }

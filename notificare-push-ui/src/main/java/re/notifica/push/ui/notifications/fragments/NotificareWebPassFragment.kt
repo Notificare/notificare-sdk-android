@@ -41,7 +41,7 @@ public class NotificareWebPassFragment : NotificationFragment() {
         val content = notification.content.firstOrNull()
         val passUrlStr = content?.data as? String
         val application = Notificare.application
-        val host = Notificare.servicesInfo?.pushHost
+        val host = Notificare.servicesInfo?.hosts?.restApi
 
         if (
             content?.type != NotificareNotification.Content.TYPE_PK_PASS ||

@@ -119,28 +119,16 @@ public object Notificare {
 
     @JvmStatic
     public fun configure(context: Context) {
-        val applicationKey = context.getString(R.string.notificare_services_application_key)
-        val applicationSecret = context.getString(R.string.notificare_services_application_secret)
+        val servicesInfo = loadServicesInfoFromResources(context)
 
-        configure(context, applicationKey, applicationSecret)
+        configure(context, servicesInfo)
     }
 
     @JvmStatic
     public fun configure(context: Context, applicationKey: String, applicationSecret: String) {
-        val environment: NotificareServicesInfo.Environment = run {
-            try {
-                val useTestApi = context.resources.getBoolean(R.bool.notificare_services_use_test_api)
-                if (useTestApi) return@run NotificareServicesInfo.Environment.TEST
-            } catch (_: Resources.NotFoundException) {
-            }
-
-            return@run NotificareServicesInfo.Environment.PRODUCTION
-        }
-
         val servicesInfo = NotificareServicesInfo(
             applicationKey = applicationKey,
             applicationSecret = applicationSecret,
-            environment = environment,
         )
 
         configure(context, servicesInfo)
@@ -401,7 +389,7 @@ public object Notificare {
             .post("/upload/reply", payload)
             .responseDecodable(NotificareUploadResponse::class)
 
-        val host = checkNotNull(servicesInfo).pushHost
+        val host = checkNotNull(servicesInfo).hosts.restApi
         "$host/upload${response.filename}"
     }
 
@@ -575,6 +563,36 @@ public object Notificare {
 
     // endregion
 
+    private fun loadServicesInfoFromResources(context: Context): NotificareServicesInfo {
+        val applicationKey = try {
+            context.getString(R.string.notificare_services_application_key)
+        } catch (_: Resources.NotFoundException) {
+            error("Application secret resource unavailable.")
+        }
+
+        val applicationSecret = try {
+            context.getString(R.string.notificare_services_application_secret)
+        } catch (_: Resources.NotFoundException) {
+            error("Application secret resource unavailable.")
+        }
+
+        val hosts = try {
+            val restApi = context.resources.getString(R.string.notificare_services_hosts_rest_api)
+            val appLinks = context.resources.getString(R.string.notificare_services_hosts_app_links)
+            val shortLinks = context.resources.getString(R.string.notificare_services_hosts_short_links)
+
+            if (restApi.isNotBlank() && appLinks.isNotBlank() && shortLinks.isNotBlank()) {
+                NotificareServicesInfo.Hosts(restApi, appLinks, shortLinks)
+            } else {
+                NotificareServicesInfo.Hosts()
+            }
+        } catch (_: Resources.NotFoundException) {
+            NotificareServicesInfo.Hosts()
+        }
+
+        return NotificareServicesInfo(applicationKey, applicationSecret, hosts)
+    }
+
     private fun printLaunchSummary(application: NotificareApplication) {
         val enabledServices = application.services.filter { it.value }.map { it.key }
         val enabledModules = NotificareUtils.getEnabledPeerModules()
@@ -598,6 +616,16 @@ public object Notificare {
 
         if (servicesInfo.applicationKey.isBlank() || servicesInfo.applicationSecret.isBlank()) {
             throw IllegalArgumentException("Notificare cannot be configured without an application key and secret.")
+        }
+
+        try {
+            servicesInfo.validate()
+        } catch (e: Exception) {
+            NotificareLogger.error(
+                "Could not validate the provided services configuration. Please check the contents are valid."
+            )
+
+            throw e
         }
 
         this.context = WeakReference(context.applicationContext)
@@ -636,6 +664,13 @@ public object Notificare {
 
         NotificareLogger.debug("Notificare configured all services.")
         state = NotificareLaunchState.CONFIGURED
+
+        if (!servicesInfo.hasDefaultHosts) {
+            NotificareLogger.info("Notificare configured with customized hosts.")
+            NotificareLogger.debug("REST API host: ${servicesInfo.hosts.restApi}")
+            NotificareLogger.debug("AppLinks host: ${servicesInfo.hosts.appLinks}")
+            NotificareLogger.debug("Short Links host: ${servicesInfo.hosts.shortLinks}")
+        }
     }
 
     private fun parseTestDeviceNonce(intent: Intent): String? {
@@ -646,7 +681,7 @@ public object Notificare {
         val pathSegments = uri.pathSegments ?: return null
 
         val application = Notificare.application ?: return null
-        val appLinksDomain = servicesInfo?.appLinksDomain ?: return null
+        val appLinksDomain = servicesInfo?.hosts?.appLinks ?: return null
 
         if (
             uri.host == "${application.id}.$appLinksDomain" &&
@@ -681,7 +716,7 @@ public object Notificare {
             return null
         }
 
-        if (!Pattern.matches("^([a-z0-9-])+\\.${Pattern.quote(servicesInfo.dynamicLinkDomain)}$", host)) {
+        if (!Pattern.matches("^([a-z0-9-])+\\.${Pattern.quote(servicesInfo.hosts.shortLinks)}$", host)) {
             NotificareLogger.debug("Domain pattern wasn't a match.")
             return null
         }

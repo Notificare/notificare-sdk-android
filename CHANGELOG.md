@@ -6,6 +6,7 @@
 - Device identifiers become long-lived
 - Keep weak references for listeners to prevent memory leaks
 - `launch()`, `unlaunch()`, `enableRemoteNotifications()` and `disableRemoteNotifications()` become suspending functions with a callback alternative
+- Add support for customisable hosts
 
 #### Breaking changes
 
