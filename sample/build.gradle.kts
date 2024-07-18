@@ -114,9 +114,6 @@ ktlint {
     baseline.set(file("ktlint-baseline.xml"))
 }
 
-val ktlintTaskProvider = tasks.named("ktlintCheck")
-tasks.getByName("preBuild").finalizedBy(ktlintTaskProvider)
-
 detekt {
     config.setFrom(rootProject.files("config/detekt/detekt.yml"))
     buildUponDefaultConfig = true
