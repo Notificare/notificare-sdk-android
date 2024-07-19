@@ -5,6 +5,8 @@ complexity:
     active: false
   LongMethod:
     active: false
+  CyclomaticComplexMethod:
+    active: false
 
 exceptions:
   TooGenericExceptionCaught:
