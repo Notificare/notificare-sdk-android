@@ -15,8 +15,8 @@ public class ResponsesTest {
         val expectedMessage = NotificareInAppMessage(
             id = "testId",
             name = "testName",
-            type = "testType",
-            context = listOf(),
+            type = NotificareInAppMessage.TYPE_BANNER,
+            context = listOf("testContext"),
             title = "testTitle",
             message = "testMessage",
             image = "testImage",
@@ -37,8 +37,8 @@ public class ResponsesTest {
         val message = InAppMessageResponse.Message(
             _id = "testId",
             name = "testName",
-            type = "testType",
-            context = listOf(),
+            type = NotificareInAppMessage.TYPE_BANNER,
+            context = listOf("testContext"),
             title = "testTitle",
             message = "testMessage",
             image = "testImage",
@@ -54,6 +54,39 @@ public class ResponsesTest {
                 destructive = true,
                 url = "testUrl"
             )
+        ).toModel()
+
+        assertEquals(expectedMessage, message)
+    }
+
+    @Test
+    public fun testMessageToModelWithNullProps() {
+        val expectedMessage = NotificareInAppMessage(
+            id = "testId",
+            name = "testName",
+            type = NotificareInAppMessage.TYPE_BANNER,
+            context = listOf("testContext"),
+            title = null,
+            message = null,
+            image = null,
+            landscapeImage = null,
+            delaySeconds = 1,
+            primaryAction = null,
+            secondaryAction = null
+        )
+
+        val message = InAppMessageResponse.Message(
+            _id = "testId",
+            name = "testName",
+            type = NotificareInAppMessage.TYPE_BANNER,
+            context = listOf("testContext"),
+            title = null,
+            message = null,
+            image = null,
+            landscapeImage = null,
+            delaySeconds = 1,
+            primaryAction = null,
+            secondaryAction = null
         ).toModel()
 
         assertEquals(expectedMessage, message)
