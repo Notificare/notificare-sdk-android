@@ -24,4 +24,20 @@ public class NotificareBeaconTest {
 
         assertEquals(beacon, convertedBeacon)
     }
+
+    @Test
+    public fun testNotificareBeaconSerializationWithNullProps() {
+        val beacon = NotificareBeacon(
+            id = "testId",
+            name = "testName",
+            major = 1,
+            minor = null,
+            triggers = true,
+            proximity = NotificareBeacon.Proximity.NEAR
+        )
+
+        val convertedBeacon = NotificareBeacon.fromJson(beacon.toJson())
+
+        assertEquals(beacon, convertedBeacon)
+    }
 }

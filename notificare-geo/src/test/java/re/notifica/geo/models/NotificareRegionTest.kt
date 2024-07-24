@@ -44,6 +44,32 @@ public class NotificareRegionTest {
     }
 
     @Test
+    public fun testNotificareRegionSerializationWithNullProps() {
+        val region = NotificareRegion(
+            id = "testId",
+            name = "testName",
+            description = null,
+            referenceKey = null,
+            geometry = NotificareRegion.Geometry(
+                type = "testType",
+                coordinate = NotificareRegion.Coordinate(
+                    latitude = 1.5,
+                    longitude = 1.5,
+                )
+            ),
+            advancedGeometry = null,
+            major = null,
+            distance = 1.5,
+            timeZone = "testTimeZone",
+            timeZoneOffset = 1.5
+        )
+
+        val convertedRegion = NotificareRegion.fromJson(region.toJson())
+
+        assertEquals(region, convertedRegion)
+    }
+
+    @Test
     public fun testGeometrySerialization() {
         val geometry = NotificareRegion.Geometry(
             type = "testType",
