@@ -29,8 +29,37 @@ public class NotificarePassTest {
             ),
             limit = 1,
             token = "testToken",
+            data = mapOf("testKey" to "testValue"),
             date = Date(),
             googlePaySaveLink = "testGooglePaySaveLink"
+        )
+
+        val convertedPass = NotificarePass.fromJson(pass.toJson())
+
+        assertEquals(pass, convertedPass)
+    }
+
+    @Test
+    public fun testNotificarePassSerializationWithNullProps() {
+        val pass = NotificarePass(
+            id = "testId",
+            type = null,
+            version = 1,
+            passbook = null,
+            template = null,
+            serial = "testSerial",
+            barcode = "testBarcode",
+            redeem = NotificarePass.Redeem.ONCE,
+            redeemHistory = listOf(
+                NotificarePass.Redemption(
+                    comments = "testComments",
+                    date = Date()
+                )
+            ),
+            limit = 1,
+            token = "testToken",
+            date = Date(),
+            googlePaySaveLink = null
         )
 
         val convertedPass = NotificarePass.fromJson(pass.toJson())
