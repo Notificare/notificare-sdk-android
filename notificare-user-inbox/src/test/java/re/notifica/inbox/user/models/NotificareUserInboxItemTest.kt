@@ -17,7 +17,7 @@ public class NotificareUserInboxItemTest {
             id = "testId",
             notification = NotificareNotification(
                 id = "testId",
-                type = "testType",
+                type = NotificareNotification.TYPE_NONE,
                 time = Date(),
                 title = "testTitle",
                 subtitle = "testSubtitle",
@@ -26,6 +26,28 @@ public class NotificareUserInboxItemTest {
             time = Date(),
             opened = true,
             expires = Date()
+        )
+
+        val convertedItem = NotificareUserInboxItem.fromJson(item.toJson())
+
+        assertEquals(item, convertedItem)
+    }
+
+    @Test
+    public fun testNotificareUserInboxItemSerializationWithNullProps() {
+        val item = NotificareUserInboxItem(
+            id = "testId",
+            notification = NotificareNotification(
+                id = "testId",
+                type = NotificareNotification.TYPE_NONE,
+                time = Date(),
+                title = "testTitle",
+                subtitle = "testSubtitle",
+                message = "testMessage"
+            ),
+            time = Date(),
+            opened = true,
+            expires = null
         )
 
         val convertedItem = NotificareUserInboxItem.fromJson(item.toJson())
