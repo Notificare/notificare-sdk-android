@@ -7,7 +7,6 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import re.notifica.internal.network.push.NotificationResponse
 import re.notifica.models.NotificareNotification
-import re.notifica.models.NotificareNotification.Companion.TYPE_NONE
 import re.notifica.scannables.models.NotificareScannable
 import java.util.Date
 
@@ -24,7 +23,7 @@ public class ResponsesTest {
             notification = NotificareNotification(
                 id = "testId",
                 partial = true,
-                type = TYPE_NONE,
+                type = NotificareNotification.TYPE_NONE,
                 time = Date(1),
                 title = "testTitle",
                 subtitle = "testSubtitle",
@@ -41,13 +40,34 @@ public class ResponsesTest {
                 notification = NotificationResponse.Notification(
                     id = "testId",
                     partial = true,
-                    type = TYPE_NONE,
+                    type = NotificareNotification.TYPE_NONE,
                     time = Date(1),
                     title = "testTitle",
                     subtitle = "testSubtitle",
                     message = "testMessage"
                 )
             )
+        ).toModel()
+
+        assertEquals(expectedScannable, scannable)
+    }
+
+    @Test
+    public fun testScannableWithNullPropsToModel() {
+        val expectedScannable = NotificareScannable(
+            id = "testId",
+            name = "testName",
+            type = "testType",
+            tag = "testTag",
+            notification = null
+        )
+
+        val scannable = FetchScannableResponse.Scannable(
+            _id = "testId",
+            name = "testName",
+            type = "testType",
+            tag = "testTag",
+            data = null
         ).toModel()
 
         assertEquals(expectedScannable, scannable)
