@@ -26,6 +26,7 @@ public class ResponsesTest {
                 contentType = "testContentType",
                 contentLength = 1
             ),
+            extra = mapOf("testKey" to "testValue")
         )
 
         val asset = FetchAssetsResponse.Asset(
@@ -41,7 +42,8 @@ public class ResponsesTest {
                 originalFileName = "testOriginalFileName",
                 contentType = "testContentType",
                 contentLength = 1
-            )
+            ),
+            extra = mapOf("testKey" to "testValue")
         ).toModel()
 
         assertEquals(expectedAsset, asset)

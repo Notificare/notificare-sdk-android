@@ -24,7 +24,24 @@ public class NotificareAssetTest {
                 originalFileName = "testOriginalFileName",
                 contentType = "testContentType",
                 contentLength = 1
-            )
+            ),
+            extra = mapOf("testKey" to "testValue")
+        )
+
+        val convertedAsset = NotificareAsset.fromJson(asset.toJson())
+
+        assertEquals(asset, convertedAsset)
+    }
+
+    @Test
+    public fun testAssetSerializationWithNullProps() {
+        val asset = NotificareAsset(
+            title = "testTitle",
+            description = null,
+            key = null,
+            url = null,
+            button = null,
+            metaData = null
         )
 
         val convertedAsset = NotificareAsset.fromJson(asset.toJson())
@@ -37,6 +54,18 @@ public class NotificareAssetTest {
         val button = NotificareAsset.Button(
             label = "testLabel",
             action = "testAction"
+        )
+
+        val convertedButton = NotificareAsset.Button.fromJson(button.toJson())
+
+        assertEquals(button, convertedButton)
+    }
+
+    @Test
+    public fun testButtonSerializationWithNullProps() {
+        val button = NotificareAsset.Button(
+            label = null,
+            action = null
         )
 
         val convertedButton = NotificareAsset.Button.fromJson(button.toJson())
