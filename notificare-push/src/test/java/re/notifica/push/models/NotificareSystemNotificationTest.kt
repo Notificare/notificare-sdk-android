@@ -14,7 +14,7 @@ public class NotificareSystemNotificationTest {
         val notification = NotificareSystemNotification(
             id = "testId",
             type = "testType",
-            extra = mapOf()
+            extra = mapOf("testKey" to "testValue")
         )
 
         val convertedNotification = NotificareSystemNotification.fromJson(notification.toJson())

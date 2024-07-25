@@ -1,5 +1,6 @@
 package re.notifica.push.models
 
+import org.json.JSONObject
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -17,9 +18,34 @@ public class NotificareLiveActivityUpdateTest {
             title = "testTitle",
             subtitle = "testSubtitle",
             message = "testMessage",
-            content = null,
+            content = JSONObject("""{"testJson":"testValue"}"""),
             final = true,
             dismissalDate = Date(),
+            timestamp = Date()
+        )
+
+        val convertedLiveActivityUpdate = NotificareLiveActivityUpdate.fromJson(liveActivityUpdate.toJson())
+
+        assertEquals(liveActivityUpdate.activity, convertedLiveActivityUpdate.activity)
+        assertEquals(liveActivityUpdate.title, convertedLiveActivityUpdate.title)
+        assertEquals(liveActivityUpdate.subtitle, convertedLiveActivityUpdate.subtitle)
+        assertEquals(liveActivityUpdate.message, convertedLiveActivityUpdate.message)
+        assertEquals(liveActivityUpdate.content.toString(), convertedLiveActivityUpdate.content.toString())
+        assertEquals(liveActivityUpdate.final, convertedLiveActivityUpdate.final)
+        assertEquals(liveActivityUpdate.dismissalDate, convertedLiveActivityUpdate.dismissalDate)
+        assertEquals(liveActivityUpdate.timestamp, convertedLiveActivityUpdate.timestamp)
+    }
+
+    @Test
+    public fun testNotificareLiveActivityUpdateSerializationWithNullProps() {
+        val liveActivityUpdate = NotificareLiveActivityUpdate(
+            activity = "testActivity",
+            title = null,
+            subtitle = null,
+            message = null,
+            content = null,
+            final = true,
+            dismissalDate = null,
             timestamp = Date()
         )
 
