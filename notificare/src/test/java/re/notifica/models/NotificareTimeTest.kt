@@ -33,6 +33,14 @@ public class NotificareTimeTest {
     }
 
     @Test
+    public fun testNotificareTimeInitialization() {
+        val time = NotificareTime(21, 30)
+
+        assertEquals(21, time.hours)
+        assertEquals(30, time.minutes)
+    }
+
+    @Test
     public fun testStringNotificareTimeInitialization() {
         val time = NotificareTime("21:30")
 

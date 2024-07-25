@@ -20,7 +20,23 @@ public class NotificareDeviceTest {
                 start = NotificareTime(hours = 20, minutes = 0),
                 end = NotificareTime(hours = 21, minutes = 0)
             ),
-            userData = mapOf()
+            userData = mapOf("testKey" to "testValue")
+        )
+
+        val convertedDevice = NotificareDevice.fromJson(device.toJson())
+
+        assertEquals(device, convertedDevice)
+    }
+
+    @Test
+    public fun testNotificareDeviceSerializationWithNullProps() {
+        val device = NotificareDevice(
+            id = "testId",
+            userId = null,
+            userName = null,
+            timeZoneOffset = 1.5,
+            dnd = null,
+            userData = mapOf("testKey" to "testValue")
         )
 
         val convertedDevice = NotificareDevice.fromJson(device.toJson())
