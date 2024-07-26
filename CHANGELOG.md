@@ -7,6 +7,7 @@
 - Keep weak references for listeners to prevent memory leaks
 - `launch()`, `unlaunch()`, `enableRemoteNotifications()` and `disableRemoteNotifications()` become suspending functions with a callback alternative
 - Add support for customisable hosts
+- Replace `NotificarePushIntentReceiver`'s `onTokenChanged()` with `onSubscriptionIdChanged()`
 
 #### Breaking changes
 
