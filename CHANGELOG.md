@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## Upcoming release
+## 4.0.0-beta.1
 
 - Fix padding discrepancies in alert dialog with actions
 - Device identifiers become long-lived
