@@ -56,4 +56,8 @@ dependencies {
     // Moshi
     implementation(libs.bundles.moshi)
     ksp(libs.moshi.codegen)
+
+    // Tests
+    testImplementation(libs.junit)
+    testImplementation(libs.robolectric)
 }
