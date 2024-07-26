@@ -11,11 +11,13 @@ import re.notifica.push.ktx.INTENT_ACTION_ACTION_OPENED
 import re.notifica.push.ktx.INTENT_ACTION_LIVE_ACTIVITY_UPDATE
 import re.notifica.push.ktx.INTENT_ACTION_NOTIFICATION_OPENED
 import re.notifica.push.ktx.INTENT_ACTION_NOTIFICATION_RECEIVED
+import re.notifica.push.ktx.INTENT_ACTION_SUBSCRIPTION_ID_CHANGED
 import re.notifica.push.ktx.INTENT_ACTION_SYSTEM_NOTIFICATION_RECEIVED
 import re.notifica.push.ktx.INTENT_ACTION_TOKEN_CHANGED
 import re.notifica.push.ktx.INTENT_ACTION_UNKNOWN_NOTIFICATION_RECEIVED
 import re.notifica.push.ktx.INTENT_EXTRA_DELIVERY_MECHANISM
 import re.notifica.push.ktx.INTENT_EXTRA_LIVE_ACTIVITY_UPDATE
+import re.notifica.push.ktx.INTENT_EXTRA_SUBSCRIPTION_ID
 import re.notifica.push.ktx.INTENT_EXTRA_TOKEN
 import re.notifica.push.models.NotificareLiveActivityUpdate
 import re.notifica.push.models.NotificareNotificationDeliveryMechanism
@@ -25,11 +27,16 @@ import re.notifica.push.models.NotificareUnknownNotification
 public open class NotificarePushIntentReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         when (intent.action) {
+            Notificare.INTENT_ACTION_SUBSCRIPTION_ID_CHANGED -> {
+                val subscriptionId = intent.getStringExtra(Notificare.INTENT_EXTRA_SUBSCRIPTION_ID)
+                onSubscriptionIdChanged(context, subscriptionId)
+            }
             Notificare.INTENT_ACTION_TOKEN_CHANGED -> {
                 val token: String = requireNotNull(
                     intent.getStringExtra(Notificare.INTENT_EXTRA_TOKEN)
                 )
 
+                @Suppress("DEPRECATION")
                 onTokenChanged(context, token)
             }
             Notificare.INTENT_ACTION_NOTIFICATION_RECEIVED -> {
@@ -85,6 +92,16 @@ public open class NotificarePushIntentReceiver : BroadcastReceiver() {
         }
     }
 
+    protected open fun onSubscriptionIdChanged(context: Context, subscriptionId: String?) {
+        NotificareLogger.debug(
+            "The subscription id changed, please override onSubscriptionIdChanged if you want to receive these intents."
+        )
+    }
+
+    @Deprecated(
+        message = "Use onSubscriptionIdChanged() instead.",
+        replaceWith = ReplaceWith("onSubscriptionIdChanged(context, subscriptionId)")
+    )
     protected open fun onTokenChanged(context: Context, token: String) {
         NotificareLogger.debug(
             "The push token changed, please override onTokenChanged if you want to receive these intents."
