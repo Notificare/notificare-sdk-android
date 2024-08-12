@@ -34,7 +34,7 @@ public class RawUserInboxResponseTest {
             ),
             time = Date(1),
             opened = true,
-            expires = Date()
+            expires = Date(1)
         )
 
         val item = RawUserInboxResponse.RawUserInboxItem(
@@ -51,7 +51,7 @@ public class RawUserInboxResponseTest {
             ),
             extra = mapOf("testKey" to "testValue"),
             opened = true,
-            expires = Date()
+            expires = Date(1)
         ).toModel()
 
         assertEquals(expectedItem, item)
