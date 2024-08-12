@@ -65,6 +65,7 @@ internal class SharedPreferencesMigration(
                         },
                         dnd = null,
                         userData = mapOf(),
+                        transport = json.optString("transport", "Notificare"),
                     )
 
                     preferences.device = device
