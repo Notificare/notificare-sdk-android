@@ -17,8 +17,8 @@ internal fun Notificare.eventsInternal(): NotificareInternalEventsModule {
 
 // region Intent actions
 
-public val Notificare.INTENT_ACTION_SUBSCRIPTION_ID_CHANGED: String
-    get() = "re.notifica.intent.action.SubscriptionIdChanged"
+public val Notificare.INTENT_ACTION_SUBSCRIPTION_CHANGED: String
+    get() = "re.notifica.intent.action.SubscriptionChanged"
 
 public val Notificare.INTENT_ACTION_TOKEN_CHANGED: String
     get() = "re.notifica.intent.action.TokenChanged"
@@ -51,8 +51,8 @@ public val Notificare.INTENT_ACTION_LIVE_ACTIVITY_UPDATE: String
 
 // region Intent extras
 
-public val Notificare.INTENT_EXTRA_SUBSCRIPTION_ID: String
-    get() = "re.notifica.intent.extra.SubscriptionId"
+public val Notificare.INTENT_EXTRA_SUBSCRIPTION: String
+    get() = "re.notifica.intent.extra.Subscription"
 
 public val Notificare.INTENT_EXTRA_TOKEN: String
     get() = "re.notifica.intent.extra.Token"

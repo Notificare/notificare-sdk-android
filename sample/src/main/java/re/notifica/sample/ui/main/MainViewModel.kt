@@ -155,6 +155,14 @@ class MainViewModel : BaseViewModel(), DefaultLifecycleObserver, Notificare.List
                     _remoteNotificationsEnabled.postValue(hasRemoteNotificationsEnabled)
                 }
         }
+
+        viewModelScope.launch {
+            Notificare.push().observableSubscription
+                .asFlow()
+                .collect { subscription ->
+                    Timber.d("subscription changed = $subscription")
+                }
+        }
     }
 
     override fun onCleared() {

@@ -4,6 +4,7 @@ import android.content.Intent
 import androidx.lifecycle.LiveData
 import re.notifica.InternalNotificareApi
 import re.notifica.NotificareCallback
+import re.notifica.push.models.NotificarePushSubscription
 import re.notifica.push.models.NotificareTransport
 import re.notifica.push.models.NotificareRemoteMessage
 
@@ -15,9 +16,9 @@ public interface NotificarePush {
 
     public val transport: NotificareTransport?
 
-    public val subscriptionId: String?
+    public val subscription: NotificarePushSubscription?
 
-    public val observableSubscriptionId: LiveData<String?>
+    public val observableSubscription: LiveData<NotificarePushSubscription?>
 
     public val allowedUI: Boolean
 

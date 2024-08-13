@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## Upcoming release
+
+- Changed the `subscriptionId` properties to a more robust data model
+
 ## 4.0.0-beta.1
 
 - Fix padding discrepancies in alert dialog with actions

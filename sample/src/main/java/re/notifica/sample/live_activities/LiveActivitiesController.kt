@@ -13,6 +13,7 @@ import kotlinx.coroutines.withContext
 import re.notifica.Notificare
 import re.notifica.ktx.events
 import re.notifica.push.ktx.push
+import re.notifica.push.models.NotificarePushSubscription
 import re.notifica.sample.R
 import re.notifica.sample.live_activities.models.CoffeeBrewerContentState
 import re.notifica.sample.live_activities.ui.CoffeeLiveNotification
@@ -58,11 +59,19 @@ object LiveActivitiesController {
         _notificationManager.createNotificationChannel(channel)
     }
 
-    suspend fun handleTokenChanged(): Unit = withContext(Dispatchers.IO) {
-        val coffeeBrewerContentState = coffeeActivityStream.lastOrNull()
-        if (coffeeBrewerContentState != null) {
-            Notificare.push().registerLiveActivity(LiveActivity.COFFEE_BREWER.identifier)
+    suspend fun handleSubscriptionChanged(
+        subscription: NotificarePushSubscription?,
+    ): Unit = withContext(Dispatchers.IO) {
+        if (coffeeActivityStream.lastOrNull() == null) {
+            return@withContext
         }
+
+        if (subscription == null) {
+            Notificare.push().endLiveActivity(LiveActivity.COFFEE_BREWER.identifier)
+            return@withContext
+        }
+
+        Notificare.push().registerLiveActivity(LiveActivity.COFFEE_BREWER.identifier)
     }
 
     // region Coffee Brewer
