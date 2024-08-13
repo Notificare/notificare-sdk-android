@@ -68,14 +68,14 @@ import re.notifica.push.ktx.INTENT_ACTION_NOTIFICATION_OPENED
 import re.notifica.push.ktx.INTENT_ACTION_NOTIFICATION_RECEIVED
 import re.notifica.push.ktx.INTENT_ACTION_QUICK_RESPONSE
 import re.notifica.push.ktx.INTENT_ACTION_REMOTE_MESSAGE_OPENED
-import re.notifica.push.ktx.INTENT_ACTION_SUBSCRIPTION_ID_CHANGED
+import re.notifica.push.ktx.INTENT_ACTION_SUBSCRIPTION_CHANGED
 import re.notifica.push.ktx.INTENT_ACTION_SYSTEM_NOTIFICATION_RECEIVED
 import re.notifica.push.ktx.INTENT_ACTION_TOKEN_CHANGED
 import re.notifica.push.ktx.INTENT_ACTION_UNKNOWN_NOTIFICATION_RECEIVED
 import re.notifica.push.ktx.INTENT_EXTRA_DELIVERY_MECHANISM
 import re.notifica.push.ktx.INTENT_EXTRA_LIVE_ACTIVITY_UPDATE
 import re.notifica.push.ktx.INTENT_EXTRA_REMOTE_MESSAGE
-import re.notifica.push.ktx.INTENT_EXTRA_SUBSCRIPTION_ID
+import re.notifica.push.ktx.INTENT_EXTRA_SUBSCRIPTION
 import re.notifica.push.ktx.INTENT_EXTRA_TEXT_RESPONSE
 import re.notifica.push.ktx.INTENT_EXTRA_TOKEN
 import re.notifica.push.ktx.logNotificationInfluenced
@@ -927,14 +927,16 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
             .put("/push/${device.id}", payload)
             .response()
 
+        val subscription = token?.let { NotificarePushSubscription(token = it) }
+
         this@NotificarePushImpl.transport = transport
-        this@NotificarePushImpl.subscription = token?.let { NotificarePushSubscription(token = it) }
+        this@NotificarePushImpl.subscription = subscription
         this@NotificarePushImpl.allowedUI = allowedUI
 
         Notificare.requireContext().sendBroadcast(
             Intent(Notificare.requireContext(), intentReceiver)
-                .setAction(Notificare.INTENT_ACTION_SUBSCRIPTION_ID_CHANGED)
-                .putExtra(Notificare.INTENT_EXTRA_SUBSCRIPTION_ID, token)
+                .setAction(Notificare.INTENT_ACTION_SUBSCRIPTION_CHANGED)
+                .putExtra(Notificare.INTENT_EXTRA_SUBSCRIPTION, subscription)
         )
 
         if (token != null && previousSubscription?.token != token) {
