@@ -84,6 +84,7 @@ import re.notifica.push.ktx.logPushRegistration
 import re.notifica.push.models.NotificareLiveActivityUpdate
 import re.notifica.push.models.NotificareNotificationDeliveryMechanism
 import re.notifica.push.models.NotificareNotificationRemoteMessage
+import re.notifica.push.models.NotificarePushSubscription
 import re.notifica.push.models.NotificareRemoteMessage
 import re.notifica.push.models.NotificareSystemNotification
 import re.notifica.push.models.NotificareSystemRemoteMessage
@@ -101,7 +102,7 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
     internal const val DEFAULT_NOTIFICATION_CHANNEL_ID: String = "notificare_channel_default"
 
     private val notificationSequence = AtomicInteger()
-    private val _observableSubscriptionId = MutableLiveData<String?>()
+    private val _observableSubscription = MutableLiveData<NotificarePushSubscription?>()
     private val _observableAllowedUI = MutableLiveData<Boolean>()
 
     internal lateinit var sharedPreferences: NotificareSharedPreferences
@@ -172,7 +173,7 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
         sharedPreferences.firstRegistration = true
 
         transport = null
-        subscriptionId = null
+        subscription = null
         allowedUI = false
     }
 
@@ -210,10 +211,10 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
             NotificareLogger.warning("Calling this method requires Notificare to have been configured.")
         }
 
-    override var subscriptionId: String?
+    override var subscription: NotificarePushSubscription?
         get() {
             if (::sharedPreferences.isInitialized) {
-                return sharedPreferences.subscriptionId
+                return sharedPreferences.subscription
             }
 
             NotificareLogger.warning("Calling this method requires Notificare to have been configured.")
@@ -221,16 +222,16 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
         }
         set(value) {
             if (::sharedPreferences.isInitialized) {
-                sharedPreferences.subscriptionId = value
-                _observableSubscriptionId.postValue(value)
+                sharedPreferences.subscription = value
+                _observableSubscription.postValue(value)
                 return
             }
 
             NotificareLogger.warning("Calling this method requires Notificare to have been configured.")
         }
 
-    override val observableSubscriptionId: LiveData<String?>
-        get() = _observableSubscriptionId
+    override val observableSubscription: LiveData<NotificarePushSubscription?>
+        get() = _observableSubscription
 
     override var allowedUI: Boolean
         get() {
@@ -316,12 +317,12 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
         val device = Notificare.device().currentDevice
             ?: throw NotificareDeviceUnavailableException()
 
-        val subscriptionId = subscriptionId
+        val token = subscription?.token
             ?: throw NotificareSubscriptionUnavailable()
 
         val payload = CreateLiveActivityPayload(
             activity = activityId,
-            token = subscriptionId,
+            token = token,
             deviceID = device.id,
             topics = topics,
         )
@@ -905,9 +906,9 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
         val device = checkNotNull(Notificare.device().currentDevice)
 
         val previousTransport = this@NotificarePushImpl.transport
-        val previousSubscriptionId = this@NotificarePushImpl.subscriptionId
+        val previousSubscription = this@NotificarePushImpl.subscription
 
-        if (previousTransport == transport && previousSubscriptionId == token) {
+        if (previousTransport == transport && previousSubscription?.token == token) {
             NotificareLogger.debug("Push subscription unmodified. Updating notification settings instead.")
             updateDeviceNotificationSettings()
             return@withContext
@@ -927,7 +928,7 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
             .response()
 
         this@NotificarePushImpl.transport = transport
-        this@NotificarePushImpl.subscriptionId = token
+        this@NotificarePushImpl.subscription = token?.let { NotificarePushSubscription(token = it) }
         this@NotificarePushImpl.allowedUI = allowedUI
 
         Notificare.requireContext().sendBroadcast(
@@ -936,7 +937,7 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
                 .putExtra(Notificare.INTENT_EXTRA_SUBSCRIPTION_ID, token)
         )
 
-        if (token != null && previousSubscriptionId != token) {
+        if (token != null && previousSubscription?.token != token) {
             Notificare.requireContext().sendBroadcast(
                 Intent(Notificare.requireContext(), intentReceiver)
                     .setAction(Notificare.INTENT_ACTION_TOKEN_CHANGED)
