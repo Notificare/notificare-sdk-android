@@ -10,6 +10,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import re.notifica.push.NotificarePushIntentReceiver
 import re.notifica.push.models.NotificareLiveActivityUpdate
+import re.notifica.push.models.NotificarePushSubscription
 import re.notifica.sample.live_activities.LiveActivitiesController
 import re.notifica.sample.live_activities.LiveActivity
 import re.notifica.sample.live_activities.models.CoffeeBrewerContentState
@@ -29,10 +30,10 @@ class SamplePushIntentReceiver : NotificarePushIntentReceiver() {
         }
     }
 
-    override fun onTokenChanged(context: Context, token: String) {
+    override fun onSubscriptionChanged(context: Context, subscription: NotificarePushSubscription?) {
         coroutineScope.launch {
             try {
-                liveActivitiesController.handleTokenChanged()
+                liveActivitiesController.handleSubscriptionChanged(subscription)
             } catch (e: Exception) {
                 Timber.e(e, "Failed to update registered live activities.")
             }
