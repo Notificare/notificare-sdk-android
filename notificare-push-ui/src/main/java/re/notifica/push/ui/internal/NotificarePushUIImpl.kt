@@ -36,6 +36,9 @@ import re.notifica.push.ui.customTabsToolbarColor
 import re.notifica.push.ui.ktx.loyaltyIntegration
 import re.notifica.push.ui.notifications.fragments.NotificareAlertFragment
 import re.notifica.push.ui.notifications.fragments.NotificareImageFragment
+import re.notifica.push.ui.notifications.fragments.NotificareMapFragment
+import re.notifica.push.ui.notifications.fragments.NotificareRateFragment
+import re.notifica.push.ui.notifications.fragments.NotificareStoreFragment
 import re.notifica.push.ui.notifications.fragments.NotificareUrlFragment
 import re.notifica.push.ui.notifications.fragments.NotificareVideoFragment
 import re.notifica.push.ui.notifications.fragments.NotificareWebPassFragment
@@ -51,16 +54,7 @@ internal object NotificarePushUIImpl : NotificareModule(), NotificarePushUI, Not
     internal val contentFileProviderAuthority: String
         get() = "${Notificare.requireContext().packageName}$CONTENT_FILE_PROVIDER_AUTHORITY_SUFFIX"
 
-    private var serviceManager: ServiceManager? = null
     private val _lifecycleListeners = mutableListOf<WeakReference<NotificarePushUI.NotificationLifecycleListener>>()
-
-    // region Notificare Module
-
-    override fun configure() {
-        serviceManager = ServiceManager.create()
-    }
-
-    // endregion
 
     // region Notificare Push UI
 
@@ -213,18 +207,9 @@ internal object NotificarePushUIImpl : NotificareModule(), NotificarePushUI, Not
             NotificareNotification.NotificationType.IMAGE -> NotificareImageFragment::class.java.canonicalName
             NotificareNotification.NotificationType.PASSBOOK -> NotificareWebPassFragment::class.java.canonicalName
             NotificareNotification.NotificationType.VIDEO -> NotificareVideoFragment::class.java.canonicalName
-            NotificareNotification.NotificationType.MAP,
-            NotificareNotification.NotificationType.RATE,
-            NotificareNotification.NotificationType.STORE -> {
-                val manager = serviceManager ?: run {
-                    NotificareLogger.warning(
-                        "No push-ui dependencies have been detected. Please include one of the platform-specific push-ui packages."
-                    )
-                    return null
-                }
-
-                return manager.getFragmentClass(notification).canonicalName
-            }
+            NotificareNotification.NotificationType.MAP -> NotificareMapFragment::class.java.canonicalName
+            NotificareNotification.NotificationType.RATE -> NotificareRateFragment::class.java.canonicalName
+            NotificareNotification.NotificationType.STORE -> NotificareStoreFragment::class.java.canonicalName
         }
     }
 

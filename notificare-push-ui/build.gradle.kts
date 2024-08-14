@@ -56,4 +56,6 @@ dependencies {
     implementation(libs.androidx.exifInterace)
     implementation(libs.androidx.lifecycle.runtime)
     implementation(libs.androidx.viewPager)
+
+    implementation(libs.google.playServices.maps)
 }

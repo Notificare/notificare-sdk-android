@@ -48,6 +48,11 @@ dependencies {
     implementation(libs.androidx.core)
     implementation(libs.bundles.androidx.lifecycle)
 
+    implementation(libs.google.playServices.base)
+
+    implementation(platform(libs.google.firebase.bom))
+    implementation(libs.google.firebase.messaging)
+
     // OkHttp
     implementation(libs.okhttp)
 

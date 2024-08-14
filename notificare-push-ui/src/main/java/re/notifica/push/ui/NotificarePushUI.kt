@@ -103,7 +103,7 @@ public interface NotificarePushUI {
     }
 }
 
-public interface NotificareInternalPushUI {
+internal interface NotificareInternalPushUI {
     @InternalNotificareApi
-    public val lifecycleListeners: List<WeakReference<NotificarePushUI.NotificationLifecycleListener>>
+    val lifecycleListeners: List<WeakReference<NotificarePushUI.NotificationLifecycleListener>>
 }

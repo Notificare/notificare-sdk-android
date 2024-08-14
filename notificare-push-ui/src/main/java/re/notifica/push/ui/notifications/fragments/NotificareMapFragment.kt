@@ -1,4 +1,4 @@
-package re.notifica.push.ui.gms
+package re.notifica.push.ui.notifications.fragments
 
 import android.os.Bundle
 import androidx.annotation.Keep
@@ -14,7 +14,7 @@ import re.notifica.internal.common.onMainThread
 import re.notifica.internal.common.waitForLayout
 import re.notifica.internal.ktx.parcelable
 import re.notifica.models.NotificareNotification
-import re.notifica.push.ui.gms.ktx.pushUIInternal
+import re.notifica.push.ui.ktx.pushUIInternal
 
 @Keep
 public class NotificareMapFragment : SupportMapFragment(), OnMapReadyCallback {
