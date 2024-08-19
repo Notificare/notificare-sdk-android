@@ -25,18 +25,7 @@ import java.lang.ref.WeakReference
 
 @Keep
 internal object NotificareScannablesImpl : NotificareModule(), NotificareScannables {
-    internal var serviceManager: ServiceManager? = null
-        private set
-
     private val listeners = mutableListOf<WeakReference<NotificareScannables.ScannableSessionListener>>()
-
-    // region Notificare Module
-
-    override fun configure() {
-        serviceManager = ServiceManager.create()
-    }
-
-    // endregion
 
     // region Notificare Scannables Module
 

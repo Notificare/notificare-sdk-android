@@ -5,6 +5,7 @@
     <string name="notificare_dialog_cancel_button">Cancel</string>
 
     <string name="notificare_camera_permission_rationale_description">We need your permission to use the camera to complete this action.</string>
+    <string name="notificare_google_play_intent_failed">Could not launch Google Play Store app</string>
 
     <string name="notificare_action_camera_failed">Camera can not be used</string>
     <string name="notificare_action_title_intent_email">Send mail…</string>
@@ -19,4 +20,6 @@
     <string name="notificare_action_error_no_sms_clients">Can not send SMS.</string>
     <string name="notificare_action_error_no_dialer">Can not make a phone call.</string>
     <string name="notificare_action_error_no_actions">No actions</string>
+
+
 </resources>

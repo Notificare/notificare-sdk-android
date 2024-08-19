@@ -1,7 +1,6 @@
 package re.notifica.internal
 
 import re.notifica.InternalNotificareApi
-import re.notifica.Notificare
 
 @InternalNotificareApi
 public abstract class AbstractServiceManager {
@@ -10,49 +9,12 @@ public abstract class AbstractServiceManager {
 
     public object Factory {
 
-        @PublishedApi
-        internal const val GOOGLE_MOBILE_SERVICES: String = "google"
+        public inline fun <reified T : AbstractServiceManager> create(gms: String): T {
+            val implementation: T? = implementation(gms)
 
-        @PublishedApi
-        internal const val HUAWEI_MOBILE_SERVICES: String = "huawei"
-
-        public inline fun <reified T : AbstractServiceManager> create(gms: String, hms: String): T {
-            val preferredMobileServices = checkNotNull(Notificare.options)
-                .preferredMobileServices
-                ?.lowercase()
-
-            var implementation: T? = when (preferredMobileServices) {
-                GOOGLE_MOBILE_SERVICES -> implementation(gms)
-                HUAWEI_MOBILE_SERVICES -> implementation(hms)
-                else -> null
-            }
-
-            if (implementation != null) {
-                if (implementation.available) {
-                    return implementation
-                }
-
-                NotificareLogger.debug(
-                    "Preferred peer dependency and its mobile services counterpart is not available."
-                )
-            }
-
-            if (preferredMobileServices != GOOGLE_MOBILE_SERVICES) {
-                implementation = implementation(gms)
-
-                if (implementation != null && implementation.available) {
-                    NotificareLogger.debug("Detected GMS peer dependency. Setting it as the target platform.")
-                    return implementation
-                }
-            }
-
-            if (preferredMobileServices != HUAWEI_MOBILE_SERVICES) {
-                implementation = implementation(hms)
-
-                if (implementation != null && implementation.available) {
-                    NotificareLogger.debug("Detected HMS peer dependency. Setting it as the target platform.")
-                    return implementation
-                }
+            if (implementation != null && implementation.available) {
+                NotificareLogger.debug("Detected GMS peer dependency. Setting it as the target platform.")
+                return implementation
             }
 
             NotificareLogger.warning(

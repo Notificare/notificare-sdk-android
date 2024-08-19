@@ -16,6 +16,7 @@ import re.notifica.internal.NotificareLogger
 import re.notifica.internal.common.getEnum
 import re.notifica.internal.common.getEnumExtra
 import re.notifica.internal.common.putEnum
+import re.notifica.scannables.ui.QrCodeScannerFragment
 import re.notifica.scannables.ktx.scannables
 import re.notifica.scannables.ktx.scannablesImplementation
 import re.notifica.scannables.models.NotificareScannable
@@ -48,16 +49,8 @@ public class ScannableActivity : AppCompatActivity() {
         when (mode) {
             ScanMode.NFC -> setupNfcAdapter()
             ScanMode.QR_CODE -> {
-                val manager = Notificare.scannablesImplementation().serviceManager ?: run {
-                    val error = IllegalStateException("No scannables dependencies have been detected.")
-                    Notificare.scannablesImplementation().notifyListeners(error)
-
-                    finish()
-                    return
-                }
-
                 supportFragmentManager.commit {
-                    replace(R.id.fragment_container, manager.getQrCodeScannerFragmentClass(), null)
+                    replace(R.id.fragment_container, QrCodeScannerFragment::class.java, null)
                 }
             }
         }

@@ -1,4 +1,4 @@
-package re.notifica.push.ui.gms
+package re.notifica.push.ui.notifications.fragments
 
 import android.content.ActivityNotFoundException
 import android.content.Intent
@@ -12,7 +12,8 @@ import androidx.annotation.Keep
 import re.notifica.Notificare
 import re.notifica.internal.common.onMainThread
 import re.notifica.models.NotificareNotification
-import re.notifica.push.ui.gms.ktx.pushUIInternal
+import re.notifica.push.ui.R
+import re.notifica.push.ui.ktx.pushUIInternal
 import re.notifica.push.ui.notifications.fragments.base.NotificationFragment
 
 @Keep
@@ -22,6 +23,7 @@ public class NotificareStoreFragment : NotificationFragment() {
         return FrameLayout(requireContext())
     }
 
+    @Suppress("detekt:NestedBlockDepth")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val context = context ?: return
 
@@ -77,7 +79,7 @@ public class NotificareStoreFragment : NotificationFragment() {
                         it.get()?.onNotificationPresented(notification)
                     }
                 }
-            } catch (e: ActivityNotFoundException) {
+            } catch (_: ActivityNotFoundException) {
                 if (altUri != null) {
                     try {
                         val rateIntent = Intent(Intent.ACTION_VIEW, altUri)
@@ -90,7 +92,7 @@ public class NotificareStoreFragment : NotificationFragment() {
                                 it.get()?.onNotificationPresented(notification)
                             }
                         }
-                    } catch (e: ActivityNotFoundException) {
+                    } catch (_: ActivityNotFoundException) {
                         callback.onNotificationFragmentActionFailed(
                             resources.getString(R.string.notificare_google_play_intent_failed)
                         )

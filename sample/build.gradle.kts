@@ -149,20 +149,12 @@ dependencies {
 
     implementation(project(":notificare"))
     implementation(project(":notificare-assets"))
+    implementation(project(":notificare-geo"))
+    implementation(project(":notificare-geo-beacons"))
     implementation(project(":notificare-in-app-messaging"))
     implementation(project(":notificare-inbox"))
     implementation(project(":notificare-loyalty"))
-
-    implementation(project(":notificare-geo"))
-    implementation(project(":notificare-geo-gms"))
-    implementation(project(":notificare-geo-beacons"))
-
     implementation(project(":notificare-push"))
-    implementation(project(":notificare-push-gms"))
-
     implementation(project(":notificare-push-ui"))
-    implementation(project(":notificare-push-ui-gms"))
-
     implementation(project(":notificare-scannables"))
-    implementation(project(":notificare-scannables-gms"))
 }

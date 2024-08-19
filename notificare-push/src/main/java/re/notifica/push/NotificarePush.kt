@@ -50,11 +50,11 @@ public interface NotificarePush {
     public fun endLiveActivity(activityId: String, callback: NotificareCallback<Unit>)
 }
 
-public interface NotificareInternalPush {
+internal interface NotificareInternalPush {
 
     @InternalNotificareApi
-    public fun handleNewToken(transport: NotificareTransport, token: String)
+    fun handleNewToken(transport: NotificareTransport, token: String)
 
     @InternalNotificareApi
-    public fun handleRemoteMessage(message: NotificareRemoteMessage)
+    fun handleRemoteMessage(message: NotificareRemoteMessage)
 }

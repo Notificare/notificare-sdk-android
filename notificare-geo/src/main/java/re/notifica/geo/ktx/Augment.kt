@@ -4,6 +4,7 @@ import re.notifica.InternalNotificareApi
 import re.notifica.Notificare
 import re.notifica.NotificareInternalEventsModule
 import re.notifica.geo.NotificareGeo
+import re.notifica.geo.NotificareInternalGeo
 import re.notifica.geo.internal.NotificareGeoImpl
 import re.notifica.ktx.events
 
@@ -14,6 +15,10 @@ public fun Notificare.geo(): NotificareGeo {
 
 internal fun Notificare.eventsInternal(): NotificareInternalEventsModule {
     return events() as NotificareInternalEventsModule
+}
+
+internal fun Notificare.geoInternal(): NotificareInternalGeo {
+    return geo() as NotificareInternalGeo
 }
 
 // region Intent actions

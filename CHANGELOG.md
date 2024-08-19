@@ -3,6 +3,7 @@
 ## Upcoming release
 
 - Changed the `subscriptionId` properties to a more robust data model
+- Removed peer modules. Main modules now include Google Play Services libraries by default.
 
 ## 4.0.0-beta.1
 

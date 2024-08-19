@@ -6,6 +6,8 @@ android {
     defaultConfig {
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
+
+        consumerProguardFiles("consumer-rules.pro")
     }
 
     buildTypes {
@@ -40,12 +42,16 @@ android {
 
 dependencies {
     implementation(libs.kotlinx.coroutines)
+    implementation(libs.kotlinx.coroutines.playServices)
 
     // Notificare
     implementation(project(":notificare"))
 
     // Android
     implementation(libs.androidx.core)
+
+    // Google Play Services
+    implementation(libs.google.playServices.location)
 
     // OkHttp
     implementation(libs.okhttp)

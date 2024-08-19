@@ -1,4 +1,4 @@
-package re.notifica.push.ui.gms
+package re.notifica.push.ui.notifications.fragments
 
 import android.content.ActivityNotFoundException
 import android.content.Intent
@@ -10,7 +10,7 @@ import android.view.ViewGroup
 import androidx.annotation.Keep
 import re.notifica.Notificare
 import re.notifica.internal.common.onMainThread
-import re.notifica.push.ui.gms.ktx.pushUIInternal
+import re.notifica.push.ui.ktx.pushUIInternal
 import re.notifica.push.ui.notifications.fragments.base.NotificationFragment
 
 @Keep
@@ -32,7 +32,7 @@ public class NotificareRateFragment : NotificationFragment() {
                         )
                     }
                 }
-            } catch (e: ActivityNotFoundException) {
+            } catch (_: ActivityNotFoundException) {
                 val uri = Uri.parse("https://play.google.com/store/apps/details?id=${inflater.context.packageName}")
                 val rateIntent = Intent(Intent.ACTION_VIEW, uri)
 

@@ -18,6 +18,10 @@ android {
         }
     }
 
+    buildFeatures {
+        viewBinding = true
+    }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
@@ -48,7 +52,10 @@ dependencies {
     implementation(libs.androidx.activity)
     implementation(libs.androidx.appCompat)
     implementation(libs.androidx.constraintLayout)
+    implementation(libs.androidx.core)
     implementation(libs.androidx.fragment)
+
+    implementation(libs.google.playServices.vision)
 
     // OkHttp
     implementation(libs.okhttp)

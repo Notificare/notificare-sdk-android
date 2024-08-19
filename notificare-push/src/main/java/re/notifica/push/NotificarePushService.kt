@@ -1,15 +1,15 @@
-package re.notifica.push.gms
+package re.notifica.push
 
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import re.notifica.Notificare
 import re.notifica.internal.NotificareLogger
-import re.notifica.push.gms.internal.NotificareNotificationRemoteMessage
-import re.notifica.push.gms.internal.NotificareSystemRemoteMessage
-import re.notifica.push.gms.internal.NotificareUnknownRemoteMessage
-import re.notifica.push.gms.ktx.isNotificareNotification
-import re.notifica.push.gms.ktx.pushInternal
+import re.notifica.push.internal.NotificareNotificationRemoteMessage
+import re.notifica.push.internal.NotificareSystemRemoteMessage
+import re.notifica.push.internal.NotificareUnknownRemoteMessage
+import re.notifica.push.ktx.isNotificareNotification
 import re.notifica.push.ktx.push
+import re.notifica.push.ktx.pushInternal
 import re.notifica.push.models.NotificareTransport
 
 public open class NotificarePushService : FirebaseMessagingService() {

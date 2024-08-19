@@ -33,9 +33,4 @@ public class NotificareOptions internal constructor(context: Context) {
         get() {
             return metadata.getString("re.notifica.action_label_prefix", null)
         }
-
-    public val preferredMobileServices: String?
-        get() {
-            return metadata.getString("re.notifica.preferred_mobile_services", null)
-        }
 }
