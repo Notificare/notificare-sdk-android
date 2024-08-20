@@ -2,6 +2,7 @@ package re.notifica.push
 
 import android.content.Intent
 import androidx.lifecycle.LiveData
+import com.google.firebase.messaging.RemoteMessage
 import re.notifica.InternalNotificareApi
 import re.notifica.NotificareCallback
 import re.notifica.push.models.NotificarePushSubscription
@@ -32,8 +33,7 @@ public interface NotificarePush {
 
     public fun disableRemoteNotifications(callback: NotificareCallback<Unit>)
 
-    // Augmented in the appropriate peer module.
-    // public fun isNotificareNotification(...: RemoteMessage)
+    public fun isNotificareNotification(remoteMessage: RemoteMessage): Boolean
 
     public fun handleTrampolineIntent(intent: Intent): Boolean
 
