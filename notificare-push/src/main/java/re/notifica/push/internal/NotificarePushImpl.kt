@@ -26,6 +26,7 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ProcessLifecycleOwner
+import com.google.firebase.messaging.RemoteMessage
 import java.net.URLEncoder
 import java.util.Date
 import java.util.concurrent.atomic.AtomicInteger
@@ -295,6 +296,10 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
     override fun disableRemoteNotifications(
         callback: NotificareCallback<Unit>
     ): Unit = toCallbackFunction(::disableRemoteNotifications)(callback)
+
+    override fun isNotificareNotification(remoteMessage: RemoteMessage): Boolean {
+        return remoteMessage.data["x-sender"] == "notificare"
+    }
 
     override fun handleTrampolineIntent(intent: Intent): Boolean {
         if (intent.action != Notificare.INTENT_ACTION_REMOTE_MESSAGE_OPENED) {
