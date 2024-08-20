@@ -4,6 +4,13 @@
 
 - Changed the `subscriptionId` properties to a more robust data model
 - Removed peer modules. Main modules now include Google Play Services libraries by default.
+- Renamed `NotificarePushService` to `NotificareFirebaseMessagingService`.
+- Replaced `isNotificareNotification` Kotlin extension with `NotificarePush.isNotificareNotification()`.
+
+#### Breaking changes
+
+- Renamed `NotificarePushService` to `NotificareFirebaseMessagingService`.
+- Removed `isNotificareNotification` Kotlin extension.
 
 ## 4.0.0-beta.1
 
