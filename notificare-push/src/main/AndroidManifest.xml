@@ -16,7 +16,7 @@
 
         <!-- Allow incoming push messages to be handled by the app -->
         <service
-            android:name="re.notifica.push.NotificarePushService"
+            android:name="re.notifica.push.NotificareFirebaseMessagingService"
             android:exported="false"
             android:label="Notificare Push Service">
             <intent-filter>

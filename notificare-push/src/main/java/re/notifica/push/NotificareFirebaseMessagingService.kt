@@ -12,7 +12,7 @@ import re.notifica.push.ktx.push
 import re.notifica.push.ktx.pushInternal
 import re.notifica.push.models.NotificareTransport
 
-public open class NotificarePushService : FirebaseMessagingService() {
+public open class NotificareFirebaseMessagingService : FirebaseMessagingService() {
 
     override fun onNewToken(token: String) {
         Notificare.pushInternal().handleNewToken(NotificareTransport.GCM, token)
