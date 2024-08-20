@@ -2,6 +2,7 @@ package re.notifica.push
 
 import android.content.Intent
 import androidx.lifecycle.LiveData
+import com.google.firebase.messaging.RemoteMessage
 import re.notifica.Notificare
 import re.notifica.NotificareCallback
 import re.notifica.push.ktx.INTENT_ACTION_ACTION_OPENED
@@ -109,6 +110,11 @@ public object NotificarePushCompat {
     @JvmStatic
     public fun disableRemoteNotifications(callback: NotificareCallback<Unit>) {
         Notificare.push().disableRemoteNotifications(callback)
+    }
+
+    @JvmStatic
+    public fun isNotificareNotification(remoteMessage: RemoteMessage): Boolean {
+        return Notificare.push().isNotificareNotification(remoteMessage)
     }
 
     @JvmStatic
