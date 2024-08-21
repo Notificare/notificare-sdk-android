@@ -25,11 +25,11 @@ internal fun Notificare.geoInternal(): NotificareInternalGeo {
 
 @InternalNotificareApi
 public val Notificare.INTENT_ACTION_INTERNAL_LOCATION_UPDATED: String
-    get() = "re.notifica.intent.action.InternalLocationUpdated"
+    get() = "re.notifica.intent.action.internal.LocationUpdated"
 
 @InternalNotificareApi
-public val Notificare.INTENT_ACTION_GEOFENCE_TRANSITION: String
-    get() = "re.notifica.intent.action.GeofenceTransition"
+public val Notificare.INTENT_ACTION_INTERNAL_GEOFENCE_TRANSITION: String
+    get() = "re.notifica.intent.action.internal.GeofenceTransition"
 
 public val Notificare.INTENT_ACTION_LOCATION_UPDATED: String
     get() = "re.notifica.intent.action.LocationUpdated"
