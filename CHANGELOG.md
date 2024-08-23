@@ -6,6 +6,8 @@
 - Removed peer modules. Main modules now include Google Play Services libraries by default.
 - Renamed `NotificarePushService` to `NotificareFirebaseMessagingService`.
 - Replaced `isNotificareNotification` Kotlin extension with `NotificarePush.isNotificareNotification()`.
+- Add `Notificare.push().parseNotificationOpenedIntent(intent)` to ease processing the intent.
+- Add `Notificare.push().parseNotificationActionOpenedIntent(intent)` to ease processing the intent.
 
 #### Breaking changes
 
