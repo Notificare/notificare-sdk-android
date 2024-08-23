@@ -52,7 +52,6 @@ import re.notifica.ktx.device
 import re.notifica.ktx.events
 import re.notifica.models.NotificareApplication
 import re.notifica.models.NotificareNotification
-import re.notifica.push.models.NotificareTransport
 import re.notifica.push.NotificareInternalPush
 import re.notifica.push.NotificarePush
 import re.notifica.push.NotificarePushIntentReceiver
@@ -83,12 +82,15 @@ import re.notifica.push.ktx.logNotificationInfluenced
 import re.notifica.push.ktx.logNotificationReceived
 import re.notifica.push.ktx.logPushRegistration
 import re.notifica.push.models.NotificareLiveActivityUpdate
+import re.notifica.push.models.NotificareNotificationActionOpenedIntentResult
 import re.notifica.push.models.NotificareNotificationDeliveryMechanism
+import re.notifica.push.models.NotificareNotificationOpenedIntentResult
 import re.notifica.push.models.NotificareNotificationRemoteMessage
 import re.notifica.push.models.NotificarePushSubscription
 import re.notifica.push.models.NotificareRemoteMessage
 import re.notifica.push.models.NotificareSystemNotification
 import re.notifica.push.models.NotificareSystemRemoteMessage
+import re.notifica.push.models.NotificareTransport
 import re.notifica.push.models.NotificareUnknownRemoteMessage
 import re.notifica.push.notificationAccentColor
 import re.notifica.push.notificationAutoCancel
@@ -313,6 +315,27 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
         )
 
         return true
+    }
+
+    override fun parseNotificationOpenedIntent(intent: Intent): NotificareNotificationOpenedIntentResult? {
+        if (intent.action != Notificare.INTENT_ACTION_NOTIFICATION_OPENED) {
+            return null
+        }
+
+        return NotificareNotificationOpenedIntentResult(
+            notification = requireNotNull(intent.parcelable(Notificare.INTENT_EXTRA_NOTIFICATION)),
+        )
+    }
+
+    override fun parseNotificationActionOpenedIntent(intent: Intent): NotificareNotificationActionOpenedIntentResult? {
+        if (intent.action != Notificare.INTENT_ACTION_ACTION_OPENED) {
+            return null
+        }
+
+        return NotificareNotificationActionOpenedIntentResult(
+            notification = requireNotNull(intent.parcelable(Notificare.INTENT_EXTRA_NOTIFICATION)),
+            action = requireNotNull(intent.parcelable(Notificare.INTENT_EXTRA_ACTION)),
+        )
     }
 
     override suspend fun registerLiveActivity(

@@ -18,6 +18,8 @@ import re.notifica.push.ktx.INTENT_EXTRA_REMOTE_MESSAGE
 import re.notifica.push.ktx.INTENT_EXTRA_TEXT_RESPONSE
 import re.notifica.push.ktx.INTENT_EXTRA_TOKEN
 import re.notifica.push.ktx.push
+import re.notifica.push.models.NotificareNotificationActionOpenedIntentResult
+import re.notifica.push.models.NotificareNotificationOpenedIntentResult
 import re.notifica.push.models.NotificarePushSubscription
 import re.notifica.push.models.NotificareTransport
 
@@ -120,6 +122,16 @@ public object NotificarePushCompat {
     @JvmStatic
     public fun handleTrampolineIntent(intent: Intent): Boolean {
         return Notificare.push().handleTrampolineIntent(intent)
+    }
+
+    @JvmStatic
+    public fun parseNotificationOpenedIntent(intent: Intent): NotificareNotificationOpenedIntentResult? {
+        return Notificare.push().parseNotificationOpenedIntent(intent)
+    }
+
+    @JvmStatic
+    public fun parseNotificationActionOpenedIntent(intent: Intent): NotificareNotificationActionOpenedIntentResult? {
+        return Notificare.push().parseNotificationActionOpenedIntent(intent)
     }
 
     @JvmStatic

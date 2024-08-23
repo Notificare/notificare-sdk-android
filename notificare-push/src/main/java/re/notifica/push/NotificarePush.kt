@@ -5,6 +5,8 @@ import androidx.lifecycle.LiveData
 import com.google.firebase.messaging.RemoteMessage
 import re.notifica.InternalNotificareApi
 import re.notifica.NotificareCallback
+import re.notifica.push.models.NotificareNotificationActionOpenedIntentResult
+import re.notifica.push.models.NotificareNotificationOpenedIntentResult
 import re.notifica.push.models.NotificarePushSubscription
 import re.notifica.push.models.NotificareTransport
 import re.notifica.push.models.NotificareRemoteMessage
@@ -36,6 +38,10 @@ public interface NotificarePush {
     public fun isNotificareNotification(remoteMessage: RemoteMessage): Boolean
 
     public fun handleTrampolineIntent(intent: Intent): Boolean
+
+    public fun parseNotificationOpenedIntent(intent: Intent): NotificareNotificationOpenedIntentResult?
+
+    public fun parseNotificationActionOpenedIntent(intent: Intent): NotificareNotificationActionOpenedIntentResult?
 
     public suspend fun registerLiveActivity(activityId: String, topics: List<String> = listOf())
 
