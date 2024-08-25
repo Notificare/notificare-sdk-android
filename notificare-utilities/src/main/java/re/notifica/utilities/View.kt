@@ -1,10 +1,8 @@
-package re.notifica.internal.common
+package re.notifica.utilities
 
 import android.view.View
 import android.view.ViewTreeObserver
-import re.notifica.InternalNotificareApi
 
-@InternalNotificareApi
 public inline fun View.waitForLayout(crossinline f: () -> Unit) {
     if (!viewTreeObserver.isAlive) return
 
