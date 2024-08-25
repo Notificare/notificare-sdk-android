@@ -1,4 +1,4 @@
-package re.notifica.internal.common
+package re.notifica.utilities
 
 import java.net.SocketException
 import java.net.UnknownHostException
@@ -6,7 +6,7 @@ import java.util.concurrent.CancellationException
 import java.util.concurrent.TimeoutException
 import javax.net.ssl.SSLException
 
-internal val Exception.recoverable: Boolean
+public val Exception.recoverable: Boolean
     get() {
         return when (this) {
             // Network failures

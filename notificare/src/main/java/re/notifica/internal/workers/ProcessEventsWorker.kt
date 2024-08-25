@@ -8,7 +8,7 @@ import java.util.Date
 import java.util.GregorianCalendar
 import re.notifica.Notificare
 import re.notifica.internal.NotificareLogger
-import re.notifica.internal.common.recoverable
+import re.notifica.utilities.recoverable
 import re.notifica.internal.network.request.NotificareRequest
 import re.notifica.internal.storage.database.entities.NotificareEventEntity
 import re.notifica.internal.storage.database.ktx.toModel
