@@ -14,7 +14,7 @@ import re.notifica.internal.NOTIFICARE_VERSION
 import re.notifica.internal.NotificareLogger
 import re.notifica.internal.NotificareModule
 import re.notifica.internal.NotificareUtils
-import re.notifica.internal.common.filterNotNull
+import re.notifica.utilities.filterNotNull
 import re.notifica.internal.ktx.coroutineScope
 import re.notifica.internal.ktx.toCallbackFunction
 import re.notifica.internal.network.push.CreateDevicePayload
