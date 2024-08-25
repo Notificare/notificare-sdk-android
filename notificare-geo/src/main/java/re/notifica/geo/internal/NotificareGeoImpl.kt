@@ -59,7 +59,7 @@ import re.notifica.geo.models.NotificareRegionSession
 import re.notifica.geo.monitoredRegionsLimit
 import re.notifica.internal.NotificareLogger
 import re.notifica.internal.NotificareModule
-import re.notifica.internal.common.onMainThread
+import re.notifica.utilities.onMainThread
 import re.notifica.internal.ktx.coroutineScope
 import re.notifica.internal.network.request.NotificareRequest
 import re.notifica.ktx.device

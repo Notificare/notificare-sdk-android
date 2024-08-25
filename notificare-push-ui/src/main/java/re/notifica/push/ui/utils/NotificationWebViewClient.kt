@@ -12,7 +12,7 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import re.notifica.Notificare
 import re.notifica.internal.NotificareLogger
-import re.notifica.internal.common.onMainThread
+import re.notifica.utilities.onMainThread
 import re.notifica.models.NotificareNotification
 import re.notifica.push.ui.closeWindowQueryParameter
 import re.notifica.push.ui.ktx.pushUIInternal

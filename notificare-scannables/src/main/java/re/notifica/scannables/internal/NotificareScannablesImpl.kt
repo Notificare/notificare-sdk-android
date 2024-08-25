@@ -12,7 +12,7 @@ import re.notifica.Notificare
 import re.notifica.NotificareCallback
 import re.notifica.internal.NotificareLogger
 import re.notifica.internal.NotificareModule
-import re.notifica.internal.common.onMainThread
+import re.notifica.utilities.onMainThread
 import re.notifica.internal.common.putEnumExtra
 import re.notifica.internal.ktx.toCallbackFunction
 import re.notifica.internal.network.request.NotificareRequest

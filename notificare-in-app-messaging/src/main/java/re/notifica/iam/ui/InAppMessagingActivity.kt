@@ -14,7 +14,7 @@ import re.notifica.iam.ktx.INTENT_EXTRA_IN_APP_MESSAGE
 import re.notifica.iam.ktx.inAppMessagingImplementation
 import re.notifica.iam.models.NotificareInAppMessage
 import re.notifica.internal.NotificareLogger
-import re.notifica.internal.common.onMainThread
+import re.notifica.utilities.onMainThread
 import re.notifica.internal.ktx.parcelable
 
 public open class InAppMessagingActivity : AppCompatActivity() {

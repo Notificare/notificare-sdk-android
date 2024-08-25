@@ -1,14 +1,12 @@
-package re.notifica.internal.common
+package re.notifica.utilities
 
 import android.os.Handler
 import android.os.Looper
-import re.notifica.InternalNotificareApi
 
 private val handler: Handler by lazy {
     Handler(Looper.getMainLooper())
 }
 
-@InternalNotificareApi
 public fun onMainThread(action: () -> Unit) {
     handler.post {
         action()

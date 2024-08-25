@@ -10,7 +10,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.MarkerOptions
 import re.notifica.Notificare
-import re.notifica.internal.common.onMainThread
+import re.notifica.utilities.onMainThread
 import re.notifica.utilities.waitForLayout
 import re.notifica.internal.ktx.parcelable
 import re.notifica.models.NotificareNotification

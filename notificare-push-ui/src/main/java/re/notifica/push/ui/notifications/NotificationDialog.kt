@@ -10,7 +10,7 @@ import androidx.fragment.app.DialogFragment
 import re.notifica.Notificare
 import re.notifica.internal.NotificareLogger
 import re.notifica.internal.NotificareUtils
-import re.notifica.internal.common.onMainThread
+import re.notifica.utilities.onMainThread
 import re.notifica.internal.ktx.parcelable
 import re.notifica.models.NotificareNotification
 import re.notifica.push.ui.R

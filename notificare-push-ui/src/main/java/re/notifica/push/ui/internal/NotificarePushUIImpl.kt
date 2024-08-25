@@ -13,7 +13,7 @@ import re.notifica.Notificare
 import re.notifica.NotificareCallback
 import re.notifica.internal.NotificareLogger
 import re.notifica.internal.NotificareModule
-import re.notifica.internal.common.onMainThread
+import re.notifica.utilities.onMainThread
 import re.notifica.internal.ktx.coroutineScope
 import re.notifica.models.NotificareNotification
 import re.notifica.push.ui.NotificareInternalPushUI

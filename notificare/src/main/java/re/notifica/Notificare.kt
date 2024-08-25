@@ -26,7 +26,7 @@ import re.notifica.internal.NotificareLogger
 import re.notifica.internal.NotificareModule
 import re.notifica.internal.NotificareOptions
 import re.notifica.internal.NotificareUtils
-import re.notifica.internal.common.onMainThread
+import re.notifica.utilities.onMainThread
 import re.notifica.internal.ktx.toCallbackFunction
 import re.notifica.internal.network.push.ApplicationResponse
 import re.notifica.internal.network.push.CreateNotificationReplyPayload

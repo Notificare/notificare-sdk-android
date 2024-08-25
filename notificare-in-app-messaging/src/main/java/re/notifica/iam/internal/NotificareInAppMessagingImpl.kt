@@ -22,7 +22,7 @@ import re.notifica.iam.models.NotificareInAppMessage
 import re.notifica.iam.ui.InAppMessagingActivity
 import re.notifica.internal.NotificareLogger
 import re.notifica.internal.NotificareModule
-import re.notifica.internal.common.onMainThread
+import re.notifica.utilities.onMainThread
 import re.notifica.internal.ktx.activityInfo
 import re.notifica.internal.ktx.coroutineScope
 import re.notifica.internal.network.NetworkException

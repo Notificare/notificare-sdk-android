@@ -7,7 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.webkit.WebChromeClient
 import re.notifica.Notificare
-import re.notifica.internal.common.onMainThread
+import re.notifica.utilities.onMainThread
 import re.notifica.models.NotificareNotification
 import re.notifica.push.ui.databinding.NotificareNotificationWebViewFragmentBinding
 import re.notifica.push.ui.ktx.pushUIInternal
