@@ -1,8 +1,5 @@
-package re.notifica.internal.ktx
+package re.notifica.utilities.ktx
 
-import re.notifica.InternalNotificareApi
-
-@InternalNotificareApi
 public inline fun <reified K, reified V> Map<*, *>.cast(): Map<K, V> {
     return this.mapNotNull { entry ->
         val key = entry.key as? K
