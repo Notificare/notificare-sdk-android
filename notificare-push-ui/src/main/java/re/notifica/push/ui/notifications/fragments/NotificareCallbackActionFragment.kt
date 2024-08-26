@@ -19,7 +19,7 @@ import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
 import re.notifica.Notificare
 import re.notifica.internal.NotificareLogger
-import re.notifica.internal.ktx.parcelable
+import re.notifica.utilities.ktx.parcelable
 import re.notifica.push.ui.R
 import re.notifica.push.ui.actions.NotificationCallbackAction
 import re.notifica.push.ui.models.NotificarePendingResult

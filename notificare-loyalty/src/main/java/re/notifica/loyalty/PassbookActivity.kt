@@ -15,7 +15,7 @@ import re.notifica.Notificare
 import re.notifica.NotificareCallback
 import re.notifica.internal.NotificareLogger
 import re.notifica.internal.NotificareUtils
-import re.notifica.internal.ktx.parcelable
+import re.notifica.utilities.ktx.parcelable
 import re.notifica.loyalty.ktx.INTENT_EXTRA_PASSBOOK
 import re.notifica.loyalty.ktx.loyalty
 import re.notifica.loyalty.models.NotificarePass

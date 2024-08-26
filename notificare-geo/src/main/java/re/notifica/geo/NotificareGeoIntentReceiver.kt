@@ -18,8 +18,8 @@ import re.notifica.geo.models.NotificareBeacon
 import re.notifica.geo.models.NotificareLocation
 import re.notifica.geo.models.NotificareRegion
 import re.notifica.internal.NotificareLogger
-import re.notifica.internal.ktx.parcelable
-import re.notifica.internal.ktx.parcelableArrayList
+import re.notifica.utilities.ktx.parcelable
+import re.notifica.utilities.ktx.parcelableArrayList
 
 public open class NotificareGeoIntentReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {

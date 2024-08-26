@@ -5,7 +5,7 @@ import android.content.Context
 import android.content.Intent
 import re.notifica.Notificare
 import re.notifica.internal.NotificareLogger
-import re.notifica.internal.ktx.parcelable
+import re.notifica.utilities.ktx.parcelable
 import re.notifica.models.NotificareNotification
 import re.notifica.push.ktx.INTENT_ACTION_ACTION_OPENED
 import re.notifica.push.ktx.INTENT_ACTION_LIVE_ACTIVITY_UPDATE

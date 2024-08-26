@@ -12,7 +12,7 @@ import com.google.android.gms.maps.model.MarkerOptions
 import re.notifica.Notificare
 import re.notifica.utilities.onMainThread
 import re.notifica.utilities.waitForLayout
-import re.notifica.internal.ktx.parcelable
+import re.notifica.utilities.ktx.parcelable
 import re.notifica.models.NotificareNotification
 import re.notifica.push.ui.ktx.pushUIInternal
 

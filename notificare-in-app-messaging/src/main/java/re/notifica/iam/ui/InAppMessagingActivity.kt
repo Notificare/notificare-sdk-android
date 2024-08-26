@@ -15,7 +15,7 @@ import re.notifica.iam.ktx.inAppMessagingImplementation
 import re.notifica.iam.models.NotificareInAppMessage
 import re.notifica.internal.NotificareLogger
 import re.notifica.utilities.onMainThread
-import re.notifica.internal.ktx.parcelable
+import re.notifica.utilities.ktx.parcelable
 
 public open class InAppMessagingActivity : AppCompatActivity() {
     private lateinit var binding: NotificareInAppMessagingActivityBinding

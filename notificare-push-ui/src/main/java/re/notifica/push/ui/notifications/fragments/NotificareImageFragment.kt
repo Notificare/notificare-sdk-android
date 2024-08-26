@@ -10,7 +10,7 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import re.notifica.Notificare
 import re.notifica.internal.NotificareUtils
 import re.notifica.utilities.onMainThread
-import re.notifica.internal.ktx.parcelable
+import re.notifica.utilities.ktx.parcelable
 import re.notifica.models.NotificareNotification
 import re.notifica.push.ui.databinding.NotificareNotificationImageFragmentBinding
 import re.notifica.push.ui.ktx.pushUIInternal

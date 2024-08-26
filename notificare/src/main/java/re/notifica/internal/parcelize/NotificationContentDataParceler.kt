@@ -2,7 +2,7 @@ package re.notifica.internal.parcelize
 
 import android.os.Parcel
 import kotlinx.parcelize.Parceler
-import re.notifica.internal.ktx.map
+import re.notifica.utilities.ktx.map
 
 internal object NotificationContentDataParceler : Parceler<Any> {
     override fun create(parcel: Parcel): Any {

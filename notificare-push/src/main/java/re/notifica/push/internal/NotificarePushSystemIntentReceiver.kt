@@ -9,7 +9,7 @@ import kotlinx.coroutines.launch
 import re.notifica.Notificare
 import re.notifica.internal.NotificareLogger
 import re.notifica.internal.ktx.coroutineScope
-import re.notifica.internal.ktx.parcelable
+import re.notifica.utilities.ktx.parcelable
 import re.notifica.ktx.events
 import re.notifica.models.NotificareNotification
 import re.notifica.push.ktx.INTENT_ACTION_QUICK_RESPONSE

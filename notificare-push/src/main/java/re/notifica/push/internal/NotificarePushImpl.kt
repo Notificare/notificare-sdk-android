@@ -44,7 +44,7 @@ import re.notifica.internal.NotificareLogger
 import re.notifica.internal.NotificareModule
 import re.notifica.internal.NotificareUtils
 import re.notifica.internal.ktx.coroutineScope
-import re.notifica.internal.ktx.parcelable
+import re.notifica.utilities.ktx.parcelable
 import re.notifica.internal.ktx.toCallbackFunction
 import re.notifica.internal.network.request.NotificareRequest
 import re.notifica.ktx.device

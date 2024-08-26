@@ -24,7 +24,7 @@ import re.notifica.internal.NotificareLogger
 import re.notifica.internal.NotificareUtils
 import re.notifica.utilities.onMainThread
 import re.notifica.utilities.ktx.packageInfo
-import re.notifica.internal.ktx.parcelable
+import re.notifica.utilities.ktx.parcelable
 import re.notifica.models.NotificareNotification
 import re.notifica.push.ui.R
 import re.notifica.push.ui.databinding.NotificareNotificationContainerFragmentBinding

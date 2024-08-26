@@ -11,7 +11,7 @@ import re.notifica.inbox.ktx.inboxImplementation
 import re.notifica.inbox.models.NotificareInboxItem
 import re.notifica.internal.NotificareLogger
 import re.notifica.internal.ktx.coroutineScope
-import re.notifica.internal.ktx.parcelable
+import re.notifica.utilities.ktx.parcelable
 import re.notifica.models.NotificareNotification
 
 internal class NotificareInboxSystemReceiver : BroadcastReceiver() {
