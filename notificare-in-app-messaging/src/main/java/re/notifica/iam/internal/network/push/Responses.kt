@@ -2,7 +2,7 @@ package re.notifica.iam.internal.network.push
 
 import com.squareup.moshi.JsonClass
 import re.notifica.iam.models.NotificareInAppMessage
-import re.notifica.internal.moshi.UseDefaultsWhenNull
+import re.notifica.utilities.moshi.UseDefaultsWhenNull
 
 @JsonClass(generateAdapter = true)
 internal data class InAppMessageResponse(

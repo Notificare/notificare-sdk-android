@@ -1,7 +1,7 @@
 package re.notifica.geo.internal.network.push
 
 import com.squareup.moshi.JsonClass
-import re.notifica.internal.moshi.EncodeNulls
+import re.notifica.utilities.moshi.EncodeNulls
 
 @EncodeNulls
 @JsonClass(generateAdapter = true)

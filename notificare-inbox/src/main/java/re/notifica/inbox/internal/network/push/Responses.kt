@@ -3,7 +3,7 @@ package re.notifica.inbox.internal.network.push
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 import java.util.Date
-import re.notifica.internal.moshi.UseDefaultsWhenNull
+import re.notifica.utilities.moshi.UseDefaultsWhenNull
 import re.notifica.models.NotificareNotification
 
 @JsonClass(generateAdapter = true)
