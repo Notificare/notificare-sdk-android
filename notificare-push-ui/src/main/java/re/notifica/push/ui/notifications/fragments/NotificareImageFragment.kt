@@ -8,13 +8,14 @@ import android.widget.ImageView
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import re.notifica.Notificare
-import re.notifica.internal.NotificareUtils
+import re.notifica.internal.NotificareLogger
 import re.notifica.utilities.onMainThread
 import re.notifica.utilities.ktx.parcelable
 import re.notifica.models.NotificareNotification
 import re.notifica.push.ui.databinding.NotificareNotificationImageFragmentBinding
 import re.notifica.push.ui.ktx.pushUIInternal
 import re.notifica.push.ui.notifications.fragments.base.NotificationFragment
+import re.notifica.utilities.loadImage
 
 public class NotificareImageFragment : NotificationFragment() {
 
@@ -74,6 +75,8 @@ public class NotificareImageFragment : NotificationFragment() {
             content = savedInstanceState?.parcelable(SAVED_STATE_CONTENT)
                 ?: arguments?.parcelable(SAVED_STATE_CONTENT)
                 ?: throw IllegalArgumentException("Missing required notification content parameter.")
+
+            NotificareLogger.info(content.data.toString())
         }
 
         override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -83,7 +86,7 @@ public class NotificareImageFragment : NotificationFragment() {
         override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
             super.onViewCreated(view, savedInstanceState)
 
-            NotificareUtils.loadImage(content.data as String, view as ImageView)
+            loadImage(requireContext(), content.data as String, view as ImageView)
         }
 
         override fun onSaveInstanceState(outState: Bundle) {

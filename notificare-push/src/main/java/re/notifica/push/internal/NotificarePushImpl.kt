@@ -95,6 +95,7 @@ import re.notifica.push.notificationLightsColor
 import re.notifica.push.notificationLightsOff
 import re.notifica.push.notificationLightsOn
 import re.notifica.push.notificationSmallIcon
+import re.notifica.utilities.loadBitmap
 
 @Keep
 internal object NotificarePushImpl : NotificareModule(), NotificarePush, NotificareInternalPush {
@@ -715,7 +716,7 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
 
         val attachmentImage = try {
             runBlocking {
-                message.attachment?.uri?.let { NotificareUtils.loadBitmap(it) }
+                message.attachment?.uri?.let { loadBitmap(Notificare.requireContext(), it) }
             }
         } catch (e: Exception) {
             NotificareLogger.warning("Failed to load the attachment image.", e)
