@@ -17,8 +17,8 @@ import kotlin.coroutines.resumeWithException
 import kotlinx.coroutines.suspendCancellableCoroutine
 import re.notifica.InternalNotificareApi
 import re.notifica.Notificare
-import re.notifica.internal.ktx.applicationInfo
-import re.notifica.internal.ktx.packageInfo
+import re.notifica.utilities.ktx.applicationInfo
+import re.notifica.utilities.ktx.packageInfo
 
 @InternalNotificareApi
 public object NotificareUtils {

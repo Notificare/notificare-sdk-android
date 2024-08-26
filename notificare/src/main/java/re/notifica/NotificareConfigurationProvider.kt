@@ -8,7 +8,7 @@ import android.database.Cursor
 import android.net.Uri
 import androidx.core.os.bundleOf
 import re.notifica.internal.NotificareLogger
-import re.notifica.internal.ktx.applicationInfo
+import re.notifica.utilities.ktx.applicationInfo
 
 /**
  * Auto configuration during application startup.
