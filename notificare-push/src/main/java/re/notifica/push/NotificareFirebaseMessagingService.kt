@@ -21,6 +21,17 @@ public open class NotificareFirebaseMessagingService : FirebaseMessagingService(
         NotificareLogger.debug("Received a remote notification from FCM.")
 
         if (Notificare.push().isNotificareNotification(message)) {
+            val application = Notificare.application ?: run {
+                @Suppress("detekt:MaxLineLength")
+                NotificareLogger.warning("Notificare application unavailable. Ensure Notificare is configured during the application launch.")
+                return
+            }
+
+            if (application.id != message.data["x-application"]) {
+                NotificareLogger.warning("Incoming notification originated from another application.")
+                return
+            }
+
             val isSystemNotification = message.data["system"] == "1" ||
                 message.data["system"]?.toBoolean() ?: false
 
