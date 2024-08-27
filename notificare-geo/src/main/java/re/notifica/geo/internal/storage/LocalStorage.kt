@@ -320,4 +320,10 @@ internal class LocalStorage(context: Context) {
     }
 
     // endregion
+
+    fun clear() {
+        sharedPreferences.edit {
+            clear()
+        }
+    }
 }

@@ -233,6 +233,13 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
         localStorage.locationServicesEnabled = settings.getBoolean("locationUpdates", false)
     }
 
+    override suspend fun clearStorage() {
+        serviceManager?.disableLocationUpdates()
+        beaconServiceManager?.clearMonitoring()
+
+        localStorage.clear()
+    }
+
     override fun configure() {
         val context = Notificare.requireContext()
 

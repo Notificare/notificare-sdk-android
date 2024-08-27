@@ -164,6 +164,12 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
         })
     }
 
+    override suspend fun clearStorage() {
+        sharedPreferences.clear()
+
+        _observableAllowedUI.postValue(allowedUI)
+    }
+
     override suspend fun postLaunch() {
         if (sharedPreferences.remoteNotificationsEnabled) {
             NotificareLogger.debug("Enabling remote notifications automatically.")

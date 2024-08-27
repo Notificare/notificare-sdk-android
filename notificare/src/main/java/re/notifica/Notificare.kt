@@ -154,7 +154,29 @@ public object Notificare {
         state = NotificareLaunchState.LAUNCHING
 
         try {
-            val application = fetchApplication()
+            val application = fetchApplication(saveToSharedPreferences = false)
+            val storedApplication = sharedPreferences.application
+
+            if (storedApplication != null && storedApplication.id != application.id) {
+                NotificareLogger.warning("Incorrect application keys detected. Resetting Notificare to a clean state.")
+
+                NotificareModule.Module.entries.forEach { module ->
+                    module.instance?.run {
+                        NotificareLogger.debug("Resetting module: ${module.name.lowercase()}")
+                        try {
+                            this.clearStorage()
+                        } catch (e: Exception) {
+                            NotificareLogger.debug("Failed to reset '${module.name.lowercase()}': $e")
+                            throw e
+                        }
+                    }
+                }
+
+                database.events().clear()
+                sharedPreferences.clear()
+            }
+
+            sharedPreferences.application = application
 
             // Loop all possible modules and launch the available ones.
             NotificareModule.Module.entries.forEach { module ->
@@ -277,20 +299,12 @@ public object Notificare {
     }
 
     public suspend fun fetchApplication(): NotificareApplication = withContext(Dispatchers.IO) {
-        NotificareRequest.Builder()
-            .get("/application/info")
-            .responseDecodable(ApplicationResponse::class)
-            .application
-            .toModel()
-            .also {
-                // Update the cached copy.
-                application = it
-            }
+        fetchApplication(saveToSharedPreferences = true)
     }
 
     @JvmStatic
     public fun fetchApplication(callback: NotificareCallback<NotificareApplication>): Unit =
-        toCallbackFunction(::fetchApplication)(callback)
+        toCallbackFunction<NotificareApplication>(::fetchApplication)(callback)
 
     public suspend fun fetchNotification(id: String): NotificareNotification = withContext(Dispatchers.IO) {
         if (!isConfigured) throw NotificareNotConfiguredException()
@@ -609,9 +623,13 @@ public object Notificare {
     }
 
     private fun configure(context: Context, servicesInfo: NotificareServicesInfo) {
-        if (isConfigured) {
-            NotificareLogger.warning("Notificare has already been configured. Skipping...")
+        if (state > NotificareLaunchState.CONFIGURED) {
+            NotificareLogger.warning("Unable to reconfigure Notificare once launched.")
             return
+        }
+
+        if (state == NotificareLaunchState.CONFIGURED) {
+            NotificareLogger.info("Reconfiguring Notificare with another set of application keys.")
         }
 
         if (servicesInfo.applicationKey.isBlank() || servicesInfo.applicationSecret.isBlank()) {
@@ -753,6 +771,21 @@ public object Notificare {
 
         return link?.let { Uri.parse(it) }
     }
+
+    private suspend fun fetchApplication(saveToSharedPreferences: Boolean): NotificareApplication =
+        withContext(Dispatchers.IO) {
+            val application = NotificareRequest.Builder()
+                .get("/application/info")
+                .responseDecodable(ApplicationResponse::class)
+                .application
+                .toModel()
+
+            if (saveToSharedPreferences) {
+                this@Notificare.application = application
+            }
+
+            return@withContext application
+        }
 
     private suspend fun getInstallReferrerDetails(
         context: Context
