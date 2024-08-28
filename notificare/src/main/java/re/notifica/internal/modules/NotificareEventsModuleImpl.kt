@@ -18,7 +18,7 @@ import re.notifica.internal.NotificareLogger
 import re.notifica.internal.NotificareModule
 import re.notifica.internal.NotificareUtils
 import re.notifica.utilities.recoverable
-import re.notifica.internal.ktx.toCallbackFunction
+import re.notifica.utilities.ktx.toCallbackFunction
 import re.notifica.internal.network.request.NotificareRequest
 import re.notifica.internal.storage.database.ktx.toEntity
 import re.notifica.internal.workers.ProcessEventsWorker
@@ -69,7 +69,7 @@ internal object NotificareEventsModuleImpl :
     }
 
     override fun logApplicationException(throwable: Throwable, callback: NotificareCallback<Unit>): Unit =
-        toCallbackFunction(::logApplicationException)(throwable, callback)
+        toCallbackFunction(::logApplicationException)(throwable, callback::onSuccess, callback::onFailure)
 
     override suspend fun logNotificationOpen(id: String) {
         log(
@@ -80,7 +80,7 @@ internal object NotificareEventsModuleImpl :
     }
 
     override fun logNotificationOpen(id: String, callback: NotificareCallback<Unit>): Unit =
-        toCallbackFunction(::logNotificationOpen)(id, callback)
+        toCallbackFunction(::logNotificationOpen)(id, callback::onSuccess, callback::onFailure)
 
     override suspend fun logCustom(event: String, data: NotificareEventData?) {
         if (!Notificare.isReady) throw NotificareNotReadyException()
@@ -89,7 +89,7 @@ internal object NotificareEventsModuleImpl :
     }
 
     override fun logCustom(event: String, data: NotificareEventData?, callback: NotificareCallback<Unit>): Unit =
-        toCallbackFunction(::logCustom)(event, data, callback)
+        toCallbackFunction(::logCustom)(event, data, callback::onSuccess, callback::onFailure)
 
     // endregion
 

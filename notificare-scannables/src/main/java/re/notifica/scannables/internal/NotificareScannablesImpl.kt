@@ -14,7 +14,7 @@ import re.notifica.internal.NotificareLogger
 import re.notifica.internal.NotificareModule
 import re.notifica.utilities.onMainThread
 import re.notifica.utilities.putEnumExtra
-import re.notifica.internal.ktx.toCallbackFunction
+import re.notifica.utilities.ktx.toCallbackFunction
 import re.notifica.internal.network.request.NotificareRequest
 import re.notifica.ktx.device
 import re.notifica.scannables.NotificareScannables
@@ -91,7 +91,7 @@ internal object NotificareScannablesImpl : NotificareModule(), NotificareScannab
     }
 
     override fun fetch(tag: String, callback: NotificareCallback<NotificareScannable>): Unit =
-        toCallbackFunction(::fetch)(tag, callback)
+        toCallbackFunction(::fetch)(tag, callback::onSuccess, callback::onFailure)
 
     // endregion
 

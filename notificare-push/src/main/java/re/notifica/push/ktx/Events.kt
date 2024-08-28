@@ -5,7 +5,7 @@ import kotlinx.coroutines.withContext
 import re.notifica.Notificare
 import re.notifica.NotificareCallback
 import re.notifica.NotificareEventsModule
-import re.notifica.internal.ktx.toCallbackFunction
+import re.notifica.utilities.ktx.toCallbackFunction
 
 @Suppress("unused")
 public suspend fun NotificareEventsModule.logNotificationReceived(id: String): Unit = withContext(Dispatchers.IO) {
@@ -17,7 +17,7 @@ public suspend fun NotificareEventsModule.logNotificationReceived(id: String): U
 }
 
 public fun NotificareEventsModule.logNotificationReceived(id: String, callback: NotificareCallback<Unit>): Unit =
-    toCallbackFunction(::logNotificationReceived)(id, callback)
+    toCallbackFunction(::logNotificationReceived)(id, callback::onSuccess, callback::onFailure)
 
 @Suppress("unused")
 public suspend fun NotificareEventsModule.logNotificationInfluenced(id: String): Unit = withContext(Dispatchers.IO) {
@@ -29,7 +29,7 @@ public suspend fun NotificareEventsModule.logNotificationInfluenced(id: String):
 }
 
 public fun NotificareEventsModule.logNotificationInfluenced(id: String, callback: NotificareCallback<Unit>): Unit =
-    toCallbackFunction(::logNotificationInfluenced)(id, callback)
+    toCallbackFunction(::logNotificationInfluenced)(id, callback::onSuccess, callback::onFailure)
 
 @Suppress("unused")
 public suspend fun NotificareEventsModule.logPushRegistration(): Unit = withContext(Dispatchers.IO) {
@@ -41,4 +41,4 @@ public suspend fun NotificareEventsModule.logPushRegistration(): Unit = withCont
 }
 
 public fun NotificareEventsModule.logPushRegistration(callback: NotificareCallback<Unit>): Unit =
-    toCallbackFunction(::logPushRegistration)(callback)
+    toCallbackFunction(::logPushRegistration)(callback::onSuccess, callback::onFailure)

@@ -14,7 +14,7 @@ import kotlinx.coroutines.withContext
 import re.notifica.Notificare
 import re.notifica.internal.NotificareLogger
 import re.notifica.internal.NotificareModule
-import re.notifica.internal.ktx.coroutineScope
+import re.notifica.utilities.ktx.notificareCoroutineScope
 import re.notifica.ktx.device
 import re.notifica.ktx.eventsImplementation
 
@@ -23,7 +23,7 @@ internal object NotificareSessionModuleImpl : NotificareModule() {
 
     private val handler = Handler(Looper.getMainLooper())
     private val runnable = Runnable {
-        Notificare.coroutineScope.launch {
+        notificareCoroutineScope.launch {
             try {
                 stopSession()
             } catch (e: Exception) {
@@ -106,7 +106,7 @@ internal object NotificareSessionModuleImpl : NotificareModule() {
                     return
                 }
 
-                Notificare.coroutineScope.launch {
+                notificareCoroutineScope.launch {
                     try {
                         startSession()
                     } catch (e: Exception) {

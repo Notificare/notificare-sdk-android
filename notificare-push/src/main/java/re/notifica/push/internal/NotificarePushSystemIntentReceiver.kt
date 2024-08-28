@@ -8,7 +8,6 @@ import androidx.core.app.RemoteInput
 import kotlinx.coroutines.launch
 import re.notifica.Notificare
 import re.notifica.internal.NotificareLogger
-import re.notifica.internal.ktx.coroutineScope
 import re.notifica.utilities.ktx.parcelable
 import re.notifica.ktx.events
 import re.notifica.models.NotificareNotification
@@ -16,6 +15,7 @@ import re.notifica.push.ktx.INTENT_ACTION_QUICK_RESPONSE
 import re.notifica.push.ktx.INTENT_EXTRA_REMOTE_MESSAGE
 import re.notifica.push.ktx.INTENT_EXTRA_TEXT_RESPONSE
 import re.notifica.push.models.NotificareNotificationRemoteMessage
+import re.notifica.utilities.ktx.notificareCoroutineScope
 
 internal class NotificarePushSystemIntentReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
@@ -48,7 +48,7 @@ internal class NotificarePushSystemIntentReceiver : BroadcastReceiver() {
         action: NotificareNotification.Action,
         responseText: String?
     ) {
-        Notificare.coroutineScope.launch {
+        notificareCoroutineScope.launch {
             // Log the notification open event.
             Notificare.events().logNotificationOpen(notification.id)
 
@@ -93,7 +93,7 @@ internal class NotificarePushSystemIntentReceiver : BroadcastReceiver() {
         params["label"] = action.label
         responseText?.let { params["message"] = it }
 
-        Notificare.coroutineScope.launch {
+        notificareCoroutineScope.launch {
             try {
                 Notificare.callNotificationReplyWebhook(targetUri, params)
 
@@ -112,7 +112,7 @@ internal class NotificarePushSystemIntentReceiver : BroadcastReceiver() {
         action: NotificareNotification.Action,
         responseText: String?
     ) {
-        Notificare.coroutineScope.launch {
+        notificareCoroutineScope.launch {
             try {
                 Notificare.createNotificationReply(
                     notification = notification,

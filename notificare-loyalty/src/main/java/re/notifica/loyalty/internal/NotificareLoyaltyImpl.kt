@@ -15,7 +15,7 @@ import re.notifica.NotificareNotReadyException
 import re.notifica.NotificareServiceUnavailableException
 import re.notifica.internal.NotificareLogger
 import re.notifica.internal.NotificareModule
-import re.notifica.internal.ktx.toCallbackFunction
+import re.notifica.utilities.ktx.toCallbackFunction
 import re.notifica.internal.modules.integrations.NotificareLoyaltyIntegration
 import re.notifica.internal.network.request.NotificareRequest
 import re.notifica.ktx.device
@@ -48,7 +48,7 @@ internal object NotificareLoyaltyImpl : NotificareModule(), NotificareLoyalty, N
     }
 
     override fun fetchPassBySerial(serial: String, callback: NotificareCallback<NotificarePass>): Unit =
-        toCallbackFunction(::fetchPassBySerial)(serial, callback)
+        toCallbackFunction(::fetchPassBySerial)(serial, callback::onSuccess, callback::onFailure)
 
     override suspend fun fetchPassByBarcode(barcode: String): NotificarePass = withContext(Dispatchers.IO) {
         checkPrerequisites()
@@ -62,7 +62,7 @@ internal object NotificareLoyaltyImpl : NotificareModule(), NotificareLoyalty, N
     }
 
     override fun fetchPassByBarcode(barcode: String, callback: NotificareCallback<NotificarePass>): Unit =
-        toCallbackFunction(::fetchPassByBarcode)(barcode, callback)
+        toCallbackFunction(::fetchPassByBarcode)(barcode, callback::onSuccess, callback::onFailure)
 
     override fun present(activity: Activity, pass: NotificarePass) {
         present(activity, pass, null)

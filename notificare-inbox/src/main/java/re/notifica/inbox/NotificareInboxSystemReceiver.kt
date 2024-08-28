@@ -10,9 +10,9 @@ import re.notifica.Notificare
 import re.notifica.inbox.ktx.inboxImplementation
 import re.notifica.inbox.models.NotificareInboxItem
 import re.notifica.internal.NotificareLogger
-import re.notifica.internal.ktx.coroutineScope
 import re.notifica.utilities.ktx.parcelable
 import re.notifica.models.NotificareNotification
+import re.notifica.utilities.ktx.notificareCoroutineScope
 
 internal class NotificareInboxSystemReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
@@ -72,7 +72,7 @@ internal class NotificareInboxSystemReceiver : BroadcastReceiver() {
             expires = inboxItemExpires,
         )
 
-        Notificare.coroutineScope.launch {
+         notificareCoroutineScope.launch {
             try {
                 NotificareLogger.debug("Adding inbox item to the database.")
                 Notificare.inboxImplementation().addItem(item, inboxItemVisible)
@@ -85,7 +85,7 @@ internal class NotificareInboxSystemReceiver : BroadcastReceiver() {
     // NOTE: we purposely do not use NotificareInbox.markAsRead(item) as that method also logs a notification open,
     // which in this case already happened in the Push module. This is to prevent duplicate events.
     private fun onMarkItemAsRead(id: String) {
-        Notificare.coroutineScope.launch {
+        notificareCoroutineScope.launch {
             try {
                 val entity = Notificare.inboxImplementation().database.inbox().findById(id) ?: run {
                     NotificareLogger.warning("Unable to find item '$id' in the local database.")

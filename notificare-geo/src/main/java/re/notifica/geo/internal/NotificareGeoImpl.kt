@@ -60,7 +60,7 @@ import re.notifica.geo.monitoredRegionsLimit
 import re.notifica.internal.NotificareLogger
 import re.notifica.internal.NotificareModule
 import re.notifica.utilities.onMainThread
-import re.notifica.internal.ktx.coroutineScope
+import re.notifica.utilities.ktx.notificareCoroutineScope
 import re.notifica.internal.network.request.NotificareRequest
 import re.notifica.ktx.device
 import re.notifica.ktx.events
@@ -351,7 +351,7 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
         // Ensure we keep the bluetooth state updated in the API.
         updateBluetoothState(hasBeaconSupport)
 
-        Notificare.coroutineScope.launch {
+        notificareCoroutineScope.launch {
             try {
                 clearLocation()
                 NotificareLogger.debug("Device location cleared.")
@@ -444,7 +444,7 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
             // Add this location to the region session.
             updateRegionSessions(NotificareLocation(location))
 
-            Notificare.coroutineScope.launch {
+            notificareCoroutineScope.launch {
                 try {
                     val country = getCountryCode(location)
 
@@ -724,7 +724,7 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
         updateBluetoothState(hasBeaconSupport)
 
         if (!hasForegroundLocationPermission) {
-            Notificare.coroutineScope.launch {
+            notificareCoroutineScope.launch {
                 try {
                     lastKnownLocation = null
                     clearLocation()
@@ -1163,7 +1163,7 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
     }
 
     private fun clearRegions() {
-        Notificare.coroutineScope.launch {
+        notificareCoroutineScope.launch {
             try {
                 // Stop monitoring all regions.
                 serviceManager?.clearMonitoringRegions()

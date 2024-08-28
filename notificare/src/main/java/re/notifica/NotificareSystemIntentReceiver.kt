@@ -6,8 +6,8 @@ import android.content.Intent
 import java.util.Locale
 import kotlinx.coroutines.launch
 import re.notifica.internal.NotificareLogger
-import re.notifica.internal.ktx.coroutineScope
 import re.notifica.ktx.deviceImplementation
+import re.notifica.utilities.ktx.notificareCoroutineScope
 
 internal class NotificareSystemIntentReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
@@ -37,7 +37,7 @@ internal class NotificareSystemIntentReceiver : BroadcastReceiver() {
             "Received a locale change: ${Locale.getDefault().language}-${Locale.getDefault().country}"
         )
 
-        Notificare.coroutineScope.launch {
+        notificareCoroutineScope.launch {
             try {
                 Notificare.deviceImplementation().updateLanguage(
                     language = Notificare.deviceImplementation().getDeviceLanguage(),

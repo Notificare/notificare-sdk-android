@@ -24,7 +24,7 @@ import re.notifica.internal.NotificareLogger
 import re.notifica.internal.NotificareModule
 import re.notifica.utilities.onMainThread
 import re.notifica.utilities.ktx.activityInfo
-import re.notifica.internal.ktx.coroutineScope
+import re.notifica.utilities.ktx.notificareCoroutineScope
 import re.notifica.internal.network.NetworkException
 import re.notifica.internal.network.request.NotificareRequest
 import re.notifica.ktx.device
@@ -201,7 +201,7 @@ internal object NotificareInAppMessagingImpl : NotificareModule(), NotificareInA
     private fun evaluateContext(context: ApplicationContext) {
         NotificareLogger.debug("Checking in-app message for context '${context.rawValue}'.")
 
-        Notificare.coroutineScope.launch {
+        notificareCoroutineScope.launch {
             try {
                 val message = fetchInAppMessage(context)
                 processInAppMessage(message)
@@ -227,7 +227,7 @@ internal object NotificareInAppMessagingImpl : NotificareModule(), NotificareInA
         if (message.delaySeconds > 0) {
             // Keep a reference to the job to cancel it when
             // the app goes into the background.
-            delayedMessageJob = Notificare.coroutineScope.launch {
+            delayedMessageJob = notificareCoroutineScope.launch {
                 try {
                     NotificareLogger.debug(
                         "Waiting ${message.delaySeconds} seconds before presenting the in-app message."
@@ -260,7 +260,7 @@ internal object NotificareInAppMessagingImpl : NotificareModule(), NotificareInA
     }
 
     private fun present(message: NotificareInAppMessage) {
-        Notificare.coroutineScope.launch {
+        notificareCoroutineScope.launch {
             if (NotificareImageCache.isLoading) {
                 NotificareLogger.debug("Cannot display an in-app message while another is being preloaded.")
                 return@launch

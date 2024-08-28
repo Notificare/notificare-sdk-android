@@ -26,10 +26,10 @@ import re.notifica.InternalNotificareApi
 import re.notifica.Notificare
 import re.notifica.NotificareCallback
 import re.notifica.internal.NotificareLogger
-import re.notifica.internal.ktx.toCallbackFunction
 import re.notifica.internal.moshi
 import re.notifica.internal.network.NetworkException
 import re.notifica.internal.network.NotificareHeadersInterceptor
+import re.notifica.utilities.ktx.toCallbackFunction
 
 @InternalNotificareApi
 public typealias DecodableForFn<T> = (responseCode: Int) -> KClass<T>?
@@ -273,21 +273,21 @@ public class NotificareRequest private constructor(
         }
 
         public fun response(callback: NotificareCallback<Response>): Unit =
-            toCallbackFunction(::response)(callback)
+            toCallbackFunction(::response)(callback::onSuccess, callback::onFailure)
 
         public suspend fun responseString(): String {
             return build().responseString()
         }
 
         public fun responseString(callback: NotificareCallback<String>): Unit =
-            toCallbackFunction(::responseString)(callback)
+            toCallbackFunction(::responseString)(callback::onSuccess, callback::onFailure)
 
         public suspend fun <T : Any> responseDecodable(klass: KClass<T>): T {
             return build().responseDecodable(klass)
         }
 
         public fun <T : Any> responseDecodable(klass: KClass<T>, callback: NotificareCallback<T>): Unit =
-            toCallbackFunction(suspend { responseDecodable(klass) })(callback)
+            toCallbackFunction(suspend { responseDecodable(klass) })(callback::onSuccess, callback::onFailure)
 
         public suspend fun <T : Any> responseDecodable(decodableFor: DecodableForFn<T>): T? {
             return build().responseDecodable(decodableFor)

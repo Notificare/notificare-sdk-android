@@ -27,7 +27,6 @@ import re.notifica.internal.NotificareModule
 import re.notifica.internal.NotificareOptions
 import re.notifica.internal.NotificareUtils
 import re.notifica.utilities.onMainThread
-import re.notifica.internal.ktx.toCallbackFunction
 import re.notifica.internal.network.push.ApplicationResponse
 import re.notifica.internal.network.push.CreateNotificationReplyPayload
 import re.notifica.internal.network.push.DynamicLinkResponse
@@ -42,6 +41,7 @@ import re.notifica.ktx.deviceImplementation
 import re.notifica.models.NotificareApplication
 import re.notifica.models.NotificareDynamicLink
 import re.notifica.models.NotificareNotification
+import re.notifica.utilities.ktx.toCallbackFunction
 
 public object Notificare {
 
@@ -206,7 +206,7 @@ public object Notificare {
     @JvmStatic
     public fun launch(
         callback: NotificareCallback<Unit>,
-    ): Unit = toCallbackFunction(::launch)(callback)
+    ): Unit = toCallbackFunction(::launch)(callback::onSuccess, callback::onFailure)
 
     public suspend fun unlaunch(): Unit = withContext(Dispatchers.IO) {
         if (!isReady) {
@@ -290,7 +290,7 @@ public object Notificare {
 
     @JvmStatic
     public fun fetchApplication(callback: NotificareCallback<NotificareApplication>): Unit =
-        toCallbackFunction(::fetchApplication)(callback)
+        toCallbackFunction(::fetchApplication)(callback::onSuccess, callback::onFailure)
 
     public suspend fun fetchNotification(id: String): NotificareNotification = withContext(Dispatchers.IO) {
         if (!isConfigured) throw NotificareNotConfiguredException()
@@ -304,7 +304,7 @@ public object Notificare {
 
     @JvmStatic
     public fun fetchNotification(id: String, callback: NotificareCallback<NotificareNotification>): Unit =
-        toCallbackFunction(::fetchNotification)(id, callback)
+        toCallbackFunction(::fetchNotification)(id, callback::onSuccess, callback::onFailure)
 
     public suspend fun fetchDynamicLink(uri: Uri): NotificareDynamicLink = withContext(Dispatchers.IO) {
         if (!isConfigured) throw NotificareNotConfiguredException()
@@ -322,7 +322,7 @@ public object Notificare {
 
     @JvmStatic
     public fun fetchDynamicLink(uri: Uri, callback: NotificareCallback<NotificareDynamicLink>): Unit =
-        toCallbackFunction(::fetchDynamicLink)(uri, callback)
+        toCallbackFunction(::fetchDynamicLink)(uri, callback::onSuccess, callback::onFailure)
 
     public suspend fun createNotificationReply(
         notification: NotificareNotification,
@@ -509,7 +509,7 @@ public object Notificare {
     @JvmStatic
     public fun canEvaluateDeferredLink(
         callback: NotificareCallback<Boolean>,
-    ): Unit = toCallbackFunction(::canEvaluateDeferredLink)(callback)
+    ): Unit = toCallbackFunction(::canEvaluateDeferredLink)(callback::onSuccess, callback::onFailure)
 
     public suspend fun evaluateDeferredLink(): Boolean = withContext(Dispatchers.IO) {
         if (sharedPreferences.deferredLinkChecked != false) {
@@ -559,7 +559,7 @@ public object Notificare {
     @JvmStatic
     public fun evaluateDeferredLink(
         callback: NotificareCallback<Boolean>,
-    ): Unit = toCallbackFunction(::evaluateDeferredLink)(callback)
+    ): Unit = toCallbackFunction(::evaluateDeferredLink)(callback::onSuccess, callback::onFailure)
 
     // endregion
 

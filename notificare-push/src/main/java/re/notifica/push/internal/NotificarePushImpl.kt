@@ -42,10 +42,9 @@ import re.notifica.NotificareNotReadyException
 import re.notifica.NotificareServiceUnavailableException
 import re.notifica.internal.NotificareLogger
 import re.notifica.internal.NotificareModule
-import re.notifica.internal.NotificareUtils
-import re.notifica.internal.ktx.coroutineScope
+import re.notifica.utilities.ktx.notificareCoroutineScope
 import re.notifica.utilities.ktx.parcelable
-import re.notifica.internal.ktx.toCallbackFunction
+import re.notifica.utilities.ktx.toCallbackFunction
 import re.notifica.internal.network.request.NotificareRequest
 import re.notifica.ktx.device
 import re.notifica.ktx.events
@@ -279,7 +278,7 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
 
     override fun enableRemoteNotifications(
         callback: NotificareCallback<Unit>
-    ): Unit = toCallbackFunction(::enableRemoteNotifications)(callback)
+    ): Unit = toCallbackFunction(::enableRemoteNotifications)(callback::onSuccess, callback::onFailure)
 
     override suspend fun disableRemoteNotifications(): Unit = withContext(Dispatchers.IO) {
         // Keep track of the status in local storage.
@@ -295,7 +294,7 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
 
     override fun disableRemoteNotifications(
         callback: NotificareCallback<Unit>
-    ): Unit = toCallbackFunction(::disableRemoteNotifications)(callback)
+    ): Unit = toCallbackFunction(::disableRemoteNotifications)(callback::onSuccess, callback::onFailure)
 
     override fun handleTrampolineIntent(intent: Intent): Boolean {
         if (intent.action != Notificare.INTENT_ACTION_REMOTE_MESSAGE_OPENED) {
@@ -337,7 +336,7 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
         activityId: String,
         topics: List<String>,
         callback: NotificareCallback<Unit>,
-    ): Unit = toCallbackFunction(::registerLiveActivity)(activityId, topics, callback)
+    ): Unit = toCallbackFunction(::registerLiveActivity)(activityId, topics, callback::onSuccess, callback::onFailure)
 
     override suspend fun endLiveActivity(activityId: String): Unit = withContext(Dispatchers.IO) {
         val device = Notificare.device().currentDevice
@@ -359,7 +358,7 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
     override fun endLiveActivity(
         activityId: String,
         callback: NotificareCallback<Unit>
-    ): Unit = toCallbackFunction(::endLiveActivity)(activityId, callback)
+    ): Unit = toCallbackFunction(::endLiveActivity)(activityId, callback::onSuccess, callback::onFailure)
 
     // endregion
 
@@ -378,7 +377,7 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
             return
         }
 
-        Notificare.coroutineScope.launch {
+        notificareCoroutineScope.launch {
             try {
                 updateDeviceSubscription(transport, token)
             } catch (e: Exception) {
@@ -417,7 +416,7 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
         notification: NotificareNotification,
         action: NotificareNotification.Action?
     ) {
-        Notificare.coroutineScope.launch {
+        notificareCoroutineScope.launch {
             // Log the notification open event.
             Notificare.events().logNotificationOpen(notification.id)
             Notificare.events().logNotificationInfluenced(notification.id)
@@ -603,7 +602,7 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
     }
 
     private fun handleNotification(message: NotificareNotificationRemoteMessage) {
-        Notificare.coroutineScope.launch {
+        notificareCoroutineScope.launch {
             try {
                 Notificare.events().logNotificationReceived(message.notificationId)
 
@@ -880,7 +879,7 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
     private fun onApplicationForeground() {
         if (!Notificare.isReady) return
 
-        Notificare.coroutineScope.launch {
+        notificareCoroutineScope.launch {
             try {
                 updateDeviceNotificationSettings()
             } catch (e: Exception) {

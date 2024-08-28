@@ -18,7 +18,7 @@ import re.notifica.inbox.user.models.NotificareUserInboxItem
 import re.notifica.inbox.user.models.NotificareUserInboxResponse
 import re.notifica.internal.NotificareLogger
 import re.notifica.internal.NotificareModule
-import re.notifica.internal.ktx.toCallbackFunction
+import re.notifica.utilities.ktx.toCallbackFunction
 import re.notifica.internal.moshi
 import re.notifica.internal.network.push.NotificationResponse
 import re.notifica.internal.network.request.NotificareRequest
@@ -64,7 +64,7 @@ internal object NotificareUserInboxImpl : NotificareModule(), NotificareUserInbo
     override fun open(
         item: NotificareUserInboxItem,
         callback: NotificareCallback<NotificareNotification>
-    ): Unit = toCallbackFunction(::open)(item, callback)
+    ): Unit = toCallbackFunction(::open)(item, callback::onSuccess, callback::onFailure)
 
     override suspend fun markAsRead(item: NotificareUserInboxItem): Unit = withContext(Dispatchers.IO) {
         checkPrerequisites()
@@ -75,7 +75,7 @@ internal object NotificareUserInboxImpl : NotificareModule(), NotificareUserInbo
     override fun markAsRead(
         item: NotificareUserInboxItem,
         callback: NotificareCallback<Unit>
-    ): Unit = toCallbackFunction(::markAsRead)(item, callback)
+    ): Unit = toCallbackFunction(::markAsRead)(item, callback::onSuccess, callback::onFailure)
 
     override suspend fun remove(item: NotificareUserInboxItem): Unit = withContext(Dispatchers.IO) {
         checkPrerequisites()
@@ -86,7 +86,7 @@ internal object NotificareUserInboxImpl : NotificareModule(), NotificareUserInbo
     override fun remove(
         item: NotificareUserInboxItem,
         callback: NotificareCallback<Unit>
-    ): Unit = toCallbackFunction(::remove)(item, callback)
+    ): Unit = toCallbackFunction(::remove)(item, callback::onSuccess, callback::onFailure)
 
     // endregion
 

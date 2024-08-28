@@ -33,8 +33,8 @@ import re.notifica.inbox.internal.workers.ExpireItemWorker
 import re.notifica.inbox.models.NotificareInboxItem
 import re.notifica.internal.NotificareLogger
 import re.notifica.internal.NotificareModule
-import re.notifica.internal.ktx.coroutineScope
-import re.notifica.internal.ktx.toCallbackFunction
+import re.notifica.utilities.ktx.notificareCoroutineScope
+import re.notifica.utilities.ktx.toCallbackFunction
 import re.notifica.internal.network.NetworkException
 import re.notifica.internal.network.request.NotificareRequest
 import re.notifica.ktx.device
@@ -151,7 +151,7 @@ internal object NotificareInboxImpl : NotificareModule(), NotificareInbox {
             return
         }
 
-        Notificare.coroutineScope.launch {
+        notificareCoroutineScope.launch {
             try {
                 reloadInbox()
             } catch (e: Exception) {
@@ -190,7 +190,7 @@ internal object NotificareInboxImpl : NotificareModule(), NotificareInbox {
     }
 
     override fun open(item: NotificareInboxItem, callback: NotificareCallback<NotificareNotification>): Unit =
-        toCallbackFunction(NotificareInboxImpl::open)(item, callback)
+        toCallbackFunction(NotificareInboxImpl::open)(item, callback::onSuccess, callback::onFailure)
 
     override suspend fun markAsRead(item: NotificareInboxItem): Unit = withContext(Dispatchers.IO) {
         checkPrerequisites()
@@ -212,7 +212,7 @@ internal object NotificareInboxImpl : NotificareModule(), NotificareInbox {
     }
 
     override fun markAsRead(item: NotificareInboxItem, callback: NotificareCallback<Unit>): Unit =
-        toCallbackFunction(NotificareInboxImpl::markAsRead)(item, callback)
+        toCallbackFunction(NotificareInboxImpl::markAsRead)(item, callback::onSuccess, callback::onFailure)
 
     override suspend fun markAllAsRead(): Unit = withContext(Dispatchers.IO) {
         checkPrerequisites()
@@ -232,7 +232,7 @@ internal object NotificareInboxImpl : NotificareModule(), NotificareInbox {
     }
 
     override fun markAllAsRead(callback: NotificareCallback<Unit>): Unit =
-        toCallbackFunction(NotificareInboxImpl::markAllAsRead)(callback)
+        toCallbackFunction(NotificareInboxImpl::markAllAsRead)(callback::onSuccess, callback::onFailure)
 
     override suspend fun remove(item: NotificareInboxItem): Unit = withContext(Dispatchers.IO) {
         checkPrerequisites()
@@ -250,7 +250,7 @@ internal object NotificareInboxImpl : NotificareModule(), NotificareInbox {
     }
 
     override fun remove(item: NotificareInboxItem, callback: NotificareCallback<Unit>): Unit =
-        toCallbackFunction(NotificareInboxImpl::remove)(item, callback)
+        toCallbackFunction(NotificareInboxImpl::remove)(item, callback::onSuccess, callback::onFailure)
 
     override suspend fun clear(): Unit = withContext(Dispatchers.IO) {
         checkPrerequisites()
@@ -266,7 +266,7 @@ internal object NotificareInboxImpl : NotificareModule(), NotificareInbox {
     }
 
     override fun clear(callback: NotificareCallback<Unit>): Unit =
-        toCallbackFunction(NotificareInboxImpl::clear)(callback)
+        toCallbackFunction(NotificareInboxImpl::clear)(callback::onSuccess, callback::onFailure)
 
     // endregion
 
