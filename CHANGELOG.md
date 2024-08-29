@@ -8,6 +8,7 @@
 - Replaced `isNotificareNotification` Kotlin extension with `NotificarePush.isNotificareNotification()`.
 - Add `Notificare.push().parseNotificationOpenedIntent(intent)` to ease processing the intent.
 - Add `Notificare.push().parseNotificationActionOpenedIntent(intent)` to ease processing the intent.
+- Allow `configure()` to be called more than once, provided Notificare is unlaunched.
 
 #### Breaking changes
 
