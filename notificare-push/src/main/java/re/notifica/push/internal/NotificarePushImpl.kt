@@ -154,11 +154,8 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
             createDefaultChannel()
         }
 
-        if (!hasIntentFilter(
-                context = Notificare.requireContext(),
-                intentAction = Notificare.INTENT_ACTION_REMOTE_MESSAGE_OPENED
-            )
-        ) {
+        if (!hasIntentFilter(Notificare.requireContext(), Notificare.INTENT_ACTION_REMOTE_MESSAGE_OPENED)) {
+            @Suppress("detekt:MaxLineLength", "ktlint:standard:argument-list-wrapping")
             NotificareLogger.warning("Could not find an activity with the '${Notificare.INTENT_ACTION_REMOTE_MESSAGE_OPENED}' action. Notification opens won't work without handling the trampoline intent.")
         }
 
