@@ -154,6 +154,11 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
             createDefaultChannel()
         }
 
+        if (!hasIntentFilter(Notificare.requireContext(), Notificare.INTENT_ACTION_REMOTE_MESSAGE_OPENED)) {
+            @Suppress("detekt:MaxLineLength", "ktlint:standard:argument-list-wrapping")
+            NotificareLogger.warning("Could not find an activity with the '${Notificare.INTENT_ACTION_REMOTE_MESSAGE_OPENED}' action. Notification opens won't work without handling the trampoline intent.")
+        }
+
         // NOTE: The allowedUI is only gettable after the storage has been configured.
         _observableAllowedUI.postValue(allowedUI)
 
@@ -1026,5 +1031,13 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
 
     private fun hasNotificationPermission(context: Context): Boolean {
         return NotificationManagerCompat.from(context).areNotificationsEnabled()
+    }
+
+    private fun hasIntentFilter(context: Context, intentAction: String): Boolean {
+        val intent = Intent()
+            .setAction(intentAction)
+            .setPackage(context.packageName)
+
+        return intent.resolveActivity(Notificare.requireContext().packageManager) != null
     }
 }
