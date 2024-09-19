@@ -1,10 +1,10 @@
-package re.notifica.internal.parcelize
+package re.notifica.utilities.parcelize
 
 import android.os.Parcel
 import kotlinx.parcelize.Parceler
 import re.notifica.utilities.ktx.map
 
-internal object NotificationContentDataParceler : Parceler<Any> {
+public object NotificationContentDataParceler : Parceler<Any> {
     override fun create(parcel: Parcel): Any {
         val typeStr = parcel.readString()
             ?: throw IllegalArgumentException("Missing type string in parcel.")

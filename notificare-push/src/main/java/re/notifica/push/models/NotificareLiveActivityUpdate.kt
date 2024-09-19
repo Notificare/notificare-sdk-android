@@ -9,7 +9,7 @@ import kotlinx.parcelize.WriteWith
 import org.json.JSONObject
 import re.notifica.Notificare
 import re.notifica.internal.moshi
-import re.notifica.internal.parcelize.NotificareJsonObjectParceler
+import re.notifica.utilities.parcelize.NotificareJsonObjectParceler
 
 @Parcelize
 @JsonClass(generateAdapter = true)

@@ -1,11 +1,9 @@
-package re.notifica.internal.parcelize
+package re.notifica.utilities.parcelize
 
 import android.os.Parcel
 import kotlinx.parcelize.Parceler
 import org.json.JSONObject
-import re.notifica.InternalNotificareApi
 
-@InternalNotificareApi
 public object NotificareJsonObjectParceler : Parceler<JSONObject?> {
     override fun create(parcel: Parcel): JSONObject? {
         if (parcel.readInt() == 0) {
