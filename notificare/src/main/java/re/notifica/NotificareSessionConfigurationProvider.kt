@@ -5,13 +5,19 @@ import android.content.ContentProvider
 import android.content.ContentValues
 import android.database.Cursor
 import android.net.Uri
-import re.notifica.internal.NotificareLogger
+import re.notifica.utilities.NotificareLogger
 import re.notifica.ktx.session
 
 /**
  * Auto configuration during application startup.
  */
 internal class NotificareSessionConfigurationProvider : ContentProvider() {
+
+    private val logger = NotificareLogger(
+        Notificare.options?.debugLoggingEnabled ?: false,
+        "NotificareSessionConfigurationProvider"
+    )
+
     /**
      * Called before [android.app.Application.onCreate].
      */
@@ -19,7 +25,7 @@ internal class NotificareSessionConfigurationProvider : ContentProvider() {
         val context = context ?: throw IllegalStateException("Cannot find context from the provider.")
         val application = context.applicationContext as Application
 
-        NotificareLogger.debug("Configuring session lifecycle listeners.")
+        logger.debug("Configuring session lifecycle listeners.")
         Notificare.session().setupLifecycleListeners(application)
 
         return true

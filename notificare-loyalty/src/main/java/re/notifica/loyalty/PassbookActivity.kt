@@ -13,7 +13,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import re.notifica.Notificare
 import re.notifica.NotificareCallback
-import re.notifica.internal.NotificareLogger
+import re.notifica.utilities.NotificareLogger
 import re.notifica.utilities.ktx.parcelable
 import re.notifica.loyalty.ktx.INTENT_EXTRA_PASSBOOK
 import re.notifica.loyalty.ktx.loyalty
@@ -21,6 +21,11 @@ import re.notifica.loyalty.models.NotificarePass
 import re.notifica.utilities.getApplicationName
 
 public open class PassbookActivity : AppCompatActivity() {
+
+    private val logger = NotificareLogger(
+        Notificare.options?.debugLoggingEnabled ?: false,
+        "PassbookActivity"
+    )
 
     private lateinit var webView: WebView
     private var pass: NotificarePass? = null
@@ -150,7 +155,7 @@ public open class PassbookActivity : AppCompatActivity() {
             startActivity(intent)
             finish()
         } catch (e: ActivityNotFoundException) {
-            NotificareLogger.error("Unable to show the Google Pay pass.", e)
+            logger.error("Unable to show the Google Pay pass.", e)
             handlePassLoadingError(e)
         }
     }

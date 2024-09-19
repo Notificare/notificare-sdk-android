@@ -7,7 +7,7 @@ import android.net.Uri
 import androidx.core.app.RemoteInput
 import kotlinx.coroutines.launch
 import re.notifica.Notificare
-import re.notifica.internal.NotificareLogger
+import re.notifica.utilities.NotificareLogger
 import re.notifica.utilities.ktx.parcelable
 import re.notifica.ktx.events
 import re.notifica.models.NotificareNotification
@@ -18,6 +18,12 @@ import re.notifica.push.models.NotificareNotificationRemoteMessage
 import re.notifica.utilities.ktx.notificareCoroutineScope
 
 internal class NotificarePushSystemIntentReceiver : BroadcastReceiver() {
+
+    private val logger = NotificareLogger(
+        Notificare.options?.debugLoggingEnabled ?: false,
+        "NotificarePushSystemIntentReceiver"
+    )
+
     override fun onReceive(context: Context, intent: Intent) {
         when (intent.action) {
             Notificare.INTENT_ACTION_QUICK_RESPONSE -> {
@@ -60,11 +66,11 @@ internal class NotificarePushSystemIntentReceiver : BroadcastReceiver() {
                     notification
                 }
             } catch (e: Exception) {
-                NotificareLogger.error("Failed to fetch notification.", e)
+                logger.error("Failed to fetch notification.", e)
                 return@launch
             }
 
-            NotificareLogger.debug("Handling a notification action without UI.")
+            logger.debug("Handling a notification action without UI.")
             sendQuickResponse(notification, action, responseText)
 
             // Remove the notification from the notification center.
@@ -100,7 +106,7 @@ internal class NotificarePushSystemIntentReceiver : BroadcastReceiver() {
                 // NotificarePushUI.shared.delegate?.notificare(NotificarePushUI.shared, didExecuteAction: self.action, for: self.notification)
             } catch (e: Exception) {
                 // NotificarePushUI.shared.delegate?.notificare(NotificarePushUI.shared, didFailToExecuteAction: self.action, for: self.notification, error: error)
-                NotificareLogger.debug("Failed to call the notification reply webhook.", e)
+                logger.debug("Failed to call the notification reply webhook.", e)
             }
 
             sendQuickResponseAction(notification, action, responseText)
@@ -122,7 +128,7 @@ internal class NotificarePushSystemIntentReceiver : BroadcastReceiver() {
                     mimeType = null,
                 )
             } catch (e: Exception) {
-                NotificareLogger.debug("Failed to create a notification reply.", e)
+                logger.debug("Failed to create a notification reply.", e)
             }
         }
     }

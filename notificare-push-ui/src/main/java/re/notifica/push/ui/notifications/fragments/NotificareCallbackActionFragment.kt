@@ -18,7 +18,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
 import re.notifica.Notificare
-import re.notifica.internal.NotificareLogger
+import re.notifica.utilities.NotificareLogger
 import re.notifica.utilities.ktx.parcelable
 import re.notifica.push.ui.R
 import re.notifica.push.ui.actions.NotificationCallbackAction
@@ -29,6 +29,11 @@ import java.io.File
 import java.io.IOException
 
 public class NotificareCallbackActionFragment private constructor() : Fragment() {
+
+    private val logger = NotificareLogger(
+        Notificare.options?.debugLoggingEnabled ?: false,
+        "NotificareCallbackActionFragment"
+    )
 
     private lateinit var pendingResult: NotificarePendingResult
     private lateinit var callback: NotificationFragment.Callback
@@ -154,12 +159,12 @@ public class NotificareCallbackActionFragment private constructor() : Fragment()
                     mimeType = mimeType,
                 )
 
-                NotificareLogger.debug("Created a notification reply.")
+                logger.debug("Created a notification reply.")
                 callback.onNotificationFragmentEndProgress()
                 callback.onNotificationFragmentActionSucceeded()
                 callback.onNotificationFragmentFinished()
             } catch (e: Exception) {
-                NotificareLogger.error("Failed to create a notification reply.", e)
+                logger.error("Failed to create a notification reply.", e)
                 callback.onNotificationFragmentEndProgress()
                 callback.onNotificationFragmentActionFailed(getString(R.string.notificare_action_failed))
                 callback.onNotificationFragmentFinished()
@@ -171,6 +176,11 @@ public class NotificareCallbackActionFragment private constructor() : Fragment()
         private const val EXTRA_PENDING_RESULT = "re.notifica.extra.PendingResult"
 
         private const val SAMPLE_SIZE_MAX_PIXELS = 307200 // 640 x 480
+
+        private val logger = NotificareLogger(
+            Notificare.options?.debugLoggingEnabled ?: false,
+            "NotificareCallbackActionFragment\$Companion"
+        )
 
         public fun newInstance(pendingResult: NotificarePendingResult): NotificareCallbackActionFragment {
             return NotificareCallbackActionFragment().apply {
@@ -192,7 +202,7 @@ public class NotificareCallbackActionFragment private constructor() : Fragment()
                 sampleSize *= 2
             }
 
-            NotificareLogger.debug(
+            logger.debug(
                 "Reading bitmap image of ${options.outWidth}x${options.outHeight} pixels with sampleSize $sampleSize"
             )
             return sampleSize
@@ -220,7 +230,7 @@ public class NotificareCallbackActionFragment private constructor() : Fragment()
                     else -> 0
                 }
             } catch (e: IOException) {
-                NotificareLogger.error("Couldn't read image file.", e)
+                logger.error("Couldn't read image file.", e)
                 0
             }
         }

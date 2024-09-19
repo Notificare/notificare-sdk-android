@@ -25,7 +25,7 @@ import okhttp3.logging.HttpLoggingInterceptor
 import re.notifica.InternalNotificareApi
 import re.notifica.Notificare
 import re.notifica.NotificareCallback
-import re.notifica.internal.NotificareLogger
+import re.notifica.utilities.NotificareLogger
 import re.notifica.internal.moshi
 import re.notifica.internal.network.NetworkException
 import re.notifica.internal.network.NotificareHeadersInterceptor
@@ -161,6 +161,11 @@ public class NotificareRequest private constructor(
     }
 
     public class Builder {
+
+        private val logger = NotificareLogger(
+            Notificare.options?.debugLoggingEnabled ?: false,
+            "NotificareRequest\$Builder"
+        )
 
         private var baseUrl: String? = null
         private var url: String? = null
@@ -330,7 +335,7 @@ public class NotificareRequest private constructor(
             val secret = Notificare.servicesInfo?.applicationSecret
 
             if (key == null || secret == null) {
-                NotificareLogger.warning("Notificare application authentication not configured.")
+                logger.warning("Notificare application authentication not configured.")
                 return null
             }
 

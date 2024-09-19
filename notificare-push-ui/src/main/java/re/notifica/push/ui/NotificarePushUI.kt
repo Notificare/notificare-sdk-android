@@ -4,9 +4,15 @@ import android.app.Activity
 import android.net.Uri
 import androidx.annotation.MainThread
 import re.notifica.InternalNotificareApi
-import re.notifica.internal.NotificareLogger
+import re.notifica.Notificare
+import re.notifica.utilities.NotificareLogger
 import re.notifica.models.NotificareNotification
 import java.lang.ref.WeakReference
+
+private val logger = NotificareLogger(
+    Notificare.options?.debugLoggingEnabled ?: false,
+    "NotificarePushUI"
+)
 
 public interface NotificarePushUI {
 
@@ -27,49 +33,49 @@ public interface NotificarePushUI {
     public interface NotificationLifecycleListener {
         @MainThread
         public fun onNotificationWillPresent(notification: NotificareNotification) {
-            NotificareLogger.debug(
+            logger.debug(
                 "Notification will present, please override onNotificationWillPresent if you want to receive these events."
             )
         }
 
         @MainThread
         public fun onNotificationPresented(notification: NotificareNotification) {
-            NotificareLogger.debug(
+            logger.debug(
                 "Notification presented, please override onNotificationPresented if you want to receive these events."
             )
         }
 
         @MainThread
         public fun onNotificationFinishedPresenting(notification: NotificareNotification) {
-            NotificareLogger.debug(
+            logger.debug(
                 "Notification finished presenting, please override onNotificationFinishedPresenting if you want to receive these events."
             )
         }
 
         @MainThread
         public fun onNotificationFailedToPresent(notification: NotificareNotification) {
-            NotificareLogger.debug(
+            logger.debug(
                 "Notification failed to present, please override onNotificationFailedToPresent if you want to receive these events."
             )
         }
 
         @MainThread
         public fun onNotificationUrlClicked(notification: NotificareNotification, uri: Uri) {
-            NotificareLogger.debug(
+            logger.debug(
                 "Notification url clicked, please override onNotificationUrlClicked if you want to receive these events."
             )
         }
 
         @MainThread
         public fun onActionWillExecute(notification: NotificareNotification, action: NotificareNotification.Action) {
-            NotificareLogger.debug(
+            logger.debug(
                 "Action will execute, please override onActionWillExecute if you want to receive these events."
             )
         }
 
         @MainThread
         public fun onActionExecuted(notification: NotificareNotification, action: NotificareNotification.Action) {
-            NotificareLogger.debug(
+            logger.debug(
                 "Action executed, please override onActionExecuted if you want to receive these events."
             )
         }
@@ -84,7 +90,7 @@ public interface NotificarePushUI {
             action: NotificareNotification.Action,
             error: Exception?,
         ) {
-            NotificareLogger.debug(
+            logger.debug(
                 "Action failed to execute, please override onActionFailedToExecute if you want to receive these events.",
                 error
             )
@@ -96,7 +102,7 @@ public interface NotificarePushUI {
             action: NotificareNotification.Action,
             uri: Uri,
         ) {
-            NotificareLogger.warning(
+            logger.warning(
                 "Action received, please override onCustomActionReceived if you want to receive these events."
             )
         }

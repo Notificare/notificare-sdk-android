@@ -4,7 +4,7 @@ import re.notifica.InternalNotificareApi
 import re.notifica.Notificare
 import re.notifica.geo.models.NotificareBeacon
 import re.notifica.geo.models.NotificareRegion
-import re.notifica.internal.NotificareLogger
+import re.notifica.utilities.NotificareLogger
 
 @InternalNotificareApi
 public abstract class BeaconServiceManager(
@@ -20,9 +20,14 @@ public abstract class BeaconServiceManager(
     public companion object {
         private const val FQN = "re.notifica.geo.beacons.internal.BeaconServiceManager"
 
+        private val logger = NotificareLogger(
+            Notificare.options?.debugLoggingEnabled ?: false,
+            "BeaconServiceMAnager"
+        )
+
         internal fun create(): BeaconServiceManager? {
             val proximityUUID = Notificare.application?.regionConfig?.proximityUUID ?: run {
-                NotificareLogger.warning("The Proximity UUID property has not been configured for this application.")
+                logger.warning("The Proximity UUID property has not been configured for this application.")
                 return null
             }
 

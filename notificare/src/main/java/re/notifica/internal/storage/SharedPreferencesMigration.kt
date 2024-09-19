@@ -3,7 +3,8 @@ package re.notifica.internal.storage
 import android.content.Context
 import androidx.core.content.edit
 import org.json.JSONObject
-import re.notifica.internal.NotificareLogger
+import re.notifica.Notificare
+import re.notifica.utilities.NotificareLogger
 import re.notifica.internal.NotificareModule
 import re.notifica.internal.storage.preferences.NotificareSharedPreferences
 import re.notifica.internal.storage.preferences.entities.StoredDevice
@@ -13,6 +14,11 @@ import re.notifica.utilities.deviceRegion
 internal class SharedPreferencesMigration(
     private val context: Context,
 ) {
+
+    private val logger = NotificareLogger(
+        Notificare.options?.debugLoggingEnabled ?: false,
+        "SharedPreferencesMigration"
+    )
 
     companion object {
         private const val V2_SAVED_STATE_FILENAME = "re.notifica.preferences.SavedState"
@@ -34,7 +40,7 @@ internal class SharedPreferencesMigration(
         val v2Settings = context.getSharedPreferences(V2_SETTINGS_FILENAME, Context.MODE_PRIVATE)
 
         if (v2SavedState.contains("registeredDevice")) {
-            NotificareLogger.debug("Found v2 device stored.")
+            logger.debug("Found v2 device stored.")
 
             val jsonStr = v2SavedState.getString("registeredDevice", null)
             if (jsonStr != null) {
@@ -71,20 +77,20 @@ internal class SharedPreferencesMigration(
 
                     preferences.device = device
                 } catch (e: Exception) {
-                    NotificareLogger.error("Failed to migrate v2 device.", e)
+                    logger.error("Failed to migrate v2 device.", e)
                 }
             }
         }
 
         if (v2Settings.contains("overrideLanguage")) {
-            NotificareLogger.debug("Found v2 language override stored.")
+            logger.debug("Found v2 language override stored.")
 
             val language = v2Settings.getString("overrideLanguage", null)
             preferences.preferredLanguage = language
         }
 
         if (v2Settings.contains("overrideRegion")) {
-            NotificareLogger.debug("Found v2 region override stored.")
+            logger.debug("Found v2 region override stored.")
 
             val region = v2Settings.getString("overrideRegion", null)
             preferences.preferredRegion = region

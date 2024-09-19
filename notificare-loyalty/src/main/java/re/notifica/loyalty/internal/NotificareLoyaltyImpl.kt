@@ -13,7 +13,7 @@ import re.notifica.NotificareCallback
 import re.notifica.NotificareDeviceUnavailableException
 import re.notifica.NotificareNotReadyException
 import re.notifica.NotificareServiceUnavailableException
-import re.notifica.internal.NotificareLogger
+import re.notifica.utilities.NotificareLogger
 import re.notifica.internal.NotificareModule
 import re.notifica.utilities.ktx.toCallbackFunction
 import re.notifica.internal.modules.integrations.NotificareLoyaltyIntegration
@@ -31,6 +31,11 @@ import re.notifica.models.NotificareNotification
 
 @Keep
 internal object NotificareLoyaltyImpl : NotificareModule(), NotificareLoyalty, NotificareLoyaltyIntegration {
+
+    private val logger = NotificareLogger(
+        Notificare.options?.debugLoggingEnabled ?: false,
+        "NotificareLoyalty"
+    )
 
     // region Notificare Loyalty
 
@@ -78,7 +83,7 @@ internal object NotificareLoyaltyImpl : NotificareModule(), NotificareLoyalty, N
         callback: NotificareCallback<Unit>,
     ) {
         val serial = extractPassSerial(notification) ?: run {
-            NotificareLogger.warning("Unable to extract the pass' serial from the notification.")
+            logger.warning("Unable to extract the pass' serial from the notification.")
 
             val error = IllegalArgumentException("Unable to extract the pass' serial from the notification.")
             callback.onFailure(error)
@@ -94,7 +99,7 @@ internal object NotificareLoyaltyImpl : NotificareModule(), NotificareLoyalty, N
                 }
 
                 override fun onFailure(e: Exception) {
-                    NotificareLogger.error("Failed to fetch the pass with serial '$serial'.", e)
+                    logger.error("Failed to fetch the pass with serial '$serial'.", e)
                     callback.onFailure(e)
                 }
             }
@@ -106,22 +111,22 @@ internal object NotificareLoyaltyImpl : NotificareModule(), NotificareLoyalty, N
     @Throws
     private fun checkPrerequisites() {
         if (!Notificare.isReady) {
-            NotificareLogger.warning("Notificare is not ready yet.")
+            logger.warning("Notificare is not ready yet.")
             throw NotificareNotReadyException()
         }
 
         if (Notificare.device().currentDevice == null) {
-            NotificareLogger.warning("Notificare device is not yet available.")
+            logger.warning("Notificare device is not yet available.")
             throw NotificareDeviceUnavailableException()
         }
 
         val application = Notificare.application ?: run {
-            NotificareLogger.warning("Notificare application is not yet available.")
+            logger.warning("Notificare application is not yet available.")
             throw NotificareApplicationUnavailableException()
         }
 
         if (application.services[NotificareApplication.ServiceKeys.PASSBOOK] != true) {
-            NotificareLogger.warning("Notificare passes functionality is not enabled.")
+            logger.warning("Notificare passes functionality is not enabled.")
             throw NotificareServiceUnavailableException(service = NotificareApplication.ServiceKeys.PASSBOOK)
         }
     }
@@ -198,7 +203,7 @@ internal object NotificareLoyaltyImpl : NotificareModule(), NotificareLoyalty, N
             }
             2 -> {
                 val url = pass.googlePaySaveLink ?: run {
-                    NotificareLogger.warning("Cannot present the pass without a Google Pay link.")
+                    logger.warning("Cannot present the pass without a Google Pay link.")
 
                     val error = IllegalArgumentException("Cannot present the pass without a Google Pay link.")
                     callback?.onFailure(error)
@@ -214,12 +219,12 @@ internal object NotificareLoyaltyImpl : NotificareModule(), NotificareLoyalty, N
                     activity.startActivity(intent)
                     callback?.onSuccess(Unit)
                 } catch (e: ActivityNotFoundException) {
-                    NotificareLogger.error("Failed to present the pass.", e)
+                    logger.error("Failed to present the pass.", e)
                     callback?.onFailure(e)
                 }
             }
             else -> {
-                NotificareLogger.error("Unsupported pass version: ${pass.version}")
+                logger.error("Unsupported pass version: ${pass.version}")
 
                 val error = IllegalArgumentException("Unsupported pass version: ${pass.version}")
                 callback?.onFailure(error)

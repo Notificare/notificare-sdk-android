@@ -2,13 +2,18 @@ package re.notifica.push.internal
 
 import com.google.firebase.messaging.RemoteMessage
 import re.notifica.Notificare
-import re.notifica.internal.NotificareLogger
+import re.notifica.utilities.NotificareLogger
 import re.notifica.internal.moshi
 import re.notifica.models.NotificareNotification
 import re.notifica.push.models.NotificareNotificationRemoteMessage
 import re.notifica.push.models.NotificareSystemRemoteMessage
 import re.notifica.push.models.NotificareUnknownNotification
 import re.notifica.push.models.NotificareUnknownRemoteMessage
+
+private val logger = NotificareLogger(
+    Notificare.options?.debugLoggingEnabled ?: false,
+    "RemoteMessages"
+)
 
 internal fun NotificareUnknownRemoteMessage(message: RemoteMessage): NotificareUnknownRemoteMessage {
     return NotificareUnknownRemoteMessage(
@@ -104,7 +109,7 @@ internal fun NotificareNotificationRemoteMessage(message: RemoteMessage): Notifi
             try {
                 Notificare.moshi.adapter(NotificareNotification.Attachment::class.java).fromJson(it)
             } catch (e: Exception) {
-                NotificareLogger.warning("Failed to parse attachment from remote message.", e)
+                logger.warning("Failed to parse attachment from remote message.", e)
                 null
             }
         },

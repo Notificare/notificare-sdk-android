@@ -20,7 +20,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
 import re.notifica.Notificare
-import re.notifica.internal.NotificareLogger
+import re.notifica.utilities.NotificareLogger
 import re.notifica.utilities.onMainThread
 import re.notifica.utilities.ktx.packageInfo
 import re.notifica.utilities.ktx.parcelable
@@ -36,6 +36,11 @@ import re.notifica.utilities.getApplicationName
 
 public class NotificationContainerFragment
 : Fragment(), NotificationFragment.Callback, NotificationDialog.Callback, NotificationActionsDialog.Callback {
+
+    private val logger = NotificareLogger(
+        Notificare.options?.debugLoggingEnabled ?: false,
+        "NotificareContainerFragment"
+    )
 
     private lateinit var binding: NotificareNotificationContainerFragmentBinding
     private lateinit var notification: NotificareNotification
@@ -129,7 +134,7 @@ public class NotificationContainerFragment
                 val klass = Class.forName(it)
                 klass.getConstructor().newInstance() as Fragment
             } catch (e: Exception) {
-                NotificareLogger.error(
+                logger.error(
                     "Failed to dynamically create the concrete notification fragment.",
                     e
                 )
@@ -229,7 +234,7 @@ public class NotificationContainerFragment
             notification = notification,
             action = action,
         ) ?: run {
-            NotificareLogger.debug("Unable to create an action handler for '${action.type}'.")
+            logger.debug("Unable to create an action handler for '${action.type}'.")
             return
         }
 
@@ -311,7 +316,7 @@ public class NotificationContainerFragment
                     return requestedPermissions.any { it == Manifest.permission.CAMERA }
                 }
             } catch (e: PackageManager.NameNotFoundException) {
-                NotificareLogger.warning("Failed to read the manifest.", e)
+                logger.warning("Failed to read the manifest.", e)
             }
 
             return false
@@ -329,7 +334,7 @@ public class NotificationContainerFragment
 
     private fun handlePendingResult() {
         val pendingResult = pendingResult ?: run {
-            NotificareLogger.debug("No pending result to process.")
+            logger.debug("No pending result to process.")
             return
         }
 
@@ -390,7 +395,7 @@ public class NotificationContainerFragment
         try {
             startActivity(intent)
         } catch (e: ActivityNotFoundException) {
-            NotificareLogger.warning("No activity found to handle intent.", e)
+            logger.warning("No activity found to handle intent.", e)
         }
     }
 
@@ -399,15 +404,15 @@ public class NotificationContainerFragment
     // region NotificationDialog.Callback
 
     override fun onNotificationDialogOkClick() {
-        NotificareLogger.debug("User clicked the OK button.")
+        logger.debug("User clicked the OK button.")
     }
 
     override fun onNotificationDialogCancelClick() {
-        NotificareLogger.debug("User clicked the cancel button.")
+        logger.debug("User clicked the cancel button.")
     }
 
     override fun onNotificationDialogDismiss() {
-        NotificareLogger.debug("User dismissed the dialog.")
+        logger.debug("User dismissed the dialog.")
         // if (notification.getType().equals(NotificareNotification.TYPE_ALERT) || notification.getType().equals(NotificareNotification.TYPE_PASSBOOK)) {
         if (pendingResult == null) {
             callback.onNotificationFragmentFinished()
@@ -415,7 +420,7 @@ public class NotificationContainerFragment
     }
 
     override fun onNotificationDialogActionClick(position: Int) {
-        NotificareLogger.debug("User clicked on action index $position.")
+        logger.debug("User clicked on action index $position.")
 
         if (position >= notification.actions.size) {
             // This is the cancel button
@@ -435,7 +440,7 @@ public class NotificationContainerFragment
     }
 
     override fun onActionDialogCancelClick() {
-        NotificareLogger.debug("Action dialog canceled.")
+        logger.debug("Action dialog canceled.")
     }
 
     override fun onActionDialogCloseClick() {

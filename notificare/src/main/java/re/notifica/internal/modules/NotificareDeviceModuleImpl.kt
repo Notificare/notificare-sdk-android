@@ -11,7 +11,7 @@ import re.notifica.NotificareDeviceModule
 import re.notifica.NotificareDeviceUnavailableException
 import re.notifica.NotificareNotReadyException
 import re.notifica.internal.NOTIFICARE_VERSION
-import re.notifica.internal.NotificareLogger
+import re.notifica.utilities.NotificareLogger
 import re.notifica.internal.NotificareModule
 import re.notifica.utilities.filterNotNull
 import re.notifica.utilities.ktx.notificareCoroutineScope
@@ -49,6 +49,11 @@ import java.util.Locale
 @Keep
 internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDeviceModule {
 
+    private val logger = NotificareLogger(
+        Notificare.options?.debugLoggingEnabled ?: false,
+        "NotificareDevice"
+    )
+
     private var storedDevice: StoredDevice?
         get() = Notificare.sharedPreferences.device
         set(value) {
@@ -65,7 +70,7 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
         val storedDevice = storedDevice
 
         if (storedDevice == null) {
-            NotificareLogger.debug("New install detected")
+            logger.debug("New install detected")
 
             createDevice()
             hasPendingDeviceRegistrationEvent = true
@@ -87,7 +92,7 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
 
             if (isApplicationUpgrade) {
                 // It's not the same version, let's log it as an upgrade.
-                NotificareLogger.debug("New version detected")
+                logger.debug("New version detected")
                 Notificare.eventsImplementation().logApplicationUpgrade()
             }
         }
@@ -373,7 +378,7 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
     @Throws
     private fun checkPrerequisites() {
         if (!Notificare.isReady) {
-            NotificareLogger.warning("Notificare is not ready yet.")
+            logger.warning("Notificare is not ready yet.")
             throw NotificareNotReadyException()
         }
     }
@@ -448,7 +453,7 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
 
         if (currentDevice.isLongLived) return@withContext
 
-        NotificareLogger.info("Upgrading current device from legacy format.")
+        logger.info("Upgrading current device from legacy format.")
 
         val deviceId = currentDevice.id
         val transport = checkNotNull(currentDevice.transport)
@@ -479,7 +484,7 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
             }
 
         if (response != null) {
-            NotificareLogger.debug("New device identifier created.")
+            logger.debug("New device identifier created.")
         }
 
         storedDevice = StoredDevice(

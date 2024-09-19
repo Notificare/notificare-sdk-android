@@ -3,8 +3,13 @@ package re.notifica.push.ui
 import android.content.res.Resources.NotFoundException
 import androidx.annotation.ColorInt
 import re.notifica.Notificare
-import re.notifica.internal.NotificareLogger
+import re.notifica.utilities.NotificareLogger
 import re.notifica.internal.NotificareOptions
+
+private val logger = NotificareLogger(
+    Notificare.options?.debugLoggingEnabled ?: false,
+    "NotificareOptions"
+)
 
 public val NotificareOptions.closeWindowQueryParameter: String
     get() {
@@ -29,7 +34,7 @@ public val NotificareOptions.urlSchemes: List<String>
             try {
                 return Notificare.requireContext().resources.getStringArray(resource).asList()
             } catch (e: NotFoundException) {
-                NotificareLogger.warning("Could not load the URL schemes.", e)
+                logger.warning("Could not load the URL schemes.", e)
             }
         }
 
@@ -65,7 +70,7 @@ public val NotificareOptions.customTabsToolbarColor: Int?
             try {
                 return Notificare.requireContext().getColor(resource)
             } catch (e: NotFoundException) {
-                NotificareLogger.warning(
+                logger.warning(
                     "Invalid color resource provided for 're.notifica.push.ui.custom_tabs_toolbar_color'.",
                     e
                 )
@@ -84,7 +89,7 @@ public val NotificareOptions.customTabsNavigationBarColor: Int?
             try {
                 return Notificare.requireContext().getColor(resource)
             } catch (e: NotFoundException) {
-                NotificareLogger.warning(
+                logger.warning(
                     "Invalid color resource provided for 're.notifica.push.ui.custom_tabs_navigation_bar_color'.",
                     e
                 )
@@ -103,7 +108,7 @@ public val NotificareOptions.customTabsNavigationBarDividerColor: Int?
             try {
                 return Notificare.requireContext().getColor(resource)
             } catch (e: NotFoundException) {
-                NotificareLogger.warning(
+                logger.warning(
                     "Invalid color resource provided for 're.notifica.push.ui.custom_tabs_navigation_bar_divider_color'.",
                     e
                 )

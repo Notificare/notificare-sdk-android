@@ -12,7 +12,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import re.notifica.Notificare
-import re.notifica.internal.NotificareLogger
+import re.notifica.utilities.NotificareLogger
 import re.notifica.utilities.onMainThread
 import re.notifica.models.NotificareNotification
 import re.notifica.push.ui.R
@@ -27,6 +27,11 @@ internal class NotificationCallbackAction(
     notification: NotificareNotification,
     action: NotificareNotification.Action
 ) : NotificationAction(context, notification, action) {
+
+    private val logger = NotificareLogger(
+        Notificare.options?.debugLoggingEnabled ?: false,
+        "NotificationCallbackAction"
+    )
 
     override suspend fun execute(): NotificarePendingResult? = withContext(Dispatchers.IO) {
         when {
@@ -79,7 +84,7 @@ internal class NotificationCallbackAction(
                 file
             )
         } catch (e: Exception) {
-            NotificareLogger.warning("Failed to create image file.", e)
+            logger.warning("Failed to create image file.", e)
             return null
         }
     }
@@ -94,7 +99,7 @@ internal class NotificationCallbackAction(
         // To be safe, you should check that the SDCard is mounted
         // using Environment.getExternalStorageState() before doing this.
         if (Environment.getExternalStorageState() == null) {
-            NotificareLogger.warning("Failed to access external storage.")
+            logger.warning("Failed to access external storage.")
             return null
         }
 
@@ -106,7 +111,7 @@ internal class NotificationCallbackAction(
             MediaType.IMAGE -> File.createTempFile("IMG_$timeStamp", ".jpg", mediaStorageDir)
             MediaType.VIDEO -> File.createTempFile("VID_$timeStamp", ".mp4", mediaStorageDir)
         }.also {
-            NotificareLogger.debug("Saving file to '${it.absolutePath}'.")
+            logger.debug("Saving file to '${it.absolutePath}'.")
         }
     }
 

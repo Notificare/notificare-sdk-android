@@ -8,7 +8,7 @@ import android.widget.ArrayAdapter
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
 import re.notifica.Notificare
-import re.notifica.internal.NotificareLogger
+import re.notifica.utilities.NotificareLogger
 import re.notifica.utilities.onMainThread
 import re.notifica.utilities.ktx.parcelable
 import re.notifica.models.NotificareNotification
@@ -18,6 +18,11 @@ import re.notifica.push.ui.ktx.pushUIInternal
 import re.notifica.utilities.getApplicationName
 
 public class NotificationDialog : DialogFragment() {
+
+    private val logger = NotificareLogger(
+        Notificare.options?.debugLoggingEnabled ?: false,
+        "NotificationDialog"
+    )
 
     private var callback: Callback? = null
     private var notification: NotificareNotification? = null
@@ -32,7 +37,7 @@ public class NotificationDialog : DialogFragment() {
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val notification = notification ?: run {
-            NotificareLogger.warning("Notification dialog created without a notification.")
+            logger.warning("Notification dialog created without a notification.")
             return super.onCreateDialog(savedInstanceState)
         }
 

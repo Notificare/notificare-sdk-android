@@ -4,13 +4,18 @@ import android.annotation.SuppressLint
 import android.content.Context
 import androidx.core.content.edit
 import re.notifica.Notificare
-import re.notifica.internal.NotificareLogger
+import re.notifica.utilities.NotificareLogger
 import re.notifica.internal.moshi
 import re.notifica.internal.storage.preferences.entities.StoredDevice
 import re.notifica.models.NotificareApplication
 import re.notifica.models.NotificareEvent
 
 internal class NotificareSharedPreferences(context: Context) {
+
+    private val logger = NotificareLogger(
+        Notificare.options?.debugLoggingEnabled ?: false,
+        "NotificareSharedPReferences"
+    )
 
     companion object {
         private const val PREFERENCES_FILE_NAME = "re.notifica.preferences"
@@ -46,7 +51,7 @@ internal class NotificareSharedPreferences(context: Context) {
                     try {
                         Notificare.moshi.adapter(NotificareApplication::class.java).fromJson(it)
                     } catch (e: Exception) {
-                        NotificareLogger.warning("Failed to decode the stored application.", e)
+                        logger.warning("Failed to decode the stored application.", e)
 
                         // Remove the corrupted device from local storage.
                         application = null
@@ -72,7 +77,7 @@ internal class NotificareSharedPreferences(context: Context) {
                     try {
                         Notificare.moshi.adapter(StoredDevice::class.java).fromJson(it)
                     } catch (e: Exception) {
-                        NotificareLogger.warning("Failed to decode the stored device.", e)
+                        logger.warning("Failed to decode the stored device.", e)
 
                         // Remove the corrupted device from local storage.
                         device = null
@@ -136,7 +141,7 @@ internal class NotificareSharedPreferences(context: Context) {
                     try {
                         Notificare.moshi.adapter(NotificareEvent::class.java).fromJson(it)
                     } catch (e: Exception) {
-                        NotificareLogger.warning("Failed to decode the stored crash report.", e)
+                        logger.warning("Failed to decode the stored crash report.", e)
 
                         // Remove the corrupted crash report from local storage.
                         crashReport = null

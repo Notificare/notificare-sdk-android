@@ -3,12 +3,17 @@ package re.notifica.push.internal
 import android.content.Context
 import androidx.core.content.edit
 import re.notifica.Notificare
-import re.notifica.internal.NotificareLogger
+import re.notifica.utilities.NotificareLogger
 import re.notifica.internal.moshi
 import re.notifica.push.models.NotificarePushSubscription
 import re.notifica.push.models.NotificareTransport
 
 internal class NotificareSharedPreferences(context: Context) {
+
+    private val logger = NotificareLogger(
+        Notificare.options?.debugLoggingEnabled ?: false,
+        "NotificareSharedPreferences"
+    )
 
     companion object {
         private const val PREFERENCES_FILE_NAME = "re.notifica.push.preferences"
@@ -45,7 +50,7 @@ internal class NotificareSharedPreferences(context: Context) {
                 try {
                     Notificare.moshi.adapter(NotificareTransport::class.java).fromJson(it)
                 } catch (e: Exception) {
-                    NotificareLogger.warning("Failed to decode the stored transport.", e)
+                    logger.warning("Failed to decode the stored transport.", e)
 
                     // Remove the corrupted value from local storage.
                     sharedPreferences.edit { remove(PREFERENCE_TRANSPORT) }
@@ -70,7 +75,7 @@ internal class NotificareSharedPreferences(context: Context) {
                 try {
                     Notificare.moshi.adapter(NotificarePushSubscription::class.java).fromJson(it)
                 } catch (e: Exception) {
-                    NotificareLogger.warning("Failed to decode the stored subscription.", e)
+                    logger.warning("Failed to decode the stored subscription.", e)
 
                     // Remove the corrupted value from local storage.
                     sharedPreferences.edit { remove(PREFERENCE_SUBSCRIPTION) }

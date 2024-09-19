@@ -11,7 +11,7 @@ import androidx.core.os.bundleOf
 import kotlinx.coroutines.launch
 import re.notifica.Notificare
 import re.notifica.NotificareCallback
-import re.notifica.internal.NotificareLogger
+import re.notifica.utilities.NotificareLogger
 import re.notifica.internal.NotificareModule
 import re.notifica.utilities.onMainThread
 import re.notifica.models.NotificareNotification
@@ -49,6 +49,11 @@ import java.lang.ref.WeakReference
 @Keep
 internal object NotificarePushUIImpl : NotificareModule(), NotificarePushUI, NotificareInternalPushUI {
 
+    private val logger = NotificareLogger(
+        Notificare.options?.debugLoggingEnabled ?: false,
+        "NotificarePushUI"
+    )
+
     private const val CONTENT_FILE_PROVIDER_AUTHORITY_SUFFIX = ".notificare.fileprovider"
 
     internal val contentFileProviderAuthority: String
@@ -76,15 +81,15 @@ internal object NotificarePushUIImpl : NotificareModule(), NotificarePushUI, Not
 
     override fun presentNotification(activity: Activity, notification: NotificareNotification) {
         val type = NotificareNotification.NotificationType.from(notification.type) ?: run {
-            NotificareLogger.warning("Trying to present a notification with an unknown type '${notification.type}'.")
+            logger.warning("Trying to present a notification with an unknown type '${notification.type}'.")
             return
         }
 
-        NotificareLogger.debug("Presenting notification '${notification.id}'.")
+        logger.debug("Presenting notification '${notification.id}'.")
 
         when (type) {
             NotificareNotification.NotificationType.NONE -> {
-                NotificareLogger.debug(
+                logger.debug(
                     "Attempting to present a notification of type 'none'. These should be handled by the application instead."
                 )
             }
@@ -127,7 +132,7 @@ internal object NotificarePushUIImpl : NotificareModule(), NotificarePushUI, Not
         notification: NotificareNotification,
         action: NotificareNotification.Action
     ) {
-        NotificareLogger.debug("Presenting notification action '${action.type}' for notification '${notification.id}'.")
+        logger.debug("Presenting notification action '${action.type}' for notification '${notification.id}'.")
 
         notificareCoroutineScope.launch {
             try {
@@ -148,7 +153,7 @@ internal object NotificarePushUIImpl : NotificareModule(), NotificarePushUI, Not
                 }
 
                 val handler = createActionHandler(activity, notification, action) ?: run {
-                    NotificareLogger.debug("Unable to create an action handler for '${action.type}'.")
+                    logger.debug("Unable to create an action handler for '${action.type}'.")
 
                     onMainThread {
                         val error = Exception("Unable to create an action handler for '${action.type}'.")
@@ -177,20 +182,20 @@ internal object NotificarePushUIImpl : NotificareModule(), NotificarePushUI, Not
 
     internal fun getFragmentCanonicalClassName(notification: NotificareNotification): String? {
         val type = NotificareNotification.NotificationType.from(notification.type) ?: run {
-            NotificareLogger.warning("Unhandled notification type '${notification.type}'.")
+            logger.warning("Unhandled notification type '${notification.type}'.")
             return null
         }
 
         return when (type) {
             NotificareNotification.NotificationType.NONE -> {
-                NotificareLogger.debug(
+                logger.debug(
                     "Attempting to create a fragment for a notification of type 'none'. This type contains to visual interface."
                 )
                 return null
             }
             NotificareNotification.NotificationType.ALERT -> NotificareAlertFragment::class.java.canonicalName
             NotificareNotification.NotificationType.IN_APP_BROWSER -> {
-                NotificareLogger.debug(
+                logger.debug(
                     "Attempting to create a fragment for a notification of type 'InAppBrowser'. This type contains no visual interface."
                 )
                 return null
@@ -199,7 +204,7 @@ internal object NotificarePushUIImpl : NotificareModule(), NotificarePushUI, Not
             NotificareNotification.NotificationType.URL -> NotificareUrlFragment::class.java.canonicalName
             NotificareNotification.NotificationType.URL_RESOLVER -> NotificareUrlFragment::class.java.canonicalName
             NotificareNotification.NotificationType.URL_SCHEME -> {
-                NotificareLogger.debug(
+                logger.debug(
                     "Attempting to create a fragment for a notification of type 'UrlScheme'. This type contains no visual interface."
                 )
                 return null
@@ -215,7 +220,7 @@ internal object NotificarePushUIImpl : NotificareModule(), NotificarePushUI, Not
 
     private fun handleUrlScheme(activity: Activity, notification: NotificareNotification) {
         val servicesInfo = Notificare.servicesInfo ?: run {
-            NotificareLogger.warning("Notificare is not configured.")
+            logger.warning("Notificare is not configured.")
 
             onMainThread {
                 lifecycleListeners.forEach { it.get()?.onNotificationFailedToPresent(notification) }
@@ -262,7 +267,7 @@ internal object NotificarePushUIImpl : NotificareModule(), NotificarePushUI, Not
 
         // Check if the application can handle the intent itself.
         if (intent.resolveActivity(activity.applicationContext.packageManager) == null) {
-            NotificareLogger.warning("Cannot open a deep link that's not supported by the application.")
+            logger.warning("Cannot open a deep link that's not supported by the application.")
 
             onMainThread {
                 lifecycleListeners.forEach { it.get()?.onNotificationFailedToPresent(notification) }
@@ -280,7 +285,7 @@ internal object NotificarePushUIImpl : NotificareModule(), NotificarePushUI, Not
 
     private fun handleUrlResolver(activity: Activity, notification: NotificareNotification) {
         val servicesInfo = Notificare.servicesInfo ?: run {
-            NotificareLogger.warning("Notificare is not configured.")
+            logger.warning("Notificare is not configured.")
 
             onMainThread {
                 lifecycleListeners.forEach { it.get()?.onNotificationFailedToPresent(notification) }
@@ -293,10 +298,10 @@ internal object NotificarePushUIImpl : NotificareModule(), NotificarePushUI, Not
 
         when (result) {
             NotificationUrlResolver.UrlResolverResult.NONE -> {
-                NotificareLogger.debug("Resolving as 'none' notification.")
+                logger.debug("Resolving as 'none' notification.")
             }
             NotificationUrlResolver.UrlResolverResult.URL_SCHEME -> {
-                NotificareLogger.debug("Resolving as 'url scheme' notification.")
+                logger.debug("Resolving as 'url scheme' notification.")
 
                 onMainThread {
                     lifecycleListeners.forEach { it.get()?.onNotificationWillPresent(notification) }
@@ -305,7 +310,7 @@ internal object NotificarePushUIImpl : NotificareModule(), NotificarePushUI, Not
                 handleUrlScheme(activity, notification)
             }
             NotificationUrlResolver.UrlResolverResult.WEB_VIEW -> {
-                NotificareLogger.debug("Resolving as 'web view' notification.")
+                logger.debug("Resolving as 'web view' notification.")
 
                 onMainThread {
                     lifecycleListeners.forEach { it.get()?.onNotificationWillPresent(notification) }
@@ -314,7 +319,7 @@ internal object NotificarePushUIImpl : NotificareModule(), NotificarePushUI, Not
                 openNotificationActivity(activity, notification)
             }
             NotificationUrlResolver.UrlResolverResult.IN_APP_BROWSER -> {
-                NotificareLogger.debug("Resolving as 'in-app browser' notification.")
+                logger.debug("Resolving as 'in-app browser' notification.")
 
                 onMainThread {
                     lifecycleListeners.forEach { it.get()?.onNotificationWillPresent(notification) }
@@ -372,7 +377,7 @@ internal object NotificarePushUIImpl : NotificareModule(), NotificarePushUI, Not
                 lifecycleListeners.forEach { it.get()?.onNotificationPresented(notification) }
             }
         } catch (e: Exception) {
-            NotificareLogger.error("Failed launch in-app browser.", e)
+            logger.error("Failed launch in-app browser.", e)
 
             onMainThread {
                 lifecycleListeners.forEach { it.get()?.onNotificationFailedToPresent(notification) }
@@ -412,7 +417,7 @@ internal object NotificarePushUIImpl : NotificareModule(), NotificarePushUI, Not
             NotificareNotification.Action.TYPE_IN_APP_BROWSER ->
                 NotificationInAppBrowserAction(activity, notification, action)
             else -> {
-                NotificareLogger.warning("Unhandled action type '${action.type}'.")
+                logger.warning("Unhandled action type '${action.type}'.")
                 null
             }
         }

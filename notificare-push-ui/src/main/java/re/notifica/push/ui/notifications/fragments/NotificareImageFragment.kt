@@ -8,7 +8,7 @@ import android.widget.ImageView
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import re.notifica.Notificare
-import re.notifica.internal.NotificareLogger
+import re.notifica.utilities.NotificareLogger
 import re.notifica.utilities.onMainThread
 import re.notifica.utilities.ktx.parcelable
 import re.notifica.models.NotificareNotification
@@ -67,6 +67,12 @@ public class NotificareImageFragment : NotificationFragment() {
     }
 
     public class ImageChildFragment : Fragment() {
+
+        private val logger = NotificareLogger(
+            Notificare.options?.debugLoggingEnabled ?: false,
+            "ImageChildFragment"
+        )
+
         private lateinit var content: NotificareNotification.Content
 
         override fun onCreate(savedInstanceState: Bundle?) {
@@ -76,7 +82,7 @@ public class NotificareImageFragment : NotificationFragment() {
                 ?: arguments?.parcelable(SAVED_STATE_CONTENT)
                 ?: throw IllegalArgumentException("Missing required notification content parameter.")
 
-            NotificareLogger.info(content.data.toString())
+            logger.info(content.data.toString())
         }
 
         override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {

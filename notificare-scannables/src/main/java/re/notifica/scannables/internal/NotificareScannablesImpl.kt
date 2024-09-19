@@ -10,7 +10,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import re.notifica.Notificare
 import re.notifica.NotificareCallback
-import re.notifica.internal.NotificareLogger
+import re.notifica.utilities.NotificareLogger
 import re.notifica.internal.NotificareModule
 import re.notifica.utilities.onMainThread
 import re.notifica.utilities.putEnumExtra
@@ -27,12 +27,17 @@ import java.lang.ref.WeakReference
 internal object NotificareScannablesImpl : NotificareModule(), NotificareScannables {
     private val listeners = mutableListOf<WeakReference<NotificareScannables.ScannableSessionListener>>()
 
+    private val logger = NotificareLogger(
+        Notificare.options?.debugLoggingEnabled ?: false,
+        "NotificareScannables"
+    )
+
     // region Notificare Scannables Module
 
     override val canStartNfcScannableSession: Boolean
         get() {
             if (!Notificare.isConfigured) {
-                NotificareLogger.warning(
+                logger.warning(
                     "You must configure Notificare before executing 'canStartNfcScannableSession'."
                 )
                 return false

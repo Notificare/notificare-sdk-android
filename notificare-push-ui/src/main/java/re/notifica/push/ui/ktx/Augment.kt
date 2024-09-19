@@ -1,7 +1,7 @@
 package re.notifica.push.ui.ktx
 
 import re.notifica.Notificare
-import re.notifica.internal.NotificareLogger
+import re.notifica.utilities.NotificareLogger
 import re.notifica.internal.NotificareModule
 import re.notifica.internal.modules.integrations.NotificareLoyaltyIntegration
 import re.notifica.push.ui.NotificareInternalPushUI
@@ -22,18 +22,23 @@ internal fun Notificare.pushUIImplementation(): NotificarePushUIImpl {
 }
 
 internal fun Notificare.loyaltyIntegration(): NotificareLoyaltyIntegration? {
+    val logger = NotificareLogger(
+        Notificare.options?.debugLoggingEnabled ?: false,
+        "NotificareLoyaltyIntegration"
+    )
+
     if (!NotificareModule.Module.LOYALTY.isAvailable) {
-        NotificareLogger.debug("Loyalty module is not available.")
+        logger.debug("Loyalty module is not available.")
         return null
     }
 
     val instance = NotificareModule.Module.LOYALTY.instance ?: run {
-        NotificareLogger.debug("Unable to acquire Loyalty module instance.")
+        logger.debug("Unable to acquire Loyalty module instance.")
         return null
     }
 
     val integration = instance as? NotificareLoyaltyIntegration ?: run {
-        NotificareLogger.debug(
+        logger.debug(
             "Loyalty module instance does not comply with the NotificareLoyaltyIntegration interface."
         )
         return null

@@ -14,7 +14,7 @@ import re.notifica.NotificareDeviceUnavailableException
 import re.notifica.NotificareEventsModule
 import re.notifica.NotificareInternalEventsModule
 import re.notifica.NotificareNotReadyException
-import re.notifica.internal.NotificareLogger
+import re.notifica.utilities.NotificareLogger
 import re.notifica.internal.NotificareModule
 import re.notifica.utilities.recoverable
 import re.notifica.utilities.ktx.toCallbackFunction
@@ -44,6 +44,11 @@ internal object NotificareEventsModuleImpl :
     NotificareModule(),
     NotificareEventsModule,
     NotificareInternalEventsModule {
+
+    private val logger = NotificareLogger(
+        Notificare.options?.debugLoggingEnabled ?: false,
+        "NotificareEvents"
+    )
 
     private val discardableEvents = listOf<String>()
 
@@ -145,7 +150,7 @@ internal object NotificareEventsModuleImpl :
 
     internal suspend fun log(event: NotificareEvent): Unit = withContext(Dispatchers.IO) {
         if (!Notificare.isConfigured) {
-            NotificareLogger.debug("Notificare is not configured. Skipping event log...")
+            logger.debug("Notificare is not configured. Skipping event log...")
             return@withContext
         }
 
@@ -154,12 +159,12 @@ internal object NotificareEventsModuleImpl :
                 .post("/event", event)
                 .response()
 
-            NotificareLogger.info("Event '${event.type}' sent successfully.")
+            logger.info("Event '${event.type}' sent successfully.")
         } catch (e: Exception) {
-            NotificareLogger.warning("Failed to send the event: ${event.type}", e)
+            logger.warning("Failed to send the event: ${event.type}", e)
 
             if (!discardableEvents.contains(event.type) && e.recoverable) {
-                NotificareLogger.info("Queuing event to be sent whenever possible.")
+                logger.info("Queuing event to be sent whenever possible.")
 
                 Notificare.database.events().insert(event.toEntity())
                 scheduleUploadWorker()
@@ -172,7 +177,7 @@ internal object NotificareEventsModuleImpl :
     }
 
     private fun scheduleUploadWorker() {
-        NotificareLogger.debug("Scheduling a worker to process stored events when there's connectivity.")
+        logger.debug("Scheduling a worker to process stored events when there's connectivity.")
 
         WorkManager
             .getInstance(Notificare.requireContext())

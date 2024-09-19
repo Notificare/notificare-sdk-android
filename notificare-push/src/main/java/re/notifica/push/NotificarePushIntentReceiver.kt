@@ -4,7 +4,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import re.notifica.Notificare
-import re.notifica.internal.NotificareLogger
+import re.notifica.utilities.NotificareLogger
 import re.notifica.utilities.ktx.parcelable
 import re.notifica.models.NotificareNotification
 import re.notifica.push.ktx.INTENT_ACTION_ACTION_OPENED
@@ -26,6 +26,12 @@ import re.notifica.push.models.NotificareSystemNotification
 import re.notifica.push.models.NotificareUnknownNotification
 
 public open class NotificarePushIntentReceiver : BroadcastReceiver() {
+
+    private val logger = NotificareLogger(
+        Notificare.options?.debugLoggingEnabled ?: false,
+        "NotificarePushIntentReceiver"
+    )
+
     override fun onReceive(context: Context, intent: Intent) {
         when (intent.action) {
             Notificare.INTENT_ACTION_SUBSCRIPTION_CHANGED -> {
@@ -94,7 +100,7 @@ public open class NotificarePushIntentReceiver : BroadcastReceiver() {
     }
 
     protected open fun onSubscriptionChanged(context: Context, subscription: NotificarePushSubscription?) {
-        NotificareLogger.debug(
+        logger.debug(
             "The subscription changed, please override onSubscriptionChanged if you want to receive these intents."
         )
     }
@@ -104,7 +110,7 @@ public open class NotificarePushIntentReceiver : BroadcastReceiver() {
         replaceWith = ReplaceWith("onSubscriptionChanged(context, subscription)")
     )
     protected open fun onTokenChanged(context: Context, token: String) {
-        NotificareLogger.debug(
+        logger.debug(
             "The push token changed, please override onTokenChanged if you want to receive these intents."
         )
     }
@@ -114,25 +120,25 @@ public open class NotificarePushIntentReceiver : BroadcastReceiver() {
         notification: NotificareNotification,
         deliveryMechanism: NotificareNotificationDeliveryMechanism,
     ) {
-        NotificareLogger.info(
+        logger.info(
             "Received a notification, please override onNotificationReceived if you want to receive these intents."
         )
     }
 
     protected open fun onSystemNotificationReceived(context: Context, notification: NotificareSystemNotification) {
-        NotificareLogger.info(
+        logger.info(
             "Received a system notification, please override onSystemNotificationReceived if you want to receive these intents."
         )
     }
 
     protected open fun onUnknownNotificationReceived(context: Context, notification: NotificareUnknownNotification) {
-        NotificareLogger.info(
+        logger.info(
             "Received an unknown notification, please override onUnknownNotificationReceived if you want to receive these intents."
         )
     }
 
     protected open fun onNotificationOpened(context: Context, notification: NotificareNotification) {
-        NotificareLogger.debug(
+        logger.debug(
             "Opened a notification, please override onNotificationOpened if you want to receive these intents."
         )
     }
@@ -142,13 +148,13 @@ public open class NotificarePushIntentReceiver : BroadcastReceiver() {
         notification: NotificareNotification,
         action: NotificareNotification.Action
     ) {
-        NotificareLogger.debug(
+        logger.debug(
             "Opened a notification action, please override onActionOpened if you want to receive these intents."
         )
     }
 
     protected open fun onLiveActivityUpdate(context: Context, update: NotificareLiveActivityUpdate) {
-        NotificareLogger.debug(
+        logger.debug(
             "Received a live activity update, please override onLiveActivityUpdate if you want to receive these intents."
         )
     }

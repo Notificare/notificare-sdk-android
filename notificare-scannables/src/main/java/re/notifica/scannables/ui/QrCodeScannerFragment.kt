@@ -16,11 +16,18 @@ import com.google.android.gms.vision.CameraSource
 import com.google.android.gms.vision.Detector
 import com.google.android.gms.vision.barcode.Barcode
 import com.google.android.gms.vision.barcode.BarcodeDetector
-import re.notifica.internal.NotificareLogger
+import re.notifica.Notificare
+import re.notifica.utilities.NotificareLogger
 import re.notifica.scannables.R
 import re.notifica.scannables.ScannableActivity
 
 public class QrCodeScannerFragment : Fragment(R.layout.notificare_scannable_qr_code_fragment) {
+
+    private val logger = NotificareLogger(
+        Notificare.options?.debugLoggingEnabled ?: false,
+        "NotificareAssets"
+    )
+
     private lateinit var surfaceView: SurfaceView
     private var cameraSource: CameraSource? = null
 
@@ -102,7 +109,7 @@ public class QrCodeScannerFragment : Fragment(R.layout.notificare_scannable_qr_c
                 try {
                     cameraSource?.start(holder)
                 } catch (e: Exception) {
-                    NotificareLogger.error("Failed to start camera source.", e)
+                    logger.error("Failed to start camera source.", e)
 
                     cameraSource?.release()
                     cameraSource = null

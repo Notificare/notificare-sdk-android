@@ -4,12 +4,18 @@ import android.app.Dialog
 import android.os.Bundle
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
-import re.notifica.internal.NotificareLogger
+import re.notifica.Notificare
+import re.notifica.utilities.NotificareLogger
 import re.notifica.utilities.ktx.parcelable
 import re.notifica.models.NotificareNotification
 import re.notifica.push.ui.R
 
 public class NotificationActionsDialog : DialogFragment() {
+
+    private val logger = NotificareLogger(
+        Notificare.options?.debugLoggingEnabled ?: false,
+        "NotificareActionsDialog"
+    )
 
     private lateinit var callback: Callback
     private var notification: NotificareNotification? = null
@@ -24,7 +30,7 @@ public class NotificationActionsDialog : DialogFragment() {
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val notification = notification ?: run {
-            NotificareLogger.warning("Notification action dialog created without a notification.")
+            logger.warning("Notification action dialog created without a notification.")
             return super.onCreateDialog(savedInstanceState)
         }
 

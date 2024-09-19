@@ -9,12 +9,18 @@ import kotlinx.coroutines.launch
 import re.notifica.Notificare
 import re.notifica.inbox.ktx.inboxImplementation
 import re.notifica.inbox.models.NotificareInboxItem
-import re.notifica.internal.NotificareLogger
+import re.notifica.utilities.NotificareLogger
 import re.notifica.utilities.ktx.parcelable
 import re.notifica.models.NotificareNotification
 import re.notifica.utilities.ktx.notificareCoroutineScope
 
 internal class NotificareInboxSystemReceiver : BroadcastReceiver() {
+
+    private val logger = NotificareLogger(
+        Notificare.options?.debugLoggingEnabled ?: false,
+        "NotificareInboxSystemReceiver"
+    )
+
     override fun onReceive(context: Context, intent: Intent) {
         when (intent.action) {
             INTENT_ACTION_INBOX_RELOAD -> {
@@ -46,16 +52,16 @@ internal class NotificareInboxSystemReceiver : BroadcastReceiver() {
     }
 
     private fun onNotificationReceived(notification: NotificareNotification, bundle: Bundle) {
-        NotificareLogger.debug("Received a signal to add an item to the inbox.")
+        logger.debug("Received a signal to add an item to the inbox.")
 
         val inboxItemId = bundle.getString("inboxItemId") ?: run {
-            NotificareLogger.warning("Cannot create inbox item. Missing inbox item id.")
+            logger.warning("Cannot create inbox item. Missing inbox item id.")
             return
         }
 
         val inboxItemTime = bundle.getLong("inboxItemTime", -1)
         if (inboxItemTime <= 0) {
-            NotificareLogger.warning("Cannot create inbox item. Invalid time.")
+            logger.warning("Cannot create inbox item. Invalid time.")
             return
         }
 
@@ -72,12 +78,12 @@ internal class NotificareInboxSystemReceiver : BroadcastReceiver() {
             expires = inboxItemExpires,
         )
 
-         notificareCoroutineScope.launch {
+        notificareCoroutineScope.launch {
             try {
-                NotificareLogger.debug("Adding inbox item to the database.")
+                logger.debug("Adding inbox item to the database.")
                 Notificare.inboxImplementation().addItem(item, inboxItemVisible)
             } catch (e: Exception) {
-                NotificareLogger.error("Failed to save inbox item to the database.", e)
+                logger.error("Failed to save inbox item to the database.", e)
             }
         }
     }
@@ -88,7 +94,7 @@ internal class NotificareInboxSystemReceiver : BroadcastReceiver() {
         notificareCoroutineScope.launch {
             try {
                 val entity = Notificare.inboxImplementation().database.inbox().findById(id) ?: run {
-                    NotificareLogger.warning("Unable to find item '$id' in the local database.")
+                    logger.warning("Unable to find item '$id' in the local database.")
                     return@launch
                 }
 
@@ -96,7 +102,7 @@ internal class NotificareInboxSystemReceiver : BroadcastReceiver() {
                 entity.opened = true
                 Notificare.inboxImplementation().database.inbox().update(entity)
             } catch (e: Exception) {
-                NotificareLogger.error("Failed to mark item '$id' as read.", e)
+                logger.error("Failed to mark item '$id' as read.", e)
             }
         }
     }

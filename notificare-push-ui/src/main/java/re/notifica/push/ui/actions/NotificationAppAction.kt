@@ -8,7 +8,7 @@ import android.net.Uri
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import re.notifica.Notificare
-import re.notifica.internal.NotificareLogger
+import re.notifica.utilities.NotificareLogger
 import re.notifica.utilities.onMainThread
 import re.notifica.models.NotificareNotification
 import re.notifica.push.ui.R
@@ -21,6 +21,11 @@ internal class NotificationAppAction(
     notification: NotificareNotification,
     action: NotificareNotification.Action
 ) : NotificationAction(context, notification, action) {
+
+    private val logger = NotificareLogger(
+        Notificare.options?.debugLoggingEnabled ?: false,
+        "NotificationAppAction"
+    )
 
     override suspend fun execute(): NotificarePendingResult? = withContext(Dispatchers.IO) {
         val uri = action.target?.let { Uri.parse(it) }
@@ -35,7 +40,7 @@ internal class NotificationAppAction(
             try {
                 context.startActivity(intent)
             } catch (e: ActivityNotFoundException) {
-                NotificareLogger.debug("No activity found to handle the action.", e)
+                logger.debug("No activity found to handle the action.", e)
                 throw Exception(context.getString(R.string.notificare_action_failed))
             }
 

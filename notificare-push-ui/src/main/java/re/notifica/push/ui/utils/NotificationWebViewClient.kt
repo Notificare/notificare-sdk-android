@@ -11,7 +11,7 @@ import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import re.notifica.Notificare
-import re.notifica.internal.NotificareLogger
+import re.notifica.utilities.NotificareLogger
 import re.notifica.utilities.onMainThread
 import re.notifica.models.NotificareNotification
 import re.notifica.push.ui.closeWindowQueryParameter
@@ -25,6 +25,11 @@ internal open class NotificationWebViewClient(
     private val notification: NotificareNotification,
     private val callback: NotificationFragment.Callback,
 ) : WebViewClient() {
+
+    private val logger = NotificareLogger(
+        Notificare.options?.debugLoggingEnabled ?: false,
+        "NotificationWebViewClient"
+    )
 
     private var loadingError: WebResourceError? = null
 
@@ -182,7 +187,7 @@ internal open class NotificationWebViewClient(
 
                     callback.onNotificationFragmentStartActivity(uriIntent)
                 } catch (e: ActivityNotFoundException) {
-                    NotificareLogger.warning("Could not find an activity capable of opening the URL.", e)
+                    logger.warning("Could not find an activity capable of opening the URL.", e)
                 }
             }
 

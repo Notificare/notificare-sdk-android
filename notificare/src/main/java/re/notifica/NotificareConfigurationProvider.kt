@@ -7,13 +7,19 @@ import android.content.pm.PackageManager
 import android.database.Cursor
 import android.net.Uri
 import androidx.core.os.bundleOf
-import re.notifica.internal.NotificareLogger
+import re.notifica.utilities.NotificareLogger
 import re.notifica.utilities.ktx.applicationInfo
 
 /**
  * Auto configuration during application startup.
  */
 internal class NotificareConfigurationProvider : ContentProvider() {
+
+    private val logger = NotificareLogger(
+        Notificare.options?.debugLoggingEnabled ?: false,
+        "NotificareConfigurationProvider"
+    )
+
     /**
      * Called before [android.app.Application.onCreate].
      */
@@ -23,9 +29,9 @@ internal class NotificareConfigurationProvider : ContentProvider() {
 
         if (hasAutoConfigurationEnabled(context)) {
             Notificare.configure(context)
-            NotificareLogger.info("Notificare configured automatically.")
+            logger.info("Notificare configured automatically.")
         } else {
-            NotificareLogger.info(
+            logger.info(
                 "Automatic configuration is disabled. Ensure you call configure() when the application starts."
             )
         }

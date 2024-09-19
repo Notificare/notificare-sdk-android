@@ -16,7 +16,7 @@ import re.notifica.inbox.user.NotificareUserInbox
 import re.notifica.inbox.user.internal.moshi.UserInboxResponseAdapter
 import re.notifica.inbox.user.models.NotificareUserInboxItem
 import re.notifica.inbox.user.models.NotificareUserInboxResponse
-import re.notifica.internal.NotificareLogger
+import re.notifica.utilities.NotificareLogger
 import re.notifica.internal.NotificareModule
 import re.notifica.utilities.ktx.toCallbackFunction
 import re.notifica.internal.moshi
@@ -29,6 +29,11 @@ import re.notifica.models.NotificareNotification
 
 @Keep
 internal object NotificareUserInboxImpl : NotificareModule(), NotificareUserInbox {
+
+    private val logger = NotificareLogger(
+        Notificare.options?.debugLoggingEnabled ?: false,
+        "NotificareUserInbox"
+    )
 
     // region Notificare Module
 
@@ -93,27 +98,27 @@ internal object NotificareUserInboxImpl : NotificareModule(), NotificareUserInbo
     @Throws
     private fun checkPrerequisites() {
         if (!Notificare.isReady) {
-            NotificareLogger.warning("Notificare is not ready yet.")
+            logger.warning("Notificare is not ready yet.")
             throw NotificareNotReadyException()
         }
 
         val application = Notificare.application ?: run {
-            NotificareLogger.warning("Notificare application is not yet available.")
+            logger.warning("Notificare application is not yet available.")
             throw NotificareApplicationUnavailableException()
         }
 
         if (application.services[NotificareApplication.ServiceKeys.INBOX] != true) {
-            NotificareLogger.warning("Notificare inbox functionality is not enabled.")
+            logger.warning("Notificare inbox functionality is not enabled.")
             throw NotificareServiceUnavailableException(service = NotificareApplication.ServiceKeys.INBOX)
         }
 
         if (application.inboxConfig?.useInbox != true) {
-            NotificareLogger.warning("Notificare inbox functionality is not enabled.")
+            logger.warning("Notificare inbox functionality is not enabled.")
             throw NotificareServiceUnavailableException(service = NotificareApplication.ServiceKeys.INBOX)
         }
 
         if (application.inboxConfig?.useUserInbox != true) {
-            NotificareLogger.warning("Notificare user inbox functionality is not enabled.")
+            logger.warning("Notificare user inbox functionality is not enabled.")
             throw NotificareServiceUnavailableException(service = NotificareApplication.ServiceKeys.INBOX)
         }
     }
