@@ -14,11 +14,11 @@ import androidx.appcompat.app.AppCompatActivity
 import re.notifica.Notificare
 import re.notifica.NotificareCallback
 import re.notifica.internal.NotificareLogger
-import re.notifica.internal.NotificareUtils
 import re.notifica.utilities.ktx.parcelable
 import re.notifica.loyalty.ktx.INTENT_EXTRA_PASSBOOK
 import re.notifica.loyalty.ktx.loyalty
 import re.notifica.loyalty.models.NotificarePass
+import re.notifica.utilities.getApplicationName
 
 public open class PassbookActivity : AppCompatActivity() {
 
@@ -113,7 +113,7 @@ public open class PassbookActivity : AppCompatActivity() {
 
     protected open fun handlePassLoadingError(e: Exception) {
         AlertDialog.Builder(this)
-            .setTitle(NotificareUtils.applicationName)
+            .setTitle(getApplicationName(Notificare.requireContext().applicationContext))
             .setMessage(R.string.notificare_passbook_error_loading_pass)
             .setPositiveButton(R.string.notificare_dialog_ok_button, null)
             .setOnDismissListener { finish() }

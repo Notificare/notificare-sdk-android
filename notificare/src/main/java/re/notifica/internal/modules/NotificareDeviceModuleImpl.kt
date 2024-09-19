@@ -13,7 +13,6 @@ import re.notifica.NotificareNotReadyException
 import re.notifica.internal.NOTIFICARE_VERSION
 import re.notifica.internal.NotificareLogger
 import re.notifica.internal.NotificareModule
-import re.notifica.internal.NotificareUtils
 import re.notifica.utilities.filterNotNull
 import re.notifica.utilities.ktx.notificareCoroutineScope
 import re.notifica.utilities.ktx.toCallbackFunction
@@ -39,6 +38,12 @@ import re.notifica.ktx.session
 import re.notifica.models.NotificareDevice
 import re.notifica.models.NotificareDoNotDisturb
 import re.notifica.models.NotificareUserData
+import re.notifica.utilities.deviceLanguage
+import re.notifica.utilities.deviceRegion
+import re.notifica.utilities.deviceString
+import re.notifica.utilities.getApplicationVersion
+import re.notifica.utilities.osVersion
+import re.notifica.utilities.timeZoneOffset
 import java.util.Locale
 
 @Keep
@@ -72,7 +77,8 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
             Notificare.eventsImplementation().logApplicationInstall()
             Notificare.eventsImplementation().logApplicationRegistration()
         } else {
-            val isApplicationUpgrade = storedDevice.appVersion != NotificareUtils.applicationVersion
+            val isApplicationUpgrade =
+                storedDevice.appVersion != getApplicationVersion(Notificare.requireContext().applicationContext)
 
             updateDevice()
 
@@ -173,8 +179,8 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
             Notificare.sharedPreferences.preferredLanguage = language
             Notificare.sharedPreferences.preferredRegion = region
         } else {
-            val language = NotificareUtils.deviceLanguage
-            val region = NotificareUtils.deviceRegion
+            val language = deviceLanguage
+            val region = deviceRegion
             updateLanguage(language, region)
 
             Notificare.sharedPreferences.preferredLanguage = null
@@ -377,11 +383,11 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
             language = getDeviceLanguage(),
             region = getDeviceRegion(),
             platform = "Android",
-            osVersion = NotificareUtils.osVersion,
+            osVersion = osVersion,
             sdkVersion = NOTIFICARE_VERSION,
-            appVersion = NotificareUtils.applicationVersion,
-            deviceString = NotificareUtils.deviceString,
-            timeZoneOffset = NotificareUtils.timeZoneOffset,
+            appVersion = getApplicationVersion(Notificare.requireContext().applicationContext),
+            deviceString = deviceString,
+            timeZoneOffset = timeZoneOffset,
             backgroundAppRefresh = true,
         )
 
@@ -412,11 +418,11 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
             language = getDeviceLanguage(),
             region = getDeviceRegion(),
             platform = "Android",
-            osVersion = NotificareUtils.osVersion,
+            osVersion = osVersion,
             sdkVersion = NOTIFICARE_VERSION,
-            appVersion = NotificareUtils.applicationVersion,
-            deviceString = NotificareUtils.deviceString,
-            timeZoneOffset = NotificareUtils.timeZoneOffset,
+            appVersion = getApplicationVersion(Notificare.requireContext().applicationContext),
+            deviceString = deviceString,
+            timeZoneOffset = timeZoneOffset,
         )
 
         NotificareRequest.Builder()
@@ -493,11 +499,11 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
     }
 
     internal fun getDeviceLanguage(): String {
-        return Notificare.sharedPreferences.preferredLanguage ?: NotificareUtils.deviceLanguage
+        return Notificare.sharedPreferences.preferredLanguage ?: deviceLanguage
     }
 
     internal fun getDeviceRegion(): String {
-        return Notificare.sharedPreferences.preferredRegion ?: NotificareUtils.deviceRegion
+        return Notificare.sharedPreferences.preferredRegion ?: deviceRegion
     }
 
     internal fun registerTestDevice(nonce: String, callback: NotificareCallback<Unit>) {
@@ -554,7 +560,7 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
                 body = DeviceUpdateTimeZonePayload(
                     language = getDeviceLanguage(),
                     region = getDeviceRegion(),
-                    timeZoneOffset = NotificareUtils.timeZoneOffset,
+                    timeZoneOffset = timeZoneOffset,
                 ),
             )
             .response()

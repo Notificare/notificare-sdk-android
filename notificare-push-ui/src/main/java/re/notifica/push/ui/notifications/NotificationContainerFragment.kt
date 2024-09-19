@@ -21,7 +21,6 @@ import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
 import re.notifica.Notificare
 import re.notifica.internal.NotificareLogger
-import re.notifica.internal.NotificareUtils
 import re.notifica.utilities.onMainThread
 import re.notifica.utilities.ktx.packageInfo
 import re.notifica.utilities.ktx.parcelable
@@ -33,6 +32,7 @@ import re.notifica.push.ui.ktx.pushUIInternal
 import re.notifica.push.ui.models.NotificarePendingResult
 import re.notifica.push.ui.notifications.fragments.NotificareCallbackActionFragment
 import re.notifica.push.ui.notifications.fragments.base.NotificationFragment
+import re.notifica.utilities.getApplicationName
 
 public class NotificationContainerFragment
 : Fragment(), NotificationFragment.Callback, NotificationDialog.Callback, NotificationActionsDialog.Callback {
@@ -207,7 +207,7 @@ public class NotificationContainerFragment
 
             if (shouldShowRequestPermissionRationale(permission)) {
                 AlertDialog.Builder(requireContext())
-                    .setTitle(NotificareUtils.applicationName)
+                    .setTitle(getApplicationName(Notificare.requireContext().applicationContext))
                     .setMessage(R.string.notificare_camera_permission_rationale_description)
                     .setCancelable(false)
                     .setPositiveButton(R.string.notificare_dialog_ok_button) { _, _ ->

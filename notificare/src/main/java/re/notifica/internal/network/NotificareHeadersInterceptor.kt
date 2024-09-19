@@ -3,9 +3,12 @@ package re.notifica.internal.network
 import okhttp3.Interceptor
 import okhttp3.Response
 import re.notifica.Notificare
-import re.notifica.internal.NotificareUtils
 import re.notifica.internal.ktx.unsafeHeader
 import re.notifica.ktx.device
+import re.notifica.utilities.deviceLanguage
+import re.notifica.utilities.deviceRegion
+import re.notifica.utilities.getApplicationVersion
+import re.notifica.utilities.getUserAgent
 
 internal class NotificareHeadersInterceptor : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
@@ -13,11 +16,14 @@ internal class NotificareHeadersInterceptor : Interceptor {
             .header(
                 "Accept-Language",
                 Notificare.device().preferredLanguage
-                    ?: "${NotificareUtils.deviceLanguage}-${NotificareUtils.deviceRegion}"
+                    ?: "$deviceLanguage-$deviceRegion"
             )
-            .unsafeHeader("User-Agent", NotificareUtils.userAgent)
+            .unsafeHeader(
+                "User-Agent",
+                getUserAgent(Notificare.requireContext().applicationContext, Notificare.SDK_VERSION)
+            )
             .header("X-Notificare-SDK-Version", Notificare.SDK_VERSION)
-            .header("X-Notificare-App-Version", NotificareUtils.applicationVersion)
+            .header("X-Notificare-App-Version", getApplicationVersion(Notificare.requireContext().applicationContext))
             .build()
 
         return chain.proceed(request)

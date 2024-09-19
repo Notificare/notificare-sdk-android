@@ -5,9 +5,10 @@ import androidx.core.content.edit
 import org.json.JSONObject
 import re.notifica.internal.NotificareLogger
 import re.notifica.internal.NotificareModule
-import re.notifica.internal.NotificareUtils
 import re.notifica.internal.storage.preferences.NotificareSharedPreferences
 import re.notifica.internal.storage.preferences.entities.StoredDevice
+import re.notifica.utilities.deviceLanguage
+import re.notifica.utilities.deviceRegion
 
 internal class SharedPreferencesMigration(
     private val context: Context,
@@ -56,12 +57,12 @@ internal class SharedPreferencesMigration(
                         language = if (!json.isNull("language")) {
                             json.getString("language")
                         } else {
-                            NotificareUtils.deviceLanguage
+                            deviceLanguage
                         },
                         region = if (!json.isNull("region")) {
                             json.getString("region")
                         } else {
-                            NotificareUtils.deviceRegion
+                            deviceRegion
                         },
                         dnd = null,
                         userData = mapOf(),

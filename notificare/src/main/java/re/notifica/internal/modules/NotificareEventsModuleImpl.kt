@@ -16,7 +16,6 @@ import re.notifica.NotificareInternalEventsModule
 import re.notifica.NotificareNotReadyException
 import re.notifica.internal.NotificareLogger
 import re.notifica.internal.NotificareModule
-import re.notifica.internal.NotificareUtils
 import re.notifica.utilities.recoverable
 import re.notifica.utilities.ktx.toCallbackFunction
 import re.notifica.internal.network.request.NotificareRequest
@@ -27,6 +26,9 @@ import re.notifica.ktx.session
 import re.notifica.models.NotificareDevice
 import re.notifica.models.NotificareEvent
 import re.notifica.models.NotificareEventData
+import re.notifica.utilities.deviceString
+import re.notifica.utilities.getApplicationVersion
+import re.notifica.utilities.osVersion
 
 private const val EVENT_APPLICATION_INSTALL = "re.notifica.event.application.Install"
 private const val EVENT_APPLICATION_REGISTRATION = "re.notifica.event.application.Registration"
@@ -199,10 +201,10 @@ internal object NotificareEventsModuleImpl :
             userId = device.userId,
             data = mapOf(
                 "platform" to "Android",
-                "osVersion" to NotificareUtils.osVersion,
-                "deviceString" to NotificareUtils.deviceString,
+                "osVersion" to osVersion,
+                "deviceString" to deviceString,
                 "sdkVersion" to Notificare.SDK_VERSION,
-                "appVersion" to NotificareUtils.applicationVersion,
+                "appVersion" to getApplicationVersion(Notificare.requireContext().applicationContext),
                 "timestamp" to timestamp.toString(),
                 "name" to throwable.message,
                 "reason" to throwable.cause?.toString(),
