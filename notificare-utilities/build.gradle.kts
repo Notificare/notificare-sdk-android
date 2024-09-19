@@ -58,12 +58,6 @@ dependencies {
     // Tests
     testImplementation(libs.junit)
     testImplementation(libs.robolectric)
-    /*testImplementation(libs.mockito.core)
-    testImplementation(libs.kotlinx.coroutines.test)
-
-    androidTestImplementation(libs.core)
-    androidTestImplementation(libs.androidx.runner)
-    androidTestImplementation(libs.androidx.rules)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.mockito.android)*/
+    testImplementation(libs.mockito)
+    testImplementation(libs.androidx.test.core)
 }
