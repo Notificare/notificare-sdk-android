@@ -250,7 +250,7 @@ public object Notificare {
     @JvmStatic
     public fun unlaunch(
         callback: NotificareCallback<Unit>,
-    ): Unit = toCallbackFunction(::unlaunch)(callback)
+    ): Unit = toCallbackFunction(::unlaunch)(callback::onSuccess, callback::onFailure)
 
     @JvmStatic
     public fun addListener(listener: Listener) {

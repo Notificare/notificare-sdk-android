@@ -495,7 +495,7 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
                 NotificareLogger.debug("Handling polygon region (${region.name}).")
 
                 if (!localStorage.enteredRegions.contains(regionId)) {
-                    Notificare.coroutineScope.launch {
+                    notificareCoroutineScope.launch {
                         try {
                             val location = checkNotNull(serviceManager).getCurrentLocationAsync().await()
                             val inside = region.contains(location)

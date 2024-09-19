@@ -14,7 +14,6 @@ import re.notifica.NotificareCallback
 import re.notifica.internal.NotificareLogger
 import re.notifica.internal.NotificareModule
 import re.notifica.utilities.onMainThread
-import re.notifica.internal.ktx.coroutineScope
 import re.notifica.models.NotificareNotification
 import re.notifica.push.ui.NotificareInternalPushUI
 import re.notifica.push.ui.NotificarePushUI
@@ -44,6 +43,7 @@ import re.notifica.push.ui.notifications.fragments.NotificareVideoFragment
 import re.notifica.push.ui.notifications.fragments.NotificareWebPassFragment
 import re.notifica.push.ui.notifications.fragments.NotificareWebViewFragment
 import re.notifica.push.ui.utils.removeQueryParameter
+import re.notifica.utilities.ktx.notificareCoroutineScope
 import java.lang.ref.WeakReference
 
 @Keep
@@ -129,7 +129,7 @@ internal object NotificarePushUIImpl : NotificareModule(), NotificarePushUI, Not
     ) {
         NotificareLogger.debug("Presenting notification action '${action.type}' for notification '${notification.id}'.")
 
-        Notificare.coroutineScope.launch {
+        notificareCoroutineScope.launch {
             try {
                 onMainThread {
                     lifecycleListeners.forEach { it.get()?.onActionWillExecute(notification, action) }
@@ -238,7 +238,7 @@ internal object NotificarePushUIImpl : NotificareModule(), NotificarePushUI, Not
             return
         }
 
-        Notificare.coroutineScope.launch {
+        notificareCoroutineScope.launch {
             try {
                 val link = Notificare.fetchDynamicLink(url)
                 presentDeepLink(activity, notification, Uri.parse(link.target))

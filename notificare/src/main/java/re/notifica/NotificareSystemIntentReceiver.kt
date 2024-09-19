@@ -22,7 +22,7 @@ internal class NotificareSystemIntentReceiver : BroadcastReceiver() {
             "Received a time zone change: ${Locale.getDefault().language}-${Locale.getDefault().country}"
         )
 
-        Notificare.coroutineScope.launch {
+        notificareCoroutineScope.launch {
             try {
                 Notificare.deviceImplementation().updateTimeZone()
                 NotificareLogger.debug("Successfully updated device time zone.")

@@ -14,13 +14,13 @@ import kotlinx.coroutines.withContext
 import re.notifica.Notificare
 import re.notifica.internal.NotificareLogger
 import re.notifica.utilities.onMainThread
-import re.notifica.internal.ktx.coroutineScope
 import re.notifica.models.NotificareNotification
 import re.notifica.push.ui.R
 import re.notifica.push.ui.actions.base.NotificationAction
 import re.notifica.push.ui.ktx.pushUIImplementation
 import re.notifica.push.ui.ktx.pushUIInternal
 import re.notifica.push.ui.models.NotificarePendingResult
+import re.notifica.utilities.ktx.notificareCoroutineScope
 
 internal class NotificationCallbackAction(
     context: Context,
@@ -147,7 +147,7 @@ internal class NotificationCallbackAction(
             mediaUrl?.let { params["media"] = it }
             mimeType?.let { params["mimeType"] = it }
 
-            Notificare.coroutineScope.launch {
+            notificareCoroutineScope.launch {
                 try {
                     Notificare.callNotificationReplyWebhook(targetUri, params)
 

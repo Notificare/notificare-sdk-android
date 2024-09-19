@@ -39,4 +39,31 @@ android {
 }
 
 dependencies {
+    implementation(libs.kotlinx.coroutines)
+
+    // Android
+    implementation(libs.androidx.core)
+
+    // OkHttp
+    implementation(libs.bundles.okhttp)
+
+    // Moshi
+    implementation(libs.bundles.moshi)
+    ksp(libs.moshi.codegen)
+
+    // Glide
+    implementation(libs.glide)
+    ksp(libs.glide.compiler)
+
+    // Tests
+    testImplementation(libs.junit)
+    testImplementation(libs.robolectric)
+    /*testImplementation(libs.mockito.core)
+    testImplementation(libs.kotlinx.coroutines.test)
+
+    androidTestImplementation(libs.core)
+    androidTestImplementation(libs.androidx.runner)
+    androidTestImplementation(libs.androidx.rules)
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.mockito.android)*/
 }
