@@ -48,6 +48,9 @@ android {
 dependencies {
     implementation(libs.kotlinx.coroutines)
 
+    // Notificare
+    implementation(project(":notificare-utilities"))
+
     // Android
     implementation(libs.androidx.activity)
     implementation(libs.androidx.core)
