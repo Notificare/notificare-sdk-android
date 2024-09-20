@@ -1,0 +1,5 @@
+/build
+
+notificare-services.json
+google-services.json
+*.keystore

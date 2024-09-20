@@ -41,6 +41,7 @@ ktlint = "12.1.0"
 detekt = "1.23.3"
 junit = "4.13.2"
 robolectric = "4.12.2"
+auth0 = "2.11.0"
 
 [libraries]
 kotlinx-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinx-coroutines" }
@@ -85,6 +86,7 @@ google-playServices-vision = { module = "com.google.android.gms:play-services-vi
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
 junit = { module = "junit:junit", version.ref = "junit"}
 robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
+auth0 = { module = "com.auth0.android:auth0", version.ref="auth0" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "android-tools" }
