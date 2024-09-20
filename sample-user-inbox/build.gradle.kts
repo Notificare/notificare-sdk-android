@@ -26,7 +26,7 @@ android {
 
         manifestPlaceholders["googleMapsApiKey"] = properties.getProperty("google.maps.key")
         manifestPlaceholders["auth0Domain"] = properties.getProperty("user.inbox.login.domain")
-        manifestPlaceholders["auth0Scheme"] = "notificare.user.inbox"
+        manifestPlaceholders["auth0Scheme"] = "auth.re.notifica.sample.user.inbox.app.dev"
 
         resValue("string", "user_inbox_fetch_inbox_url", properties.getProperty("user.inbox.fetch.inbox.url"))
         resValue("string", "user_inbox_register_device_url", properties.getProperty("user.inbox.register.device.url"))

@@ -221,7 +221,7 @@ internal class MainViewModel :
 
     internal suspend fun loginWithBrowser(context: Context, account: Auth0): String {
         val credentials = WebAuthProvider.login(account)
-            .withScheme("notificare.user.inbox")
+            .withScheme(AUTH_SCHEME)
             .await(context)
 
         accessToken = credentials.accessToken
@@ -232,7 +232,7 @@ internal class MainViewModel :
 
     internal suspend fun logoutWithBrowser(context: Context, account: Auth0) {
         WebAuthProvider.logout(account)
-            .withScheme("re.notifica.sample.user.inbox.app.dev")
+            .withScheme(AUTH_SCHEME)
             .await(context)
 
         accessToken = null
@@ -275,4 +275,8 @@ internal class MainViewModel :
 
     private val NotificareDoNotDisturb.Companion.defaultEnd: NotificareTime
         get() = NotificareTime(hours = 8, minutes = 0)
+
+    companion object {
+        private const val AUTH_SCHEME = "auth.re.notifica.sample.user.inbox.app.dev"
+    }
 }
