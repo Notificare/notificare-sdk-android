@@ -6,8 +6,8 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import re.notifica.Notificare
-import re.notifica.utilities.onMainThread
-import re.notifica.utilities.ktx.parcelable
+import re.notifica.utilities.threading.onMainThread
+import re.notifica.utilities.parcel.parcelable
 import re.notifica.models.NotificareNotification
 import re.notifica.push.ui.databinding.NotificareNotificationActivityBinding
 import re.notifica.push.ui.ktx.pushUIImplementation

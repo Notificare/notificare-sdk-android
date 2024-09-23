@@ -7,8 +7,8 @@ import android.content.pm.PackageManager
 import android.database.Cursor
 import android.net.Uri
 import androidx.core.os.bundleOf
-import re.notifica.utilities.NotificareLogger
-import re.notifica.utilities.ktx.applicationInfo
+import re.notifica.utilities.logging.NotificareLogger
+import re.notifica.utilities.content.applicationInfo
 
 /**
  * Auto configuration during application startup.

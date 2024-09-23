@@ -57,10 +57,10 @@ import re.notifica.geo.models.NotificareLocation
 import re.notifica.geo.models.NotificareRegion
 import re.notifica.geo.models.NotificareRegionSession
 import re.notifica.geo.monitoredRegionsLimit
-import re.notifica.utilities.NotificareLogger
+import re.notifica.utilities.logging.NotificareLogger
 import re.notifica.internal.NotificareModule
-import re.notifica.utilities.onMainThread
-import re.notifica.utilities.ktx.notificareCoroutineScope
+import re.notifica.utilities.threading.onMainThread
+import re.notifica.utilities.coroutines.notificareCoroutineScope
 import re.notifica.internal.network.request.NotificareRequest
 import re.notifica.ktx.device
 import re.notifica.ktx.events

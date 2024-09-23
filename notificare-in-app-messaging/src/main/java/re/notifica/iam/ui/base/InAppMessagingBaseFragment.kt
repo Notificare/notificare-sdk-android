@@ -17,9 +17,9 @@ import re.notifica.iam.ktx.inAppMessagingImplementation
 import re.notifica.iam.ktx.logInAppMessageActionClicked
 import re.notifica.iam.ktx.logInAppMessageViewed
 import re.notifica.iam.models.NotificareInAppMessage
-import re.notifica.utilities.NotificareLogger
-import re.notifica.utilities.onMainThread
-import re.notifica.utilities.ktx.parcelable
+import re.notifica.utilities.logging.NotificareLogger
+import re.notifica.utilities.threading.onMainThread
+import re.notifica.utilities.parcel.parcelable
 import re.notifica.ktx.events
 
 public abstract class InAppMessagingBaseFragment : Fragment() {

@@ -17,7 +17,7 @@ import com.google.android.gms.vision.Detector
 import com.google.android.gms.vision.barcode.Barcode
 import com.google.android.gms.vision.barcode.BarcodeDetector
 import re.notifica.Notificare
-import re.notifica.utilities.NotificareLogger
+import re.notifica.utilities.logging.NotificareLogger
 import re.notifica.scannables.R
 import re.notifica.scannables.ScannableActivity
 

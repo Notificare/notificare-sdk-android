@@ -10,11 +10,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import re.notifica.Notificare
 import re.notifica.NotificareCallback
-import re.notifica.utilities.NotificareLogger
+import re.notifica.utilities.logging.NotificareLogger
 import re.notifica.internal.NotificareModule
-import re.notifica.utilities.onMainThread
-import re.notifica.utilities.putEnumExtra
-import re.notifica.utilities.ktx.toCallbackFunction
+import re.notifica.utilities.threading.onMainThread
+import re.notifica.utilities.parcel.putEnumExtra
+import re.notifica.utilities.coroutines.toCallbackFunction
 import re.notifica.internal.network.request.NotificareRequest
 import re.notifica.ktx.device
 import re.notifica.scannables.NotificareScannables

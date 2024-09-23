@@ -11,11 +11,7 @@ import re.notifica.NotificareDeviceModule
 import re.notifica.NotificareDeviceUnavailableException
 import re.notifica.NotificareNotReadyException
 import re.notifica.internal.NOTIFICARE_VERSION
-import re.notifica.utilities.NotificareLogger
 import re.notifica.internal.NotificareModule
-import re.notifica.utilities.filterNotNull
-import re.notifica.utilities.ktx.notificareCoroutineScope
-import re.notifica.utilities.ktx.toCallbackFunction
 import re.notifica.internal.network.push.CreateDevicePayload
 import re.notifica.internal.network.push.CreateDeviceResponse
 import re.notifica.internal.network.push.DeviceDoNotDisturbResponse
@@ -38,12 +34,16 @@ import re.notifica.ktx.session
 import re.notifica.models.NotificareDevice
 import re.notifica.models.NotificareDoNotDisturb
 import re.notifica.models.NotificareUserData
-import re.notifica.utilities.deviceLanguage
-import re.notifica.utilities.deviceRegion
-import re.notifica.utilities.deviceString
-import re.notifica.utilities.getApplicationVersion
-import re.notifica.utilities.osVersion
-import re.notifica.utilities.timeZoneOffset
+import re.notifica.utilities.collections.filterNotNull
+import re.notifica.utilities.content.applicationVersion
+import re.notifica.utilities.coroutines.notificareCoroutineScope
+import re.notifica.utilities.coroutines.toCallbackFunction
+import re.notifica.utilities.device.deviceLanguage
+import re.notifica.utilities.device.deviceRegion
+import re.notifica.utilities.device.deviceString
+import re.notifica.utilities.device.osVersion
+import re.notifica.utilities.device.timeZoneOffset
+import re.notifica.utilities.logging.NotificareLogger
 import java.util.Locale
 
 @Keep
@@ -82,8 +82,7 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
             Notificare.eventsImplementation().logApplicationInstall()
             Notificare.eventsImplementation().logApplicationRegistration()
         } else {
-            val isApplicationUpgrade =
-                storedDevice.appVersion != getApplicationVersion(Notificare.requireContext().applicationContext)
+            val isApplicationUpgrade = storedDevice.appVersion != Notificare.requireContext().applicationVersion
 
             updateDevice()
 
@@ -390,7 +389,7 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
             platform = "Android",
             osVersion = osVersion,
             sdkVersion = NOTIFICARE_VERSION,
-            appVersion = getApplicationVersion(Notificare.requireContext().applicationContext),
+            appVersion = Notificare.requireContext().applicationVersion,
             deviceString = deviceString,
             timeZoneOffset = timeZoneOffset,
             backgroundAppRefresh = true,
@@ -425,7 +424,7 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
             platform = "Android",
             osVersion = osVersion,
             sdkVersion = NOTIFICARE_VERSION,
-            appVersion = getApplicationVersion(Notificare.requireContext().applicationContext),
+            appVersion = Notificare.requireContext().applicationVersion,
             deviceString = deviceString,
             timeZoneOffset = timeZoneOffset,
         )

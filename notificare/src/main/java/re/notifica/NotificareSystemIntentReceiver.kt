@@ -5,9 +5,9 @@ import android.content.Context
 import android.content.Intent
 import java.util.Locale
 import kotlinx.coroutines.launch
-import re.notifica.utilities.NotificareLogger
+import re.notifica.utilities.logging.NotificareLogger
 import re.notifica.ktx.deviceImplementation
-import re.notifica.utilities.ktx.notificareCoroutineScope
+import re.notifica.utilities.coroutines.notificareCoroutineScope
 
 internal class NotificareSystemIntentReceiver : BroadcastReceiver() {
 

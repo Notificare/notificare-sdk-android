@@ -12,9 +12,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import re.notifica.Notificare
-import re.notifica.utilities.NotificareLogger
+import re.notifica.utilities.logging.NotificareLogger
 import re.notifica.internal.NotificareModule
-import re.notifica.utilities.ktx.notificareCoroutineScope
+import re.notifica.utilities.coroutines.notificareCoroutineScope
 import re.notifica.ktx.device
 import re.notifica.ktx.eventsImplementation
 

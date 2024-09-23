@@ -22,11 +22,11 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import re.notifica.internal.NOTIFICARE_VERSION
 import re.notifica.internal.NotificareLaunchState
-import re.notifica.utilities.NotificareLogger
+import re.notifica.utilities.logging.NotificareLogger
 import re.notifica.internal.NotificareModule
 import re.notifica.internal.NotificareOptions
 import re.notifica.internal.NotificareUtils
-import re.notifica.utilities.onMainThread
+import re.notifica.utilities.threading.onMainThread
 import re.notifica.internal.network.push.ApplicationResponse
 import re.notifica.internal.network.push.CreateNotificationReplyPayload
 import re.notifica.internal.network.push.DynamicLinkResponse
@@ -41,7 +41,7 @@ import re.notifica.ktx.deviceImplementation
 import re.notifica.models.NotificareApplication
 import re.notifica.models.NotificareDynamicLink
 import re.notifica.models.NotificareNotification
-import re.notifica.utilities.ktx.toCallbackFunction
+import re.notifica.utilities.coroutines.toCallbackFunction
 
 public object Notificare {
 

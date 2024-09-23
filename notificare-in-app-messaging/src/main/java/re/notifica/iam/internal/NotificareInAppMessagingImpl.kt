@@ -20,11 +20,11 @@ import re.notifica.iam.internal.caching.NotificareImageCache
 import re.notifica.iam.internal.network.push.InAppMessageResponse
 import re.notifica.iam.models.NotificareInAppMessage
 import re.notifica.iam.ui.InAppMessagingActivity
-import re.notifica.utilities.NotificareLogger
+import re.notifica.utilities.logging.NotificareLogger
 import re.notifica.internal.NotificareModule
-import re.notifica.utilities.onMainThread
-import re.notifica.utilities.ktx.activityInfo
-import re.notifica.utilities.ktx.notificareCoroutineScope
+import re.notifica.utilities.threading.onMainThread
+import re.notifica.utilities.content.activityInfo
+import re.notifica.utilities.coroutines.notificareCoroutineScope
 import re.notifica.internal.network.NetworkException
 import re.notifica.internal.network.request.NotificareRequest
 import re.notifica.ktx.device

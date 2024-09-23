@@ -30,7 +30,7 @@ import re.notifica.geo.ktx.DEFAULT_LOCATION_UPDATES_SMALLEST_DISPLACEMENT
 import re.notifica.geo.ktx.INTENT_ACTION_GEOFENCE_TRANSITION
 import re.notifica.geo.ktx.INTENT_ACTION_INTERNAL_LOCATION_UPDATED
 import re.notifica.geo.models.NotificareRegion
-import re.notifica.utilities.NotificareLogger
+import re.notifica.utilities.logging.NotificareLogger
 
 @Keep
 @InternalNotificareApi

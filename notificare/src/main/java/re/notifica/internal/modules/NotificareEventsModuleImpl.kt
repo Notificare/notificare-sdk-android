@@ -14,10 +14,10 @@ import re.notifica.NotificareDeviceUnavailableException
 import re.notifica.NotificareEventsModule
 import re.notifica.NotificareInternalEventsModule
 import re.notifica.NotificareNotReadyException
-import re.notifica.utilities.NotificareLogger
+import re.notifica.utilities.logging.NotificareLogger
 import re.notifica.internal.NotificareModule
-import re.notifica.utilities.recoverable
-import re.notifica.utilities.ktx.toCallbackFunction
+import re.notifica.utilities.networking.isRecoverable
+import re.notifica.utilities.coroutines.toCallbackFunction
 import re.notifica.internal.network.request.NotificareRequest
 import re.notifica.internal.storage.database.ktx.toEntity
 import re.notifica.internal.workers.ProcessEventsWorker
@@ -26,9 +26,9 @@ import re.notifica.ktx.session
 import re.notifica.models.NotificareDevice
 import re.notifica.models.NotificareEvent
 import re.notifica.models.NotificareEventData
-import re.notifica.utilities.deviceString
-import re.notifica.utilities.getApplicationVersion
-import re.notifica.utilities.osVersion
+import re.notifica.utilities.content.applicationVersion
+import re.notifica.utilities.device.deviceString
+import re.notifica.utilities.device.osVersion
 
 private const val EVENT_APPLICATION_INSTALL = "re.notifica.event.application.Install"
 private const val EVENT_APPLICATION_REGISTRATION = "re.notifica.event.application.Registration"
@@ -163,7 +163,7 @@ internal object NotificareEventsModuleImpl :
         } catch (e: Exception) {
             logger.warning("Failed to send the event: ${event.type}", e)
 
-            if (!discardableEvents.contains(event.type) && e.recoverable) {
+            if (!discardableEvents.contains(event.type) && e.isRecoverable) {
                 logger.info("Queuing event to be sent whenever possible.")
 
                 Notificare.database.events().insert(event.toEntity())
@@ -209,7 +209,7 @@ internal object NotificareEventsModuleImpl :
                 "osVersion" to osVersion,
                 "deviceString" to deviceString,
                 "sdkVersion" to Notificare.SDK_VERSION,
-                "appVersion" to getApplicationVersion(Notificare.requireContext().applicationContext),
+                "appVersion" to Notificare.requireContext().applicationVersion,
                 "timestamp" to timestamp.toString(),
                 "name" to throwable.message,
                 "reason" to throwable.cause?.toString(),

@@ -4,7 +4,7 @@ import re.notifica.InternalNotificareApi
 import re.notifica.Notificare
 import re.notifica.geo.models.NotificareBeacon
 import re.notifica.geo.models.NotificareRegion
-import re.notifica.utilities.NotificareLogger
+import re.notifica.utilities.logging.NotificareLogger
 
 @InternalNotificareApi
 public abstract class BeaconServiceManager(

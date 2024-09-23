@@ -2,7 +2,7 @@ package re.notifica.push.internal
 
 import com.google.firebase.messaging.RemoteMessage
 import re.notifica.Notificare
-import re.notifica.utilities.NotificareLogger
+import re.notifica.utilities.logging.NotificareLogger
 import re.notifica.internal.moshi
 import re.notifica.models.NotificareNotification
 import re.notifica.push.models.NotificareNotificationRemoteMessage

@@ -8,14 +8,14 @@ import android.widget.ArrayAdapter
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
 import re.notifica.Notificare
-import re.notifica.utilities.NotificareLogger
-import re.notifica.utilities.onMainThread
-import re.notifica.utilities.ktx.parcelable
+import re.notifica.utilities.logging.NotificareLogger
+import re.notifica.utilities.threading.onMainThread
+import re.notifica.utilities.parcel.parcelable
 import re.notifica.models.NotificareNotification
 import re.notifica.push.ui.R
 import re.notifica.push.ui.databinding.NotificareAlertDialogBinding
 import re.notifica.push.ui.ktx.pushUIInternal
-import re.notifica.utilities.getApplicationName
+import re.notifica.utilities.content.applicationName
 
 public class NotificationDialog : DialogFragment() {
 
@@ -52,7 +52,7 @@ public class NotificationDialog : DialogFragment() {
         val icon = context?.applicationInfo?.icon
         if (icon != null) builder.setIcon(icon)
 
-        builder.setTitle(notification.title ?: getApplicationName(Notificare.requireContext().applicationContext))
+        builder.setTitle(notification.title ?: requireContext().applicationName)
         builder.setMessage(notification.message)
 
         val type = NotificareNotification.NotificationType.from(notification.type)

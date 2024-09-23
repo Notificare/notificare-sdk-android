@@ -3,7 +3,7 @@ package re.notifica.push.internal
 import android.content.Context
 import androidx.core.content.edit
 import re.notifica.Notificare
-import re.notifica.utilities.NotificareLogger
+import re.notifica.utilities.logging.NotificareLogger
 import re.notifica.internal.moshi
 import re.notifica.push.models.NotificarePushSubscription
 import re.notifica.push.models.NotificareTransport

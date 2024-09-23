@@ -11,9 +11,9 @@ import androidx.core.os.bundleOf
 import kotlinx.coroutines.launch
 import re.notifica.Notificare
 import re.notifica.NotificareCallback
-import re.notifica.utilities.NotificareLogger
+import re.notifica.utilities.logging.NotificareLogger
 import re.notifica.internal.NotificareModule
-import re.notifica.utilities.onMainThread
+import re.notifica.utilities.threading.onMainThread
 import re.notifica.models.NotificareNotification
 import re.notifica.push.ui.NotificareInternalPushUI
 import re.notifica.push.ui.NotificarePushUI
@@ -43,7 +43,7 @@ import re.notifica.push.ui.notifications.fragments.NotificareVideoFragment
 import re.notifica.push.ui.notifications.fragments.NotificareWebPassFragment
 import re.notifica.push.ui.notifications.fragments.NotificareWebViewFragment
 import re.notifica.push.ui.utils.removeQueryParameter
-import re.notifica.utilities.ktx.notificareCoroutineScope
+import re.notifica.utilities.coroutines.notificareCoroutineScope
 import java.lang.ref.WeakReference
 
 @Keep

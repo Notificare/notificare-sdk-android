@@ -12,15 +12,15 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import re.notifica.Notificare
-import re.notifica.utilities.NotificareLogger
-import re.notifica.utilities.onMainThread
+import re.notifica.utilities.logging.NotificareLogger
+import re.notifica.utilities.threading.onMainThread
 import re.notifica.models.NotificareNotification
 import re.notifica.push.ui.R
 import re.notifica.push.ui.actions.base.NotificationAction
 import re.notifica.push.ui.ktx.pushUIImplementation
 import re.notifica.push.ui.ktx.pushUIInternal
 import re.notifica.push.ui.models.NotificarePendingResult
-import re.notifica.utilities.ktx.notificareCoroutineScope
+import re.notifica.utilities.coroutines.notificareCoroutineScope
 
 internal class NotificationCallbackAction(
     context: Context,

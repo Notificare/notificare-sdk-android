@@ -10,7 +10,7 @@ import re.notifica.Notificare
 import re.notifica.inbox.user.internal.responses.ConsumerUserInboxResponse
 import re.notifica.inbox.user.internal.responses.RawUserInboxResponse
 import re.notifica.inbox.user.models.NotificareUserInboxResponse
-import re.notifica.utilities.NotificareLogger
+import re.notifica.utilities.logging.NotificareLogger
 
 internal class UserInboxResponseAdapter {
 

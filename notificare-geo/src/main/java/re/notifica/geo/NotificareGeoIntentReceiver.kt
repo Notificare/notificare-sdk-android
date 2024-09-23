@@ -17,9 +17,9 @@ import re.notifica.geo.ktx.INTENT_EXTRA_REGION
 import re.notifica.geo.models.NotificareBeacon
 import re.notifica.geo.models.NotificareLocation
 import re.notifica.geo.models.NotificareRegion
-import re.notifica.utilities.NotificareLogger
-import re.notifica.utilities.ktx.parcelable
-import re.notifica.utilities.ktx.parcelableArrayList
+import re.notifica.utilities.logging.NotificareLogger
+import re.notifica.utilities.parcel.parcelable
+import re.notifica.utilities.parcel.parcelableArrayList
 
 public open class NotificareGeoIntentReceiver : BroadcastReceiver() {
 

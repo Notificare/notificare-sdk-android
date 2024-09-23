@@ -7,8 +7,8 @@ import java.util.Calendar
 import java.util.Date
 import java.util.GregorianCalendar
 import re.notifica.Notificare
-import re.notifica.utilities.NotificareLogger
-import re.notifica.utilities.recoverable
+import re.notifica.utilities.logging.NotificareLogger
+import re.notifica.utilities.networking.isRecoverable
 import re.notifica.internal.network.request.NotificareRequest
 import re.notifica.internal.storage.database.entities.NotificareEventEntity
 import re.notifica.internal.storage.database.ktx.toModel
@@ -61,7 +61,7 @@ internal class ProcessEventsWorker(context: Context, params: WorkerParameters) :
             logger.debug("Event processed. Removing from storage...")
             Notificare.database.events().delete(entity)
         } catch (e: Exception) {
-            if (e.recoverable) {
+            if (e.isRecoverable) {
                 logger.debug("Failed to process event.")
 
                 // Increase the attempts counter.

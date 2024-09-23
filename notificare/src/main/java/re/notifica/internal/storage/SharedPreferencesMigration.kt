@@ -4,12 +4,12 @@ import android.content.Context
 import androidx.core.content.edit
 import org.json.JSONObject
 import re.notifica.Notificare
-import re.notifica.utilities.NotificareLogger
+import re.notifica.utilities.logging.NotificareLogger
 import re.notifica.internal.NotificareModule
 import re.notifica.internal.storage.preferences.NotificareSharedPreferences
 import re.notifica.internal.storage.preferences.entities.StoredDevice
-import re.notifica.utilities.deviceLanguage
-import re.notifica.utilities.deviceRegion
+import re.notifica.utilities.device.deviceLanguage
+import re.notifica.utilities.device.deviceRegion
 
 internal class SharedPreferencesMigration(
     private val context: Context,

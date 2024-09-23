@@ -8,7 +8,7 @@ import re.notifica.NotificareCallback
 import re.notifica.NotificareEventsModule
 import re.notifica.geo.models.NotificareBeaconSession
 import re.notifica.geo.models.NotificareRegionSession
-import re.notifica.utilities.ktx.toCallbackFunction
+import re.notifica.utilities.coroutines.toCallbackFunction
 
 @Suppress("unused")
 internal suspend fun NotificareEventsModule.logRegionSession(

@@ -5,7 +5,7 @@ import android.net.Uri
 import androidx.annotation.MainThread
 import re.notifica.InternalNotificareApi
 import re.notifica.Notificare
-import re.notifica.utilities.NotificareLogger
+import re.notifica.utilities.logging.NotificareLogger
 import re.notifica.models.NotificareNotification
 import java.lang.ref.WeakReference
 

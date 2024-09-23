@@ -12,10 +12,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.commit
 import re.notifica.Notificare
 import re.notifica.NotificareCallback
-import re.notifica.utilities.NotificareLogger
-import re.notifica.utilities.getEnum
-import re.notifica.utilities.getEnumExtra
-import re.notifica.utilities.putEnum
+import re.notifica.utilities.logging.NotificareLogger
+import re.notifica.utilities.parcel.getEnum
+import re.notifica.utilities.parcel.getEnumExtra
+import re.notifica.utilities.parcel.putEnum
 import re.notifica.scannables.ui.QrCodeScannerFragment
 import re.notifica.scannables.ktx.scannables
 import re.notifica.scannables.ktx.scannablesImplementation

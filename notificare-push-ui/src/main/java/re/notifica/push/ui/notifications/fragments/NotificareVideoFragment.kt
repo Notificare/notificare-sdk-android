@@ -9,7 +9,7 @@ import android.webkit.WebChromeClient
 import android.widget.FrameLayout
 import androidx.core.view.isVisible
 import re.notifica.Notificare
-import re.notifica.utilities.onMainThread
+import re.notifica.utilities.threading.onMainThread
 import re.notifica.push.ui.databinding.NotificareNotificationVideoFragmentBinding
 import re.notifica.push.ui.ktx.pushUIInternal
 import re.notifica.push.ui.notifications.fragments.base.NotificationFragment

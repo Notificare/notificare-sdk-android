@@ -7,15 +7,15 @@ import android.net.Uri
 import androidx.core.app.RemoteInput
 import kotlinx.coroutines.launch
 import re.notifica.Notificare
-import re.notifica.utilities.NotificareLogger
-import re.notifica.utilities.ktx.parcelable
+import re.notifica.utilities.logging.NotificareLogger
+import re.notifica.utilities.parcel.parcelable
 import re.notifica.ktx.events
 import re.notifica.models.NotificareNotification
 import re.notifica.push.ktx.INTENT_ACTION_QUICK_RESPONSE
 import re.notifica.push.ktx.INTENT_EXTRA_REMOTE_MESSAGE
 import re.notifica.push.ktx.INTENT_EXTRA_TEXT_RESPONSE
 import re.notifica.push.models.NotificareNotificationRemoteMessage
-import re.notifica.utilities.ktx.notificareCoroutineScope
+import re.notifica.utilities.coroutines.notificareCoroutineScope
 
 internal class NotificarePushSystemIntentReceiver : BroadcastReceiver() {
 

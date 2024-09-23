@@ -40,11 +40,11 @@ import re.notifica.NotificareCallback
 import re.notifica.NotificareDeviceUnavailableException
 import re.notifica.NotificareNotReadyException
 import re.notifica.NotificareServiceUnavailableException
-import re.notifica.utilities.NotificareLogger
+import re.notifica.utilities.logging.NotificareLogger
 import re.notifica.internal.NotificareModule
-import re.notifica.utilities.ktx.notificareCoroutineScope
-import re.notifica.utilities.ktx.parcelable
-import re.notifica.utilities.ktx.toCallbackFunction
+import re.notifica.utilities.coroutines.notificareCoroutineScope
+import re.notifica.utilities.parcel.parcelable
+import re.notifica.utilities.coroutines.toCallbackFunction
 import re.notifica.internal.network.request.NotificareRequest
 import re.notifica.ktx.device
 import re.notifica.ktx.events
@@ -94,7 +94,7 @@ import re.notifica.push.notificationLightsColor
 import re.notifica.push.notificationLightsOff
 import re.notifica.push.notificationLightsOn
 import re.notifica.push.notificationSmallIcon
-import re.notifica.utilities.loadBitmap
+import re.notifica.utilities.image.loadBitmap
 
 @Keep
 internal object NotificarePushImpl : NotificareModule(), NotificarePush, NotificareInternalPush {

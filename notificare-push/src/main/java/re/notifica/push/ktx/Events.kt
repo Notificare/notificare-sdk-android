@@ -5,7 +5,7 @@ import kotlinx.coroutines.withContext
 import re.notifica.Notificare
 import re.notifica.NotificareCallback
 import re.notifica.NotificareEventsModule
-import re.notifica.utilities.ktx.toCallbackFunction
+import re.notifica.utilities.coroutines.toCallbackFunction
 
 @Suppress("unused")
 public suspend fun NotificareEventsModule.logNotificationReceived(id: String): Unit = withContext(Dispatchers.IO) {

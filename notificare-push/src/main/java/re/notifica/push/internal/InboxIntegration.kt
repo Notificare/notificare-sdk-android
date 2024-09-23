@@ -3,7 +3,7 @@ package re.notifica.push.internal
 import android.content.Intent
 import androidx.core.os.bundleOf
 import re.notifica.Notificare
-import re.notifica.utilities.NotificareLogger
+import re.notifica.utilities.logging.NotificareLogger
 import re.notifica.models.NotificareNotification
 import re.notifica.push.models.NotificareNotificationRemoteMessage
 

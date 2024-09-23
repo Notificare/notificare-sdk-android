@@ -2,7 +2,7 @@ package re.notifica.internal
 
 import re.notifica.InternalNotificareApi
 import re.notifica.Notificare
-import re.notifica.utilities.NotificareLogger
+import re.notifica.utilities.logging.NotificareLogger
 
 @InternalNotificareApi
 public abstract class AbstractServiceManager {

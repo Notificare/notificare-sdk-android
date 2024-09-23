@@ -3,8 +3,8 @@ package re.notifica
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import re.notifica.utilities.NotificareLogger
-import re.notifica.utilities.ktx.parcelable
+import re.notifica.utilities.logging.NotificareLogger
+import re.notifica.utilities.parcel.parcelable
 import re.notifica.models.NotificareApplication
 import re.notifica.models.NotificareDevice
 

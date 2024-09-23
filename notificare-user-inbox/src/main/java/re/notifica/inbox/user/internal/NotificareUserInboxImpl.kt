@@ -16,9 +16,9 @@ import re.notifica.inbox.user.NotificareUserInbox
 import re.notifica.inbox.user.internal.moshi.UserInboxResponseAdapter
 import re.notifica.inbox.user.models.NotificareUserInboxItem
 import re.notifica.inbox.user.models.NotificareUserInboxResponse
-import re.notifica.utilities.NotificareLogger
+import re.notifica.utilities.logging.NotificareLogger
 import re.notifica.internal.NotificareModule
-import re.notifica.utilities.ktx.toCallbackFunction
+import re.notifica.utilities.coroutines.toCallbackFunction
 import re.notifica.internal.moshi
 import re.notifica.internal.network.push.NotificationResponse
 import re.notifica.internal.network.request.NotificareRequest

@@ -28,7 +28,7 @@ import re.notifica.geo.internal.BeaconServiceManager
 import re.notifica.geo.ktx.INTENT_ACTION_BEACON_NOTIFICATION_OPENED
 import re.notifica.geo.models.NotificareBeacon
 import re.notifica.geo.models.NotificareRegion
-import re.notifica.utilities.NotificareLogger
+import re.notifica.utilities.logging.NotificareLogger
 
 private const val BEACON_LAYOUT_APPLE = "m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24"
 

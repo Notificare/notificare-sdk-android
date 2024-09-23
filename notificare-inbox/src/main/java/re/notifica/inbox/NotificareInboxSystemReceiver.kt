@@ -9,10 +9,10 @@ import kotlinx.coroutines.launch
 import re.notifica.Notificare
 import re.notifica.inbox.ktx.inboxImplementation
 import re.notifica.inbox.models.NotificareInboxItem
-import re.notifica.utilities.NotificareLogger
-import re.notifica.utilities.ktx.parcelable
+import re.notifica.utilities.logging.NotificareLogger
+import re.notifica.utilities.parcel.parcelable
 import re.notifica.models.NotificareNotification
-import re.notifica.utilities.ktx.notificareCoroutineScope
+import re.notifica.utilities.coroutines.notificareCoroutineScope
 
 internal class NotificareInboxSystemReceiver : BroadcastReceiver() {
 

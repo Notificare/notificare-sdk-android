@@ -12,7 +12,7 @@ import re.notifica.geo.models.NotificareBeaconSession
 import re.notifica.geo.models.NotificareLocation
 import re.notifica.geo.models.NotificareRegion
 import re.notifica.geo.models.NotificareRegionSession
-import re.notifica.utilities.NotificareLogger
+import re.notifica.utilities.logging.NotificareLogger
 import re.notifica.internal.moshi
 
 private const val PREFERENCES_FILE_NAME = "re.notifica.geo.preferences"

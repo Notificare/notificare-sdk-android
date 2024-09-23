@@ -8,14 +8,14 @@ import android.widget.ImageView
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import re.notifica.Notificare
-import re.notifica.utilities.NotificareLogger
-import re.notifica.utilities.onMainThread
-import re.notifica.utilities.ktx.parcelable
+import re.notifica.utilities.logging.NotificareLogger
+import re.notifica.utilities.threading.onMainThread
+import re.notifica.utilities.parcel.parcelable
 import re.notifica.models.NotificareNotification
 import re.notifica.push.ui.databinding.NotificareNotificationImageFragmentBinding
 import re.notifica.push.ui.ktx.pushUIInternal
 import re.notifica.push.ui.notifications.fragments.base.NotificationFragment
-import re.notifica.utilities.loadImage
+import re.notifica.utilities.image.loadImage
 
 public class NotificareImageFragment : NotificationFragment() {
 

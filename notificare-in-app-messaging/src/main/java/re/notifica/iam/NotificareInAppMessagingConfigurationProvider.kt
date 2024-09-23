@@ -7,7 +7,7 @@ import android.database.Cursor
 import android.net.Uri
 import re.notifica.Notificare
 import re.notifica.iam.ktx.inAppMessagingImplementation
-import re.notifica.utilities.NotificareLogger
+import re.notifica.utilities.logging.NotificareLogger
 
 /**
  * Auto configuration during application startup.
