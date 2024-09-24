@@ -7,19 +7,14 @@ import android.os.Bundle
 import java.util.Date
 import kotlinx.coroutines.launch
 import re.notifica.Notificare
+import re.notifica.inbox.internal.logger
 import re.notifica.inbox.ktx.inboxImplementation
 import re.notifica.inbox.models.NotificareInboxItem
-import re.notifica.utilities.logging.NotificareLogger
 import re.notifica.utilities.parcel.parcelable
 import re.notifica.models.NotificareNotification
 import re.notifica.utilities.coroutines.notificareCoroutineScope
 
 internal class NotificareInboxSystemReceiver : BroadcastReceiver() {
-
-    private val logger = NotificareLogger(
-        Notificare.options?.debugLoggingEnabled ?: false,
-        "NotificareInboxSystemReceiver"
-    )
 
     override fun onReceive(context: Context, intent: Intent) {
         when (intent.action) {

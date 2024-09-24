@@ -7,18 +7,13 @@ import android.content.pm.PackageManager
 import android.database.Cursor
 import android.net.Uri
 import androidx.core.os.bundleOf
-import re.notifica.utilities.logging.NotificareLogger
+import re.notifica.internal.logger
 import re.notifica.utilities.content.applicationInfo
 
 /**
  * Auto configuration during application startup.
  */
 internal class NotificareConfigurationProvider : ContentProvider() {
-
-    private val logger = NotificareLogger(
-        Notificare.options?.debugLoggingEnabled ?: false,
-        "NotificareConfigurationProvider"
-    )
 
     /**
      * Called before [android.app.Application.onCreate].

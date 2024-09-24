@@ -40,7 +40,6 @@ import re.notifica.NotificareCallback
 import re.notifica.NotificareDeviceUnavailableException
 import re.notifica.NotificareNotReadyException
 import re.notifica.NotificareServiceUnavailableException
-import re.notifica.utilities.logging.NotificareLogger
 import re.notifica.internal.NotificareModule
 import re.notifica.utilities.coroutines.notificareCoroutineScope
 import re.notifica.utilities.parcel.parcelable
@@ -99,11 +98,6 @@ import re.notifica.utilities.image.loadBitmap
 @Keep
 internal object NotificarePushImpl : NotificareModule(), NotificarePush, NotificareInternalPush {
 
-    private val logger = NotificareLogger(
-        Notificare.options?.debugLoggingEnabled ?: false,
-        "NotificarePush"
-    )
-
     internal const val DEFAULT_NOTIFICATION_CHANNEL_ID: String = "notificare_channel_default"
 
     private val notificationSequence = AtomicInteger()
@@ -146,6 +140,8 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
     }
 
     override fun configure() {
+        logger.hasDebugLoggingEnabled = checkNotNull(Notificare.options).debugLoggingEnabled
+
         sharedPreferences = NotificareSharedPreferences(Notificare.requireContext())
         serviceManager = ServiceManager.create()
 
@@ -548,6 +544,7 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
                         }
                     })
                 }
+
                 "re.notifica.notification.system.Inbox" -> InboxIntegration.reloadInbox()
                 "re.notifica.notification.system.LiveActivity" -> {
                     val activity = message.extra["activity"] ?: run {
@@ -588,6 +585,7 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
                             .putExtra(Notificare.INTENT_EXTRA_LIVE_ACTIVITY_UPDATE, update)
                     )
                 }
+
                 else -> logger.warning("Unhandled system notification: ${message.type}")
             }
         } else {

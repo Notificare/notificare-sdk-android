@@ -1,12 +1,13 @@
 package re.notifica.push.ui.ktx
 
 import re.notifica.Notificare
-import re.notifica.utilities.logging.NotificareLogger
+
 import re.notifica.internal.NotificareModule
 import re.notifica.internal.modules.integrations.NotificareLoyaltyIntegration
 import re.notifica.push.ui.NotificareInternalPushUI
 import re.notifica.push.ui.NotificarePushUI
 import re.notifica.push.ui.internal.NotificarePushUIImpl
+import re.notifica.push.ui.internal.logger
 
 @Suppress("unused")
 public fun Notificare.pushUI(): NotificarePushUI {
@@ -22,11 +23,6 @@ internal fun Notificare.pushUIImplementation(): NotificarePushUIImpl {
 }
 
 internal fun Notificare.loyaltyIntegration(): NotificareLoyaltyIntegration? {
-    val logger = NotificareLogger(
-        options?.debugLoggingEnabled ?: false,
-        "NotificareLoyaltyIntegration"
-    )
-
     if (!NotificareModule.Module.LOYALTY.isAvailable) {
         logger.debug("Loyalty module is not available.")
         return null

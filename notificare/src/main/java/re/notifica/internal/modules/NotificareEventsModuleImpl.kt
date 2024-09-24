@@ -14,8 +14,8 @@ import re.notifica.NotificareDeviceUnavailableException
 import re.notifica.NotificareEventsModule
 import re.notifica.NotificareInternalEventsModule
 import re.notifica.NotificareNotReadyException
-import re.notifica.utilities.logging.NotificareLogger
 import re.notifica.internal.NotificareModule
+import re.notifica.internal.logger
 import re.notifica.utilities.networking.isRecoverable
 import re.notifica.utilities.coroutines.toCallbackFunction
 import re.notifica.internal.network.request.NotificareRequest
@@ -44,11 +44,6 @@ internal object NotificareEventsModuleImpl :
     NotificareModule(),
     NotificareEventsModule,
     NotificareInternalEventsModule {
-
-    private val logger = NotificareLogger(
-        Notificare.options?.debugLoggingEnabled ?: false,
-        "NotificareEvents"
-    )
 
     private val discardableEvents = listOf<String>()
 

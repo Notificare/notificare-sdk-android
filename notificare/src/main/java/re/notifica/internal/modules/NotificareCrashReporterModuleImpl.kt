@@ -2,18 +2,13 @@ package re.notifica.internal.modules
 
 import androidx.annotation.Keep
 import re.notifica.Notificare
-import re.notifica.utilities.logging.NotificareLogger
 import re.notifica.internal.NotificareModule
+import re.notifica.internal.logger
 import re.notifica.ktx.device
 import re.notifica.ktx.eventsImplementation
 
 @Keep
 internal object NotificareCrashReporterModuleImpl : NotificareModule() {
-
-    private val logger = NotificareLogger(
-        Notificare.options?.debugLoggingEnabled ?: false,
-        "NotificareCrashReporter"
-    )
 
     private var defaultUncaughtExceptionHandler: Thread.UncaughtExceptionHandler? = null
     private val uncaughtExceptionHandler = Thread.UncaughtExceptionHandler { thread: Thread, throwable: Throwable ->

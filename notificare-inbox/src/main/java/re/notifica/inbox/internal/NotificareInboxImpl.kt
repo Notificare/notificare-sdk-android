@@ -31,7 +31,6 @@ import re.notifica.inbox.internal.database.entities.InboxItemEntity
 import re.notifica.inbox.internal.network.push.InboxResponse
 import re.notifica.inbox.internal.workers.ExpireItemWorker
 import re.notifica.inbox.models.NotificareInboxItem
-import re.notifica.utilities.logging.NotificareLogger
 import re.notifica.internal.NotificareModule
 import re.notifica.utilities.coroutines.notificareCoroutineScope
 import re.notifica.utilities.coroutines.toCallbackFunction
@@ -44,12 +43,6 @@ import re.notifica.models.NotificareNotification
 
 @Keep
 internal object NotificareInboxImpl : NotificareModule(), NotificareInbox {
-
-    private val logger = NotificareLogger(
-        Notificare.options?.debugLoggingEnabled ?: false,
-        "NotificareInbox"
-    )
-
     internal lateinit var database: InboxDatabase
 
     private var liveItems: LiveData<List<InboxItemEntity>>? = null
@@ -86,6 +79,8 @@ internal object NotificareInboxImpl : NotificareModule(), NotificareInbox {
     // region Notificare Module
 
     override fun configure() {
+        logger.hasDebugLoggingEnabled = checkNotNull(Notificare.options).debugLoggingEnabled
+
         database = InboxDatabase.create(Notificare.requireContext())
 
         reloadLiveItems()

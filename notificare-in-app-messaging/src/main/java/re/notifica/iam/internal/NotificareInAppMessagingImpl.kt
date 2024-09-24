@@ -20,7 +20,6 @@ import re.notifica.iam.internal.caching.NotificareImageCache
 import re.notifica.iam.internal.network.push.InAppMessageResponse
 import re.notifica.iam.models.NotificareInAppMessage
 import re.notifica.iam.ui.InAppMessagingActivity
-import re.notifica.utilities.logging.NotificareLogger
 import re.notifica.internal.NotificareModule
 import re.notifica.utilities.threading.onMainThread
 import re.notifica.utilities.content.activityInfo
@@ -31,12 +30,6 @@ import re.notifica.ktx.device
 
 @Keep
 internal object NotificareInAppMessagingImpl : NotificareModule(), NotificareInAppMessaging {
-
-    private val logger = NotificareLogger(
-        Notificare.options?.debugLoggingEnabled ?: false,
-        "NotificareInAppMessaging"
-    )
-
     private const val MANIFEST_SUPPRESS_MESSAGES_ACTIVITY_KEY = "re.notifica.iam.ui.suppress_messages"
     private const val DEFAULT_BACKGROUND_GRACE_PERIOD_MILLIS = 5 * 60 * 1000L
 
@@ -50,6 +43,10 @@ internal object NotificareInAppMessagingImpl : NotificareModule(), NotificareInA
     internal val lifecycleListeners = mutableListOf<WeakReference<NotificareInAppMessaging.MessageLifecycleListener>>()
 
     // region Notificare Module
+
+    override fun configure() {
+        logger.hasDebugLoggingEnabled = checkNotNull(Notificare.options).debugLoggingEnabled
+    }
 
     override suspend fun launch() {
         evaluateContext(ApplicationContext.LAUNCH)

@@ -22,10 +22,10 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import re.notifica.internal.NOTIFICARE_VERSION
 import re.notifica.internal.NotificareLaunchState
-import re.notifica.utilities.logging.NotificareLogger
 import re.notifica.internal.NotificareModule
 import re.notifica.internal.NotificareOptions
 import re.notifica.internal.NotificareUtils
+import re.notifica.internal.logger
 import re.notifica.utilities.threading.onMainThread
 import re.notifica.internal.network.push.ApplicationResponse
 import re.notifica.internal.network.push.CreateNotificationReplyPayload
@@ -44,8 +44,6 @@ import re.notifica.models.NotificareNotification
 import re.notifica.utilities.coroutines.toCallbackFunction
 
 public object Notificare {
-
-    private var logger = NotificareLogger()
 
     public const val SDK_VERSION: String = NOTIFICARE_VERSION
 
@@ -634,10 +632,7 @@ public object Notificare {
         this.servicesInfo = servicesInfo
         this.options = NotificareOptions(context.applicationContext)
 
-        this.logger = NotificareLogger(
-            this.options?.debugLoggingEnabled ?: false,
-            "Notificare"
-        )
+        logger.hasDebugLoggingEnabled = checkNotNull(this.options).debugLoggingEnabled
 
         // Late init modules
         this.database = NotificareDatabase.create(context.applicationContext)

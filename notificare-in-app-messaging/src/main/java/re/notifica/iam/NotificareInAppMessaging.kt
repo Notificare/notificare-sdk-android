@@ -1,14 +1,8 @@
 package re.notifica.iam
 
 import androidx.annotation.MainThread
-import re.notifica.Notificare
+import re.notifica.iam.internal.logger
 import re.notifica.iam.models.NotificareInAppMessage
-import re.notifica.utilities.logging.NotificareLogger
-
-private val logger = NotificareLogger(
-    Notificare.options?.debugLoggingEnabled ?: false,
-    "NotificareInAppMessaging"
-)
 
 public interface NotificareInAppMessaging {
 

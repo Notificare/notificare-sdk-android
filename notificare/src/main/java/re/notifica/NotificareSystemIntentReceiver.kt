@@ -3,18 +3,13 @@ package re.notifica
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import java.util.Locale
 import kotlinx.coroutines.launch
-import re.notifica.utilities.logging.NotificareLogger
+import re.notifica.internal.logger
 import re.notifica.ktx.deviceImplementation
 import re.notifica.utilities.coroutines.notificareCoroutineScope
+import java.util.Locale
 
 internal class NotificareSystemIntentReceiver : BroadcastReceiver() {
-
-    private val logger = NotificareLogger(
-        Notificare.options?.debugLoggingEnabled ?: false,
-        "NotificareSystemIntentReceiver"
-    )
 
     override fun onReceive(context: Context, intent: Intent) {
         when (intent.action) {

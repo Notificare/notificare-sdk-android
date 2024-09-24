@@ -6,18 +6,13 @@ import android.content.ContentValues
 import android.database.Cursor
 import android.net.Uri
 import re.notifica.Notificare
+import re.notifica.iam.internal.logger
 import re.notifica.iam.ktx.inAppMessagingImplementation
-import re.notifica.utilities.logging.NotificareLogger
 
 /**
  * Auto configuration during application startup.
  */
 internal class NotificareInAppMessagingConfigurationProvider : ContentProvider() {
-
-    private val logger = NotificareLogger(
-        Notificare.options?.debugLoggingEnabled ?: false,
-        "NotificareInAppMessagingConfigurationProvider"
-    )
 
     /**
      * Called before [android.app.Application.onCreate].
@@ -26,7 +21,7 @@ internal class NotificareInAppMessagingConfigurationProvider : ContentProvider()
         val context = context ?: throw IllegalStateException("Cannot find context from the provider.")
         val application = context.applicationContext as Application
 
-        logger.debug("Configuring session lifecycle listeners.")
+        logger.info("Configuring in-app messaging lifecycle listeners.")
         Notificare.inAppMessagingImplementation().setupLifecycleListeners(application)
 
         return true

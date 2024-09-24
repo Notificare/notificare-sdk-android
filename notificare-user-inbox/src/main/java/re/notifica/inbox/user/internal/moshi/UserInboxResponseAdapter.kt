@@ -6,18 +6,12 @@ import com.squareup.moshi.JsonReader
 import com.squareup.moshi.JsonWriter
 import com.squareup.moshi.ToJson
 import okhttp3.internal.closeQuietly
-import re.notifica.Notificare
+import re.notifica.inbox.user.internal.logger
 import re.notifica.inbox.user.internal.responses.ConsumerUserInboxResponse
 import re.notifica.inbox.user.internal.responses.RawUserInboxResponse
 import re.notifica.inbox.user.models.NotificareUserInboxResponse
-import re.notifica.utilities.logging.NotificareLogger
 
 internal class UserInboxResponseAdapter {
-
-    private val logger = NotificareLogger(
-        Notificare.options?.debugLoggingEnabled ?: false,
-        "UserInboxResponseAdapter"
-    )
 
     @FromJson
     fun fromJson(

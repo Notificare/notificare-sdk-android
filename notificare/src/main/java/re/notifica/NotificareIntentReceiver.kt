@@ -3,17 +3,12 @@ package re.notifica
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import re.notifica.utilities.logging.NotificareLogger
+import re.notifica.internal.logger
 import re.notifica.utilities.parcel.parcelable
 import re.notifica.models.NotificareApplication
 import re.notifica.models.NotificareDevice
 
 public open class NotificareIntentReceiver : BroadcastReceiver() {
-
-    private val logger = NotificareLogger(
-        Notificare.options?.debugLoggingEnabled ?: false,
-        "NotificareIntentReceiver"
-    )
 
     override fun onReceive(context: Context, intent: Intent) {
         when (intent.action) {

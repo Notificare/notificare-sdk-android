@@ -57,7 +57,6 @@ import re.notifica.geo.models.NotificareLocation
 import re.notifica.geo.models.NotificareRegion
 import re.notifica.geo.models.NotificareRegionSession
 import re.notifica.geo.monitoredRegionsLimit
-import re.notifica.utilities.logging.NotificareLogger
 import re.notifica.internal.NotificareModule
 import re.notifica.utilities.threading.onMainThread
 import re.notifica.utilities.coroutines.notificareCoroutineScope
@@ -70,11 +69,6 @@ import java.lang.ref.WeakReference
 @Keep
 @Suppress("detekt:LargeClass")
 internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, NotificareInternalGeo {
-
-    private val logger = NotificareLogger(
-        Notificare.options?.debugLoggingEnabled ?: false,
-        "NotificareGeo"
-    )
 
     private const val DEFAULT_MONITORED_REGIONS_LIMIT: Int = 10
     private const val MAX_MONITORED_REGIONS_LIMIT: Int = 100
@@ -239,6 +233,8 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
     }
 
     override fun configure() {
+        logger.hasDebugLoggingEnabled = checkNotNull(Notificare.options).debugLoggingEnabled
+
         val context = Notificare.requireContext()
 
         localStorage = LocalStorage(context)

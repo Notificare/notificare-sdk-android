@@ -25,7 +25,7 @@ import okhttp3.logging.HttpLoggingInterceptor
 import re.notifica.InternalNotificareApi
 import re.notifica.Notificare
 import re.notifica.NotificareCallback
-import re.notifica.utilities.logging.NotificareLogger
+import re.notifica.internal.logger
 import re.notifica.internal.moshi
 import re.notifica.internal.network.NetworkException
 import re.notifica.internal.network.NotificareHeadersInterceptor
@@ -161,12 +161,6 @@ public class NotificareRequest private constructor(
     }
 
     public class Builder {
-
-        private val logger = NotificareLogger(
-            Notificare.options?.debugLoggingEnabled ?: false,
-            "NotificareRequest\$Builder"
-        )
-
         private var baseUrl: String? = null
         private var url: String? = null
         private var queryItems = mutableMapOf<String, String?>()

@@ -3,17 +3,11 @@ package re.notifica.push.internal
 import android.content.Context
 import androidx.core.content.edit
 import re.notifica.Notificare
-import re.notifica.utilities.logging.NotificareLogger
 import re.notifica.internal.moshi
 import re.notifica.push.models.NotificarePushSubscription
 import re.notifica.push.models.NotificareTransport
 
 internal class NotificareSharedPreferences(context: Context) {
-
-    private val logger = NotificareLogger(
-        Notificare.options?.debugLoggingEnabled ?: false,
-        "NotificareSharedPreferences"
-    )
 
     companion object {
         private const val PREFERENCES_FILE_NAME = "re.notifica.push.preferences"

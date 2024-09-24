@@ -12,19 +12,14 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import re.notifica.Notificare
-import re.notifica.utilities.logging.NotificareLogger
 import re.notifica.internal.NotificareModule
+import re.notifica.internal.logger
 import re.notifica.utilities.coroutines.notificareCoroutineScope
 import re.notifica.ktx.device
 import re.notifica.ktx.eventsImplementation
 
 @Keep
 internal object NotificareSessionModuleImpl : NotificareModule() {
-
-    private val logger = NotificareLogger(
-        Notificare.options?.debugLoggingEnabled ?: false,
-        "NotificareSession"
-    )
 
     private val handler = Handler(Looper.getMainLooper())
     private val runnable = Runnable {

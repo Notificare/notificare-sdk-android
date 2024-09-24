@@ -20,13 +20,13 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
 import re.notifica.Notificare
-import re.notifica.utilities.logging.NotificareLogger
 import re.notifica.utilities.threading.onMainThread
 import re.notifica.utilities.content.packageInfo
 import re.notifica.utilities.parcel.parcelable
 import re.notifica.models.NotificareNotification
 import re.notifica.push.ui.R
 import re.notifica.push.ui.databinding.NotificareNotificationContainerFragmentBinding
+import re.notifica.push.ui.internal.logger
 import re.notifica.push.ui.ktx.pushUIImplementation
 import re.notifica.push.ui.ktx.pushUIInternal
 import re.notifica.push.ui.models.NotificarePendingResult
@@ -36,11 +36,6 @@ import re.notifica.utilities.content.applicationName
 
 public class NotificationContainerFragment
 : Fragment(), NotificationFragment.Callback, NotificationDialog.Callback, NotificationActionsDialog.Callback {
-
-    private val logger = NotificareLogger(
-        Notificare.options?.debugLoggingEnabled ?: false,
-        "NotificareContainerFragment"
-    )
 
     private lateinit var binding: NotificareNotificationContainerFragmentBinding
     private lateinit var notification: NotificareNotification

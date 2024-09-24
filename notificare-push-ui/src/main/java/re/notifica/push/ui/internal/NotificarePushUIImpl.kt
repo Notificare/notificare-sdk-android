@@ -11,7 +11,6 @@ import androidx.core.os.bundleOf
 import kotlinx.coroutines.launch
 import re.notifica.Notificare
 import re.notifica.NotificareCallback
-import re.notifica.utilities.logging.NotificareLogger
 import re.notifica.internal.NotificareModule
 import re.notifica.utilities.threading.onMainThread
 import re.notifica.models.NotificareNotification
@@ -49,17 +48,16 @@ import java.lang.ref.WeakReference
 @Keep
 internal object NotificarePushUIImpl : NotificareModule(), NotificarePushUI, NotificareInternalPushUI {
 
-    private val logger = NotificareLogger(
-        Notificare.options?.debugLoggingEnabled ?: false,
-        "NotificarePushUI"
-    )
-
     private const val CONTENT_FILE_PROVIDER_AUTHORITY_SUFFIX = ".notificare.fileprovider"
 
     internal val contentFileProviderAuthority: String
         get() = "${Notificare.requireContext().packageName}$CONTENT_FILE_PROVIDER_AUTHORITY_SUFFIX"
 
     private val _lifecycleListeners = mutableListOf<WeakReference<NotificarePushUI.NotificationLifecycleListener>>()
+
+    override fun configure() {
+        logger.hasDebugLoggingEnabled = checkNotNull(Notificare.options).debugLoggingEnabled
+    }
 
     // region Notificare Push UI
 

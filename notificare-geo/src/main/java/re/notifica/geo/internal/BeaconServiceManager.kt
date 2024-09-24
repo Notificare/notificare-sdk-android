@@ -4,7 +4,6 @@ import re.notifica.InternalNotificareApi
 import re.notifica.Notificare
 import re.notifica.geo.models.NotificareBeacon
 import re.notifica.geo.models.NotificareRegion
-import re.notifica.utilities.logging.NotificareLogger
 
 @InternalNotificareApi
 public abstract class BeaconServiceManager(
@@ -19,11 +18,6 @@ public abstract class BeaconServiceManager(
 
     public companion object {
         private const val FQN = "re.notifica.geo.beacons.internal.BeaconServiceManager"
-
-        private val logger = NotificareLogger(
-            Notificare.options?.debugLoggingEnabled ?: false,
-            "BeaconServiceMAnager"
-        )
 
         internal fun create(): BeaconServiceManager? {
             val proximityUUID = Notificare.application?.regionConfig?.proximityUUID ?: run {

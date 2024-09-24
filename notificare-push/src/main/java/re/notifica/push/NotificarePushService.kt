@@ -3,21 +3,16 @@ package re.notifica.push
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import re.notifica.Notificare
-import re.notifica.utilities.logging.NotificareLogger
 import re.notifica.push.internal.NotificareNotificationRemoteMessage
 import re.notifica.push.internal.NotificareSystemRemoteMessage
 import re.notifica.push.internal.NotificareUnknownRemoteMessage
+import re.notifica.push.internal.logger
 import re.notifica.push.ktx.isNotificareNotification
 import re.notifica.push.ktx.push
 import re.notifica.push.ktx.pushInternal
 import re.notifica.push.models.NotificareTransport
 
 public open class NotificarePushService : FirebaseMessagingService() {
-
-    private val logger = NotificareLogger(
-        Notificare.options?.debugLoggingEnabled ?: false,
-        "NotificarePushService"
-    )
 
     override fun onNewToken(token: String) {
         Notificare.pushInternal().handleNewToken(NotificareTransport.GCM, token)

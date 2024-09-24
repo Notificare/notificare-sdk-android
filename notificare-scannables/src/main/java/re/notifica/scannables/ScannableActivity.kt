@@ -12,7 +12,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.commit
 import re.notifica.Notificare
 import re.notifica.NotificareCallback
-import re.notifica.utilities.logging.NotificareLogger
+import re.notifica.scannables.internal.logger
 import re.notifica.utilities.parcel.getEnum
 import re.notifica.utilities.parcel.getEnumExtra
 import re.notifica.utilities.parcel.putEnum
@@ -22,11 +22,6 @@ import re.notifica.scannables.ktx.scannablesImplementation
 import re.notifica.scannables.models.NotificareScannable
 
 public class ScannableActivity : AppCompatActivity() {
-
-    private val logger = NotificareLogger(
-        Notificare.options?.debugLoggingEnabled ?: false,
-        "ScannableActivity"
-    )
 
     public companion object {
         internal const val EXTRA_MODE = "re.notifica.scannables.extra.ScanMode"
@@ -110,6 +105,7 @@ public class ScannableActivity : AppCompatActivity() {
                 onBackPressed()
                 true
             }
+
             else -> super.onOptionsItemSelected(item)
         }
     }

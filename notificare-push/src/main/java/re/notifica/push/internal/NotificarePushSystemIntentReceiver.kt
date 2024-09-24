@@ -7,7 +7,6 @@ import android.net.Uri
 import androidx.core.app.RemoteInput
 import kotlinx.coroutines.launch
 import re.notifica.Notificare
-import re.notifica.utilities.logging.NotificareLogger
 import re.notifica.utilities.parcel.parcelable
 import re.notifica.ktx.events
 import re.notifica.models.NotificareNotification
@@ -18,11 +17,6 @@ import re.notifica.push.models.NotificareNotificationRemoteMessage
 import re.notifica.utilities.coroutines.notificareCoroutineScope
 
 internal class NotificarePushSystemIntentReceiver : BroadcastReceiver() {
-
-    private val logger = NotificareLogger(
-        Notificare.options?.debugLoggingEnabled ?: false,
-        "NotificarePushSystemIntentReceiver"
-    )
 
     override fun onReceive(context: Context, intent: Intent) {
         when (intent.action) {

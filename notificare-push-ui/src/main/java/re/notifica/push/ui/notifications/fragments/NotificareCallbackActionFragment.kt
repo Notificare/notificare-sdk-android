@@ -18,10 +18,10 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
 import re.notifica.Notificare
-import re.notifica.utilities.logging.NotificareLogger
 import re.notifica.utilities.parcel.parcelable
 import re.notifica.push.ui.R
 import re.notifica.push.ui.actions.NotificationCallbackAction
+import re.notifica.push.ui.internal.logger
 import re.notifica.push.ui.models.NotificarePendingResult
 import re.notifica.push.ui.notifications.fragments.base.NotificationFragment
 import java.io.ByteArrayOutputStream
@@ -29,11 +29,6 @@ import java.io.File
 import java.io.IOException
 
 public class NotificareCallbackActionFragment private constructor() : Fragment() {
-
-    private val logger = NotificareLogger(
-        Notificare.options?.debugLoggingEnabled ?: false,
-        "NotificareCallbackActionFragment"
-    )
 
     private lateinit var pendingResult: NotificarePendingResult
     private lateinit var callback: NotificationFragment.Callback
@@ -174,13 +169,7 @@ public class NotificareCallbackActionFragment private constructor() : Fragment()
 
     public companion object {
         private const val EXTRA_PENDING_RESULT = "re.notifica.extra.PendingResult"
-
         private const val SAMPLE_SIZE_MAX_PIXELS = 307200 // 640 x 480
-
-        private val logger = NotificareLogger(
-            Notificare.options?.debugLoggingEnabled ?: false,
-            "NotificareCallbackActionFragment\$Companion"
-        )
 
         public fun newInstance(pendingResult: NotificarePendingResult): NotificareCallbackActionFragment {
             return NotificareCallbackActionFragment().apply {
@@ -205,6 +194,7 @@ public class NotificareCallbackActionFragment private constructor() : Fragment()
             logger.debug(
                 "Reading bitmap image of ${options.outWidth}x${options.outHeight} pixels with sampleSize $sampleSize"
             )
+
             return sampleSize
         }
 

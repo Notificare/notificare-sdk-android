@@ -23,6 +23,7 @@ import re.notifica.InternalNotificareApi
 import re.notifica.Notificare
 import re.notifica.geo.gms.LocationReceiver
 import re.notifica.geo.internal.ServiceManager
+import re.notifica.geo.internal.logger
 import re.notifica.geo.ktx.DEFAULT_GEOFENCE_RESPONSIVENESS
 import re.notifica.geo.ktx.DEFAULT_LOCATION_UPDATES_FASTEST_INTERVAL
 import re.notifica.geo.ktx.DEFAULT_LOCATION_UPDATES_INTERVAL
@@ -30,16 +31,10 @@ import re.notifica.geo.ktx.DEFAULT_LOCATION_UPDATES_SMALLEST_DISPLACEMENT
 import re.notifica.geo.ktx.INTENT_ACTION_GEOFENCE_TRANSITION
 import re.notifica.geo.ktx.INTENT_ACTION_INTERNAL_LOCATION_UPDATED
 import re.notifica.geo.models.NotificareRegion
-import re.notifica.utilities.logging.NotificareLogger
 
 @Keep
 @InternalNotificareApi
 public class ServiceManager : ServiceManager() {
-
-    private val logger = NotificareLogger(
-        Notificare.options?.debugLoggingEnabled ?: false,
-        "ServiceManager"
-    )
 
     private val fusedLocationClient: FusedLocationProviderClient
     private val geofencingClient: GeofencingClient

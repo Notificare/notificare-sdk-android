@@ -13,7 +13,6 @@ import re.notifica.NotificareCallback
 import re.notifica.NotificareDeviceUnavailableException
 import re.notifica.NotificareNotReadyException
 import re.notifica.NotificareServiceUnavailableException
-import re.notifica.utilities.logging.NotificareLogger
 import re.notifica.internal.NotificareModule
 import re.notifica.utilities.coroutines.toCallbackFunction
 import re.notifica.internal.modules.integrations.NotificareLoyaltyIntegration
@@ -32,10 +31,9 @@ import re.notifica.models.NotificareNotification
 @Keep
 internal object NotificareLoyaltyImpl : NotificareModule(), NotificareLoyalty, NotificareLoyaltyIntegration {
 
-    private val logger = NotificareLogger(
-        Notificare.options?.debugLoggingEnabled ?: false,
-        "NotificareLoyalty"
-    )
+    override fun configure() {
+        logger.hasDebugLoggingEnabled = checkNotNull(Notificare.options).debugLoggingEnabled
+    }
 
     // region Notificare Loyalty
 

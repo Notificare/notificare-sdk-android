@@ -8,17 +8,12 @@ import com.google.android.gms.location.Geofence
 import com.google.android.gms.location.GeofencingEvent
 import com.google.android.gms.location.LocationResult
 import re.notifica.Notificare
+import re.notifica.geo.internal.logger
 import re.notifica.geo.ktx.INTENT_ACTION_GEOFENCE_TRANSITION
 import re.notifica.geo.ktx.INTENT_ACTION_INTERNAL_LOCATION_UPDATED
 import re.notifica.geo.ktx.geoInternal
-import re.notifica.utilities.logging.NotificareLogger
 
 internal class LocationReceiver : BroadcastReceiver() {
-
-    private val logger = NotificareLogger(
-        Notificare.options?.debugLoggingEnabled ?: false,
-        "LocationReceiver"
-    )
 
     override fun onReceive(context: Context, intent: Intent) {
         when (intent.action) {

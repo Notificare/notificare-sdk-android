@@ -1,21 +1,15 @@
 package re.notifica.internal.storage.preferences
 
-import android.annotation.SuppressLint
 import android.content.Context
 import androidx.core.content.edit
 import re.notifica.Notificare
-import re.notifica.utilities.logging.NotificareLogger
+import re.notifica.internal.logger
 import re.notifica.internal.moshi
 import re.notifica.internal.storage.preferences.entities.StoredDevice
 import re.notifica.models.NotificareApplication
 import re.notifica.models.NotificareEvent
 
 internal class NotificareSharedPreferences(context: Context) {
-
-    private val logger = NotificareLogger(
-        Notificare.options?.debugLoggingEnabled ?: false,
-        "NotificareSharedPReferences"
-    )
 
     companion object {
         private const val PREFERENCES_FILE_NAME = "re.notifica.preferences"
@@ -150,16 +144,14 @@ internal class NotificareSharedPreferences(context: Context) {
                     }
                 }
         }
-
-        @SuppressLint("ApplySharedPref")
         set(value) {
-            sharedPreferences.edit().also {
-                if (value == null) it.remove(PREFERENCE_CRASH_REPORT)
-                else it.putString(
+            sharedPreferences.edit(commit = true) {
+                if (value == null) remove(PREFERENCE_CRASH_REPORT)
+                else putString(
                     PREFERENCE_CRASH_REPORT,
                     Notificare.moshi.adapter(NotificareEvent::class.java).toJson(value)
                 )
-            }.commit()
+            }
         }
 
     var deferredLinkChecked: Boolean?

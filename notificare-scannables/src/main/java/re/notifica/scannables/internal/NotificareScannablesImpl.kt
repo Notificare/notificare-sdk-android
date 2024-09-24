@@ -10,7 +10,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import re.notifica.Notificare
 import re.notifica.NotificareCallback
-import re.notifica.utilities.logging.NotificareLogger
 import re.notifica.internal.NotificareModule
 import re.notifica.utilities.threading.onMainThread
 import re.notifica.utilities.parcel.putEnumExtra
@@ -27,10 +26,9 @@ import java.lang.ref.WeakReference
 internal object NotificareScannablesImpl : NotificareModule(), NotificareScannables {
     private val listeners = mutableListOf<WeakReference<NotificareScannables.ScannableSessionListener>>()
 
-    private val logger = NotificareLogger(
-        Notificare.options?.debugLoggingEnabled ?: false,
-        "NotificareScannables"
-    )
+    override fun configure() {
+        logger.hasDebugLoggingEnabled = checkNotNull(Notificare.options).debugLoggingEnabled
+    }
 
     // region Notificare Scannables Module
 

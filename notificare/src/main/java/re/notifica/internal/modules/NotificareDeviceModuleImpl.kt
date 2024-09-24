@@ -12,6 +12,7 @@ import re.notifica.NotificareDeviceUnavailableException
 import re.notifica.NotificareNotReadyException
 import re.notifica.internal.NOTIFICARE_VERSION
 import re.notifica.internal.NotificareModule
+import re.notifica.internal.logger
 import re.notifica.internal.network.push.CreateDevicePayload
 import re.notifica.internal.network.push.CreateDeviceResponse
 import re.notifica.internal.network.push.DeviceDoNotDisturbResponse
@@ -43,16 +44,10 @@ import re.notifica.utilities.device.deviceRegion
 import re.notifica.utilities.device.deviceString
 import re.notifica.utilities.device.osVersion
 import re.notifica.utilities.device.timeZoneOffset
-import re.notifica.utilities.logging.NotificareLogger
 import java.util.Locale
 
 @Keep
 internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDeviceModule {
-
-    private val logger = NotificareLogger(
-        Notificare.options?.debugLoggingEnabled ?: false,
-        "NotificareDevice"
-    )
 
     private var storedDevice: StoredDevice?
         get() = Notificare.sharedPreferences.device

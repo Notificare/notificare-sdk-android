@@ -12,23 +12,17 @@ import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
 import re.notifica.Notificare
 import re.notifica.iam.internal.caching.NotificareImageCache
+import re.notifica.iam.internal.logger
 import re.notifica.iam.ktx.INTENT_EXTRA_IN_APP_MESSAGE
 import re.notifica.iam.ktx.inAppMessagingImplementation
 import re.notifica.iam.ktx.logInAppMessageActionClicked
 import re.notifica.iam.ktx.logInAppMessageViewed
 import re.notifica.iam.models.NotificareInAppMessage
-import re.notifica.utilities.logging.NotificareLogger
 import re.notifica.utilities.threading.onMainThread
 import re.notifica.utilities.parcel.parcelable
 import re.notifica.ktx.events
 
 public abstract class InAppMessagingBaseFragment : Fragment() {
-
-    private val logger = NotificareLogger(
-        Notificare.options?.debugLoggingEnabled ?: false,
-        "InAppMessagingBaseFragment"
-    )
-
     protected lateinit var message: NotificareInAppMessage
 
     protected abstract val animatedView: View

@@ -10,19 +10,14 @@ import androidx.fragment.app.commit
 import re.notifica.Notificare
 import re.notifica.iam.R
 import re.notifica.iam.databinding.NotificareInAppMessagingActivityBinding
+import re.notifica.iam.internal.logger
 import re.notifica.iam.ktx.INTENT_EXTRA_IN_APP_MESSAGE
 import re.notifica.iam.ktx.inAppMessagingImplementation
 import re.notifica.iam.models.NotificareInAppMessage
-import re.notifica.utilities.logging.NotificareLogger
 import re.notifica.utilities.threading.onMainThread
 import re.notifica.utilities.parcel.parcelable
 
 public open class InAppMessagingActivity : AppCompatActivity() {
-
-    private val logger = NotificareLogger(
-        Notificare.options?.debugLoggingEnabled ?: false,
-        "InAppMessagingActivity"
-    )
 
     private lateinit var binding: NotificareInAppMessagingActivityBinding
     private var backgroundTimestamp: Long? = null

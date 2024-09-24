@@ -4,18 +4,12 @@ import android.app.Dialog
 import android.os.Bundle
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
-import re.notifica.Notificare
-import re.notifica.utilities.logging.NotificareLogger
 import re.notifica.utilities.parcel.parcelable
 import re.notifica.models.NotificareNotification
 import re.notifica.push.ui.R
+import re.notifica.push.ui.internal.logger
 
 public class NotificationActionsDialog : DialogFragment() {
-
-    private val logger = NotificareLogger(
-        Notificare.options?.debugLoggingEnabled ?: false,
-        "NotificareActionsDialog"
-    )
 
     private lateinit var callback: Callback
     private var notification: NotificareNotification? = null

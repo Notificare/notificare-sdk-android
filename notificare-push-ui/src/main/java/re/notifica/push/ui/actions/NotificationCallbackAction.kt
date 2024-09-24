@@ -12,11 +12,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import re.notifica.Notificare
-import re.notifica.utilities.logging.NotificareLogger
 import re.notifica.utilities.threading.onMainThread
 import re.notifica.models.NotificareNotification
 import re.notifica.push.ui.R
 import re.notifica.push.ui.actions.base.NotificationAction
+import re.notifica.push.ui.internal.logger
 import re.notifica.push.ui.ktx.pushUIImplementation
 import re.notifica.push.ui.ktx.pushUIInternal
 import re.notifica.push.ui.models.NotificarePendingResult
@@ -27,11 +27,6 @@ internal class NotificationCallbackAction(
     notification: NotificareNotification,
     action: NotificareNotification.Action
 ) : NotificationAction(context, notification, action) {
-
-    private val logger = NotificareLogger(
-        Notificare.options?.debugLoggingEnabled ?: false,
-        "NotificationCallbackAction"
-    )
 
     override suspend fun execute(): NotificarePendingResult? = withContext(Dispatchers.IO) {
         when {
@@ -52,6 +47,7 @@ internal class NotificationCallbackAction(
                     imageUri = imageUri,
                 )
             }
+
             action.keyboard -> {
                 // Just Keyboard, return the result to the caller.
                 NotificarePendingResult(
@@ -61,6 +57,7 @@ internal class NotificationCallbackAction(
                     imageUri = null,
                 )
             }
+
             else -> {
                 // Just do the call.
                 send(notification, action, null, null, null)

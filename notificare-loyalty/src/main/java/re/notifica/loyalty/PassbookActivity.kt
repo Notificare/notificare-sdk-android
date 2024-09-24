@@ -13,7 +13,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import re.notifica.Notificare
 import re.notifica.NotificareCallback
-import re.notifica.utilities.logging.NotificareLogger
+import re.notifica.loyalty.internal.logger
 import re.notifica.utilities.parcel.parcelable
 import re.notifica.loyalty.ktx.INTENT_EXTRA_PASSBOOK
 import re.notifica.loyalty.ktx.loyalty
@@ -21,11 +21,6 @@ import re.notifica.loyalty.models.NotificarePass
 import re.notifica.utilities.content.applicationName
 
 public open class PassbookActivity : AppCompatActivity() {
-
-    private val logger = NotificareLogger(
-        Notificare.options?.debugLoggingEnabled ?: false,
-        "PassbookActivity"
-    )
 
     private lateinit var webView: WebView
     private var pass: NotificarePass? = null

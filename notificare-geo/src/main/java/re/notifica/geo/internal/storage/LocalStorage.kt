@@ -7,12 +7,12 @@ import com.squareup.moshi.Types
 import java.util.Date
 import re.notifica.Notificare
 import re.notifica.geo.internal.canInsertBeacon
+import re.notifica.geo.internal.logger
 import re.notifica.geo.models.NotificareBeacon
 import re.notifica.geo.models.NotificareBeaconSession
 import re.notifica.geo.models.NotificareLocation
 import re.notifica.geo.models.NotificareRegion
 import re.notifica.geo.models.NotificareRegionSession
-import re.notifica.utilities.logging.NotificareLogger
 import re.notifica.internal.moshi
 
 private const val PREFERENCES_FILE_NAME = "re.notifica.geo.preferences"
@@ -26,11 +26,6 @@ private const val PREFERENCE_REGION_SESSIONS = "re.notifica.geo.preferences.regi
 private const val PREFERENCE_BEACON_SESSIONS = "re.notifica.geo.preferences.beacon_sessions"
 
 internal class LocalStorage(context: Context) {
-
-    private val logger = NotificareLogger(
-        Notificare.options?.debugLoggingEnabled ?: false,
-        "LocalStorage"
-    )
 
     private val sharedPreferences = context.getSharedPreferences(
         PREFERENCES_FILE_NAME,

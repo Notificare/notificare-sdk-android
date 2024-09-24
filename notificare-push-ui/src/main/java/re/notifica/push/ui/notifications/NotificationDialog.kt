@@ -8,21 +8,16 @@ import android.widget.ArrayAdapter
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
 import re.notifica.Notificare
-import re.notifica.utilities.logging.NotificareLogger
 import re.notifica.utilities.threading.onMainThread
 import re.notifica.utilities.parcel.parcelable
 import re.notifica.models.NotificareNotification
 import re.notifica.push.ui.R
 import re.notifica.push.ui.databinding.NotificareAlertDialogBinding
+import re.notifica.push.ui.internal.logger
 import re.notifica.push.ui.ktx.pushUIInternal
 import re.notifica.utilities.content.applicationName
 
 public class NotificationDialog : DialogFragment() {
-
-    private val logger = NotificareLogger(
-        Notificare.options?.debugLoggingEnabled ?: false,
-        "NotificationDialog"
-    )
 
     private var callback: Callback? = null
     private var notification: NotificareNotification? = null

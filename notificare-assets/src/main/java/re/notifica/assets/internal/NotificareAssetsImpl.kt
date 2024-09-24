@@ -11,7 +11,6 @@ import re.notifica.NotificareServiceUnavailableException
 import re.notifica.assets.NotificareAssets
 import re.notifica.assets.internal.network.push.FetchAssetsResponse
 import re.notifica.assets.models.NotificareAsset
-import re.notifica.utilities.logging.NotificareLogger
 import re.notifica.internal.NotificareModule
 import re.notifica.utilities.coroutines.toCallbackFunction
 import re.notifica.internal.network.request.NotificareRequest
@@ -20,11 +19,11 @@ import re.notifica.models.NotificareApplication
 
 @Keep
 internal object NotificareAssetsImpl : NotificareModule(), NotificareAssets {
+    override fun configure() {
+        logger.hasDebugLoggingEnabled = checkNotNull(Notificare.options).debugLoggingEnabled
+    }
 
-    private val logger = NotificareLogger(
-        Notificare.options?.debugLoggingEnabled ?: false,
-        "NotificareAssets"
-    )
+    // region Notificare Assets
 
     override suspend fun fetch(group: String): List<NotificareAsset> = withContext(Dispatchers.IO) {
         checkPrerequisites()
@@ -40,6 +39,8 @@ internal object NotificareAssetsImpl : NotificareModule(), NotificareAssets {
 
     override fun fetch(group: String, callback: NotificareCallback<List<NotificareAsset>>): Unit =
         toCallbackFunction(NotificareAssetsImpl::fetch)(group, callback::onSuccess, callback::onFailure)
+
+    // endregion
 
     @Throws
     private fun checkPrerequisites() {

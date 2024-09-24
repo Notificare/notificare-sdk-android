@@ -11,25 +11,20 @@ import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import re.notifica.Notificare
-import re.notifica.utilities.logging.NotificareLogger
-import re.notifica.utilities.threading.onMainThread
 import re.notifica.models.NotificareNotification
 import re.notifica.push.ui.closeWindowQueryParameter
+import re.notifica.push.ui.internal.logger
 import re.notifica.push.ui.ktx.pushUIInternal
 import re.notifica.push.ui.notifications.fragments.base.NotificationFragment
 import re.notifica.push.ui.openActionQueryParameter
 import re.notifica.push.ui.openActionsQueryParameter
 import re.notifica.push.ui.urlSchemes
+import re.notifica.utilities.threading.onMainThread
 
 internal open class NotificationWebViewClient(
     private val notification: NotificareNotification,
     private val callback: NotificationFragment.Callback,
 ) : WebViewClient() {
-
-    private val logger = NotificareLogger(
-        Notificare.options?.debugLoggingEnabled ?: false,
-        "NotificationWebViewClient"
-    )
 
     private var loadingError: WebResourceError? = null
 

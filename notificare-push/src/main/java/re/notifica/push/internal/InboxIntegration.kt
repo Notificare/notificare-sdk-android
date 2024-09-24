@@ -3,7 +3,6 @@ package re.notifica.push.internal
 import android.content.Intent
 import androidx.core.os.bundleOf
 import re.notifica.Notificare
-import re.notifica.utilities.logging.NotificareLogger
 import re.notifica.models.NotificareNotification
 import re.notifica.push.models.NotificareNotificationRemoteMessage
 
@@ -17,11 +16,6 @@ internal object InboxIntegration {
 
     private const val INTENT_EXTRA_INBOX_NOTIFICATION_RECEIVED_BUNDLE = "re.notifica.inbox.intent.extra.InboxBundle"
     private const val INTENT_EXTRA_INBOX_ITEM_ID = "re.notifica.inbox.intent.extra.InboxItemId"
-
-    private val logger = NotificareLogger(
-        Notificare.options?.debugLoggingEnabled ?: false,
-        "InboxIntegration"
-    )
 
     fun reloadInbox() {
         try {

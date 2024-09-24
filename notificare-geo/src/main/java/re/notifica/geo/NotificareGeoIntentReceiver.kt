@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import re.notifica.Notificare
+import re.notifica.geo.internal.logger
 import re.notifica.geo.ktx.INTENT_ACTION_BEACONS_RANGED
 import re.notifica.geo.ktx.INTENT_ACTION_BEACON_ENTERED
 import re.notifica.geo.ktx.INTENT_ACTION_BEACON_EXITED
@@ -17,16 +18,10 @@ import re.notifica.geo.ktx.INTENT_EXTRA_REGION
 import re.notifica.geo.models.NotificareBeacon
 import re.notifica.geo.models.NotificareLocation
 import re.notifica.geo.models.NotificareRegion
-import re.notifica.utilities.logging.NotificareLogger
 import re.notifica.utilities.parcel.parcelable
 import re.notifica.utilities.parcel.parcelableArrayList
 
 public open class NotificareGeoIntentReceiver : BroadcastReceiver() {
-
-    private val logger = NotificareLogger(
-        Notificare.options?.debugLoggingEnabled ?: false,
-        "NotificareGeoIntentReceiver"
-    )
 
     override fun onReceive(context: Context, intent: Intent) {
         when (intent.action) {

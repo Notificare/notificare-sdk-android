@@ -4,9 +4,9 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import re.notifica.Notificare
-import re.notifica.utilities.logging.NotificareLogger
 import re.notifica.utilities.parcel.parcelable
 import re.notifica.models.NotificareNotification
+import re.notifica.push.internal.logger
 import re.notifica.push.ktx.INTENT_ACTION_ACTION_OPENED
 import re.notifica.push.ktx.INTENT_ACTION_LIVE_ACTIVITY_UPDATE
 import re.notifica.push.ktx.INTENT_ACTION_NOTIFICATION_OPENED
@@ -27,17 +27,13 @@ import re.notifica.push.models.NotificareUnknownNotification
 
 public open class NotificarePushIntentReceiver : BroadcastReceiver() {
 
-    private val logger = NotificareLogger(
-        Notificare.options?.debugLoggingEnabled ?: false,
-        "NotificarePushIntentReceiver"
-    )
-
     override fun onReceive(context: Context, intent: Intent) {
         when (intent.action) {
             Notificare.INTENT_ACTION_SUBSCRIPTION_CHANGED -> {
                 val subscription: NotificarePushSubscription? = intent.parcelable(Notificare.INTENT_EXTRA_SUBSCRIPTION)
                 onSubscriptionChanged(context, subscription)
             }
+
             Notificare.INTENT_ACTION_TOKEN_CHANGED -> {
                 val token: String = requireNotNull(
                     intent.getStringExtra(Notificare.INTENT_EXTRA_TOKEN)
@@ -46,6 +42,7 @@ public open class NotificarePushIntentReceiver : BroadcastReceiver() {
                 @Suppress("DEPRECATION")
                 onTokenChanged(context, token)
             }
+
             Notificare.INTENT_ACTION_NOTIFICATION_RECEIVED -> {
                 val notification: NotificareNotification = requireNotNull(
                     intent.parcelable(Notificare.INTENT_EXTRA_NOTIFICATION)
@@ -57,6 +54,7 @@ public open class NotificarePushIntentReceiver : BroadcastReceiver() {
 
                 onNotificationReceived(context, notification, deliveryMechanism)
             }
+
             Notificare.INTENT_ACTION_SYSTEM_NOTIFICATION_RECEIVED -> {
                 val notification: NotificareSystemNotification = requireNotNull(
                     intent.parcelable(Notificare.INTENT_EXTRA_NOTIFICATION)
@@ -64,6 +62,7 @@ public open class NotificarePushIntentReceiver : BroadcastReceiver() {
 
                 onSystemNotificationReceived(context, notification)
             }
+
             Notificare.INTENT_ACTION_UNKNOWN_NOTIFICATION_RECEIVED -> {
                 val notification: NotificareUnknownNotification = requireNotNull(
                     intent.parcelable(Notificare.INTENT_EXTRA_NOTIFICATION)
@@ -71,6 +70,7 @@ public open class NotificarePushIntentReceiver : BroadcastReceiver() {
 
                 onUnknownNotificationReceived(context, notification)
             }
+
             Notificare.INTENT_ACTION_NOTIFICATION_OPENED -> {
                 val notification: NotificareNotification = requireNotNull(
                     intent.parcelable(Notificare.INTENT_EXTRA_NOTIFICATION)
@@ -78,6 +78,7 @@ public open class NotificarePushIntentReceiver : BroadcastReceiver() {
 
                 onNotificationOpened(context, notification)
             }
+
             Notificare.INTENT_ACTION_ACTION_OPENED -> {
                 val notification: NotificareNotification = requireNotNull(
                     intent.parcelable(Notificare.INTENT_EXTRA_NOTIFICATION)
@@ -89,6 +90,7 @@ public open class NotificarePushIntentReceiver : BroadcastReceiver() {
 
                 onActionOpened(context, notification, action)
             }
+
             Notificare.INTENT_ACTION_LIVE_ACTIVITY_UPDATE -> {
                 val update: NotificareLiveActivityUpdate = requireNotNull(
                     intent.parcelable(Notificare.INTENT_EXTRA_LIVE_ACTIVITY_UPDATE)

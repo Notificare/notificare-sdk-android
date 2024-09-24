@@ -4,15 +4,9 @@ import android.app.Activity
 import android.net.Uri
 import androidx.annotation.MainThread
 import re.notifica.InternalNotificareApi
-import re.notifica.Notificare
-import re.notifica.utilities.logging.NotificareLogger
 import re.notifica.models.NotificareNotification
+import re.notifica.push.ui.internal.logger
 import java.lang.ref.WeakReference
-
-private val logger = NotificareLogger(
-    Notificare.options?.debugLoggingEnabled ?: false,
-    "NotificarePushUI"
-)
 
 public interface NotificarePushUI {
 

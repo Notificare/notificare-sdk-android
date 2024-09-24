@@ -16,7 +16,6 @@ import re.notifica.inbox.user.NotificareUserInbox
 import re.notifica.inbox.user.internal.moshi.UserInboxResponseAdapter
 import re.notifica.inbox.user.models.NotificareUserInboxItem
 import re.notifica.inbox.user.models.NotificareUserInboxResponse
-import re.notifica.utilities.logging.NotificareLogger
 import re.notifica.internal.NotificareModule
 import re.notifica.utilities.coroutines.toCallbackFunction
 import re.notifica.internal.moshi
@@ -30,12 +29,11 @@ import re.notifica.models.NotificareNotification
 @Keep
 internal object NotificareUserInboxImpl : NotificareModule(), NotificareUserInbox {
 
-    private val logger = NotificareLogger(
-        Notificare.options?.debugLoggingEnabled ?: false,
-        "NotificareUserInbox"
-    )
-
     // region Notificare Module
+
+    override fun configure() {
+        logger.hasDebugLoggingEnabled = checkNotNull(Notificare.options).debugLoggingEnabled
+    }
 
     override fun moshi(builder: Moshi.Builder) {
         builder.add(UserInboxResponseAdapter())
