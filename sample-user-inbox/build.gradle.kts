@@ -28,6 +28,7 @@ android {
         manifestPlaceholders["auth0Domain"] = properties.getProperty("user.inbox.login.domain")
         manifestPlaceholders["auth0Scheme"] = "auth.re.notifica.sample.user.inbox.app.dev"
 
+        resValue("string", "user_inbox_base_url", properties.getProperty("user.inbox.base.url"))
         resValue("string", "user_inbox_fetch_inbox_url", properties.getProperty("user.inbox.fetch.inbox.url"))
         resValue("string", "user_inbox_register_device_url", properties.getProperty("user.inbox.register.device.url"))
         resValue("string", "user_inbox_login_domain", properties.getProperty("user.inbox.login.domain"))
@@ -110,20 +111,17 @@ dependencies {
     implementation(libs.google.material)
     implementation(libs.timber)
 
-    // Glide
-    implementation(libs.glide)
-    ksp(libs.glide.compiler)
-
-    // Moshi
-    implementation(libs.moshi.kotlin)
-    implementation(libs.moshi.adapters)
-    ksp(libs.moshi.codegen)
-
-    implementation(libs.okhttp)
-
     implementation(libs.androidx.navigation.fragment)
     implementation(libs.androidx.navigation.ui)
 
+    // Glide
+    implementation(libs.glide)
+    ksp(libs.glide.ksp)
+
+    // Retrofit
+    implementation(libs.bundles.retrofit)
+
+    // Auth0
     implementation(libs.auth0)
 
     implementation(project(":notificare"))

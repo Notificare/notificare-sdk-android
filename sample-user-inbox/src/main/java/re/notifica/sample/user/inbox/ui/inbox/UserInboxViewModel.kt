@@ -1,38 +1,36 @@
 package re.notifica.sample.user.inbox.ui.inbox
 
 import android.app.Activity
+import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.auth0.android.Auth0
 import kotlinx.coroutines.launch
-import org.json.JSONObject
 import re.notifica.Notificare
 import re.notifica.inbox.user.ktx.userInbox
 import re.notifica.inbox.user.models.NotificareUserInboxItem
 import re.notifica.push.ui.ktx.pushUI
 import re.notifica.sample.user.inbox.core.BaseViewModel
 import re.notifica.sample.user.inbox.core.NotificationEvent
-import re.notifica.sample.user.inbox.network.SampleRequest
+import re.notifica.sample.user.inbox.network.UserInboxService
+import retrofit2.Retrofit
+import retrofit2.converter.scalars.ScalarsConverterFactory
 import timber.log.Timber
 
 internal class UserInboxViewModel : BaseViewModel() {
     private val _items = MutableLiveData<List<NotificareUserInboxItem>>()
     val items: LiveData<List<NotificareUserInboxItem>> = _items
 
-    init {
-        viewModelScope.launch {
-            NotificationEvent.inboxShouldUpdateFlow.collect {
-                refresh()
-            }
-        }
-    }
-
     internal fun open(activity: Activity, item: NotificareUserInboxItem) {
         viewModelScope.launch {
             try {
                 val notification = Notificare.userInbox().open(item)
                 Notificare.pushUI().presentNotification(activity, notification)
-                NotificationEvent.triggerInboxShouldUpdateEvent()
+
+                if (!item.opened) {
+                    NotificationEvent.triggerInboxShouldUpdateEvent()
+                }
 
                 Timber.i("Opened inbox item successfully.")
                 showSnackBar("Opened inbox item successfully.")
@@ -47,7 +45,10 @@ internal class UserInboxViewModel : BaseViewModel() {
         viewModelScope.launch {
             try {
                 Notificare.userInbox().markAsRead(item)
-                NotificationEvent.triggerInboxShouldUpdateEvent()
+
+                if (!item.opened) {
+                    NotificationEvent.triggerInboxShouldUpdateEvent()
+                }
 
                 Timber.i("Mark inbox item as read successfully.")
                 showSnackBar("Mark inbox item as read successfully.")
@@ -73,23 +74,28 @@ internal class UserInboxViewModel : BaseViewModel() {
         }
     }
 
-    internal fun refresh() {
-        if (accessToken == null) {
-            Timber.e("Failed refreshing inbox, access token is missing.")
-            showSnackBar("Failed refreshing inbox, access token is missing.")
+    internal fun refresh(context: Context, account: Auth0) {
+        val manager = getCredentialsManager(context, account)
+
+        if (!manager.hasValidCredentials()) {
+            Timber.e("Failed refreshing inbox, no valid credentials.")
+            showSnackBar("Failed refreshing inbox, no valid credentials.")
 
             return
         }
 
         viewModelScope.launch {
             try {
-                val responseStr = SampleRequest.Builder()
-                    .authentication("Bearer $accessToken")
-                    .get(fetchInboxUrl)
-                    .responseString()
+                val credentials = manager.awaitCredentials()
 
-                val json = JSONObject(responseStr)
-                val userInboxResponse = Notificare.userInbox().parseResponse(json)
+                val retrofit = Retrofit.Builder()
+                    .baseUrl("$baseUrl/")
+                    .addConverterFactory(ScalarsConverterFactory.create())
+                    .build()
+
+                val userInboxService = retrofit.create(UserInboxService::class.java)
+                val call = userInboxService.fetchInbox(credentials.accessToken, fetchInboxUrl)
+                val userInboxResponse = Notificare.userInbox().parseResponse(call)
 
                 _items.postValue(userInboxResponse.items)
 

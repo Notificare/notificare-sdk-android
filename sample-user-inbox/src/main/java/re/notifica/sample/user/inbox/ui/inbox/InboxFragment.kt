@@ -11,11 +11,14 @@ import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import kotlinx.coroutines.launch
 import re.notifica.inbox.user.models.NotificareUserInboxItem
 import re.notifica.sample.user.inbox.R
 import re.notifica.sample.user.inbox.core.BaseFragment
+import re.notifica.sample.user.inbox.core.NotificationEvent
 import re.notifica.sample.user.inbox.databinding.FragmentInboxBinding
 
 internal class InboxFragment : BaseFragment() {
@@ -38,6 +41,12 @@ internal class InboxFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupMenu()
+
+        lifecycleScope.launch {
+            NotificationEvent.inboxShouldUpdateFlow.collect {
+                viewModel.refresh(requireContext(), account)
+            }
+        }
     }
 
     private fun setupMenu() {
@@ -97,6 +106,6 @@ internal class InboxFragment : BaseFragment() {
     }
 
     private fun refresh() {
-        viewModel.refresh()
+        viewModel.refresh(requireContext(), account)
     }
 }

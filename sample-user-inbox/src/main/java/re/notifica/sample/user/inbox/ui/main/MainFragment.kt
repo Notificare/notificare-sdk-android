@@ -18,26 +18,25 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import com.auth0.android.Auth0
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
 import kotlinx.coroutines.launch
 import re.notifica.Notificare
+import re.notifica.models.NotificareApplication
 import re.notifica.models.NotificareDoNotDisturb
 import re.notifica.models.NotificareTime
 import re.notifica.push.ktx.push
 import re.notifica.sample.user.inbox.BuildConfig
 import re.notifica.sample.user.inbox.R
 import re.notifica.sample.user.inbox.core.BaseFragment
+import re.notifica.sample.user.inbox.core.NotificationEvent
 import re.notifica.sample.user.inbox.databinding.FragmentMainBinding
 import timber.log.Timber
 
-internal class MainFragment : BaseFragment() {
+internal class MainFragment : BaseFragment(), Notificare.Listener {
     private val pendingRationales = mutableListOf<PermissionType>()
     private val viewModel: MainViewModel by viewModels()
     private lateinit var binding: FragmentMainBinding
-
-    private lateinit var account: Auth0
 
     override val baseViewModel: MainViewModel by viewModels()
     // Permission Launcher
@@ -80,14 +79,12 @@ internal class MainFragment : BaseFragment() {
         lifecycle.addObserver(viewModel)
 
         viewModel.setUserInboxURLs(
+            base = requireContext().getString(R.string.user_inbox_base_url),
             registerDevice = requireContext().getString(R.string.user_inbox_register_device_url),
             fetchInbox = requireContext().getString(R.string.user_inbox_fetch_inbox_url)
         )
 
-        account = Auth0(
-            requireContext().getString(R.string.user_inbox_login_client_id),
-            requireContext().getString(R.string.user_inbox_login_domain),
-        )
+        Notificare.addListener(this)
     }
 
     override fun onDestroy() {
@@ -101,37 +98,34 @@ internal class MainFragment : BaseFragment() {
         setupListeners()
         setupObservers()
 
+        if (Notificare.isReady && !viewModel.didAutoLogin) {
+            viewModel.startAutoLoginFlow(requireContext(), account)
+        }
+
+        lifecycleScope.launch {
+            NotificationEvent.inboxShouldUpdateFlow.collect {
+                viewModel.refreshBadge(requireContext(), account)
+            }
+        }
+
         return binding.root
+    }
+
+    override fun onReady(application: NotificareApplication) {
+        if (!viewModel.didAutoLogin) {
+            viewModel.startAutoLoginFlow(requireContext(), account)
+        }
     }
 
     private fun setupListeners() {
         // Authentication flow
 
         binding.authenticationCard.loginButton.setOnClickListener {
-            lifecycleScope.launch {
-                try {
-                    val token = viewModel.loginWithBrowser(requireContext(), account)
-                    Timber.d("Successfully logged in.")
-
-                    viewModel.registerDevice(token)
-                    Timber.d("Successfully registered device.")
-
-                    viewModel.refreshBadge()
-                } catch (e: Exception) {
-                    Timber.e(e, "Failed login flow.")
-                }
-            }
+            viewModel.startLoginFLow(requireContext(), account)
         }
 
         binding.authenticationCard.logoutButton.setOnClickListener {
-            lifecycleScope.launch {
-                try {
-                    viewModel.logoutWithBrowser(requireContext(), account)
-                    Timber.d("Successfully logged out.")
-                } catch (e: Exception) {
-                    Timber.e(e, "Failed to logout.")
-                }
-            }
+            viewModel.startLogoutFlow(requireContext(), account)
         }
 
         // Launch flow

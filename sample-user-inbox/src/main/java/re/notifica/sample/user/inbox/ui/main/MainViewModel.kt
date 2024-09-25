@@ -8,8 +8,8 @@ import androidx.lifecycle.asFlow
 import androidx.lifecycle.viewModelScope
 import com.auth0.android.Auth0
 import com.auth0.android.provider.WebAuthProvider
+import com.auth0.android.result.Credentials
 import kotlinx.coroutines.launch
-import org.json.JSONObject
 import re.notifica.Notificare
 import re.notifica.inbox.user.ktx.userInbox
 import re.notifica.ktx.device
@@ -18,16 +18,19 @@ import re.notifica.models.NotificareDoNotDisturb
 import re.notifica.models.NotificareTime
 import re.notifica.push.ktx.push
 import re.notifica.sample.user.inbox.core.BaseViewModel
-import re.notifica.sample.user.inbox.core.NotificationEvent
 import re.notifica.sample.user.inbox.ktx.hasNotificationsPermission
 import re.notifica.sample.user.inbox.models.ApplicationInfo
-import re.notifica.sample.user.inbox.network.SampleRequest
+import re.notifica.sample.user.inbox.network.UserInboxService
+import retrofit2.Retrofit
+import retrofit2.converter.scalars.ScalarsConverterFactory
 import timber.log.Timber
 
 internal class MainViewModel :
     BaseViewModel(),
     DefaultLifecycleObserver,
     Notificare.Listener {
+    internal var didAutoLogin = false
+
     private val _isLoggedIn: MutableLiveData<Boolean> = MutableLiveData(false)
     val isLoggedIn: LiveData<Boolean> = _isLoggedIn
 
@@ -112,14 +115,8 @@ internal class MainViewModel :
             Notificare.push().observableSubscription
                 .asFlow()
                 .collect { subscription ->
-                    Timber.d("subscription changed = $subscription")
+                    Timber.i("subscription changed = $subscription")
                 }
-        }
-
-        viewModelScope.launch {
-            NotificationEvent.inboxShouldUpdateFlow.collect {
-                refreshBadge()
-            }
         }
     }
 
@@ -190,23 +187,105 @@ internal class MainViewModel :
         }
     }
 
-    internal fun refreshBadge() {
-        if (accessToken == null) {
-            Timber.e("Failed refreshing badge, access token is missing.")
-            showSnackBar("Failed refreshing badge, access token is missing.")
+    internal fun startAutoLoginFlow(context: Context, account: Auth0) {
+        didAutoLogin = true
+
+        val manager = getCredentialsManager(context, account)
+
+        if (!manager.hasValidCredentials()) {
+            Timber.e("Failed to auto login, no saved credentials.")
+            showSnackBar("Failed to auto login, no saved credentials.")
 
             return
         }
 
         viewModelScope.launch {
             try {
-                val responseStr = SampleRequest.Builder()
-                    .authentication("Bearer $accessToken")
-                    .get(fetchInboxUrl)
-                    .responseString()
+                val credentials = manager.awaitCredentials()
+                _isLoggedIn.postValue(true)
+                Timber.i("Successfully got stored credentials for auto login flow.")
 
-                val json = JSONObject(responseStr)
-                val userInboxResponse = Notificare.userInbox().parseResponse(json)
+                registerDeviceWithUser(credentials.accessToken)
+                _deviceRegistered.postValue(true)
+                Timber.i("Successfully registered device.")
+
+                refreshBadge(context, account)
+
+                Timber.i("Auto login success.")
+            } catch (e: Exception) {
+                Timber.e(e, "Failed to auto login.")
+            }
+        }
+    }
+
+    internal fun startLoginFLow(context: Context, account: Auth0) {
+        val manager = getCredentialsManager(context, account)
+
+        viewModelScope.launch {
+            try {
+                val credentials = loginWithBrowser(context, account)
+                manager.saveCredentials(credentials)
+                _isLoggedIn.postValue(true)
+                Timber.i("Successfully logged in and stored credentials.")
+
+                registerDeviceWithUser(credentials.accessToken)
+                _deviceRegistered.postValue(true)
+                Timber.i("Successfully registered device.")
+
+                refreshBadge(context, account)
+
+                Timber.i("Login flow success.")
+            } catch (e: Exception) {
+                Timber.e(e, "Login flow failed.")
+            }
+        }
+    }
+
+    internal fun startLogoutFlow(context: Context, account: Auth0) {
+        val manager = getCredentialsManager(context, account)
+
+        viewModelScope.launch {
+            try {
+                val credentials = manager.awaitCredentials()
+                manager.clearCredentials()
+                Timber.i("Cleaned stored credentials.")
+
+                logoutWithBrowser(context, account)
+                _isLoggedIn.postValue(false)
+                Timber.i("Cleaned web credentials.")
+
+                registerDeviceAsAnonymous(credentials.accessToken)
+                Timber.i("Registered device as anonymous successful.")
+
+                Timber.i("Successfully logged out.")
+            } catch (e: Exception) {
+                Timber.e(e, "Failed to logout.")
+            }
+        }
+    }
+
+    internal fun refreshBadge(context: Context, account: Auth0) {
+        val manager = getCredentialsManager(context, account)
+
+        if (!manager.hasValidCredentials()) {
+            Timber.e("Failed refreshing badge, no valid credentials.")
+            showSnackBar("Failed refreshing badge, no valid credentials.")
+
+            return
+        }
+
+        viewModelScope.launch {
+            try {
+                val credentials = manager.awaitCredentials()
+
+                val retrofit = Retrofit.Builder()
+                    .baseUrl("$baseUrl/")
+                    .addConverterFactory(ScalarsConverterFactory.create())
+                    .build()
+
+                val userInboxService = retrofit.create(UserInboxService::class.java)
+                val call = userInboxService.fetchInbox(credentials.accessToken, fetchInboxUrl)
+                val userInboxResponse = Notificare.userInbox().parseResponse(call)
 
                 _badge.postValue(userInboxResponse.unread)
 
@@ -219,41 +298,42 @@ internal class MainViewModel :
         }
     }
 
-    internal suspend fun loginWithBrowser(context: Context, account: Auth0): String {
+    private suspend fun loginWithBrowser(context: Context, account: Auth0): Credentials {
         val credentials = WebAuthProvider.login(account)
             .withScheme(AUTH_SCHEME)
             .await(context)
 
-        accessToken = credentials.accessToken
-        _isLoggedIn.postValue(true)
-
-        return credentials.accessToken
+        return credentials
     }
 
-    internal suspend fun logoutWithBrowser(context: Context, account: Auth0) {
+    private suspend fun logoutWithBrowser(context: Context, account: Auth0) {
         WebAuthProvider.logout(account)
             .withScheme(AUTH_SCHEME)
             .await(context)
-
-        accessToken = null
-        _isLoggedIn.postValue(false)
     }
 
-    internal suspend fun registerDevice(token: String) {
-        if (_deviceRegistered.value == true) {
-            Timber.i("Device already registered, skipping.")
-            return
-        }
-
+    private suspend fun registerDeviceAsAnonymous(accessToken: String) {
         val device = Notificare.device().currentDevice
             ?: throw Exception("Notificare current device is null, can not assign device to user without device ID.")
 
-        SampleRequest.Builder()
-            .authentication("Bearer $token")
-            .put("$registerDeviceUrl/${device.id}", null)
-            .response()
+        val retrofit = Retrofit.Builder()
+            .baseUrl("$baseUrl/")
+            .build()
 
-        _deviceRegistered.postValue(true)
+        val userInboxService = retrofit.create(UserInboxService::class.java)
+        userInboxService.registerDeviceAsAnonymous(accessToken, "$registerDeviceUrl/${device.id}/")
+    }
+
+    private suspend fun registerDeviceWithUser(accessToken: String) {
+        val device = Notificare.device().currentDevice
+            ?: throw Exception("Notificare current device is null, can not assign device to user without device ID.")
+
+        val retrofit = Retrofit.Builder()
+            .baseUrl("$baseUrl/")
+            .build()
+
+        val userInboxService = retrofit.create(UserInboxService::class.java)
+        userInboxService.registerDeviceWithUser(accessToken, "$registerDeviceUrl/${device.id}/")
     }
 
     private fun updateNotificareReadyStatus() {

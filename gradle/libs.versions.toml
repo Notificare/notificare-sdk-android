@@ -42,6 +42,7 @@ detekt = "1.23.3"
 junit = "4.13.2"
 robolectric = "4.12.2"
 auth0 = "2.11.0"
+retrofit = "2.11.0"
 
 [libraries]
 kotlinx-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinx-coroutines" }
@@ -75,6 +76,7 @@ okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
 okhttp-loggingInterceptor = { module = "com.squareup.okhttp3:logging-interceptor", version.ref = "okhttp" }
 glide = { module = "com.github.bumptech.glide:glide", version.ref = "glide" }
 glide-compiler = { module = "com.github.bumptech.glide:compiler", version.ref = "glide" }
+glide-ksp = { module = "com.github.bumptech.glide:ksp", version.ref = "glide" }
 altbeacon = { module = "org.altbeacon:android-beacon-library", version.ref = "altbeacon"}
 google-firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "google-firebase" }
 google-firebase-messaging = { module = "com.google.firebase:firebase-messaging-ktx" }
@@ -87,6 +89,8 @@ timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
 junit = { module = "junit:junit", version.ref = "junit"}
 robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
 auth0 = { module = "com.auth0.android:auth0", version.ref="auth0" }
+retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref="retrofit" }
+retrofit-scalars = { module = "com.squareup.retrofit2:converter-scalars", version.ref="retrofit" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "android-tools" }
@@ -103,3 +107,4 @@ androidx-lifecycle = ["androidx-lifecycle-livedata", "androidx-lifecycle-process
 androidx-room = ["androidx-room", "androidx-room-runtime"]
 moshi = ["moshi", "moshi-adapters"]
 okhttp = ["okhttp", "okhttp-loggingInterceptor"]
+retrofit = ["retrofit", "retrofit-scalars"]
