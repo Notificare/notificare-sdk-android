@@ -137,7 +137,7 @@ dependencies {
 
     // Glide
     implementation(libs.glide)
-    ksp(libs.glide.compiler)
+    ksp(libs.glide.ksp)
 
     // Moshi
     implementation(libs.moshi.kotlin)
