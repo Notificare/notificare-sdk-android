@@ -13,6 +13,8 @@ public abstract class NotificareModule {
 
     public open fun configure() {}
 
+    public open suspend fun clearStorage() {}
+
     public open suspend fun launch() {}
 
     public open suspend fun postLaunch() {}

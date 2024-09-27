@@ -133,7 +133,7 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
             return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 ContextCompat.checkSelfPermission(
                     Notificare.requireContext(),
-                    Manifest.permission.BLUETOOTH
+                    Manifest.permission.BLUETOOTH_SCAN
                 ) == PackageManager.PERMISSION_GRANTED
             } else {
                 true
@@ -230,6 +230,13 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
     override fun migrate(savedState: SharedPreferences, settings: SharedPreferences) {
         val localStorage = LocalStorage(Notificare.requireContext())
         localStorage.locationServicesEnabled = settings.getBoolean("locationUpdates", false)
+    }
+
+    override suspend fun clearStorage() {
+        serviceManager?.disableLocationUpdates()
+        beaconServiceManager?.clearMonitoring()
+
+        localStorage.clear()
     }
 
     override fun configure() {

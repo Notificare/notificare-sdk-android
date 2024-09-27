@@ -11,8 +11,8 @@
             android:name="re.notifica.geo.gms.LocationReceiver"
             android:exported="false">
             <intent-filter>
-                <action android:name="re.notifica.intent.action.LocationUpdated" />
-                <action android:name="re.notifica.intent.action.GeofenceTransition" />
+                <action android:name="re.notifica.intent.action.internal.LocationUpdated" />
+                <action android:name="re.notifica.intent.action.internal.GeofenceTransition" />
             </intent-filter>
         </receiver>
 

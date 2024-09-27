@@ -9,7 +9,7 @@ import com.google.android.gms.location.GeofencingEvent
 import com.google.android.gms.location.LocationResult
 import re.notifica.Notificare
 import re.notifica.geo.internal.logger
-import re.notifica.geo.ktx.INTENT_ACTION_GEOFENCE_TRANSITION
+import re.notifica.geo.ktx.INTENT_ACTION_INTERNAL_GEOFENCE_TRANSITION
 import re.notifica.geo.ktx.INTENT_ACTION_INTERNAL_LOCATION_UPDATED
 import re.notifica.geo.ktx.geoInternal
 
@@ -25,7 +25,7 @@ internal class LocationReceiver : BroadcastReceiver() {
                     onLocationUpdated(location)
                 }
             }
-            Notificare.INTENT_ACTION_GEOFENCE_TRANSITION -> {
+            Notificare.INTENT_ACTION_INTERNAL_GEOFENCE_TRANSITION -> {
                 val event = GeofencingEvent.fromIntent(intent) ?: return
                 if (event.hasError()) {
                     logger.warning("Geofencing error: ${event.errorCode}")

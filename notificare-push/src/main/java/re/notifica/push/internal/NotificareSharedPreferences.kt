@@ -104,4 +104,10 @@ internal class NotificareSharedPreferences(context: Context) {
     var firstRegistration: Boolean
         get() = sharedPreferences.getBoolean(PREFERENCE_FIRST_REGISTRATION, true)
         set(value) = sharedPreferences.edit { putBoolean(PREFERENCE_FIRST_REGISTRATION, value) }
+
+    fun clear() {
+        sharedPreferences.edit {
+            clear()
+        }
+    }
 }

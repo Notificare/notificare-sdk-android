@@ -22,4 +22,7 @@ internal interface NotificareEventsDao {
 
     @Delete
     suspend fun delete(event: NotificareEventEntity)
+
+    @Query("DELETE FROM events")
+    suspend fun clear()
 }

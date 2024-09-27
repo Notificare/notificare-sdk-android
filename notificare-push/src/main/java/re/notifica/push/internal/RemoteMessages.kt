@@ -62,9 +62,12 @@ internal fun NotificareSystemRemoteMessage(message: RemoteMessage): NotificareSy
         "notification_type",
         "system",
         "systemType",
-        "x-sender",
         "attachment",
     )
+
+    val extras = message.data.filterKeys { key ->
+        !ignoreKeys.contains(key) && !key.startsWith("x-")
+    }
 
     return NotificareSystemRemoteMessage(
         messageId = message.messageId,
@@ -73,7 +76,7 @@ internal fun NotificareSystemRemoteMessage(message: RemoteMessage): NotificareSy
         ttl = message.ttl.toLong(),
         id = message.data["id"],
         type = requireNotNull(message.data["systemType"]),
-        extra = message.data.filterKeys { !ignoreKeys.contains(it) },
+        extra = extras,
     )
 }
 
@@ -81,8 +84,12 @@ internal fun NotificareNotificationRemoteMessage(message: RemoteMessage): Notifi
     val ignoreKeys = listOf(
         "id", "notification_id", "notification_type", "notification_channel", "notification_group", "alert",
         "alert_title", "alert_subtitle", "attachment", "action_category", "inbox_item_id", "inbox_item_visible",
-        "inbox_item_expires", "presentation", "notify", "sound", "lights_color", "lights_on", "lights_off", "x-sender"
+        "inbox_item_expires", "presentation", "notify", "sound", "lights_color", "lights_on", "lights_off",
     )
+
+    val extras = message.data.filterKeys { key ->
+        !ignoreKeys.contains(key) && !key.startsWith("x-")
+    }
 
     return NotificareNotificationRemoteMessage(
         messageId = message.messageId,
@@ -109,7 +116,7 @@ internal fun NotificareNotificationRemoteMessage(message: RemoteMessage): Notifi
         },
         //
         actionCategory = message.data["action_category"],
-        extra = message.data.filterKeys { !ignoreKeys.contains(it) },
+        extra = extras,
         // Inbox properties
         inboxItemId = message.data["inbox_item_id"],
         inboxItemVisible = message.data["inbox_item_visible"]?.toBoolean() ?: true,

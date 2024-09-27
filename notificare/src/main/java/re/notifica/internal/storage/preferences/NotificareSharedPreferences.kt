@@ -169,4 +169,10 @@ internal class NotificareSharedPreferences(context: Context) {
                 putBoolean(PREFERENCE_DEFERRED_LINK_CHECKED, value)
             }
         }
+
+    fun clear() {
+        sharedPreferences.edit {
+            clear()
+        }
+    }
 }

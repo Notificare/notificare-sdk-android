@@ -26,6 +26,7 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ProcessLifecycleOwner
+import com.google.firebase.messaging.RemoteMessage
 import java.net.URLEncoder
 import java.util.Date
 import java.util.concurrent.atomic.AtomicInteger
@@ -49,7 +50,6 @@ import re.notifica.ktx.device
 import re.notifica.ktx.events
 import re.notifica.models.NotificareApplication
 import re.notifica.models.NotificareNotification
-import re.notifica.push.models.NotificareTransport
 import re.notifica.push.NotificareInternalPush
 import re.notifica.push.NotificarePush
 import re.notifica.push.NotificarePushIntentReceiver
@@ -80,12 +80,15 @@ import re.notifica.push.ktx.logNotificationInfluenced
 import re.notifica.push.ktx.logNotificationReceived
 import re.notifica.push.ktx.logPushRegistration
 import re.notifica.push.models.NotificareLiveActivityUpdate
+import re.notifica.push.models.NotificareNotificationActionOpenedIntentResult
 import re.notifica.push.models.NotificareNotificationDeliveryMechanism
+import re.notifica.push.models.NotificareNotificationOpenedIntentResult
 import re.notifica.push.models.NotificareNotificationRemoteMessage
 import re.notifica.push.models.NotificarePushSubscription
 import re.notifica.push.models.NotificareRemoteMessage
 import re.notifica.push.models.NotificareSystemNotification
 import re.notifica.push.models.NotificareSystemRemoteMessage
+import re.notifica.push.models.NotificareTransport
 import re.notifica.push.models.NotificareUnknownRemoteMessage
 import re.notifica.push.notificationAccentColor
 import re.notifica.push.notificationAutoCancel
@@ -152,6 +155,11 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
             createDefaultChannel()
         }
 
+        if (!hasIntentFilter(Notificare.requireContext(), Notificare.INTENT_ACTION_REMOTE_MESSAGE_OPENED)) {
+            @Suppress("detekt:MaxLineLength", "ktlint:standard:argument-list-wrapping")
+            NotificareLogger.warning("Could not find an activity with the '${Notificare.INTENT_ACTION_REMOTE_MESSAGE_OPENED}' action. Notification opens won't work without handling the trampoline intent.")
+        }
+
         // NOTE: The allowedUI is only gettable after the storage has been configured.
         _observableAllowedUI.postValue(allowedUI)
 
@@ -160,6 +168,12 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
                 onApplicationForeground()
             }
         })
+    }
+
+    override suspend fun clearStorage() {
+        sharedPreferences.clear()
+
+        _observableAllowedUI.postValue(allowedUI)
     }
 
     override suspend fun postLaunch() {
@@ -297,6 +311,10 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
         callback: NotificareCallback<Unit>
     ): Unit = toCallbackFunction(::disableRemoteNotifications)(callback::onSuccess, callback::onFailure)
 
+    override fun isNotificareNotification(remoteMessage: RemoteMessage): Boolean {
+        return remoteMessage.data["x-sender"] == "notificare"
+    }
+
     override fun handleTrampolineIntent(intent: Intent): Boolean {
         if (intent.action != Notificare.INTENT_ACTION_REMOTE_MESSAGE_OPENED) {
             return false
@@ -309,6 +327,27 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
         )
 
         return true
+    }
+
+    override fun parseNotificationOpenedIntent(intent: Intent): NotificareNotificationOpenedIntentResult? {
+        if (intent.action != Notificare.INTENT_ACTION_NOTIFICATION_OPENED) {
+            return null
+        }
+
+        return NotificareNotificationOpenedIntentResult(
+            notification = requireNotNull(intent.parcelable(Notificare.INTENT_EXTRA_NOTIFICATION)),
+        )
+    }
+
+    override fun parseNotificationActionOpenedIntent(intent: Intent): NotificareNotificationActionOpenedIntentResult? {
+        if (intent.action != Notificare.INTENT_ACTION_ACTION_OPENED) {
+            return null
+        }
+
+        return NotificareNotificationActionOpenedIntentResult(
+            notification = requireNotNull(intent.parcelable(Notificare.INTENT_EXTRA_NOTIFICATION)),
+            action = requireNotNull(intent.parcelable(Notificare.INTENT_EXTRA_ACTION)),
+        )
     }
 
     override suspend fun registerLiveActivity(
@@ -995,5 +1034,13 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
 
     private fun hasNotificationPermission(context: Context): Boolean {
         return NotificationManagerCompat.from(context).areNotificationsEnabled()
+    }
+
+    private fun hasIntentFilter(context: Context, intentAction: String): Boolean {
+        val intent = Intent()
+            .setAction(intentAction)
+            .setPackage(context.packageName)
+
+        return intent.resolveActivity(Notificare.requireContext().packageManager) != null
     }
 }

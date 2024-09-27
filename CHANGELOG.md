@@ -1,9 +1,19 @@
 # CHANGELOG
 
-## Upcoming release
+## 4.0.0-beta.2
 
 - Changed the `subscriptionId` properties to a more robust data model
 - Removed peer modules. Main modules now include Google Play Services libraries by default.
+- Renamed `NotificarePushService` to `NotificareFirebaseMessagingService`.
+- Replaced `isNotificareNotification` Kotlin extension with `NotificarePush.isNotificareNotification()`.
+- Add `Notificare.push().parseNotificationOpenedIntent(intent)` to ease processing the intent.
+- Add `Notificare.push().parseNotificationActionOpenedIntent(intent)` to ease processing the intent.
+- Allow `configure()` to be called more than once, provided Notificare is unlaunched.
+
+#### Breaking changes
+
+- Renamed `NotificarePushService` to `NotificareFirebaseMessagingService`.
+- Removed `isNotificareNotification` Kotlin extension.
 
 ## 4.0.0-beta.1
 

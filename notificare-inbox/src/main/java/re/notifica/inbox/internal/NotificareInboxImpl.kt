@@ -86,6 +86,10 @@ internal object NotificareInboxImpl : NotificareModule(), NotificareInbox {
         reloadLiveItems()
     }
 
+    override suspend fun clearStorage() {
+        database.inbox().clear()
+    }
+
     override suspend fun launch() {
         sync()
     }

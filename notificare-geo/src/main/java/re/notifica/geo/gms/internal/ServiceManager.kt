@@ -28,7 +28,7 @@ import re.notifica.geo.ktx.DEFAULT_GEOFENCE_RESPONSIVENESS
 import re.notifica.geo.ktx.DEFAULT_LOCATION_UPDATES_FASTEST_INTERVAL
 import re.notifica.geo.ktx.DEFAULT_LOCATION_UPDATES_INTERVAL
 import re.notifica.geo.ktx.DEFAULT_LOCATION_UPDATES_SMALLEST_DISPLACEMENT
-import re.notifica.geo.ktx.INTENT_ACTION_GEOFENCE_TRANSITION
+import re.notifica.geo.ktx.INTENT_ACTION_INTERNAL_GEOFENCE_TRANSITION
 import re.notifica.geo.ktx.INTENT_ACTION_INTERNAL_LOCATION_UPDATED
 import re.notifica.geo.models.NotificareRegion
 
@@ -79,7 +79,7 @@ public class ServiceManager : ServiceManager() {
         // region Setup geofencing pending intent
 
         val geofencingIntent = Intent(context, LocationReceiver::class.java)
-            .setAction(Notificare.INTENT_ACTION_GEOFENCE_TRANSITION)
+            .setAction(Notificare.INTENT_ACTION_INTERNAL_GEOFENCE_TRANSITION)
 
         geofencingPendingIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             PendingIntent.getBroadcast(

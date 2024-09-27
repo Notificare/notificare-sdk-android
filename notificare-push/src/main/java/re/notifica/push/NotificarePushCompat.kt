@@ -2,6 +2,7 @@ package re.notifica.push
 
 import android.content.Intent
 import androidx.lifecycle.LiveData
+import com.google.firebase.messaging.RemoteMessage
 import re.notifica.Notificare
 import re.notifica.NotificareCallback
 import re.notifica.push.ktx.INTENT_ACTION_ACTION_OPENED
@@ -17,6 +18,8 @@ import re.notifica.push.ktx.INTENT_EXTRA_REMOTE_MESSAGE
 import re.notifica.push.ktx.INTENT_EXTRA_TEXT_RESPONSE
 import re.notifica.push.ktx.INTENT_EXTRA_TOKEN
 import re.notifica.push.ktx.push
+import re.notifica.push.models.NotificareNotificationActionOpenedIntentResult
+import re.notifica.push.models.NotificareNotificationOpenedIntentResult
 import re.notifica.push.models.NotificarePushSubscription
 import re.notifica.push.models.NotificareTransport
 
@@ -112,8 +115,23 @@ public object NotificarePushCompat {
     }
 
     @JvmStatic
+    public fun isNotificareNotification(remoteMessage: RemoteMessage): Boolean {
+        return Notificare.push().isNotificareNotification(remoteMessage)
+    }
+
+    @JvmStatic
     public fun handleTrampolineIntent(intent: Intent): Boolean {
         return Notificare.push().handleTrampolineIntent(intent)
+    }
+
+    @JvmStatic
+    public fun parseNotificationOpenedIntent(intent: Intent): NotificareNotificationOpenedIntentResult? {
+        return Notificare.push().parseNotificationOpenedIntent(intent)
+    }
+
+    @JvmStatic
+    public fun parseNotificationActionOpenedIntent(intent: Intent): NotificareNotificationActionOpenedIntentResult? {
+        return Notificare.push().parseNotificationActionOpenedIntent(intent)
     }
 
     @JvmStatic
