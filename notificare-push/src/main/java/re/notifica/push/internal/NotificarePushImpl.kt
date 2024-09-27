@@ -157,7 +157,7 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
 
         if (!hasIntentFilter(Notificare.requireContext(), Notificare.INTENT_ACTION_REMOTE_MESSAGE_OPENED)) {
             @Suppress("detekt:MaxLineLength", "ktlint:standard:argument-list-wrapping")
-            NotificareLogger.warning("Could not find an activity with the '${Notificare.INTENT_ACTION_REMOTE_MESSAGE_OPENED}' action. Notification opens won't work without handling the trampoline intent.")
+            logger.warning("Could not find an activity with the '${Notificare.INTENT_ACTION_REMOTE_MESSAGE_OPENED}' action. Notification opens won't work without handling the trampoline intent.")
         }
 
         // NOTE: The allowedUI is only gettable after the storage has been configured.
