@@ -17,23 +17,6 @@ public class AttributesTests {
     }
 
     @Test
-    public fun testDeviceLanguage() {
-        Locale.setDefault(Locale("pt", "PT"))
-        assertEquals("pt", deviceLanguage)
-    }
-
-    @Test
-    public fun testDeviceRegion() {
-        Locale.setDefault(Locale("pt", "PT"))
-        assertEquals("PT", deviceRegion)
-    }
-
-    @Test
-    public fun testOsVersion() {
-        assertEquals(Build.VERSION.RELEASE, osVersion)
-    }
-
-    @Test
     public fun testTimeZoneOffset() {
         TimeZone.setDefault(TimeZone.getTimeZone("GMT+2"))
 

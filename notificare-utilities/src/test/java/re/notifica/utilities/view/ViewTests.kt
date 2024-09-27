@@ -14,24 +14,22 @@ import org.robolectric.annotation.Config
 @RunWith(RobolectricTestRunner::class)
 @Config(manifest = Config.NONE)
 public class ViewTests {
-    private lateinit var rootView: FrameLayout
     private lateinit var testView: View
-    private var wasCalled = false
 
     @Before
     public fun setup() {
-        wasCalled = false
-
         val activity = Robolectric.buildActivity(TestActivity::class.java).create().get()
-        rootView = FrameLayout(activity)
-        testView = View(activity)
-        rootView.addView(testView)
-        activity.setContentView(rootView)
+        testView = FrameLayout(activity)
+        activity.setContentView(testView)
     }
 
     @Test
     public fun testWaitForLayoutAfterViewLaidOut() {
+        var wasCalled = false
+
         testView.layout(0, 0, 100, 100)
+
+        testView.viewTreeObserver.dispatchOnGlobalLayout()
 
         testView.waitForLayout {
             wasCalled = true
@@ -42,6 +40,8 @@ public class ViewTests {
 
     @Test
     public fun testWaitForLayoutBeforeViewLaidOut() {
+        var wasCalled = false
+
         testView.waitForLayout {
             wasCalled = true
         }

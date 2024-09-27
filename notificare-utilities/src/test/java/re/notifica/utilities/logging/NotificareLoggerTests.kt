@@ -1,6 +1,7 @@
 package re.notifica.utilities.logging
 
 import android.util.Log
+import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.mockito.MockedStatic
@@ -16,30 +17,37 @@ public class NotificareLoggerTests {
 
     @Before
     public fun setup() {
+        logger = NotificareLogger("Notificare")
+        logger.hasDebugLoggingEnabled = true
+
         MockitoAnnotations.openMocks(this)
         mockLog = mockStatic(Log::class.java)
+    }
+
+    @After
+    public fun tearDown() {
+        logger.labelClassIgnoreList = listOf()
+        mockLog.close()
     }
 
     @Test
     public fun testDebugLogging() {
         val message = "Debug message"
 
-        logger = NotificareLogger(true)
         logger.debug(message)
 
-        mockLog.verify { Log.println(Log.DEBUG, "Notificare", message) }
-        mockLog.close()
+        mockLog.verify {
+            Log.println(Log.DEBUG, "Notificare", "[NotificareLoggerTests] $message")
+        }
     }
 
     @Test
     public fun testInfoLogging() {
         val message = "Info message"
 
-        logger = NotificareLogger(true)
         logger.info(message)
 
-        mockLog.verify { Log.println(Log.INFO, "Notificare", message) }
-        mockLog.close()
+        mockLog.verify { Log.println(Log.INFO, "Notificare", "[NotificareLoggerTests] $message") }
     }
 
     @Test
@@ -48,69 +56,33 @@ public class NotificareLoggerTests {
         val message = "Error message"
         val expectedStackTrace = getStackTraceString(throwable)
 
-        logger = NotificareLogger(true)
         logger.error(message, throwable)
 
         val expectedMessage = "$message\n$expectedStackTrace"
 
-        mockLog.verify { Log.println(Log.ERROR, "Notificare", expectedMessage) }
-        mockLog.close()
-    }
-
-    @Test
-    public fun testInfoLoggingWithInternalTag() {
-        val internalTag = "NotificareTest"
-        val message = "Info message with internal tag"
-
-        val taggedMessage = "[$internalTag] $message"
-
-        logger = NotificareLogger(true, internalTag)
-        logger.info(message)
-
-        mockLog.verify { Log.println(Log.INFO, "Notificare", taggedMessage) }
-        mockLog.close()
-    }
-
-    @Test
-    public fun testErrorLoggingWithInternalTag() {
-        val throwable = RuntimeException("Test exception")
-        val internalTag = "NotificareTest"
-        val message = "Error message"
-        val taggedMessage = "[$internalTag] $message"
-        val expectedStackTrace = getStackTraceString(throwable)
-
-        logger = NotificareLogger(true, internalTag)
-        logger.error(message, throwable)
-
-        val expectedMessage = "$taggedMessage\n$expectedStackTrace"
-
-        mockLog.verify { Log.println(Log.ERROR, "Notificare", expectedMessage) }
-        mockLog.close()
-    }
-
-    @Test
-    public fun testDebugLoggingWithInternalTag() {
-        val internalTag = "NotificareTest"
-        val message = "Debug message with internal tag"
-
-        val taggedMessage = "[$internalTag] $message"
-
-        logger = NotificareLogger(true, internalTag)
-        logger.debug(message)
-
-        mockLog.verify { Log.println(Log.DEBUG, "Notificare", taggedMessage) }
-        mockLog.close()
+        mockLog.verify { Log.println(Log.ERROR, "Notificare", "[NotificareLoggerTests] $expectedMessage") }
     }
 
     @Test
     public fun testDebugLoggingDisabled() {
-        logger = NotificareLogger(false)
-        val message = "Message that should not be logged"
-
+        val message = "[NotificareLoggerTest] Message that should not be logged"
+        logger.hasDebugLoggingEnabled = false
         logger.debug(message)
 
         mockLog.verify({ Log.println(Log.DEBUG, "Notificare", message) }, times(0))
-        mockLog.close()
+    }
+
+    @Test
+    public fun testDebugLoggingWithLabelIgnore() {
+        val message = "Debug message"
+        logger.labelClassIgnoreList = listOf(
+            NotificareLoggerTests::class,
+        )
+        logger.debug(message)
+
+        mockLog.verify {
+            Log.println(Log.DEBUG, "Notificare", message)
+        }
     }
 
     private fun getStackTraceString(t: Throwable): String {

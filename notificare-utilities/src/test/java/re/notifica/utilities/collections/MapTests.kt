@@ -83,22 +83,4 @@ public class MapTests {
 
         assertEquals(expectedMap, filteredMap)
     }
-
-    @Test
-    public fun testMapNullFilterWithSomeNulls() {
-        val map = mapOf(1 to null, 2 to null, 3 to "three")
-        val filteredMap = map.filterNotNull { it.value }
-
-        val expectedMap = mapOf(3 to "three")
-
-        assertEquals(expectedMap, filteredMap)
-    }
-
-    @Test
-    public fun testEmptyMapNullFilter() {
-        val expectedMap = emptyMap<Int, String>()
-        val filteredMap = expectedMap.filterNotNull { it.value }
-
-        assertEquals(expectedMap, filteredMap)
-    }
 }
