@@ -29,8 +29,6 @@ internal class MainViewModel :
     BaseViewModel(),
     DefaultLifecycleObserver,
     Notificare.Listener {
-    internal var didAutoLogin = false
-
     private val _isLoggedIn: MutableLiveData<Boolean> = MutableLiveData(false)
     val isLoggedIn: LiveData<Boolean> = _isLoggedIn
 
@@ -131,6 +129,7 @@ internal class MainViewModel :
     }
 
     override fun onUnlaunched() {
+        _deviceRegistered.postValue(false)
         updateNotificareReadyStatus()
     }
 
@@ -188,8 +187,6 @@ internal class MainViewModel :
     }
 
     internal fun startAutoLoginFlow(context: Context, account: Auth0) {
-        didAutoLogin = true
-
         val manager = getCredentialsManager(context, account)
 
         if (!manager.hasValidCredentials()) {
@@ -252,6 +249,7 @@ internal class MainViewModel :
 
                 logoutWithBrowser(context, account)
                 _isLoggedIn.postValue(false)
+                _badge.postValue(0)
                 Timber.i("Cleaned web credentials.")
 
                 registerDeviceAsAnonymous(credentials.accessToken)

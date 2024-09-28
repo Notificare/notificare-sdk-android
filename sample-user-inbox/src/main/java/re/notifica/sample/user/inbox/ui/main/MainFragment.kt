@@ -98,7 +98,7 @@ internal class MainFragment : BaseFragment(), Notificare.Listener {
         setupListeners()
         setupObservers()
 
-        if (Notificare.isReady && !viewModel.didAutoLogin) {
+        if (Notificare.isReady && viewModel.deviceRegistered.value != true) {
             viewModel.startAutoLoginFlow(requireContext(), account)
         }
 
@@ -112,7 +112,7 @@ internal class MainFragment : BaseFragment(), Notificare.Listener {
     }
 
     override fun onReady(application: NotificareApplication) {
-        if (!viewModel.didAutoLogin) {
+        if (viewModel.deviceRegistered.value != true) {
             viewModel.startAutoLoginFlow(requireContext(), account)
         }
     }
@@ -217,6 +217,8 @@ internal class MainFragment : BaseFragment(), Notificare.Listener {
     private fun setupObservers() {
         viewModel.isLoggedIn.observe(viewLifecycleOwner) { isLoggedIn ->
             binding.authenticationCard.loggedInStatusLabel.text = isLoggedIn.toString()
+            binding.authenticationCard.loginButton.isEnabled = !isLoggedIn
+            binding.authenticationCard.logoutButton.isEnabled = isLoggedIn
         }
 
         viewModel.deviceRegistered.observe(viewLifecycleOwner) { isRegistered ->
