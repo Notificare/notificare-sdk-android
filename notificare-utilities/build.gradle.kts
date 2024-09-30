@@ -27,7 +27,6 @@ android {
         jvmTarget = "1.8"
         freeCompilerArgs += listOf(
             "-Xexplicit-api=strict",
-            "-opt-in=re.notifica.InternalNotificareApi",
         )
     }
 
