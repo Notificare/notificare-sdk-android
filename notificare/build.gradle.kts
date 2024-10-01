@@ -68,10 +68,6 @@ dependencies {
     implementation(libs.bundles.moshi)
     ksp(libs.moshi.codegen)
 
-    // Glide
-    implementation(libs.glide)
-    ksp(libs.glide.ksp)
-
     // Tests
     testImplementation(libs.junit)
     testImplementation(libs.robolectric)

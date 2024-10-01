@@ -43,9 +43,6 @@ dependencies {
     // Android
     implementation(libs.androidx.core)
 
-    // OkHttp
-    implementation(libs.bundles.okhttp)
-
     // Moshi
     implementation(libs.bundles.moshi)
     ksp(libs.moshi.codegen)
