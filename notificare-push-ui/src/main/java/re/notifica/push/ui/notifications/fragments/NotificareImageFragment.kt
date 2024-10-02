@@ -8,23 +8,19 @@ import android.widget.ImageView
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import re.notifica.Notificare
-import re.notifica.internal.NotificareUtils
-import re.notifica.internal.common.onMainThread
-import re.notifica.internal.ktx.parcelable
+import re.notifica.utilities.threading.onMainThread
+import re.notifica.utilities.parcel.parcelable
 import re.notifica.models.NotificareNotification
 import re.notifica.push.ui.databinding.NotificareNotificationImageFragmentBinding
 import re.notifica.push.ui.ktx.pushUIInternal
 import re.notifica.push.ui.notifications.fragments.base.NotificationFragment
+import re.notifica.utilities.image.loadImage
 
 public class NotificareImageFragment : NotificationFragment() {
 
     private lateinit var binding: NotificareNotificationImageFragmentBinding
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = NotificareNotificationImageFragmentBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -38,11 +34,15 @@ public class NotificareImageFragment : NotificationFragment() {
 
         if (notification.content.isEmpty()) {
             onMainThread {
-                Notificare.pushUIInternal().lifecycleListeners.forEach { it.onNotificationFailedToPresent(notification) }
+                Notificare.pushUIInternal().lifecycleListeners.forEach {
+                    it.get()?.onNotificationFailedToPresent(notification)
+                }
             }
         } else {
             onMainThread {
-                Notificare.pushUIInternal().lifecycleListeners.forEach { it.onNotificationPresented(notification) }
+                Notificare.pushUIInternal().lifecycleListeners.forEach {
+                    it.get()?.onNotificationPresented(notification)
+                }
             }
         }
     }
@@ -73,21 +73,17 @@ public class NotificareImageFragment : NotificationFragment() {
 
             content = savedInstanceState?.parcelable(SAVED_STATE_CONTENT)
                 ?: arguments?.parcelable(SAVED_STATE_CONTENT)
-                    ?: throw IllegalArgumentException("Missing required notification content parameter.")
+                ?: throw IllegalArgumentException("Missing required notification content parameter.")
         }
 
-        override fun onCreateView(
-            inflater: LayoutInflater,
-            container: ViewGroup?,
-            savedInstanceState: Bundle?
-        ): View {
+        override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
             return ImageView(inflater.context)
         }
 
         override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
             super.onViewCreated(view, savedInstanceState)
 
-            NotificareUtils.loadImage(content.data as String, view as ImageView)
+            loadImage(requireContext(), content.data as String, view as ImageView)
         }
 
         override fun onSaveInstanceState(outState: Bundle) {

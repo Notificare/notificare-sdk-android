@@ -1,11 +1,15 @@
 package re.notifica.push.ui.internal
 
 import android.net.Uri
+import re.notifica.NotificareServicesInfo
 import re.notifica.models.NotificareNotification
 
 internal object NotificationUrlResolver {
 
-    internal fun resolve(notification: NotificareNotification): UrlResolverResult {
+    internal fun resolve(
+        notification: NotificareNotification,
+        servicesInfo: NotificareServicesInfo,
+    ): UrlResolverResult {
         val content = notification.content.firstOrNull { it.type == "re.notifica.content.URL" }
             ?: return UrlResolverResult.NONE
 
@@ -14,7 +18,7 @@ internal object NotificationUrlResolver {
 
         val url = Uri.parse(urlStr)
         val isHttpUrl = url.scheme == "http" || url.scheme == "https"
-        val isDynamicLink = url.host?.endsWith("ntc.re") == true
+        val isDynamicLink = url.host?.endsWith(servicesInfo.hosts.shortLinks) == true
 
         if (!isHttpUrl || isDynamicLink) return UrlResolverResult.URL_SCHEME
 

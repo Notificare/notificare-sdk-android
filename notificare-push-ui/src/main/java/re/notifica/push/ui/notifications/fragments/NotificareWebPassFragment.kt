@@ -7,7 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.webkit.WebChromeClient
 import re.notifica.Notificare
-import re.notifica.internal.common.onMainThread
+import re.notifica.utilities.threading.onMainThread
 import re.notifica.models.NotificareNotification
 import re.notifica.push.ui.databinding.NotificareNotificationWebPassFragmentBinding
 import re.notifica.push.ui.ktx.pushUIInternal
@@ -18,11 +18,7 @@ public class NotificareWebPassFragment : NotificationFragment() {
 
     private lateinit var binding: NotificareNotificationWebPassFragmentBinding
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = NotificareNotificationWebPassFragmentBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -41,16 +37,22 @@ public class NotificareWebPassFragment : NotificationFragment() {
         setupContent()
     }
 
-
     private fun setupContent() {
         val content = notification.content.firstOrNull()
         val passUrlStr = content?.data as? String
         val application = Notificare.application
-        val host = Notificare.servicesInfo?.pushHost
+        val host = Notificare.servicesInfo?.hosts?.restApi
 
-        if (content?.type != NotificareNotification.Content.TYPE_PK_PASS || passUrlStr == null || application == null || host == null) {
+        if (
+            content?.type != NotificareNotification.Content.TYPE_PK_PASS ||
+            passUrlStr == null ||
+            application == null ||
+            host == null
+        ) {
             onMainThread {
-                Notificare.pushUIInternal().lifecycleListeners.forEach { it.onNotificationFailedToPresent(notification) }
+                Notificare.pushUIInternal().lifecycleListeners.forEach {
+                    it.get()?.onNotificationFailedToPresent(notification)
+                }
             }
 
             return

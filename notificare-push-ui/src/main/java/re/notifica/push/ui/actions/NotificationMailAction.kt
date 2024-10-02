@@ -7,7 +7,7 @@ import android.content.Intent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import re.notifica.Notificare
-import re.notifica.internal.common.onMainThread
+import re.notifica.utilities.threading.onMainThread
 import re.notifica.models.NotificareNotification
 import re.notifica.push.ui.R
 import re.notifica.push.ui.actions.base.NotificationAction
@@ -47,7 +47,7 @@ internal class NotificationMailAction(
 
             onMainThread {
                 Notificare.pushUIInternal().lifecycleListeners.forEach {
-                    it.onActionExecuted(notification, action)
+                    it.get()?.onActionExecuted(notification, action)
                 }
             }
         } else {

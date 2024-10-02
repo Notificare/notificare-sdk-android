@@ -7,18 +7,19 @@ android {
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
 
-        javaCompileOptions {
-            annotationProcessorOptions {
-                argument("room.schemaLocation", "$projectDir/schemas")
-                argument("room.incremental", "true")
-            }
+        ksp {
+            arg("room.schemaLocation", "$projectDir/schemas")
+            arg("room.incremental", "true")
         }
     }
 
     buildTypes {
         getByName("release") {
             isMinifyEnabled = false
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
         }
     }
 
@@ -30,8 +31,8 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
         freeCompilerArgs += listOf(
-                "-Xexplicit-api=strict",
-                "-opt-in=re.notifica.InternalNotificareApi",
+            "-Xexplicit-api=strict",
+            "-opt-in=re.notifica.InternalNotificareApi",
         )
     }
 
@@ -47,6 +48,7 @@ dependencies {
 
     // Notificare
     implementation(project(":notificare"))
+    implementation(project(":notificare-utilities"))
 
     // Android
     implementation(libs.androidx.appCompat)
@@ -56,12 +58,16 @@ dependencies {
 
     // Android: Room
     implementation(libs.bundles.androidx.room)
-    kapt(libs.androidx.room.compiler)
+    ksp(libs.androidx.room.compiler)
 
     // OkHttp
     implementation(libs.okhttp)
 
     // Moshi
     implementation(libs.bundles.moshi)
-    kapt(libs.moshi.codegen)
+    ksp(libs.moshi.codegen)
+
+    // Tests
+    testImplementation(libs.junit)
+    testImplementation(libs.robolectric)
 }

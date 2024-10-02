@@ -9,18 +9,19 @@ android {
 
         consumerProguardFiles("consumer-rules.pro")
 
-        javaCompileOptions {
-            annotationProcessorOptions {
-                argument("room.schemaLocation", "$projectDir/schemas")
-                argument("room.incremental", "true")
-            }
+        ksp {
+            arg("room.schemaLocation", "$projectDir/schemas")
+            arg("room.incremental", "true")
         }
     }
 
     buildTypes {
         getByName("release") {
             isMinifyEnabled = false
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
         }
     }
 
@@ -32,8 +33,8 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
         freeCompilerArgs += listOf(
-                "-Xexplicit-api=strict",
-                "-opt-in=re.notifica.InternalNotificareApi",
+            "-Xexplicit-api=strict",
+            "-opt-in=re.notifica.InternalNotificareApi",
         )
     }
 
@@ -47,23 +48,27 @@ android {
 dependencies {
     implementation(libs.kotlinx.coroutines)
 
+    // Notificare
+    implementation(project(":notificare-utilities"))
+
     // Android
+    implementation(libs.androidx.activity)
     implementation(libs.androidx.core)
     implementation(libs.androidx.work.runtime)
     implementation(libs.google.androidInstallReferrer)
 
     // Android: Room
     implementation(libs.bundles.androidx.room)
-    kapt(libs.androidx.room.compiler)
+    ksp(libs.androidx.room.compiler)
 
     // OkHttp
     implementation(libs.bundles.okhttp)
 
     // Moshi
     implementation(libs.bundles.moshi)
-    kapt(libs.moshi.codegen)
+    ksp(libs.moshi.codegen)
 
-    // Glide
-    implementation(libs.glide)
-    kapt(libs.glide.compiler)
+    // Tests
+    testImplementation(libs.junit)
+    testImplementation(libs.robolectric)
 }

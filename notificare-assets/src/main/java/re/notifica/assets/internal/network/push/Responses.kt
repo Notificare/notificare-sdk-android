@@ -3,7 +3,7 @@ package re.notifica.assets.internal.network.push
 import com.squareup.moshi.JsonClass
 import re.notifica.Notificare
 import re.notifica.assets.models.NotificareAsset
-import re.notifica.internal.moshi.UseDefaultsWhenNull
+import re.notifica.utilities.moshi.UseDefaultsWhenNull
 
 @JsonClass(generateAdapter = true)
 internal data class FetchAssetsResponse(
@@ -27,7 +27,7 @@ internal data class FetchAssetsResponse(
                 description = description,
                 key = key,
                 url = key?.let { key ->
-                    val host = Notificare.servicesInfo?.pushHost ?: return@let null
+                    val host = Notificare.servicesInfo?.hosts?.restApi ?: return@let null
                     "$host/asset/file/$key"
                 },
                 button = button?.let {

@@ -1,10 +1,10 @@
 package re.notifica.inbox.user.internal.responses
 
 import com.squareup.moshi.JsonClass
+import java.util.Date
 import re.notifica.inbox.user.models.NotificareUserInboxItem
-import re.notifica.internal.moshi.UseDefaultsWhenNull
+import re.notifica.utilities.moshi.UseDefaultsWhenNull
 import re.notifica.models.NotificareNotification
-import java.util.*
 
 @JsonClass(generateAdapter = true)
 internal data class RawUserInboxResponse(

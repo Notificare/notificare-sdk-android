@@ -5,13 +5,14 @@ import android.content.ContentProvider
 import android.content.ContentValues
 import android.database.Cursor
 import android.net.Uri
-import re.notifica.internal.NotificareLogger
+import re.notifica.internal.logger
 import re.notifica.ktx.session
 
 /**
  * Auto configuration during application startup.
  */
 internal class NotificareSessionConfigurationProvider : ContentProvider() {
+
     /**
      * Called before [android.app.Application.onCreate].
      */
@@ -19,7 +20,7 @@ internal class NotificareSessionConfigurationProvider : ContentProvider() {
         val context = context ?: throw IllegalStateException("Cannot find context from the provider.")
         val application = context.applicationContext as Application
 
-        NotificareLogger.debug("Configuring session lifecycle listeners.")
+        logger.info("Configuring session lifecycle listeners.")
         Notificare.session().setupLifecycleListeners(application)
 
         return true
@@ -39,10 +40,5 @@ internal class NotificareSessionConfigurationProvider : ContentProvider() {
 
     override fun delete(uri: Uri, selection: String?, selectionArgs: Array<String>?): Int = 0
 
-    override fun update(
-        uri: Uri,
-        values: ContentValues?,
-        selection: String?,
-        selectionArgs: Array<String>?
-    ): Int = 0
+    override fun update(uri: Uri, values: ContentValues?, selection: String?, selectionArgs: Array<String>?): Int = 0
 }

@@ -6,8 +6,8 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import re.notifica.Notificare
-import re.notifica.internal.common.onMainThread
-import re.notifica.internal.ktx.parcelable
+import re.notifica.utilities.threading.onMainThread
+import re.notifica.utilities.parcel.parcelable
 import re.notifica.models.NotificareNotification
 import re.notifica.push.ui.databinding.NotificareNotificationActivityBinding
 import re.notifica.push.ui.ktx.pushUIImplementation
@@ -22,7 +22,7 @@ public open class NotificationActivity : AppCompatActivity(), NotificationContai
     override fun onCreate(savedInstanceState: Bundle?) {
         notification = savedInstanceState?.parcelable(Notificare.INTENT_EXTRA_NOTIFICATION)
             ?: intent.parcelable(Notificare.INTENT_EXTRA_NOTIFICATION)
-                ?: throw IllegalArgumentException("Missing required notification parameter.")
+            ?: throw IllegalArgumentException("Missing required notification parameter.")
 
         action = savedInstanceState?.parcelable(Notificare.INTENT_EXTRA_ACTION)
             ?: intent.parcelable(Notificare.INTENT_EXTRA_ACTION)
@@ -31,6 +31,8 @@ public open class NotificationActivity : AppCompatActivity(), NotificationContai
         binding = NotificareNotificationActivityBinding.inflate(layoutInflater).also {
             setContentView(it.root)
         }
+
+        if (savedInstanceState != null) return
 
         supportActionBar?.hide()
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -52,7 +54,7 @@ public open class NotificationActivity : AppCompatActivity(), NotificationContai
         if (item.itemId == android.R.id.home) {
             onMainThread {
                 Notificare.pushUIImplementation().lifecycleListeners.forEach {
-                    it.onNotificationFinishedPresenting(notification)
+                    it.get()?.onNotificationFinishedPresenting(notification)
                 }
             }
 
@@ -68,7 +70,7 @@ public open class NotificationActivity : AppCompatActivity(), NotificationContai
 
         onMainThread {
             Notificare.pushUIImplementation().lifecycleListeners.forEach {
-                it.onNotificationFinishedPresenting(notification)
+                it.get()?.onNotificationFinishedPresenting(notification)
             }
         }
     }
@@ -112,10 +114,7 @@ public open class NotificationActivity : AppCompatActivity(), NotificationContai
         }
     }
 
-    override fun onNotificationFragmentActionFailed(
-        notification: NotificareNotification,
-        reason: String?
-    ) {
+    override fun onNotificationFragmentActionFailed(notification: NotificareNotification, reason: String?) {
         binding.notificareProgress.isVisible = false
 
         if (checkNotNull(Notificare.options).showNotificationToasts) {

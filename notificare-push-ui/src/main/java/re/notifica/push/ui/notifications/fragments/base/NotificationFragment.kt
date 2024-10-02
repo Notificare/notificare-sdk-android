@@ -4,7 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import re.notifica.Notificare
-import re.notifica.internal.ktx.parcelable
+import re.notifica.utilities.parcel.parcelable
 import re.notifica.models.NotificareNotification
 
 public open class NotificationFragment : Fragment() {
@@ -23,7 +23,7 @@ public open class NotificationFragment : Fragment() {
 
         notification = savedInstanceState?.parcelable(Notificare.INTENT_EXTRA_NOTIFICATION)
             ?: arguments?.parcelable(Notificare.INTENT_EXTRA_NOTIFICATION)
-                ?: throw IllegalArgumentException("Missing required notification parameter.")
+            ?: throw IllegalArgumentException("Missing required notification parameter.")
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

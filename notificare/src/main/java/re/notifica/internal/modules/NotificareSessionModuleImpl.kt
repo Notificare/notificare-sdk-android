@@ -6,24 +6,24 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import androidx.annotation.Keep
+import java.text.SimpleDateFormat
+import java.util.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import re.notifica.Notificare
-import re.notifica.internal.NotificareLogger
 import re.notifica.internal.NotificareModule
-import re.notifica.internal.ktx.coroutineScope
+import re.notifica.internal.logger
+import re.notifica.utilities.coroutines.notificareCoroutineScope
 import re.notifica.ktx.device
 import re.notifica.ktx.eventsImplementation
-import java.text.SimpleDateFormat
-import java.util.*
 
 @Keep
 internal object NotificareSessionModuleImpl : NotificareModule() {
 
     private val handler = Handler(Looper.getMainLooper())
     private val runnable = Runnable {
-        Notificare.coroutineScope.launch {
+        notificareCoroutineScope.launch {
             try {
                 stopSession()
             } catch (e: Exception) {
@@ -39,7 +39,6 @@ internal object NotificareSessionModuleImpl : NotificareModule() {
     var sessionId: String? = null
         private set
 
-
     private suspend fun startSession() = withContext(Dispatchers.IO) {
         val sessionId = UUID.randomUUID().toString()
         val sessionStart = Date()
@@ -49,14 +48,14 @@ internal object NotificareSessionModuleImpl : NotificareModule() {
         this@NotificareSessionModuleImpl.sessionStart = sessionStart
 
         val format = SimpleDateFormat("HH:mm:ss", Locale.getDefault())
-        NotificareLogger.debug("Session '$sessionId' started at ${format.format(sessionStart)}")
+        logger.debug("Session '$sessionId' started at ${format.format(sessionStart)}")
 
         try {
             Notificare.eventsImplementation().logApplicationOpen(
                 sessionId = sessionId,
             )
         } catch (e: Exception) {
-            NotificareLogger.warning("Failed to process an application session start.")
+            logger.warning("Failed to process an application session start.")
         }
     }
 
@@ -71,7 +70,7 @@ internal object NotificareSessionModuleImpl : NotificareModule() {
         this@NotificareSessionModuleImpl.sessionEnd = null
 
         val format = SimpleDateFormat("HH:mm:ss", Locale.getDefault())
-        NotificareLogger.debug("Session '$sessionId' stopped at ${format.format(sessionEnd)}")
+        logger.debug("Session '$sessionId' stopped at ${format.format(sessionEnd)}")
 
         try {
             Notificare.eventsImplementation().logApplicationClose(
@@ -79,17 +78,19 @@ internal object NotificareSessionModuleImpl : NotificareModule() {
                 sessionLength = (sessionEnd.time - sessionStart.time) / 1000.toDouble(),
             )
         } catch (e: Exception) {
-            NotificareLogger.warning("Failed to process an application session stop.")
+            logger.warning("Failed to process an application session stop.")
         }
     }
 
     internal fun setupLifecycleListeners(application: Application) {
         application.registerActivityLifecycleCallbacks(object : Application.ActivityLifecycleCallbacks {
-            override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {}
+            override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
+                // no-op
+            }
 
             override fun onActivityStarted(activity: Activity) {
                 if (activityCounter == 0) {
-                    NotificareLogger.debug("Resuming previous session.")
+                    logger.debug("Resuming previous session.")
                 }
 
                 activityCounter++
@@ -101,11 +102,11 @@ internal object NotificareSessionModuleImpl : NotificareModule() {
                 if (sessionId != null) return
 
                 if (!Notificare.isReady) {
-                    NotificareLogger.debug("Postponing session start until Notificare is launched.")
+                    logger.debug("Postponing session start until Notificare is launched.")
                     return
                 }
 
-                Notificare.coroutineScope.launch {
+                notificareCoroutineScope.launch {
                     try {
                         startSession()
                     } catch (e: Exception) {
@@ -114,9 +115,13 @@ internal object NotificareSessionModuleImpl : NotificareModule() {
                 }
             }
 
-            override fun onActivityResumed(activity: Activity) {}
+            override fun onActivityResumed(activity: Activity) {
+                // no-op
+            }
 
-            override fun onActivityPaused(activity: Activity) {}
+            override fun onActivityPaused(activity: Activity) {
+                // no-op
+            }
 
             override fun onActivityStopped(activity: Activity) {
                 activityCounter--
@@ -131,16 +136,20 @@ internal object NotificareSessionModuleImpl : NotificareModule() {
                 handler.postDelayed(runnable, 10000)
             }
 
-            override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) {}
+            override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) {
+                // no-op
+            }
 
-            override fun onActivityDestroyed(activity: Activity) {}
+            override fun onActivityDestroyed(activity: Activity) {
+                // no-op
+            }
         })
     }
 
     // region Notificare Module
 
     override suspend fun launch() {
-         if (sessionId == null && Notificare.device().currentDevice != null) {
+        if (sessionId == null && Notificare.device().currentDevice != null) {
             // Launch is taking place after the first activity has been created.
             // Start the application session.
             startSession()

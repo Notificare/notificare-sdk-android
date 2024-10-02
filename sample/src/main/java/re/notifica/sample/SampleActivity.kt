@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.IntentCompat
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.navigation.ui.setupWithNavController
@@ -18,17 +17,15 @@ import re.notifica.iam.NotificareInAppMessaging
 import re.notifica.iam.ktx.inAppMessaging
 import re.notifica.iam.models.NotificareInAppMessage
 import re.notifica.models.NotificareNotification
-import re.notifica.monetize.NotificareMonetize
-import re.notifica.push.ktx.INTENT_ACTION_ACTION_OPENED
-import re.notifica.push.ktx.INTENT_ACTION_NOTIFICATION_OPENED
 import re.notifica.push.ktx.push
 import re.notifica.push.ui.NotificarePushUI
 import re.notifica.push.ui.ktx.pushUI
 import re.notifica.sample.databinding.ActivitySampleBinding
 import timber.log.Timber
 
-class SampleActivity : AppCompatActivity(), NotificarePushUI.NotificationLifecycleListener,
-    NotificareMonetize.Listener {
+class SampleActivity :
+    AppCompatActivity(),
+    NotificarePushUI.NotificationLifecycleListener {
 
     private lateinit var binding: ActivitySampleBinding
 
@@ -57,7 +54,6 @@ class SampleActivity : AppCompatActivity(), NotificarePushUI.NotificationLifecyc
         Notificare.inAppMessaging().addLifecycleListener(messageLifecycleListener)
     }
 
-
     override fun onDestroy() {
         super.onDestroy()
 
@@ -76,41 +72,17 @@ class SampleActivity : AppCompatActivity(), NotificarePushUI.NotificationLifecyc
         if (Notificare.handleTestDeviceIntent(intent)) return
         if (Notificare.handleDynamicLinkIntent(this, intent)) return
 
+        Notificare.push().parseNotificationOpenedIntent(intent)?.also { result ->
+            Notificare.pushUI().presentNotification(this, result.notification)
+            return
+        }
+
+        Notificare.push().parseNotificationActionOpenedIntent(intent)?.also { result ->
+            Notificare.pushUI().presentAction(this, result.notification, result.action)
+            return
+        }
+
         when (intent.action) {
-            Notificare.INTENT_ACTION_NOTIFICATION_OPENED -> {
-                val notification = requireNotNull(
-                    IntentCompat.getParcelableExtra(
-                        intent,
-                        Notificare.INTENT_EXTRA_NOTIFICATION,
-                        NotificareNotification::class.java
-                    )
-                )
-
-                Notificare.pushUI().presentNotification(this, notification)
-                return
-            }
-
-            Notificare.INTENT_ACTION_ACTION_OPENED -> {
-                val notification = requireNotNull(
-                    IntentCompat.getParcelableExtra(
-                        intent,
-                        Notificare.INTENT_EXTRA_NOTIFICATION,
-                        NotificareNotification::class.java
-                    )
-                )
-
-                val action = requireNotNull(
-                    IntentCompat.getParcelableExtra(
-                        intent,
-                        Notificare.INTENT_EXTRA_ACTION,
-                        NotificareNotification.Action::class.java
-                    )
-                )
-
-                Notificare.pushUI().presentAction(this, notification, action)
-                return
-            }
-
             Notificare.INTENT_ACTION_BEACON_NOTIFICATION_OPENED -> {
                 Snackbar.make(binding.root, "Beacon notification opened.", Snackbar.LENGTH_SHORT).show()
                 return

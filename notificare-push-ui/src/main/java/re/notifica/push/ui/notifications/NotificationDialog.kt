@@ -8,14 +8,14 @@ import android.widget.ArrayAdapter
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
 import re.notifica.Notificare
-import re.notifica.internal.NotificareLogger
-import re.notifica.internal.NotificareUtils
-import re.notifica.internal.common.onMainThread
-import re.notifica.internal.ktx.parcelable
+import re.notifica.utilities.threading.onMainThread
+import re.notifica.utilities.parcel.parcelable
 import re.notifica.models.NotificareNotification
 import re.notifica.push.ui.R
 import re.notifica.push.ui.databinding.NotificareAlertDialogBinding
+import re.notifica.push.ui.internal.logger
 import re.notifica.push.ui.ktx.pushUIInternal
+import re.notifica.utilities.content.applicationName
 
 public class NotificationDialog : DialogFragment() {
 
@@ -32,7 +32,7 @@ public class NotificationDialog : DialogFragment() {
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val notification = notification ?: run {
-            NotificareLogger.warning("Notification dialog created without a notification.")
+            logger.warning("Notification dialog created without a notification.")
             return super.onCreateDialog(savedInstanceState)
         }
 
@@ -47,13 +47,12 @@ public class NotificationDialog : DialogFragment() {
         val icon = context?.applicationInfo?.icon
         if (icon != null) builder.setIcon(icon)
 
-        builder.setTitle(notification.title ?: NotificareUtils.applicationName)
+        builder.setTitle(notification.title ?: requireContext().applicationName)
+        builder.setMessage(notification.message)
 
         val type = NotificareNotification.NotificationType.from(notification.type)
         if (type == NotificareNotification.NotificationType.ALERT && notification.actions.isNotEmpty()) {
             val binding = NotificareAlertDialogBinding.inflate(LayoutInflater.from(context))
-
-            binding.message.text = notification.message
 
             binding.list.adapter = ArrayAdapter(
                 requireContext(),
@@ -70,16 +69,20 @@ public class NotificationDialog : DialogFragment() {
             }
 
             builder.setView(binding.root)
-            builder.setNeutralButton(R.string.notificare_dialog_cancel_button) { _, _ -> callback?.onNotificationDialogCancelClick() }
+            builder.setNeutralButton(R.string.notificare_dialog_cancel_button) { _, _ ->
+                callback?.onNotificationDialogCancelClick()
+            }
         } else {
             builder.setMessage(notification.message)
-            builder.setNeutralButton(R.string.notificare_dialog_ok_button) { _, _ -> callback?.onNotificationDialogOkClick() }
+            builder.setNeutralButton(R.string.notificare_dialog_ok_button) { _, _ ->
+                callback?.onNotificationDialogOkClick()
+            }
         }
 
         val dialog = builder.create()
 
         onMainThread {
-            Notificare.pushUIInternal().lifecycleListeners.forEach { it.onNotificationPresented(notification) }
+            Notificare.pushUIInternal().lifecycleListeners.forEach { it.get()?.onNotificationPresented(notification) }
         }
 
         return dialog

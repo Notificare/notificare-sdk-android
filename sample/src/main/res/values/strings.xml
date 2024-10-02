@@ -38,7 +38,6 @@
     <string name="main_fragment_launch_flow_title">Launch Flow</string>
     <string name="main_fragment_location_title">Location</string>
     <string name="main_fragment_loyalty_title">Loyalty</string>
-    <string name="main_fragment_monetize_title">Monetize</string>
     <string name="main_fragment_notifications_title">Notifications</string>
     <string name="main_fragment_other_features_title">Other Features</string>
     <string name="main_fragment_scannables_title">Scannables</string>
@@ -101,17 +100,6 @@
     <string name="scannables_qr_code_button">QR Code</string>
     <string name="scannables_scannable_session">Scannable Session</string>
     <string name="scannables_title">Scannables</string>
-
-    <string name="monetize_price">Price</string>
-    <string name="monetize_product_id">Product ID</string>
-    <string name="monetize_product_name">Product Name</string>
-    <string name="monetize_product_type">Product Type</string>
-    <string name="monetize_products">Products</string>
-    <string name="monetize_purchase_id">Purchase ID</string>
-    <string name="monetize_purchase_token">Purchase Token</string>
-    <string name="monetize_purchases">Purchases</string>
-    <string name="monetize_title">Monetize</string>
-    <string name="buy_product_image">Buy product image</string>
 
     <string name="assets_asset_button_action">Action</string>
     <string name="assets_asset_button_label">Label</string>

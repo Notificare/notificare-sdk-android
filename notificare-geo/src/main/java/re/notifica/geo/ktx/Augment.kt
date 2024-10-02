@@ -4,9 +4,8 @@ import re.notifica.InternalNotificareApi
 import re.notifica.Notificare
 import re.notifica.NotificareInternalEventsModule
 import re.notifica.geo.NotificareGeo
+import re.notifica.geo.NotificareInternalGeo
 import re.notifica.geo.internal.NotificareGeoImpl
-import re.notifica.internal.NotificareModule
-import re.notifica.internal.modules.integrations.NotificareLoyaltyIntegration
 import re.notifica.ktx.events
 
 @Suppress("unused")
@@ -14,25 +13,23 @@ public fun Notificare.geo(): NotificareGeo {
     return NotificareGeoImpl
 }
 
-
 internal fun Notificare.eventsInternal(): NotificareInternalEventsModule {
     return events() as NotificareInternalEventsModule
 }
 
-@Suppress("unused")
-internal fun Notificare.loyaltyIntegration(): NotificareLoyaltyIntegration? {
-    return NotificareModule.Module.LOYALTY.instance as? NotificareLoyaltyIntegration
+internal fun Notificare.geoInternal(): NotificareInternalGeo {
+    return geo() as NotificareInternalGeo
 }
 
 // region Intent actions
 
 @InternalNotificareApi
 public val Notificare.INTENT_ACTION_INTERNAL_LOCATION_UPDATED: String
-    get() = "re.notifica.intent.action.InternalLocationUpdated"
+    get() = "re.notifica.intent.action.internal.LocationUpdated"
 
 @InternalNotificareApi
-public val Notificare.INTENT_ACTION_GEOFENCE_TRANSITION: String
-    get() = "re.notifica.intent.action.GeofenceTransition"
+public val Notificare.INTENT_ACTION_INTERNAL_GEOFENCE_TRANSITION: String
+    get() = "re.notifica.intent.action.internal.GeofenceTransition"
 
 public val Notificare.INTENT_ACTION_LOCATION_UPDATED: String
     get() = "re.notifica.intent.action.LocationUpdated"

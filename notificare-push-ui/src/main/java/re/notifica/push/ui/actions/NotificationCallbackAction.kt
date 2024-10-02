@@ -4,23 +4,23 @@ import android.content.Context
 import android.net.Uri
 import android.os.Environment
 import androidx.core.content.FileProvider
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import re.notifica.Notificare
-import re.notifica.internal.NotificareLogger
-import re.notifica.internal.common.onMainThread
-import re.notifica.internal.ktx.coroutineScope
-import re.notifica.models.NotificareNotification
-import re.notifica.push.ui.R
-import re.notifica.push.ui.actions.base.NotificationAction
-import re.notifica.push.ui.ktx.pushUIImplementation
-import re.notifica.push.ui.ktx.pushUIInternal
-import re.notifica.push.ui.models.NotificarePendingResult
 import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import re.notifica.Notificare
+import re.notifica.utilities.threading.onMainThread
+import re.notifica.models.NotificareNotification
+import re.notifica.push.ui.R
+import re.notifica.push.ui.actions.base.NotificationAction
+import re.notifica.push.ui.internal.logger
+import re.notifica.push.ui.ktx.pushUIImplementation
+import re.notifica.push.ui.ktx.pushUIInternal
+import re.notifica.push.ui.models.NotificarePendingResult
+import re.notifica.utilities.coroutines.notificareCoroutineScope
 
 internal class NotificationCallbackAction(
     context: Context,
@@ -47,6 +47,7 @@ internal class NotificationCallbackAction(
                     imageUri = imageUri,
                 )
             }
+
             action.keyboard -> {
                 // Just Keyboard, return the result to the caller.
                 NotificarePendingResult(
@@ -56,6 +57,7 @@ internal class NotificationCallbackAction(
                     imageUri = null,
                 )
             }
+
             else -> {
                 // Just do the call.
                 send(notification, action, null, null, null)
@@ -79,7 +81,7 @@ internal class NotificationCallbackAction(
                 file
             )
         } catch (e: Exception) {
-            NotificareLogger.warning("Failed to create image file.", e)
+            logger.warning("Failed to create image file.", e)
             return null
         }
     }
@@ -94,7 +96,7 @@ internal class NotificationCallbackAction(
         // To be safe, you should check that the SDCard is mounted
         // using Environment.getExternalStorageState() before doing this.
         if (Environment.getExternalStorageState() == null) {
-            NotificareLogger.warning("Failed to access external storage.")
+            logger.warning("Failed to access external storage.")
             return null
         }
 
@@ -106,7 +108,7 @@ internal class NotificationCallbackAction(
             MediaType.IMAGE -> File.createTempFile("IMG_$timeStamp", ".jpg", mediaStorageDir)
             MediaType.VIDEO -> File.createTempFile("VID_$timeStamp", ".mp4", mediaStorageDir)
         }.also {
-            NotificareLogger.debug("Saving file to '${it.absolutePath}'.")
+            logger.debug("Saving file to '${it.absolutePath}'.")
         }
     }
 
@@ -129,7 +131,12 @@ internal class NotificationCallbackAction(
                 )
 
                 onMainThread {
-                    Notificare.pushUIInternal().lifecycleListeners.forEach { it.onActionExecuted(notification, action) }
+                    Notificare.pushUIInternal().lifecycleListeners.forEach {
+                        it.get()?.onActionExecuted(
+                            notification,
+                            action
+                        )
+                    }
                 }
 
                 return@withContext
@@ -142,13 +149,13 @@ internal class NotificationCallbackAction(
             mediaUrl?.let { params["media"] = it }
             mimeType?.let { params["mimeType"] = it }
 
-            Notificare.coroutineScope.launch {
+            notificareCoroutineScope.launch {
                 try {
                     Notificare.callNotificationReplyWebhook(targetUri, params)
 
                     onMainThread {
                         Notificare.pushUIInternal().lifecycleListeners.forEach {
-                            it.onActionExecuted(
+                            it.get()?.onActionExecuted(
                                 notification,
                                 action
                             )
@@ -157,7 +164,7 @@ internal class NotificationCallbackAction(
                 } catch (e: Exception) {
                     onMainThread {
                         Notificare.pushUIInternal().lifecycleListeners.forEach {
-                            it.onActionFailedToExecute(
+                            it.get()?.onActionFailedToExecute(
                                 notification,
                                 action,
                                 e

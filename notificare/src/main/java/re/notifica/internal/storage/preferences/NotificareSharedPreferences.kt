@@ -1,13 +1,12 @@
 package re.notifica.internal.storage.preferences
 
-import android.annotation.SuppressLint
 import android.content.Context
 import androidx.core.content.edit
 import re.notifica.Notificare
-import re.notifica.internal.NotificareLogger
+import re.notifica.internal.logger
 import re.notifica.internal.moshi
+import re.notifica.internal.storage.preferences.entities.StoredDevice
 import re.notifica.models.NotificareApplication
-import re.notifica.models.NotificareDevice
 import re.notifica.models.NotificareEvent
 
 internal class NotificareSharedPreferences(context: Context) {
@@ -46,7 +45,7 @@ internal class NotificareSharedPreferences(context: Context) {
                     try {
                         Notificare.moshi.adapter(NotificareApplication::class.java).fromJson(it)
                     } catch (e: Exception) {
-                        NotificareLogger.warning("Failed to decode the stored application.", e)
+                        logger.warning("Failed to decode the stored application.", e)
 
                         // Remove the corrupted device from local storage.
                         application = null
@@ -65,14 +64,14 @@ internal class NotificareSharedPreferences(context: Context) {
             }.apply()
         }
 
-    var device: NotificareDevice?
+    var device: StoredDevice?
         get() {
             return sharedPreferences.getString(PREFERENCE_DEVICE, null)
                 ?.let {
                     try {
-                        Notificare.moshi.adapter(NotificareDevice::class.java).fromJson(it)
+                        Notificare.moshi.adapter(StoredDevice::class.java).fromJson(it)
                     } catch (e: Exception) {
-                        NotificareLogger.warning("Failed to decode the stored device.", e)
+                        logger.warning("Failed to decode the stored device.", e)
 
                         // Remove the corrupted device from local storage.
                         device = null
@@ -82,13 +81,13 @@ internal class NotificareSharedPreferences(context: Context) {
                 }
         }
         set(value) {
-            sharedPreferences.edit().also {
-                if (value == null) it.remove(PREFERENCE_DEVICE)
-                else it.putString(
+            sharedPreferences.edit {
+                if (value == null) remove(PREFERENCE_DEVICE)
+                else putString(
                     PREFERENCE_DEVICE,
-                    Notificare.moshi.adapter(NotificareDevice::class.java).toJson(value)
+                    Notificare.moshi.adapter(StoredDevice::class.java).toJson(value)
                 )
-            }.apply()
+            }
         }
 
     var preferredLanguage: String?
@@ -136,7 +135,7 @@ internal class NotificareSharedPreferences(context: Context) {
                     try {
                         Notificare.moshi.adapter(NotificareEvent::class.java).fromJson(it)
                     } catch (e: Exception) {
-                        NotificareLogger.warning("Failed to decode the stored crash report.", e)
+                        logger.warning("Failed to decode the stored crash report.", e)
 
                         // Remove the corrupted crash report from local storage.
                         crashReport = null
@@ -145,15 +144,14 @@ internal class NotificareSharedPreferences(context: Context) {
                     }
                 }
         }
-        @SuppressLint("ApplySharedPref")
         set(value) {
-            sharedPreferences.edit().also {
-                if (value == null) it.remove(PREFERENCE_CRASH_REPORT)
-                else it.putString(
+            sharedPreferences.edit(commit = true) {
+                if (value == null) remove(PREFERENCE_CRASH_REPORT)
+                else putString(
                     PREFERENCE_CRASH_REPORT,
                     Notificare.moshi.adapter(NotificareEvent::class.java).toJson(value)
                 )
-            }.commit()
+            }
         }
 
     var deferredLinkChecked: Boolean?
@@ -171,4 +169,10 @@ internal class NotificareSharedPreferences(context: Context) {
                 putBoolean(PREFERENCE_DEFERRED_LINK_CHECKED, value)
             }
         }
+
+    fun clear() {
+        sharedPreferences.edit {
+            clear()
+        }
+    }
 }

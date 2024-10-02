@@ -1,6 +1,11 @@
 package re.notifica.sample.ui.main
 
-import androidx.lifecycle.*
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.asFlow
+import androidx.lifecycle.asLiveData
+import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import re.notifica.Notificare
@@ -12,12 +17,16 @@ import re.notifica.models.NotificareDevice
 import re.notifica.models.NotificareDoNotDisturb
 import re.notifica.models.NotificareTime
 import re.notifica.push.ktx.push
-import re.notifica.sample.ktx.*
+import re.notifica.sample.core.BaseViewModel
+import re.notifica.sample.ktx.LocationPermission
+import re.notifica.sample.ktx.hasBackgroundTrackingCapabilities
+import re.notifica.sample.ktx.hasBluetoothCapabilities
+import re.notifica.sample.ktx.hasForegroundTrackingCapabilities
+import re.notifica.sample.ktx.hasNotificationsPermission
 import re.notifica.sample.live_activities.LiveActivitiesController
 import re.notifica.sample.live_activities.models.CoffeeBrewerContentState
 import re.notifica.sample.live_activities.models.CoffeeBrewingState
 import re.notifica.sample.models.ApplicationInfo
-import re.notifica.sample.core.BaseViewModel
 import timber.log.Timber
 
 class MainViewModel : BaseViewModel(), DefaultLifecycleObserver, Notificare.Listener {
@@ -98,7 +107,10 @@ class MainViewModel : BaseViewModel(), DefaultLifecycleObserver, Notificare.List
 
     private val checkLocationPermission: LocationPermission
         get() {
-            if (Notificare.geo().hasForegroundTrackingCapabilities && Notificare.geo().hasBackgroundTrackingCapabilities) {
+            if (
+                Notificare.geo().hasForegroundTrackingCapabilities &&
+                Notificare.geo().hasBackgroundTrackingCapabilities
+            ) {
                 return LocationPermission.BACKGROUND
             }
 
@@ -124,7 +136,7 @@ class MainViewModel : BaseViewModel(), DefaultLifecycleObserver, Notificare.List
     private val appInfo: ApplicationInfo?
         get() {
             val application = Notificare.application
-            if(application != null) {
+            if (application != null) {
                 return ApplicationInfo(application.name, application.id)
             }
 
@@ -141,6 +153,14 @@ class MainViewModel : BaseViewModel(), DefaultLifecycleObserver, Notificare.List
                     _notificationsEnabled.postValue(enabled)
                     _notificationsAllowedUI.postValue(hasNotificationsAllowedUI)
                     _remoteNotificationsEnabled.postValue(hasRemoteNotificationsEnabled)
+                }
+        }
+
+        viewModelScope.launch {
+            Notificare.push().observableSubscription
+                .asFlow()
+                .collect { subscription ->
+                    Timber.d("subscription changed = $subscription")
                 }
         }
     }
@@ -164,13 +184,19 @@ class MainViewModel : BaseViewModel(), DefaultLifecycleObserver, Notificare.List
     }
 
     fun updateRemoteNotificationsStatus(enabled: Boolean) {
-        if (enabled) {
-            Notificare.push().enableRemoteNotifications()
-            if (_hasNotificationsPermissions.value != true) {
-                _hasNotificationsPermissions.postValue(hasNotificationsPermission)
+        viewModelScope.launch {
+            try {
+                if (enabled) {
+                    Notificare.push().enableRemoteNotifications()
+                    if (_hasNotificationsPermissions.value != true) {
+                        _hasNotificationsPermissions.postValue(hasNotificationsPermission)
+                    }
+                } else {
+                    Notificare.push().disableRemoteNotifications()
+                }
+            } catch (e: Exception) {
+                Timber.e(e, "Failed to update remote notifications registration.")
             }
-        } else {
-            Notificare.push().disableRemoteNotifications()
         }
     }
 
@@ -285,7 +311,7 @@ class MainViewModel : BaseViewModel(), DefaultLifecycleObserver, Notificare.List
     fun registerDevice(userID: String?, userName: String?) {
         viewModelScope.launch {
             try {
-                Notificare.device().register(userID, userName)
+                Notificare.device().updateUser(userID, userName)
                 _deviceRegistrationData.postValue(deviceData)
 
                 Timber.i("Registered device successfully.")

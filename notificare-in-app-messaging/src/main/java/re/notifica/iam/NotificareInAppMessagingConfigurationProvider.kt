@@ -6,13 +6,14 @@ import android.content.ContentValues
 import android.database.Cursor
 import android.net.Uri
 import re.notifica.Notificare
+import re.notifica.iam.internal.logger
 import re.notifica.iam.ktx.inAppMessagingImplementation
-import re.notifica.internal.NotificareLogger
 
 /**
  * Auto configuration during application startup.
  */
 internal class NotificareInAppMessagingConfigurationProvider : ContentProvider() {
+
     /**
      * Called before [android.app.Application.onCreate].
      */
@@ -20,7 +21,7 @@ internal class NotificareInAppMessagingConfigurationProvider : ContentProvider()
         val context = context ?: throw IllegalStateException("Cannot find context from the provider.")
         val application = context.applicationContext as Application
 
-        NotificareLogger.debug("Configuring session lifecycle listeners.")
+        logger.info("Configuring in-app messaging lifecycle listeners.")
         Notificare.inAppMessagingImplementation().setupLifecycleListeners(application)
 
         return true
@@ -40,10 +41,5 @@ internal class NotificareInAppMessagingConfigurationProvider : ContentProvider()
 
     override fun delete(uri: Uri, selection: String?, selectionArgs: Array<String>?): Int = 0
 
-    override fun update(
-        uri: Uri,
-        values: ContentValues?,
-        selection: String?,
-        selectionArgs: Array<String>?
-    ): Int = 0
+    override fun update(uri: Uri, values: ContentValues?, selection: String?, selectionArgs: Array<String>?): Int = 0
 }

@@ -1,0 +1,7 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues></ManuallySuppressedIssues>
+  <CurrentIssues>
+    <ID>ConstructorParameterNaming:RawUserInboxResponse.kt$RawUserInboxResponse.RawUserInboxItem$val _id: String</ID>
+  </CurrentIssues>
+</SmellBaseline>

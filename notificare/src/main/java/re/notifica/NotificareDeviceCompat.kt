@@ -17,14 +17,17 @@ public object NotificareDeviceCompat {
 
     @JvmStatic
     public fun register(userId: String?, userName: String?, callback: NotificareCallback<Unit>) {
+        @Suppress("DEPRECATION")
         Notificare.device().register(userId, userName, callback)
     }
 
     @JvmStatic
-    public fun updatePreferredLanguage(
-        preferredLanguage: String?,
-        callback: NotificareCallback<Unit>
-    ) {
+    public fun updateUser(userId: String?, userName: String?, callback: NotificareCallback<Unit>) {
+        Notificare.device().updateUser(userId, userName, callback)
+    }
+
+    @JvmStatic
+    public fun updatePreferredLanguage(preferredLanguage: String?, callback: NotificareCallback<Unit>) {
         Notificare.device().updatePreferredLanguage(preferredLanguage, callback)
     }
 

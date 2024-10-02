@@ -11,12 +11,15 @@ android {
     buildTypes {
         getByName("release") {
             isMinifyEnabled = false
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
         }
     }
 
     buildFeatures {
-        viewBinding  = true
+        viewBinding = true
     }
 
     compileOptions {
@@ -27,8 +30,8 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
         freeCompilerArgs += listOf(
-                "-Xexplicit-api=strict",
-                "-opt-in=re.notifica.InternalNotificareApi",
+            "-Xexplicit-api=strict",
+            "-opt-in=re.notifica.InternalNotificareApi",
         )
     }
 
@@ -44,6 +47,7 @@ dependencies {
 
     // Notificare
     implementation(project(":notificare"))
+    implementation(project(":notificare-utilities"))
 
     // Android
     implementation(libs.androidx.appCompat)
@@ -58,9 +62,13 @@ dependencies {
 
     // Moshi
     implementation(libs.bundles.moshi)
-    kapt(libs.moshi.codegen)
+    ksp(libs.moshi.codegen)
 
     // Glide
     implementation(libs.glide)
-    kapt(libs.glide.compiler)
+    ksp(libs.glide.ksp)
+
+    // Tests
+    testImplementation(libs.junit)
+    testImplementation(libs.robolectric)
 }

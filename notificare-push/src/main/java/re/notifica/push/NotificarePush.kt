@@ -2,9 +2,13 @@ package re.notifica.push
 
 import android.content.Intent
 import androidx.lifecycle.LiveData
+import com.google.firebase.messaging.RemoteMessage
 import re.notifica.InternalNotificareApi
 import re.notifica.NotificareCallback
-import re.notifica.models.NotificareTransport
+import re.notifica.push.models.NotificareNotificationActionOpenedIntentResult
+import re.notifica.push.models.NotificareNotificationOpenedIntentResult
+import re.notifica.push.models.NotificarePushSubscription
+import re.notifica.push.models.NotificareTransport
 import re.notifica.push.models.NotificareRemoteMessage
 
 public interface NotificarePush {
@@ -13,23 +17,33 @@ public interface NotificarePush {
 
     public val hasRemoteNotificationsEnabled: Boolean
 
+    public val transport: NotificareTransport?
+
+    public val subscription: NotificarePushSubscription?
+
+    public val observableSubscription: LiveData<NotificarePushSubscription?>
+
     public val allowedUI: Boolean
 
     public val observableAllowedUI: LiveData<Boolean>
 
-    public fun enableRemoteNotifications()
+    public suspend fun enableRemoteNotifications()
 
-    public fun disableRemoteNotifications()
+    public fun enableRemoteNotifications(callback: NotificareCallback<Unit>)
 
-    // Augmented in the appropriate peer module.
-    // public fun isNotificareNotification(...: RemoteMessage)
+    public suspend fun disableRemoteNotifications()
+
+    public fun disableRemoteNotifications(callback: NotificareCallback<Unit>)
+
+    public fun isNotificareNotification(remoteMessage: RemoteMessage): Boolean
 
     public fun handleTrampolineIntent(intent: Intent): Boolean
 
-    public suspend fun registerLiveActivity(
-        activityId: String,
-        topics: List<String> = listOf(),
-    )
+    public fun parseNotificationOpenedIntent(intent: Intent): NotificareNotificationOpenedIntentResult?
+
+    public fun parseNotificationActionOpenedIntent(intent: Intent): NotificareNotificationActionOpenedIntentResult?
+
+    public suspend fun registerLiveActivity(activityId: String, topics: List<String> = listOf())
 
     public fun registerLiveActivity(
         activityId: String,
@@ -42,14 +56,11 @@ public interface NotificarePush {
     public fun endLiveActivity(activityId: String, callback: NotificareCallback<Unit>)
 }
 
-public interface NotificareInternalPush {
-    @InternalNotificareApi
-    public suspend fun registerPushToken(
-        transport: NotificareTransport,
-        token: String,
-        performReadinessCheck: Boolean = true,
-    )
+internal interface NotificareInternalPush {
 
     @InternalNotificareApi
-    public fun handleRemoteMessage(message: NotificareRemoteMessage)
+    fun handleNewToken(transport: NotificareTransport, token: String)
+
+    @InternalNotificareApi
+    fun handleRemoteMessage(message: NotificareRemoteMessage)
 }

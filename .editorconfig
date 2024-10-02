@@ -1,0 +1,15 @@
+root = true
+
+[*.{kt,kts}]
+max_line_length = 120
+ktlint_code_style = android_studio
+ktlint_standard_function-signature = disabled
+ktlint_standard_trailing-comma-on-declaration-site = disabled
+ktlint_standard_trailing-comma-on-call-site = disabled
+ktlint_standard_colon-spacing = disabled
+ktlint_standard_import-ordering = disabled
+ktlint_standard_filename = disabled
+ktlint_standard_multiline-if-else = disabled
+ktlint_standard_no-semi = disabled
+ktlint_standard_package-name = disabled
+ktlint_standard_max-line-length = disabled

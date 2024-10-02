@@ -11,7 +11,7 @@ import timber.log.Timber
 
 class TagsViewModel : BaseViewModel() {
     private val _fetchedTags = MutableLiveData<List<String>>()
-    val fetchedTag: LiveData<List<String>> = _fetchedTags
+    val fetchedTags: LiveData<List<String>> = _fetchedTags
 
     val defaultTags = listOf("Kotlin", "Java", "Swift", "Python")
 

@@ -1,12 +1,9 @@
 package re.notifica.push.ktx
 
 import re.notifica.Notificare
-import re.notifica.NotificareInternalDeviceModule
 import re.notifica.NotificareInternalEventsModule
-import re.notifica.internal.NotificareModule
-import re.notifica.internal.modules.integrations.NotificareLoyaltyIntegration
-import re.notifica.ktx.device
 import re.notifica.ktx.events
+import re.notifica.push.NotificareInternalPush
 import re.notifica.push.NotificarePush
 import re.notifica.push.internal.NotificarePushImpl
 
@@ -15,19 +12,18 @@ public fun Notificare.push(): NotificarePush {
     return NotificarePushImpl
 }
 
-internal fun Notificare.deviceInternal(): NotificareInternalDeviceModule {
-    return device() as NotificareInternalDeviceModule
+internal fun Notificare.pushInternal(): NotificareInternalPush {
+    return push() as NotificareInternalPush
 }
 
 internal fun Notificare.eventsInternal(): NotificareInternalEventsModule {
     return events() as NotificareInternalEventsModule
 }
 
-internal fun Notificare.loyaltyIntegration(): NotificareLoyaltyIntegration? {
-    return NotificareModule.Module.LOYALTY.instance as? NotificareLoyaltyIntegration
-}
-
 // region Intent actions
+
+public val Notificare.INTENT_ACTION_SUBSCRIPTION_CHANGED: String
+    get() = "re.notifica.intent.action.SubscriptionChanged"
 
 public val Notificare.INTENT_ACTION_TOKEN_CHANGED: String
     get() = "re.notifica.intent.action.TokenChanged"
@@ -59,6 +55,9 @@ public val Notificare.INTENT_ACTION_LIVE_ACTIVITY_UPDATE: String
 // endregion
 
 // region Intent extras
+
+public val Notificare.INTENT_EXTRA_SUBSCRIPTION: String
+    get() = "re.notifica.intent.extra.Subscription"
 
 public val Notificare.INTENT_EXTRA_TOKEN: String
     get() = "re.notifica.intent.extra.Token"

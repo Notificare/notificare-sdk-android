@@ -3,10 +3,10 @@ package re.notifica.inbox.internal.database.entities
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import java.util.Date
 import re.notifica.inbox.internal.network.push.InboxResponse
 import re.notifica.inbox.models.NotificareInboxItem
 import re.notifica.models.NotificareNotification
-import java.util.*
 
 @Entity(
     tableName = "inbox"

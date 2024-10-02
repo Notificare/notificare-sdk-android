@@ -3,10 +3,11 @@ import org.jetbrains.kotlin.konan.properties.loadProperties
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
-    id("kotlin-kapt")
+    alias(libs.plugins.google.ksp)
     alias(libs.plugins.notificare.services)
     alias(libs.plugins.google.services)
-    //alias(libs.plugins.huawei.agconnect)
+    alias(libs.plugins.ktlint)
+    alias(libs.plugins.detekt)
 }
 
 val properties = loadProperties("local.properties")
@@ -25,6 +26,8 @@ android {
 
         manifestPlaceholders["googleMapsApiKey"] = properties.getProperty("google.maps.key")
 
+        resValue("string", "sample_user_id", properties.getProperty("userId"))
+        resValue("string", "sample_user_name", properties.getProperty("userName"))
     }
 
     signingConfigs {
@@ -67,18 +70,25 @@ android {
     }
 
     applicationVariants.configureEach {
-        if (name == "apiTestDebug") {
-            resValue("string", "notificare_app_links_hostname", "\"618d0f4edc09fbed1864e8d0.applinks-test.notifica.re\"")
-            resValue("string", "notificare_dynamic_link_hostname", "\"sample-app-dev.test.ntc.re\"")
-        } else if (name == "apiTestRelease") {
-            resValue("string", "notificare_app_links_hostname", "\"654d017fc468efc19379921e.applinks-test.notifica.re\"")
-            resValue("string", "notificare_dynamic_link_hostname", "\"sample-app.test.ntc.re\"")
-        } else if (name == "apiProductionDebug") {
-            resValue("string", "notificare_app_links_hostname", "\"61644511218adebf72c5449b.applinks.notifica.re\"")
-            resValue("string", "notificare_dynamic_link_hostname", "\"sample-app-dev.ntc.re\"")
-        } else if (name == "apiProductionRelease") {
-            resValue("string", "notificare_app_links_hostname", "\"6511625f445cc1c81d47fd6f.applinks.notifica.re\"")
-            resValue("string", "notificare_dynamic_link_hostname", "\"sample-app.ntc.re\"")
+        when (name) {
+            "apiTestDebug" -> {
+                @Suppress("ktlint:standard:argument-list-wrapping")
+                resValue("string", "notificare_app_links_hostname", "\"618d0f4edc09fbed1864e8d0.applinks-test.notifica.re\"")
+                resValue("string", "notificare_dynamic_link_hostname", "\"sample-app-dev.test.ntc.re\"")
+            }
+            "apiTestRelease" -> {
+                @Suppress("ktlint:standard:argument-list-wrapping")
+                resValue("string", "notificare_app_links_hostname", "\"654d017fc468efc19379921e.applinks-test.notifica.re\"")
+                resValue("string", "notificare_dynamic_link_hostname", "\"sample-app.test.ntc.re\"")
+            }
+            "apiProductionDebug" -> {
+                resValue("string", "notificare_app_links_hostname", "\"61644511218adebf72c5449b.applinks.notifica.re\"")
+                resValue("string", "notificare_dynamic_link_hostname", "\"sample-app-dev.ntc.re\"")
+            }
+            "apiProductionRelease" -> {
+                resValue("string", "notificare_app_links_hostname", "\"6511625f445cc1c81d47fd6f.applinks.notifica.re\"")
+                resValue("string", "notificare_dynamic_link_hostname", "\"sample-app.ntc.re\"")
+            }
         }
     }
 
@@ -95,6 +105,19 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
+}
+
+ktlint {
+    debug.set(true)
+    verbose.set(true)
+    android.set(true)
+    baseline.set(file("ktlint-baseline.xml"))
+}
+
+detekt {
+    config.setFrom(rootProject.files("config/detekt/detekt.yml"))
+    buildUponDefaultConfig = true
+    baseline = file("detekt-baseline.xml")
 }
 
 dependencies {
@@ -114,39 +137,24 @@ dependencies {
 
     // Glide
     implementation(libs.glide)
-    kapt(libs.glide.compiler)
+    ksp(libs.glide.ksp)
 
     // Moshi
     implementation(libs.moshi.kotlin)
     implementation(libs.moshi.adapters)
-    kapt(libs.moshi.codegen)
+    ksp(libs.moshi.codegen)
 
     implementation(libs.androidx.navigation.fragment)
     implementation(libs.androidx.navigation.ui)
 
     implementation(project(":notificare"))
     implementation(project(":notificare-assets"))
+    implementation(project(":notificare-geo"))
+    implementation(project(":notificare-geo-beacons"))
     implementation(project(":notificare-in-app-messaging"))
     implementation(project(":notificare-inbox"))
     implementation(project(":notificare-loyalty"))
-
-    implementation(project(":notificare-geo"))
-    implementation(project(":notificare-geo-gms"))
-    implementation(project(":notificare-geo-hms"))
-    implementation(project(":notificare-geo-beacons"))
-
-    implementation(project(":notificare-monetize"))
-    implementation(project(":notificare-monetize-gms"))
-
     implementation(project(":notificare-push"))
-    implementation(project(":notificare-push-gms"))
-    implementation(project(":notificare-push-hms"))
-
     implementation(project(":notificare-push-ui"))
-    implementation(project(":notificare-push-ui-gms"))
-    implementation(project(":notificare-push-ui-hms"))
-
     implementation(project(":notificare-scannables"))
-    implementation(project(":notificare-scannables-gms"))
-    implementation(project(":notificare-scannables-hms"))
 }

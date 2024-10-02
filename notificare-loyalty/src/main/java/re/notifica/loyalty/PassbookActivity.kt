@@ -5,7 +5,6 @@ import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.view.Menu
 import android.view.MenuItem
 import android.webkit.WebChromeClient
 import android.webkit.WebView
@@ -14,13 +13,12 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import re.notifica.Notificare
 import re.notifica.NotificareCallback
-import re.notifica.internal.NotificareLogger
-import re.notifica.internal.NotificareUtils
-import re.notifica.internal.ktx.parcelable
+import re.notifica.loyalty.internal.logger
+import re.notifica.utilities.parcel.parcelable
 import re.notifica.loyalty.ktx.INTENT_EXTRA_PASSBOOK
 import re.notifica.loyalty.ktx.loyalty
-import re.notifica.loyalty.ktx.loyaltyImplementation
 import re.notifica.loyalty.models.NotificarePass
+import re.notifica.utilities.content.applicationName
 
 public open class PassbookActivity : AppCompatActivity() {
 
@@ -60,61 +58,10 @@ public open class PassbookActivity : AppCompatActivity() {
         handlePassSerial(serial)
     }
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.notificare_menu_passbook_activity, menu)
-        return true
-    }
-
-    override fun onPrepareOptionsMenu(menu: Menu): Boolean {
-        pass.let { pass ->
-            menu.findItem(R.id.notificare_action_add_pass_to_wallet)?.apply {
-                isVisible = pass != null && pass.version == 1 && !Notificare.loyalty().isInWallet(pass)
-            }
-
-            menu.findItem(R.id.notificare_action_remove_pass_from_wallet)?.apply {
-                isVisible = pass != null && pass.version == 1 && Notificare.loyalty().isInWallet(pass)
-            }
-        }
-
-        return true
-    }
-
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             android.R.id.home -> {
                 onBackPressed()
-                return true
-            }
-            R.id.notificare_action_add_pass_to_wallet -> {
-                Notificare.loyalty().addPass(checkNotNull(pass), object : NotificareCallback<Unit> {
-                    override fun onSuccess(result: Unit) {
-                        finish()
-                    }
-
-                    override fun onFailure(e: Exception) {
-                        AlertDialog.Builder(this@PassbookActivity)
-                            .setTitle(NotificareUtils.applicationName)
-                            .setMessage(R.string.notificare_passbook_error_adding_pass)
-                            .setPositiveButton(R.string.notificare_dialog_ok_button) { _, _ -> finish() }
-                            .show()
-                    }
-                })
-                return true
-            }
-            R.id.notificare_action_remove_pass_from_wallet -> {
-                Notificare.loyalty().removePass(checkNotNull(pass), object : NotificareCallback<Unit> {
-                    override fun onSuccess(result: Unit) {
-                        finish()
-                    }
-
-                    override fun onFailure(e: Exception) {
-                        AlertDialog.Builder(this@PassbookActivity)
-                            .setTitle(NotificareUtils.applicationName)
-                            .setMessage(R.string.notificare_passbook_error_removing_pass)
-                            .setPositiveButton(R.string.notificare_dialog_ok_button) { _, _ -> finish() }
-                            .show()
-                    }
-                })
                 return true
             }
         }
@@ -127,10 +74,8 @@ public open class PassbookActivity : AppCompatActivity() {
         pass?.let { outState.putParcelable(Notificare.INTENT_EXTRA_PASSBOOK, it) }
     }
 
-
     protected open fun handlePass(pass: NotificarePass) {
         this.pass = pass
-        invalidateOptionsMenu()
 
         when (pass.version) {
             1 -> showWebPassView(pass.serial)
@@ -152,20 +97,23 @@ public open class PassbookActivity : AppCompatActivity() {
     }
 
     protected open fun handlePassSerial(serial: String) {
-        Notificare.loyaltyImplementation().fetchPassBySerial(serial, object : NotificareCallback<NotificarePass> {
-            override fun onSuccess(result: NotificarePass) {
-                handlePass(result)
-            }
+        Notificare.loyalty().fetchPassBySerial(
+            serial,
+            object : NotificareCallback<NotificarePass> {
+                override fun onSuccess(result: NotificarePass) {
+                    handlePass(result)
+                }
 
-            override fun onFailure(e: Exception) {
-                handlePassLoadingError(e)
+                override fun onFailure(e: Exception) {
+                    handlePassLoadingError(e)
+                }
             }
-        })
+        )
     }
 
     protected open fun handlePassLoadingError(e: Exception) {
         AlertDialog.Builder(this)
-            .setTitle(NotificareUtils.applicationName)
+            .setTitle(applicationName)
             .setMessage(R.string.notificare_passbook_error_loading_pass)
             .setPositiveButton(R.string.notificare_dialog_ok_button, null)
             .setOnDismissListener { finish() }
@@ -177,9 +125,9 @@ public open class PassbookActivity : AppCompatActivity() {
         val pathSegments = uri.pathSegments ?: return null
 
         val application = Notificare.application ?: return null
-        val appLinksDomain = Notificare.servicesInfo?.appLinksDomain ?: return null
+        val appLinksDomain = Notificare.servicesInfo?.hosts?.appLinks ?: return null
 
-        if (uri.host == "${application.id}.${appLinksDomain}" && pathSegments.size >= 2 && pathSegments[0] == "pass") {
+        if (uri.host == "${application.id}.$appLinksDomain" && pathSegments.size >= 2 && pathSegments[0] == "pass") {
             return pathSegments[1]
         }
 
@@ -187,7 +135,7 @@ public open class PassbookActivity : AppCompatActivity() {
     }
 
     private fun showWebPassView(serial: String) {
-        val host = Notificare.servicesInfo?.pushHost ?: return
+        val host = Notificare.servicesInfo?.hosts?.restApi ?: return
         val url = "$host/pass/web/$serial?showWebVersion=1"
 
         webView.loadUrl(url)
@@ -202,7 +150,7 @@ public open class PassbookActivity : AppCompatActivity() {
             startActivity(intent)
             finish()
         } catch (e: ActivityNotFoundException) {
-            NotificareLogger.error("Unable to show the Google Pay pass.", e)
+            logger.error("Unable to show the Google Pay pass.", e)
             handlePassLoadingError(e)
         }
     }

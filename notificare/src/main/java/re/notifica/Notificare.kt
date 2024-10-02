@@ -11,18 +11,27 @@ import android.os.RemoteException
 import androidx.annotation.MainThread
 import androidx.core.app.NotificationManagerCompat
 import com.android.installreferrer.api.InstallReferrerClient
-import com.android.installreferrer.api.InstallReferrerClient.InstallReferrerResponse
 import com.android.installreferrer.api.InstallReferrerStateListener
 import com.android.installreferrer.api.ReferrerDetails
+import java.lang.ref.WeakReference
+import java.net.URLEncoder
+import java.util.regex.Pattern
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import re.notifica.internal.*
-import re.notifica.internal.common.onMainThread
-import re.notifica.internal.ktx.coroutineScope
-import re.notifica.internal.ktx.toCallbackFunction
-import re.notifica.internal.network.push.*
+import re.notifica.internal.NOTIFICARE_VERSION
+import re.notifica.internal.NotificareLaunchState
+import re.notifica.internal.NotificareModule
+import re.notifica.internal.NotificareOptions
+import re.notifica.internal.NotificareUtils
+import re.notifica.internal.logger
+import re.notifica.utilities.threading.onMainThread
+import re.notifica.internal.network.push.ApplicationResponse
+import re.notifica.internal.network.push.CreateNotificationReplyPayload
+import re.notifica.internal.network.push.DynamicLinkResponse
+import re.notifica.internal.network.push.NotificareUploadResponse
+import re.notifica.internal.network.push.NotificationResponse
 import re.notifica.internal.network.request.NotificareRequest
 import re.notifica.internal.storage.SharedPreferencesMigration
 import re.notifica.internal.storage.database.NotificareDatabase
@@ -32,9 +41,7 @@ import re.notifica.ktx.deviceImplementation
 import re.notifica.models.NotificareApplication
 import re.notifica.models.NotificareDynamicLink
 import re.notifica.models.NotificareNotification
-import java.lang.ref.WeakReference
-import java.net.URLEncoder
-import java.util.regex.Pattern
+import re.notifica.utilities.coroutines.toCallbackFunction
 
 public object Notificare {
 
@@ -75,7 +82,7 @@ public object Notificare {
     private var state: NotificareLaunchState = NotificareLaunchState.NONE
 
     // Listeners
-    private val listeners = hashSetOf<Listener>()
+    private val listeners = hashSetOf<WeakReference<Listener>>()
 
     private var installReferrerDetails: ReferrerDetails? = null
 
@@ -98,7 +105,7 @@ public object Notificare {
             return if (::sharedPreferences.isInitialized) {
                 sharedPreferences.application
             } else {
-                NotificareLogger.warning("Calling this method requires Notificare to have been configured.")
+                logger.warning("Calling this method requires Notificare to have been configured.")
                 null
             }
         }
@@ -106,34 +113,22 @@ public object Notificare {
             if (::sharedPreferences.isInitialized) {
                 sharedPreferences.application = value
             } else {
-                NotificareLogger.warning("Calling this method requires Notificare to have been configured.")
+                logger.warning("Calling this method requires Notificare to have been configured.")
             }
         }
 
     @JvmStatic
     public fun configure(context: Context) {
-        val applicationKey = context.getString(R.string.notificare_services_application_key)
-        val applicationSecret = context.getString(R.string.notificare_services_application_secret)
+        val servicesInfo = loadServicesInfoFromResources(context)
 
-        configure(context, applicationKey, applicationSecret)
+        configure(context, servicesInfo)
     }
 
     @JvmStatic
     public fun configure(context: Context, applicationKey: String, applicationSecret: String) {
-        val environment: NotificareServicesInfo.Environment = run {
-            try {
-                val useTestApi = context.resources.getBoolean(R.bool.notificare_services_use_test_api)
-                if (useTestApi) return@run NotificareServicesInfo.Environment.TEST
-            } catch (_: Resources.NotFoundException) {
-            }
-
-            return@run NotificareServicesInfo.Environment.PRODUCTION
-        }
-
         val servicesInfo = NotificareServicesInfo(
             applicationKey = applicationKey,
             applicationSecret = applicationSecret,
-            environment = environment,
         )
 
         configure(context, servicesInfo)
@@ -144,149 +139,145 @@ public object Notificare {
         return context?.get() ?: throw IllegalStateException("Cannot find context for Notificare.")
     }
 
-    @JvmStatic
-    public fun launch() {
+    public suspend fun launch(): Unit = withContext(Dispatchers.IO) {
         if (state == NotificareLaunchState.NONE) {
-            NotificareLogger.warning("Notificare.configure() has never been called. Cannot launch.")
-            return
+            logger.warning("Notificare.configure() has never been called. Cannot launch.")
+            throw NotificareNotConfiguredException()
         }
 
         if (state > NotificareLaunchState.CONFIGURED) {
-            NotificareLogger.warning("Notificare has already been launched. Skipping...")
-            return
+            logger.warning("Notificare has already been launched. Skipping...")
+            return@withContext
         }
 
-        NotificareLogger.info("Launching Notificare.")
+        logger.info("Launching Notificare.")
         state = NotificareLaunchState.LAUNCHING
 
-        Notificare.coroutineScope.launch {
-            try {
-                val application = fetchApplication()
+        try {
+            val application = fetchApplication(saveToSharedPreferences = false)
+            val storedApplication = sharedPreferences.application
 
-                // Loop all possible modules and launch the available ones.
+            if (storedApplication != null && storedApplication.id != application.id) {
+                logger.warning("Incorrect application keys detected. Resetting Notificare to a clean state.")
+
                 NotificareModule.Module.entries.forEach { module ->
                     module.instance?.run {
-                        NotificareLogger.debug("Launching module: ${module.name.lowercase()}")
+                        logger.debug("Resetting module: ${module.name.lowercase()}")
                         try {
-                            this.launch()
+                            this.clearStorage()
                         } catch (e: Exception) {
-                            NotificareLogger.debug("Failed to launch '${module.name.lowercase()}': $e")
+                            logger.debug("Failed to reset '${module.name.lowercase()}': $e")
                             throw e
                         }
                     }
                 }
 
-                state = NotificareLaunchState.READY
+                database.events().clear()
+                sharedPreferences.clear()
+            }
 
-                val enabledServices = application.services.filter { it.value }.map { it.key }
-                val enabledModules = NotificareUtils.getEnabledPeerModules()
+            sharedPreferences.application = application
 
-                NotificareLogger.debug("/==================================================================================/")
-                NotificareLogger.debug("Notificare SDK is ready to use for application")
-                NotificareLogger.debug("App name: ${application.name}")
-                NotificareLogger.debug("App ID: ${application.id}")
-                NotificareLogger.debug("App services: ${enabledServices.joinToString(", ")}")
-                NotificareLogger.debug("/==================================================================================/")
-                NotificareLogger.debug("SDK version: $SDK_VERSION")
-                NotificareLogger.debug("SDK modules: ${enabledModules.joinToString(", ")}")
-                NotificareLogger.debug("/==================================================================================/")
-
-                // We're done launching. Send a broadcast.
-                requireContext().sendBroadcast(
-                    Intent(requireContext(), intentReceiver)
-                        .setAction(INTENT_ACTION_READY)
-                        .putExtra(INTENT_EXTRA_APPLICATION, application)
-                )
-
-                onMainThread {
-                    // Notify the listeners.
-                    listeners.forEach { it.onReady(application) }
-                }
-
-                // Loop all possible modules and post-launch the available ones.
-                NotificareModule.Module.entries.forEach { module ->
-                    module.instance?.run {
-                        NotificareLogger.debug("Post-launching module: ${module.name.lowercase()}")
-                        try {
-                            this.postLaunch()
-                        } catch (e: Exception) {
-                            NotificareLogger.error("Failed to post-launch '${module.name.lowercase()}': $e")
-                        }
+            // Loop all possible modules and launch the available ones.
+            NotificareModule.Module.entries.forEach { module ->
+                module.instance?.run {
+                    logger.debug("Launching module: ${module.name.lowercase()}")
+                    try {
+                        this.launch()
+                    } catch (e: Exception) {
+                        logger.debug("Failed to launch '${module.name.lowercase()}': $e")
+                        throw e
                     }
                 }
-            } catch (e: Exception) {
-                NotificareLogger.error("Failed to launch Notificare.", e)
-                state = NotificareLaunchState.CONFIGURED
+            }
+
+            state = NotificareLaunchState.READY
+            printLaunchSummary(application)
+
+            // We're done launching. Send a broadcast.
+            requireContext().sendBroadcast(
+                Intent(requireContext(), intentReceiver)
+                    .setAction(INTENT_ACTION_READY)
+                    .putExtra(INTENT_EXTRA_APPLICATION, application)
+            )
+
+            onMainThread {
+                listeners.forEach { it.get()?.onReady(application) }
+            }
+        } catch (e: Exception) {
+            logger.error("Failed to launch Notificare.", e)
+            state = NotificareLaunchState.CONFIGURED
+            throw e
+        }
+
+        launch {
+            // Loop all possible modules and post-launch the available ones.
+            NotificareModule.Module.entries.forEach { module ->
+                module.instance?.run {
+                    logger.debug("Post-launching module: ${module.name.lowercase()}")
+                    try {
+                        this.postLaunch()
+                    } catch (e: Exception) {
+                        logger.error("Failed to post-launch '${module.name.lowercase()}': $e")
+                    }
+                }
             }
         }
     }
 
     @JvmStatic
-    public fun unlaunch() {
+    public fun launch(
+        callback: NotificareCallback<Unit>,
+    ): Unit = toCallbackFunction(::launch)(callback::onSuccess, callback::onFailure)
+
+    public suspend fun unlaunch(): Unit = withContext(Dispatchers.IO) {
         if (!isReady) {
-            NotificareLogger.warning("Cannot un-launch Notificare before it has been launched.")
-            return
+            logger.warning("Cannot un-launch Notificare before it has been launched.")
+            throw NotificareNotReadyException()
         }
 
-        NotificareLogger.info("Un-launching Notificare.")
+        logger.info("Un-launching Notificare.")
 
-        Notificare.coroutineScope.launch {
-            try {
-                // Loop all possible modules and un-launch the available ones.
-                NotificareModule.Module.entries.reversed().forEach { module ->
-                    module.instance?.run {
-                        NotificareLogger.debug("Un-launching module: ${module.name.lowercase()}.")
+        // Loop all possible modules and un-launch the available ones.
+        NotificareModule.Module.entries.reversed().forEach { module ->
+            module.instance?.run {
+                logger.debug("Un-launching module: ${module.name.lowercase()}.")
 
-                        try {
-                            this.unlaunch()
-                        } catch (e: Exception) {
-                            NotificareLogger.debug("Failed to un-launch ${module.name.lowercase()}': $e")
-                            throw e
-                        }
-                    }
+                try {
+                    this.unlaunch()
+                } catch (e: Exception) {
+                    logger.debug("Failed to un-launch ${module.name.lowercase()}': $e")
+                    throw e
                 }
-
-                NotificareLogger.debug("Clearing device tags.")
-                device().clearTags()
-
-                NotificareLogger.debug("Registering a temporary device.")
-                deviceImplementation().registerTemporary()
-
-                NotificareLogger.debug("Removing device.")
-                deviceImplementation().delete()
-
-                NotificareLogger.info("Un-launched Notificare.")
-                state = NotificareLaunchState.CONFIGURED
-
-                // We're done un-launching. Send a broadcast.
-                requireContext().sendBroadcast(
-                    Intent(requireContext(), intentReceiver)
-                        .setAction(INTENT_ACTION_UNLAUNCHED)
-                )
-
-                onMainThread {
-                    // Notify the listeners.
-                    listeners.forEach { it.onUnlaunched() }
-                }
-            } catch (e: Exception) {
-                NotificareLogger.error("Failed to un-launch Notificare.", e)
             }
         }
+
+        logger.debug("Removing device.")
+        deviceImplementation().delete()
+
+        logger.info("Un-launched Notificare.")
+        state = NotificareLaunchState.CONFIGURED
+
+        // We're done un-launching. Send a broadcast.
+        requireContext().sendBroadcast(
+            Intent(requireContext(), intentReceiver)
+                .setAction(INTENT_ACTION_UNLAUNCHED)
+        )
+
+        onMainThread {
+            listeners.forEach { it.get()?.onUnlaunched() }
+        }
     }
 
-    @Deprecated(
-        message = "Use addListener() instead.",
-        replaceWith = ReplaceWith("Notificare.addListener(listener)")
-    )
     @JvmStatic
-    public fun addOnReadyListener(@Suppress("DEPRECATION") listener: OnReadyListener) {
-        addListener(listener)
-    }
+    public fun unlaunch(
+        callback: NotificareCallback<Unit>,
+    ): Unit = toCallbackFunction(::unlaunch)(callback::onSuccess, callback::onFailure)
 
     @JvmStatic
     public fun addListener(listener: Listener) {
-        listeners.add(listener)
-        NotificareLogger.debug("Added a new Notificare.Listener (${listeners.size} in total).")
+        listeners.add(WeakReference(listener))
+        logger.debug("Added a new Notificare.Listener (${listeners.size} in total).")
 
         if (isReady) {
             onMainThread {
@@ -295,36 +286,25 @@ public object Notificare {
         }
     }
 
-    @Deprecated(
-        message = "Use removeListener() instead.",
-        replaceWith = ReplaceWith("Notificare.removeListener(listener)")
-    )
-    @JvmStatic
-    public fun removeOnReadyListener(@Suppress("DEPRECATION") listener: OnReadyListener) {
-        removeListener(listener)
-    }
-
     @JvmStatic
     public fun removeListener(listener: Listener) {
-        listeners.remove(listener)
-        NotificareLogger.debug("Removed a Notificare.Listener (${listeners.size} in total).")
+        val iterator = listeners.iterator()
+        while (iterator.hasNext()) {
+            val next = iterator.next().get()
+            if (next == null || next == listener) {
+                iterator.remove()
+            }
+        }
+        logger.debug("Removed a Notificare.Listener (${listeners.size} in total).")
     }
 
     public suspend fun fetchApplication(): NotificareApplication = withContext(Dispatchers.IO) {
-        NotificareRequest.Builder()
-            .get("/application/info")
-            .responseDecodable(ApplicationResponse::class)
-            .application
-            .toModel()
-            .also {
-                // Update the cached copy.
-                application = it
-            }
+        fetchApplication(saveToSharedPreferences = true)
     }
 
     @JvmStatic
     public fun fetchApplication(callback: NotificareCallback<NotificareApplication>): Unit =
-        toCallbackFunction(::fetchApplication)(callback)
+        toCallbackFunction<NotificareApplication>(::fetchApplication)(callback::onSuccess, callback::onFailure)
 
     public suspend fun fetchNotification(id: String): NotificareNotification = withContext(Dispatchers.IO) {
         if (!isConfigured) throw NotificareNotConfiguredException()
@@ -338,7 +318,7 @@ public object Notificare {
 
     @JvmStatic
     public fun fetchNotification(id: String, callback: NotificareCallback<NotificareNotification>): Unit =
-        toCallbackFunction(::fetchNotification)(id, callback)
+        toCallbackFunction(::fetchNotification)(id, callback::onSuccess, callback::onFailure)
 
     public suspend fun fetchDynamicLink(uri: Uri): NotificareDynamicLink = withContext(Dispatchers.IO) {
         if (!isConfigured) throw NotificareNotConfiguredException()
@@ -346,7 +326,7 @@ public object Notificare {
         val uriEncodedLink = URLEncoder.encode(uri.toString(), "UTF-8")
 
         NotificareRequest.Builder()
-            .get("/link/dynamic/${uriEncodedLink}")
+            .get("/link/dynamic/$uriEncodedLink")
             .query("platform", "Android")
             .query("deviceID", device().currentDevice?.id)
             .query("userID", device().currentDevice?.userId)
@@ -356,7 +336,7 @@ public object Notificare {
 
     @JvmStatic
     public fun fetchDynamicLink(uri: Uri, callback: NotificareCallback<NotificareDynamicLink>): Unit =
-        toCallbackFunction(::fetchDynamicLink)(uri, callback)
+        toCallbackFunction(::fetchDynamicLink)(uri, callback::onSuccess, callback::onFailure)
 
     public suspend fun createNotificationReply(
         notification: NotificareNotification,
@@ -423,7 +403,7 @@ public object Notificare {
             .post("/upload/reply", payload)
             .responseDecodable(NotificareUploadResponse::class)
 
-        val host = checkNotNull(servicesInfo).pushHost
+        val host = checkNotNull(servicesInfo).hosts.restApi
         "$host/upload${response.filename}"
     }
 
@@ -449,8 +429,15 @@ public object Notificare {
                     var summaryTag: String? = null
 
                     for (statusBarNotification in notificationManager.activeNotifications) {
-                        if (statusBarNotification != null && statusBarNotification.groupKey != null && statusBarNotification.groupKey == groupKey) {
-                            if ((statusBarNotification.tag == null || statusBarNotification.tag != id) && statusBarNotification.id == 0) {
+                        if (
+                            statusBarNotification != null &&
+                            statusBarNotification.groupKey != null &&
+                            statusBarNotification.groupKey == groupKey
+                        ) {
+                            if (
+                                (statusBarNotification.tag == null || statusBarNotification.tag != id) &&
+                                statusBarNotification.id == 0
+                            ) {
                                 hasMore = true
                             } else if (statusBarNotification.id == 1) {
                                 summaryTag = statusBarNotification.tag
@@ -479,15 +466,18 @@ public object Notificare {
     public fun handleTestDeviceIntent(intent: Intent): Boolean {
         val nonce = parseTestDeviceNonce(intent) ?: return false
 
-        deviceImplementation().registerTestDevice(nonce, object : NotificareCallback<Unit> {
-            override fun onSuccess(result: Unit) {
-                NotificareLogger.info("Device registered for testing.")
-            }
+        deviceImplementation().registerTestDevice(
+            nonce,
+            object : NotificareCallback<Unit> {
+                override fun onSuccess(result: Unit) {
+                    logger.info("Device registered for testing.")
+                }
 
-            override fun onFailure(e: Exception) {
-                NotificareLogger.error("Failed to register the device for testing.", e)
+                override fun onFailure(e: Exception) {
+                    logger.error("Failed to register the device for testing.", e)
+                }
             }
-        })
+        )
 
         return true
     }
@@ -496,20 +486,23 @@ public object Notificare {
     public fun handleDynamicLinkIntent(activity: Activity, intent: Intent): Boolean {
         val uri = parseDynamicLink(intent) ?: return false
 
-        NotificareLogger.debug("Handling a dynamic link.")
-        fetchDynamicLink(uri, object : NotificareCallback<NotificareDynamicLink> {
-            override fun onSuccess(result: NotificareDynamicLink) {
-                activity.startActivity(
-                    Intent()
-                        .setAction(Intent.ACTION_VIEW)
-                        .setData(Uri.parse(result.target))
-                )
-            }
+        logger.debug("Handling a dynamic link.")
+        fetchDynamicLink(
+            uri,
+            object : NotificareCallback<NotificareDynamicLink> {
+                override fun onSuccess(result: NotificareDynamicLink) {
+                    activity.startActivity(
+                        Intent()
+                            .setAction(Intent.ACTION_VIEW)
+                            .setData(Uri.parse(result.target))
+                    )
+                }
 
-            override fun onFailure(e: Exception) {
-                NotificareLogger.warning("Failed to fetch the dynamic link.", e)
+                override fun onFailure(e: Exception) {
+                    logger.warning("Failed to fetch the dynamic link.", e)
+                }
             }
-        })
+        )
 
         return true
     }
@@ -530,38 +523,42 @@ public object Notificare {
     @JvmStatic
     public fun canEvaluateDeferredLink(
         callback: NotificareCallback<Boolean>,
-    ): Unit = toCallbackFunction(::canEvaluateDeferredLink)(callback)
+    ): Unit = toCallbackFunction(::canEvaluateDeferredLink)(callback::onSuccess, callback::onFailure)
 
     public suspend fun evaluateDeferredLink(): Boolean = withContext(Dispatchers.IO) {
         if (sharedPreferences.deferredLinkChecked != false) {
-            NotificareLogger.debug("Deferred link already evaluated.")
+            logger.debug("Deferred link already evaluated.")
             return@withContext false
         }
 
         try {
-            NotificareLogger.debug("Checking for a deferred link.")
+            logger.debug("Checking for a deferred link.")
 
             val context = requireContext()
 
             val referrerDetails = getInstallReferrerDetails(context)
             val installReferrer = referrerDetails?.installReferrer ?: run {
-                NotificareLogger.debug("Install referrer information not found.")
+                logger.debug("Install referrer information not found.")
                 return@withContext false
             }
 
             val deferredLink = parseDeferredLink(installReferrer) ?: run {
-                NotificareLogger.debug("Install referrer has no Notificare deferred link.")
+                logger.debug("Install referrer has no Notificare deferred link.")
                 return@withContext false
             }
 
             val dynamicLink = fetchDynamicLink(deferredLink)
 
             val intent = Intent(Intent.ACTION_VIEW, Uri.parse(dynamicLink.target))
-                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS)
+                .addFlags(
+                    Intent.FLAG_ACTIVITY_NEW_TASK or
+                        Intent.FLAG_ACTIVITY_CLEAR_TOP or
+                        Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS
+                )
                 .setPackage(context.packageName)
 
             if (intent.resolveActivity(context.packageManager) == null) {
-                NotificareLogger.warning("Cannot open a deep link that's not supported by the application.")
+                logger.warning("Cannot open a deep link that's not supported by the application.")
                 return@withContext false
             }
 
@@ -576,23 +573,84 @@ public object Notificare {
     @JvmStatic
     public fun evaluateDeferredLink(
         callback: NotificareCallback<Boolean>,
-    ): Unit = toCallbackFunction(::evaluateDeferredLink)(callback)
+    ): Unit = toCallbackFunction(::evaluateDeferredLink)(callback::onSuccess, callback::onFailure)
 
     // endregion
 
+    private fun loadServicesInfoFromResources(context: Context): NotificareServicesInfo {
+        val applicationKey = try {
+            context.getString(R.string.notificare_services_application_key)
+        } catch (_: Resources.NotFoundException) {
+            error("Application secret resource unavailable.")
+        }
+
+        val applicationSecret = try {
+            context.getString(R.string.notificare_services_application_secret)
+        } catch (_: Resources.NotFoundException) {
+            error("Application secret resource unavailable.")
+        }
+
+        val hosts = try {
+            val restApi = context.resources.getString(R.string.notificare_services_hosts_rest_api)
+            val appLinks = context.resources.getString(R.string.notificare_services_hosts_app_links)
+            val shortLinks = context.resources.getString(R.string.notificare_services_hosts_short_links)
+
+            if (restApi.isNotBlank() && appLinks.isNotBlank() && shortLinks.isNotBlank()) {
+                NotificareServicesInfo.Hosts(restApi, appLinks, shortLinks)
+            } else {
+                NotificareServicesInfo.Hosts()
+            }
+        } catch (_: Resources.NotFoundException) {
+            NotificareServicesInfo.Hosts()
+        }
+
+        return NotificareServicesInfo(applicationKey, applicationSecret, hosts)
+    }
+
+    private fun printLaunchSummary(application: NotificareApplication) {
+        val enabledServices = application.services.filter { it.value }.map { it.key }
+        val enabledModules = NotificareUtils.getEnabledPeerModules()
+
+        logger.info("Notificare is ready to use for application.")
+        logger.debug("/==================================================================================/")
+        logger.debug("App name: ${application.name}")
+        logger.debug("App ID: ${application.id}")
+        logger.debug("App services: ${enabledServices.joinToString(", ")}")
+        logger.debug("/==================================================================================/")
+        logger.debug("SDK version: $SDK_VERSION")
+        logger.debug("SDK modules: ${enabledModules.joinToString(", ")}")
+        logger.debug("/==================================================================================/")
+    }
+
     private fun configure(context: Context, servicesInfo: NotificareServicesInfo) {
-        if (isConfigured) {
-            NotificareLogger.warning("Notificare has already been configured. Skipping...")
+        if (state > NotificareLaunchState.CONFIGURED) {
+            logger.warning("Unable to reconfigure Notificare once launched.")
             return
+        }
+
+        if (state == NotificareLaunchState.CONFIGURED) {
+            logger.info("Reconfiguring Notificare with another set of application keys.")
         }
 
         if (servicesInfo.applicationKey.isBlank() || servicesInfo.applicationSecret.isBlank()) {
             throw IllegalArgumentException("Notificare cannot be configured without an application key and secret.")
         }
 
+        try {
+            servicesInfo.validate()
+        } catch (e: Exception) {
+            logger.error(
+                "Could not validate the provided services configuration. Please check the contents are valid."
+            )
+
+            throw e
+        }
+
         this.context = WeakReference(context.applicationContext)
         this.servicesInfo = servicesInfo
         this.options = NotificareOptions(context.applicationContext)
+
+        logger.hasDebugLoggingEnabled = checkNotNull(this.options).debugLoggingEnabled
 
         // Late init modules
         this.database = NotificareDatabase.create(context.applicationContext)
@@ -600,18 +658,18 @@ public object Notificare {
 
         NotificareModule.Module.entries.forEach { module ->
             module.instance?.run {
-                NotificareLogger.debug("Configuring module: ${module.name.lowercase()}")
+                logger.debug("Configuring module: ${module.name.lowercase()}")
                 this.configure()
             }
         }
 
         if (!sharedPreferences.migrated) {
-            NotificareLogger.debug("Checking if there is legacy data that needs to be migrated.")
+            logger.debug("Checking if there is legacy data that needs to be migrated.")
             val migration = SharedPreferencesMigration(context)
 
             if (migration.hasLegacyData) {
                 migration.migrate()
-                NotificareLogger.info("Legacy data found and migrated to the new storage format.")
+                logger.info("Legacy data found and migrated to the new storage format.")
             }
 
             sharedPreferences.migrated = true
@@ -624,8 +682,15 @@ public object Notificare {
             sharedPreferences.deferredLinkChecked = sharedPreferences.device != null
         }
 
-        NotificareLogger.debug("Notificare configured all services.")
+        logger.debug("Notificare configured all services.")
         state = NotificareLaunchState.CONFIGURED
+
+        if (!servicesInfo.hasDefaultHosts) {
+            logger.info("Notificare configured with customized hosts.")
+            logger.debug("REST API host: ${servicesInfo.hosts.restApi}")
+            logger.debug("AppLinks host: ${servicesInfo.hosts.appLinks}")
+            logger.debug("Short Links host: ${servicesInfo.hosts.shortLinks}")
+        }
     }
 
     private fun parseTestDeviceNonce(intent: Intent): String? {
@@ -636,9 +701,13 @@ public object Notificare {
         val pathSegments = uri.pathSegments ?: return null
 
         val application = Notificare.application ?: return null
-        val appLinksDomain = servicesInfo?.appLinksDomain ?: return null
+        val appLinksDomain = servicesInfo?.hosts?.appLinks ?: return null
 
-        if (uri.host == "${application.id}.${appLinksDomain}" && pathSegments.size >= 2 && pathSegments[0] == "testdevice") {
+        if (
+            uri.host == "${application.id}.$appLinksDomain" &&
+            pathSegments.size >= 2 &&
+            pathSegments[0] == "testdevice"
+        ) {
             return pathSegments[1]
         }
 
@@ -663,23 +732,23 @@ public object Notificare {
         val host = uri.host ?: return null
 
         val servicesInfo = servicesInfo ?: run {
-            NotificareLogger.warning("Unable to parse dynamic link. Notificare services have not been configured.")
+            logger.warning("Unable to parse dynamic link. Notificare services have not been configured.")
             return null
         }
 
-        if (!Pattern.matches("^([a-z0-9-])+\\.${Pattern.quote(servicesInfo.dynamicLinkDomain)}$", host)) {
-            NotificareLogger.debug("Domain pattern wasn't a match.")
+        if (!Pattern.matches("^([a-z0-9-])+\\.${Pattern.quote(servicesInfo.hosts.shortLinks)}$", host)) {
+            logger.debug("Domain pattern wasn't a match.")
             return null
         }
 
         if (uri.pathSegments?.size != 1) {
-            NotificareLogger.debug("Path components length wasn't a match.")
+            logger.debug("Path components length wasn't a match.")
             return null
         }
 
         val code = uri.pathSegments.first()
         if (!code.matches("^[a-zA-Z0-9_-]+$".toRegex())) {
-            NotificareLogger.debug("First path component value wasn't a match.")
+            logger.debug("First path component value wasn't a match.")
             return null
         }
 
@@ -687,16 +756,38 @@ public object Notificare {
     }
 
     private fun parseDeferredLink(referrer: String): Uri? {
-        var uri = Uri.Builder().encodedQuery(referrer).build()
-        var link = uri.getQueryParameter("ntc_link")
-        if (link != null) return Uri.parse(link)
-
-        uri = Uri.parse(referrer)
-        link = uri.getQueryParameter("ntc_link")
-        if (link != null) return Uri.parse(link)
-
-        return null
+        return parseDeferredLinkFromEncodedQueryUrl(referrer)
+            ?: parseDeferredLinkFromUrl(referrer)
     }
+
+    private fun parseDeferredLinkFromEncodedQueryUrl(referrer: String): Uri? {
+        val uri = Uri.Builder().encodedQuery(referrer).build()
+        val link = uri.getQueryParameter("ntc_link")
+
+        return link?.let { Uri.parse(it) }
+    }
+
+    private fun parseDeferredLinkFromUrl(referrer: String): Uri? {
+        val uri = Uri.parse(referrer)
+        val link = uri.getQueryParameter("ntc_link")
+
+        return link?.let { Uri.parse(it) }
+    }
+
+    private suspend fun fetchApplication(saveToSharedPreferences: Boolean): NotificareApplication =
+        withContext(Dispatchers.IO) {
+            val application = NotificareRequest.Builder()
+                .get("/application/info")
+                .responseDecodable(ApplicationResponse::class)
+                .application
+                .toModel()
+
+            if (saveToSharedPreferences) {
+                this@Notificare.application = application
+            }
+
+            return@withContext application
+        }
 
     private suspend fun getInstallReferrerDetails(
         context: Context
@@ -709,16 +800,18 @@ public object Notificare {
         val client = InstallReferrerClient.newBuilder(context.applicationContext).build()
         client.startConnection(object : InstallReferrerStateListener {
             override fun onInstallReferrerSetupFinished(responseCode: Int) {
-                if (responseCode == InstallReferrerResponse.OK) {
+                if (responseCode == InstallReferrerClient.InstallReferrerResponse.OK) {
                     try {
                         val referrer = client.installReferrer
                         deferredReferrerDetails.complete(referrer)
                     } catch (e: RemoteException) {
-                        NotificareLogger.error("Failed to acquire the install referrer.", e)
+                        logger.error("Failed to acquire the install referrer.", e)
                         deferredReferrerDetails.complete(null)
                     }
                 } else {
-                    NotificareLogger.error("Unable to acquire the install referrer. Play Store responded with code '$responseCode'.")
+                    logger.error(
+                        "Unable to acquire the install referrer. Play Store responded with code '$responseCode'."
+                    )
                     deferredReferrerDetails.complete(null)
                 }
 
@@ -727,7 +820,7 @@ public object Notificare {
 
             override fun onInstallReferrerServiceDisconnected() {
                 if (!deferredReferrerDetails.isCompleted) {
-                    NotificareLogger.warning("Lost connection to the Play Store before acquiring the install referrer.")
+                    logger.warning("Lost connection to the Play Store before acquiring the install referrer.")
                     deferredReferrerDetails.complete(null)
                 }
             }
@@ -736,14 +829,6 @@ public object Notificare {
         return@withContext deferredReferrerDetails.await().also {
             installReferrerDetails = it
         }
-    }
-
-    @Deprecated(
-        message = "Use the more complete Notificare.Listener instead.",
-        replaceWith = ReplaceWith("Notificare.Listener")
-    )
-    public interface OnReadyListener : Listener {
-        public override fun onReady(application: NotificareApplication)
     }
 
     public interface Listener {

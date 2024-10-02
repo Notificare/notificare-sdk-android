@@ -1,8 +1,8 @@
 package re.notifica.internal.room
 
 import androidx.room.TypeConverter
+import java.util.Date
 import re.notifica.InternalNotificareApi
-import java.util.*
 
 @InternalNotificareApi
 public class NotificareDateTypeConverter {

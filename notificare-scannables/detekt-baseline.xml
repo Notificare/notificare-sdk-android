@@ -1,0 +1,7 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues></ManuallySuppressedIssues>
+  <CurrentIssues>
+    <ID>ConstructorParameterNaming:Responses.kt$FetchScannableResponse.Scannable$val _id: String</ID>
+  </CurrentIssues>
+</SmellBaseline>

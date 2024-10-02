@@ -5,11 +5,11 @@ import android.os.Build
 import android.os.Parcelable
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.JsonClass
+import java.util.Date
 import kotlinx.parcelize.Parcelize
 import org.json.JSONObject
 import re.notifica.Notificare
 import re.notifica.internal.moshi
-import java.util.*
 
 @Parcelize
 @JsonClass(generateAdapter = true)

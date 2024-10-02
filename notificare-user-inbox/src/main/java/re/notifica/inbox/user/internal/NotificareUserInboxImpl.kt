@@ -5,14 +5,19 @@ import com.squareup.moshi.Moshi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
-import re.notifica.*
+import re.notifica.Notificare
+import re.notifica.NotificareApplicationUnavailableException
+import re.notifica.NotificareCallback
+import re.notifica.NotificareDeviceUnavailableException
+import re.notifica.NotificareNotConfiguredException
+import re.notifica.NotificareNotReadyException
+import re.notifica.NotificareServiceUnavailableException
 import re.notifica.inbox.user.NotificareUserInbox
 import re.notifica.inbox.user.internal.moshi.UserInboxResponseAdapter
 import re.notifica.inbox.user.models.NotificareUserInboxItem
 import re.notifica.inbox.user.models.NotificareUserInboxResponse
-import re.notifica.internal.NotificareLogger
 import re.notifica.internal.NotificareModule
-import re.notifica.internal.ktx.toCallbackFunction
+import re.notifica.utilities.coroutines.toCallbackFunction
 import re.notifica.internal.moshi
 import re.notifica.internal.network.push.NotificationResponse
 import re.notifica.internal.network.request.NotificareRequest
@@ -25,6 +30,10 @@ import re.notifica.models.NotificareNotification
 internal object NotificareUserInboxImpl : NotificareModule(), NotificareUserInbox {
 
     // region Notificare Module
+
+    override fun configure() {
+        logger.hasDebugLoggingEnabled = checkNotNull(Notificare.options).debugLoggingEnabled
+    }
 
     override fun moshi(builder: Moshi.Builder) {
         builder.add(UserInboxResponseAdapter())
@@ -43,9 +52,7 @@ internal object NotificareUserInboxImpl : NotificareModule(), NotificareUserInbo
         return parseResponse(json.toString())
     }
 
-    override suspend fun open(
-        item: NotificareUserInboxItem
-    ): NotificareNotification = withContext(Dispatchers.IO) {
+    override suspend fun open(item: NotificareUserInboxItem): NotificareNotification = withContext(Dispatchers.IO) {
         checkPrerequisites()
 
         // User inbox items are always partial.
@@ -59,12 +66,10 @@ internal object NotificareUserInboxImpl : NotificareModule(), NotificareUserInbo
 
     override fun open(
         item: NotificareUserInboxItem,
-        callback: NotificareCallback<NotificareNotification>,
-    ): Unit = toCallbackFunction(::open)(item, callback)
+        callback: NotificareCallback<NotificareNotification>
+    ): Unit = toCallbackFunction(::open)(item, callback::onSuccess, callback::onFailure)
 
-    override suspend fun markAsRead(
-        item: NotificareUserInboxItem
-    ): Unit = withContext(Dispatchers.IO) {
+    override suspend fun markAsRead(item: NotificareUserInboxItem): Unit = withContext(Dispatchers.IO) {
         checkPrerequisites()
 
         Notificare.events().logNotificationOpen(item.notification.id)
@@ -73,11 +78,9 @@ internal object NotificareUserInboxImpl : NotificareModule(), NotificareUserInbo
     override fun markAsRead(
         item: NotificareUserInboxItem,
         callback: NotificareCallback<Unit>
-    ): Unit = toCallbackFunction(::markAsRead)(item, callback)
+    ): Unit = toCallbackFunction(::markAsRead)(item, callback::onSuccess, callback::onFailure)
 
-    override suspend fun remove(
-        item: NotificareUserInboxItem
-    ): Unit = withContext(Dispatchers.IO) {
+    override suspend fun remove(item: NotificareUserInboxItem): Unit = withContext(Dispatchers.IO) {
         checkPrerequisites()
 
         removeUserInboxItem(item)
@@ -86,40 +89,40 @@ internal object NotificareUserInboxImpl : NotificareModule(), NotificareUserInbo
     override fun remove(
         item: NotificareUserInboxItem,
         callback: NotificareCallback<Unit>
-    ): Unit = toCallbackFunction(::remove)(item, callback)
+    ): Unit = toCallbackFunction(::remove)(item, callback::onSuccess, callback::onFailure)
 
     // endregion
 
     @Throws
     private fun checkPrerequisites() {
         if (!Notificare.isReady) {
-            NotificareLogger.warning("Notificare is not ready yet.")
+            logger.warning("Notificare is not ready yet.")
             throw NotificareNotReadyException()
         }
 
         val application = Notificare.application ?: run {
-            NotificareLogger.warning("Notificare application is not yet available.")
+            logger.warning("Notificare application is not yet available.")
             throw NotificareApplicationUnavailableException()
         }
 
         if (application.services[NotificareApplication.ServiceKeys.INBOX] != true) {
-            NotificareLogger.warning("Notificare inbox functionality is not enabled.")
+            logger.warning("Notificare inbox functionality is not enabled.")
             throw NotificareServiceUnavailableException(service = NotificareApplication.ServiceKeys.INBOX)
         }
 
         if (application.inboxConfig?.useInbox != true) {
-            NotificareLogger.warning("Notificare inbox functionality is not enabled.")
+            logger.warning("Notificare inbox functionality is not enabled.")
             throw NotificareServiceUnavailableException(service = NotificareApplication.ServiceKeys.INBOX)
         }
 
         if (application.inboxConfig?.useUserInbox != true) {
-            NotificareLogger.warning("Notificare user inbox functionality is not enabled.")
+            logger.warning("Notificare user inbox functionality is not enabled.")
             throw NotificareServiceUnavailableException(service = NotificareApplication.ServiceKeys.INBOX)
         }
     }
 
     private suspend fun fetchUserInboxNotification(
-        item: NotificareUserInboxItem,
+        item: NotificareUserInboxItem
     ): NotificareNotification = withContext(Dispatchers.IO) {
         if (!Notificare.isConfigured) throw NotificareNotConfiguredException()
 
@@ -133,9 +136,7 @@ internal object NotificareUserInboxImpl : NotificareModule(), NotificareUserInbo
             .toModel()
     }
 
-    private suspend fun removeUserInboxItem(
-        item: NotificareUserInboxItem,
-    ): Unit = withContext(Dispatchers.IO) {
+    private suspend fun removeUserInboxItem(item: NotificareUserInboxItem): Unit = withContext(Dispatchers.IO) {
         if (!Notificare.isConfigured) throw NotificareNotConfiguredException()
 
         val device = Notificare.device().currentDevice

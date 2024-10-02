@@ -1,6 +1,5 @@
 package re.notifica.sample.ui.inbox
 
-
 import android.text.format.DateUtils
 import android.view.LayoutInflater
 import android.view.ViewGroup

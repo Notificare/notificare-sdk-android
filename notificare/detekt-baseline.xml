@@ -1,0 +1,23 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues></ManuallySuppressedIssues>
+  <CurrentIssues>
+    <ID>CyclomaticComplexMethod:Notificare.kt$Notificare$@JvmStatic public fun cancelNotification(id: String)</ID>
+    <ID>MaxLineLength:NotificareNotification.kt$NotificareNotification.Action.Companion$message = "The WebView action type becomes a backwards compatible alias. Use the InAppBrowser action type instead."</ID>
+    <ID>MaxLineLength:NotificareUtils.kt$NotificareUtils$get() = "$applicationName/$applicationVersion Notificare/${Notificare.SDK_VERSION} Android/${Build.VERSION.RELEASE}"</ID>
+    <ID>NestedBlockDepth:Notificare.kt$Notificare$@JvmStatic public fun cancelNotification(id: String)</ID>
+    <ID>SwallowedException:AbstractServiceManager.kt$AbstractServiceManager.Factory$e: Exception</ID>
+    <ID>SwallowedException:NotificareModule.kt$NotificareModule.Module$e: Exception</ID>
+    <ID>SwallowedException:NotificareSessionModuleImpl.kt$NotificareSessionModuleImpl$e: Exception</ID>
+    <ID>SwallowedException:NotificareSessionModuleImpl.kt$NotificareSessionModuleImpl.&lt;no name provided&gt;$e: Exception</ID>
+    <ID>ThrowingExceptionsWithoutMessageOrCause:NotificareLogger.kt$NotificareLogger$Throwable()</ID>
+    <ID>UseCheckOrError:AbstractServiceManager.kt$AbstractServiceManager.Factory$throw IllegalStateException( "No platform dependencies have been detected. Please include one of the platform-specific packages." )</ID>
+    <ID>UseCheckOrError:Notificare.kt$Notificare$throw IllegalStateException("Cannot find context for Notificare.")</ID>
+    <ID>UseCheckOrError:NotificareConfigurationProvider.kt$NotificareConfigurationProvider$throw IllegalStateException("Cannot find context from the provider.")</ID>
+    <ID>UseCheckOrError:NotificareSessionConfigurationProvider.kt$NotificareSessionConfigurationProvider$throw IllegalStateException("Cannot find context from the provider.")</ID>
+    <ID>UseRequire:Notificare.kt$Notificare$throw IllegalArgumentException("Notificare cannot be configured without an application key and secret.")</ID>
+    <ID>UseRequire:NotificareDeviceModuleImpl.kt$NotificareDeviceModuleImpl$throw IllegalArgumentException("Invalid preferred language value: $preferredLanguage")</ID>
+    <ID>UseRequire:NotificareTime.kt$NotificareTime$throw IllegalArgumentException("Invalid time '$hours:$minutes'.")</ID>
+    <ID>UseRequire:NotificareTime.kt$NotificareTime.Companion$throw IllegalArgumentException("Invalid time string.")</ID>
+  </CurrentIssues>
+</SmellBaseline>

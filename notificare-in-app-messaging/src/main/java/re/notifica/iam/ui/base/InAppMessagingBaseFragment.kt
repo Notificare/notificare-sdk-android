@@ -12,14 +12,14 @@ import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
 import re.notifica.Notificare
 import re.notifica.iam.internal.caching.NotificareImageCache
+import re.notifica.iam.internal.logger
 import re.notifica.iam.ktx.INTENT_EXTRA_IN_APP_MESSAGE
 import re.notifica.iam.ktx.inAppMessagingImplementation
 import re.notifica.iam.ktx.logInAppMessageActionClicked
 import re.notifica.iam.ktx.logInAppMessageViewed
 import re.notifica.iam.models.NotificareInAppMessage
-import re.notifica.internal.NotificareLogger
-import re.notifica.internal.common.onMainThread
-import re.notifica.internal.ktx.parcelable
+import re.notifica.utilities.threading.onMainThread
+import re.notifica.utilities.parcel.parcelable
 import re.notifica.ktx.events
 
 public abstract class InAppMessagingBaseFragment : Fragment() {
@@ -34,7 +34,7 @@ public abstract class InAppMessagingBaseFragment : Fragment() {
 
         message = savedInstanceState?.parcelable(Notificare.INTENT_EXTRA_IN_APP_MESSAGE)
             ?: arguments?.parcelable(Notificare.INTENT_EXTRA_IN_APP_MESSAGE)
-                ?: throw IllegalStateException("Cannot create the UI without the associated in-app message.")
+            ?: throw IllegalStateException("Cannot create the UI without the associated in-app message.")
     }
 
     @CallSuper
@@ -42,12 +42,12 @@ public abstract class InAppMessagingBaseFragment : Fragment() {
         // Prevent tracking the event during configuration changes.
         if (savedInstanceState != null) return
 
-        NotificareLogger.debug("Tracking in-app message viewed event.")
+        logger.debug("Tracking in-app message viewed event.")
         lifecycleScope.launch {
             try {
                 Notificare.events().logInAppMessageViewed(message)
             } catch (e: Exception) {
-                NotificareLogger.error("Failed to log in-app message viewed event.", e)
+                logger.error("Failed to log in-app message viewed event.", e)
             }
         }
     }
@@ -64,13 +64,17 @@ public abstract class InAppMessagingBaseFragment : Fragment() {
         }
 
         animation.setAnimationListener(object : Animation.AnimationListener {
-            override fun onAnimationStart(animation: Animation?) {}
+            override fun onAnimationStart(animation: Animation?) {
+                // no-op
+            }
 
             override fun onAnimationEnd(animation: Animation?) {
                 onAnimationFinished()
             }
 
-            override fun onAnimationRepeat(animation: Animation?) {}
+            override fun onAnimationRepeat(animation: Animation?) {
+                // no-op
+            }
         })
 
         animatedView.clearAnimation()
@@ -94,14 +98,14 @@ public abstract class InAppMessagingBaseFragment : Fragment() {
         }
 
         if (action == null) {
-            NotificareLogger.debug("There is no '${actionType.rawValue}' action to process.")
+            logger.debug("There is no '${actionType.rawValue}' action to process.")
             dismiss()
 
             return
         }
 
         if (action.url.isNullOrBlank()) {
-            NotificareLogger.debug("There is no URL for '${actionType.rawValue}' action.")
+            logger.debug("There is no URL for '${actionType.rawValue}' action.")
             dismiss()
 
             return
@@ -111,7 +115,7 @@ public abstract class InAppMessagingBaseFragment : Fragment() {
             try {
                 Notificare.events().logInAppMessageActionClicked(message, actionType)
             } catch (e: Exception) {
-                NotificareLogger.error("Failed to log in-app message action.", e)
+                logger.error("Failed to log in-app message action.", e)
             }
 
             val uri = action.url.let { Uri.parse(it) }
@@ -126,19 +130,19 @@ public abstract class InAppMessagingBaseFragment : Fragment() {
 
             try {
                 startActivity(intent)
-                NotificareLogger.info("In-app message action '${actionType.rawValue}' successfully processed.")
+                logger.info("In-app message action '${actionType.rawValue}' successfully processed.")
 
                 onMainThread {
                     Notificare.inAppMessagingImplementation().lifecycleListeners.forEach {
-                        it.onActionExecuted(message, action)
+                        it.get()?.onActionExecuted(message, action)
                     }
                 }
             } catch (e: Exception) {
-                NotificareLogger.warning("Could not find an activity capable of opening the URL.", e)
+                logger.warning("Could not find an activity capable of opening the URL.", e)
 
                 onMainThread {
                     Notificare.inAppMessagingImplementation().lifecycleListeners.forEach {
-                        it.onActionFailedToExecute(message, action, e)
+                        it.get()?.onActionFailedToExecute(message, action, e)
                     }
                 }
             }

@@ -4,12 +4,16 @@ import android.content.Context
 import android.location.Location
 import androidx.core.content.edit
 import com.squareup.moshi.Types
+import java.util.Date
 import re.notifica.Notificare
 import re.notifica.geo.internal.canInsertBeacon
-import re.notifica.geo.models.*
-import re.notifica.internal.NotificareLogger
+import re.notifica.geo.internal.logger
+import re.notifica.geo.models.NotificareBeacon
+import re.notifica.geo.models.NotificareBeaconSession
+import re.notifica.geo.models.NotificareLocation
+import re.notifica.geo.models.NotificareRegion
+import re.notifica.geo.models.NotificareRegionSession
 import re.notifica.internal.moshi
-import java.util.*
 
 private const val PREFERENCES_FILE_NAME = "re.notifica.geo.preferences"
 private const val PREFERENCE_LOCATION_SERVICES_ENABLED = "re.notifica.geo.preferences.location_services_enabled"
@@ -22,6 +26,7 @@ private const val PREFERENCE_REGION_SESSIONS = "re.notifica.geo.preferences.regi
 private const val PREFERENCE_BEACON_SESSIONS = "re.notifica.geo.preferences.beacon_sessions"
 
 internal class LocalStorage(context: Context) {
+
     private val sharedPreferences = context.getSharedPreferences(
         PREFERENCES_FILE_NAME,
         Context.MODE_PRIVATE
@@ -47,7 +52,7 @@ internal class LocalStorage(context: Context) {
 
                 return regions.associateBy { it.id }
             } catch (e: Exception) {
-                NotificareLogger.warning("Failed to decode the monitored regions.", e)
+                logger.warning("Failed to decode the monitored regions.", e)
 
                 // remove the corrupted data.
                 monitoredRegions = emptyMap()
@@ -66,7 +71,7 @@ internal class LocalStorage(context: Context) {
                     putString(PREFERENCE_MONITORED_REGIONS, adapter.toJson(regions))
                 }
             } catch (e: Exception) {
-                NotificareLogger.warning("Failed to encode the monitored regions.", e)
+                logger.warning("Failed to encode the monitored regions.", e)
             }
         }
 
@@ -81,7 +86,7 @@ internal class LocalStorage(context: Context) {
 
                 return adapter.fromJson(jsonStr) ?: emptyList()
             } catch (e: Exception) {
-                NotificareLogger.warning("Failed to decode the monitored beacons.", e)
+                logger.warning("Failed to decode the monitored beacons.", e)
 
                 // remove the corrupted data.
                 monitoredBeacons = emptyList()
@@ -98,7 +103,7 @@ internal class LocalStorage(context: Context) {
                     putString(PREFERENCE_MONITORED_BEACONS, adapter.toJson(value))
                 }
             } catch (e: Exception) {
-                NotificareLogger.warning("Failed to encode the monitored beacons.", e)
+                logger.warning("Failed to encode the monitored beacons.", e)
             }
         }
 
@@ -139,7 +144,7 @@ internal class LocalStorage(context: Context) {
 
                 return sessions.map { it.regionId to it }.toMap()
             } catch (e: Exception) {
-                NotificareLogger.warning("Failed to decode the region sessions.", e)
+                logger.warning("Failed to decode the region sessions.", e)
 
                 // remove the corrupted data.
                 regionSessions = emptyMap()
@@ -158,10 +163,9 @@ internal class LocalStorage(context: Context) {
                     putString(PREFERENCE_REGION_SESSIONS, adapter.toJson(sessions))
                 }
             } catch (e: Exception) {
-                NotificareLogger.warning("Failed to encode the region sessions.", e)
+                logger.warning("Failed to encode the region sessions.", e)
             }
         }
-
 
     fun addRegionSession(session: NotificareRegionSession) {
         regionSessions = regionSessions.toMutableMap().apply {
@@ -202,7 +206,7 @@ internal class LocalStorage(context: Context) {
 
                 return sessions.map { it.regionId to it }.toMap()
             } catch (e: Exception) {
-                NotificareLogger.warning("Failed to decode the beacon sessions.", e)
+                logger.warning("Failed to decode the beacon sessions.", e)
 
                 // remove the corrupted data.
                 beaconSessions = emptyMap()
@@ -221,10 +225,9 @@ internal class LocalStorage(context: Context) {
                     putString(PREFERENCE_BEACON_SESSIONS, adapter.toJson(sessions))
                 }
             } catch (e: Exception) {
-                NotificareLogger.warning("Failed to encode the beacon sessions.", e)
+                logger.warning("Failed to encode the beacon sessions.", e)
             }
         }
-
 
     fun addBeaconSession(session: NotificareBeaconSession) {
         beaconSessions = beaconSessions.toMutableMap().apply {
@@ -234,7 +237,7 @@ internal class LocalStorage(context: Context) {
 
     fun updateBeaconSession(beacons: List<NotificareBeacon>, location: Location?) {
         if (beacons.isEmpty()) {
-            NotificareLogger.debug("Cannot update beacon session without at least one ranged beacon.")
+            logger.debug("Cannot update beacon session without at least one ranged beacon.")
             return
         }
 
@@ -246,7 +249,9 @@ internal class LocalStorage(context: Context) {
             .groupBy { it.major }
             .mapKeys { entry ->
                 val region = monitoredRegions.values.firstOrNull { it.major == entry.key } ?: run {
-                    NotificareLogger.warning("Cannot update the beacon session for region with major '${entry.key}' since the corresponding region is not being monitored.")
+                    logger.warning(
+                        "Cannot update the beacon session for region with major '${entry.key}' since the corresponding region is not being monitored."
+                    )
                     return@mapKeys null
                 }
 
@@ -261,7 +266,9 @@ internal class LocalStorage(context: Context) {
             .map { entry ->
                 val region = entry.key
                 val session = beaconSessions[region.id] ?: run {
-                    NotificareLogger.warning("Cannot update the beacon session for region with major '${entry.key}' since there's no ongoing session.")
+                    logger.warning(
+                        "Cannot update the beacon session for region with major '${entry.key}' since there's no ongoing session."
+                    )
                     return@map null
                 }
 
@@ -314,4 +321,10 @@ internal class LocalStorage(context: Context) {
     }
 
     // endregion
+
+    fun clear() {
+        sharedPreferences.edit {
+            clear()
+        }
+    }
 }
