@@ -9,7 +9,7 @@ import android.webkit.WebChromeClient
 import android.widget.FrameLayout
 import androidx.core.view.isVisible
 import re.notifica.Notificare
-import re.notifica.internal.common.onMainThread
+import re.notifica.utilities.threading.onMainThread
 import re.notifica.push.ui.databinding.NotificareNotificationVideoFragmentBinding
 import re.notifica.push.ui.ktx.pushUIInternal
 import re.notifica.push.ui.notifications.fragments.base.NotificationFragment
@@ -21,11 +21,7 @@ public class NotificareVideoFragment : NotificationFragment() {
     private var customView: View? = null
     private var customViewCallback: WebChromeClient.CustomViewCallback? = null
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = NotificareNotificationVideoFragmentBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -50,7 +46,7 @@ public class NotificareVideoFragment : NotificationFragment() {
             else -> {
                 onMainThread {
                     Notificare.pushUIInternal().lifecycleListeners.forEach {
-                        it.onNotificationFailedToPresent(
+                        it.get()?.onNotificationFailedToPresent(
                             notification
                         )
                     }

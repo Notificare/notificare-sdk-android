@@ -20,9 +20,6 @@
             android:id="@+id/action_mainFragment_to_scannablesFragment"
             app:destination="@id/scannablesFragment" />
         <action
-            android:id="@+id/action_mainFragment_to_monetizeFragment"
-            app:destination="@id/monetizeFragment" />
-        <action
             android:id="@+id/action_mainFragment_to_assetsFragment"
             app:destination="@id/assetsFragment" />
         <action
@@ -49,11 +46,6 @@
         android:name="re.notifica.sample.ui.scannables.ScannablesFragment"
         android:label="@string/scannables_title"
         tools:layout="@layout/fragment_scannables" />
-    <fragment
-        android:id="@+id/monetizeFragment"
-        android:name="re.notifica.sample.ui.monetize.MonetizeFragment"
-        android:label="@string/monetize_title"
-        tools:layout="@layout/fragment_monetize" />
     <fragment
         android:id="@+id/assetsFragment"
         android:name="re.notifica.sample.ui.assets.AssetsFragment"

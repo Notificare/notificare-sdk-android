@@ -1,14 +1,14 @@
 package re.notifica.geo.internal
 
 import android.location.Location
-import re.notifica.geo.models.NotificareBeacon
-import re.notifica.geo.models.NotificareBeaconSession
-import re.notifica.geo.models.NotificareRegion
 import java.util.Calendar
 import kotlin.math.abs
 import kotlin.math.acos
 import kotlin.math.cos
 import kotlin.math.sin
+import re.notifica.geo.models.NotificareBeacon
+import re.notifica.geo.models.NotificareBeaconSession
+import re.notifica.geo.models.NotificareRegion
 
 private const val EARTH_RADIUS: Double = 6371000.0
 

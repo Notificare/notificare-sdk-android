@@ -9,7 +9,6 @@ public fun Notificare.scannables(): NotificareScannables {
     return NotificareScannablesImpl
 }
 
-
 internal fun Notificare.scannablesImplementation(): NotificareScannablesImpl {
     return scannables() as NotificareScannablesImpl
 }

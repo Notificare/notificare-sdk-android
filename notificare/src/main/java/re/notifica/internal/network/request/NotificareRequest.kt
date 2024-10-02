@@ -1,27 +1,38 @@
 package re.notifica.internal.network.request
 
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import okhttp3.*
-import okhttp3.HttpUrl.Companion.toHttpUrl
-import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.RequestBody.Companion.toRequestBody
-import okhttp3.internal.EMPTY_REQUEST
-import okhttp3.logging.HttpLoggingInterceptor
-import re.notifica.InternalNotificareApi
-import re.notifica.Notificare
-import re.notifica.NotificareCallback
-import re.notifica.internal.NotificareLogger
-import re.notifica.internal.ktx.toCallbackFunction
-import re.notifica.internal.moshi
-import re.notifica.internal.network.NetworkException
-import re.notifica.internal.network.NotificareHeadersInterceptor
 import java.io.IOException
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 import kotlin.reflect.KClass
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import okhttp3.Call
+import okhttp3.Callback
+import okhttp3.Credentials
+import okhttp3.FormBody
+import okhttp3.HttpUrl
+import okhttp3.HttpUrl.Companion.toHttpUrl
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.Response
+import okhttp3.internal.EMPTY_REQUEST
+import okhttp3.logging.HttpLoggingInterceptor
+import re.notifica.InternalNotificareApi
+import re.notifica.Notificare
+import re.notifica.NotificareCallback
+import re.notifica.internal.logger
+import re.notifica.internal.moshi
+import re.notifica.internal.network.NetworkException
+import re.notifica.internal.network.NotificareHeadersInterceptor
+import re.notifica.utilities.coroutines.toCallbackFunction
+
+@InternalNotificareApi
+public typealias DecodableForFn<T> = (responseCode: Int) -> KClass<T>?
 
 @InternalNotificareApi
 public class NotificareRequest private constructor(
@@ -37,13 +48,15 @@ public class NotificareRequest private constructor(
         private val client = OkHttpClient.Builder()
             // .authenticator(NotificareBasicAuthenticator())
             .addInterceptor(NotificareHeadersInterceptor())
-            .addInterceptor(HttpLoggingInterceptor().apply {
-                level = if (Notificare.options?.debugLoggingEnabled == true) {
-                    HttpLoggingInterceptor.Level.BASIC
-                } else {
-                    HttpLoggingInterceptor.Level.NONE
+            .addInterceptor(
+                HttpLoggingInterceptor().apply {
+                    level = if (Notificare.options?.debugLoggingEnabled == true) {
+                        HttpLoggingInterceptor.Level.BASIC
+                    } else {
+                        HttpLoggingInterceptor.Level.NONE
+                    }
                 }
-            })
+            )
             .build()
     }
 
@@ -71,7 +84,6 @@ public class NotificareRequest private constructor(
 
         return withContext(Dispatchers.IO) {
             try {
-                @Suppress("BlockingMethodInNonBlockingContext")
                 body.string()
             } catch (e: Exception) {
                 throw NetworkException.ParsingException(cause = e)
@@ -85,13 +97,14 @@ public class NotificareRequest private constructor(
         val response = response(closeResponse = false)
 
         val body = response.body
-            ?: throw IllegalArgumentException("The response contains an empty body. Cannot parse into '${klass.simpleName}'.")
+            ?: throw IllegalArgumentException(
+                "The response contains an empty body. Cannot parse into '${klass.simpleName}'."
+            )
 
         return withContext(Dispatchers.IO) {
             try {
                 val adapter = Notificare.moshi.adapter(klass.java)
 
-                @Suppress("BlockingMethodInNonBlockingContext")
                 adapter.fromJson(body.source())
                     ?: throw NetworkException.ParsingException(message = "JSON parsing resulted in a null object.")
             } catch (e: Exception) {
@@ -102,11 +115,30 @@ public class NotificareRequest private constructor(
         }
     }
 
-    private fun handleResponse(
-        response: Response,
-        closeResponse: Boolean,
-        continuation: Continuation<Response>
-    ) {
+    public suspend fun <T : Any> responseDecodable(
+        decodableFor: DecodableForFn<T>,
+    ): T? = withContext(Dispatchers.IO) {
+        response(closeResponse = false).use { response ->
+            val klass = decodableFor(response.code)
+                ?: return@withContext null
+
+            val body = response.body
+                ?: throw IllegalArgumentException(
+                    "The response contains an empty body. Cannot parse into '${klass.simpleName}'."
+                )
+
+            try {
+                val adapter = Notificare.moshi.adapter(klass.java)
+
+                adapter.fromJson(body.source())
+                    ?: throw NetworkException.ParsingException(message = "JSON parsing resulted in a null object.")
+            } catch (e: Exception) {
+                throw NetworkException.ParsingException(cause = e)
+            }
+        }
+    }
+
+    private fun handleResponse(response: Response, closeResponse: Boolean, continuation: Continuation<Response>) {
         try {
             if (response.code !in validStatusCodes) {
                 // Forcefully close the body. Decodable responses will not proceed.
@@ -129,7 +161,6 @@ public class NotificareRequest private constructor(
     }
 
     public class Builder {
-
         private var baseUrl: String? = null
         private var url: String? = null
         private var queryItems = mutableMapOf<String, String?>()
@@ -212,7 +243,6 @@ public class NotificareRequest private constructor(
             return this
         }
 
-
         @Throws(IllegalArgumentException::class)
         public fun build(): NotificareRequest {
             val method = requireNotNull(method) { "Please provide the HTTP method for the request." }
@@ -242,36 +272,44 @@ public class NotificareRequest private constructor(
         }
 
         public fun response(callback: NotificareCallback<Response>): Unit =
-            toCallbackFunction(::response)(callback)
+            toCallbackFunction(::response)(callback::onSuccess, callback::onFailure)
 
         public suspend fun responseString(): String {
             return build().responseString()
         }
 
         public fun responseString(callback: NotificareCallback<String>): Unit =
-            toCallbackFunction(::responseString)(callback)
+            toCallbackFunction(::responseString)(callback::onSuccess, callback::onFailure)
 
         public suspend fun <T : Any> responseDecodable(klass: KClass<T>): T {
             return build().responseDecodable(klass)
         }
 
         public fun <T : Any> responseDecodable(klass: KClass<T>, callback: NotificareCallback<T>): Unit =
-            toCallbackFunction(suspend { responseDecodable(klass) })(callback)
+            toCallbackFunction(suspend { responseDecodable(klass) })(callback::onSuccess, callback::onFailure)
+
+        public suspend fun <T : Any> responseDecodable(decodableFor: DecodableForFn<T>): T? {
+            return build().responseDecodable(decodableFor)
+        }
 
         @Throws(IllegalArgumentException::class)
         private fun computeCompleteUrl(): HttpUrl {
             var url = requireNotNull(url) { "Please provide the URL for the request." }
 
             if (!url.startsWith("http://") && !url.startsWith("https://")) {
-                val baseUrl = requireNotNull(baseUrl ?: Notificare.servicesInfo?.pushHost) {
+                var baseUrl = requireNotNull(baseUrl ?: Notificare.servicesInfo?.hosts?.restApi) {
                     "Unable to determine the base url for the request."
                 }
 
-                if (!baseUrl.endsWith("/") && !url.startsWith("/")) {
-                    url = "$baseUrl/$url"
+                if (!baseUrl.startsWith("http://") && !baseUrl.startsWith("https://")) {
+                    baseUrl = "https://$baseUrl"
                 }
 
-                url = "$baseUrl$url"
+                url = if (!baseUrl.endsWith("/") && !url.startsWith("/")) {
+                    "$baseUrl/$url"
+                } else {
+                    "$baseUrl$url"
+                }
             }
 
             if (queryItems.isNotEmpty()) {
@@ -291,7 +329,7 @@ public class NotificareRequest private constructor(
             val secret = Notificare.servicesInfo?.applicationSecret
 
             if (key == null || secret == null) {
-                NotificareLogger.warning("Notificare application authentication not configured.")
+                logger.warning("Notificare application authentication not configured.")
                 return null
             }
 

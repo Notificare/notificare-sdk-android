@@ -2,11 +2,5 @@
 <resources>
     <string name="notificare_dialog_ok_button">OK</string>
 
-    <string name="notificare_action_add_pass_to_wallet">Add to wallet</string>
-    <string name="notificare_action_remove_pass_from_wallet">Remove from wallet</string>
     <string name="notificare_passbook_error_loading_pass">There was an error while opening the pass.</string>
-    <string name="notificare_passbook_error_adding_pass">There was an error adding the pass to the wallet.</string>
-    <string name="notificare_passbook_error_removing_pass">There was an error removing the pass from the wallet.</string>
-    <string name="notificare_passbook_absolute_date_relevance_text">A pass that is relevant at %1$s is in the wallet.</string>
-    <string name="notificare_passbook_location_relevance_text">A pass that is relevant for the current location is in the wallet.</string>
 </resources>

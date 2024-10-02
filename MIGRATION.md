@@ -1,107 +1,92 @@
 # MIGRATING
 
-Notificare 3.x upgrades our implementation language from Java to Kotlin and brings a highly modular system.
-While you can consume the library from Java sources, there are certain pain points that we are addressing to give you the best developer experience possible. If you are using Kotlin in your app, you should have a first class experience.
+In Notificare 4.x, one of the most significant changes is the immutability of device identifiers. Previously, the `id` property of a `NotificareDevice` would change based on the device's push capability. Now, new devices will be assigned a UUID that remains constant. For existing devices, their current identifier will persist without changes.
 
-## Requirements
+## Breaking changes
 
-We have increased the minimum Android version required to run the Notificare library to Android 6.0+ (API level 23+). According to Google's API version distribution stats, this minimum version should support ~94% of the devices worldwide. Additionally, this version addresses the granular permission user controls which is essential in modern privacy-compliant applications.
+### Device identifier immutability
 
-## Configuration file
+As noted, device identifiers are now immutable in Notificare 4.x. Most applications won't need to directly access the device identifier or the push token, as Notificare handles these internally. However, if you do need to access the push token, it is available through the `notificare-push` module.
 
-Instead of the `notificareconfig.properties` you are used to having in the v2.x library and that contains two sets of app keys — development and production — we have moved to a `notificare-services.json` for each environment, similar to what Firebase offers.
+```kotlin
+// Get the current subscription.
+val subscription = Notificare.push().subscription
 
-We have also created a Gradle plugin to help you automatically configure the Notificare libraries. Add the following to your `build.gradle` files.
+// Observe changes to the subscription.
+Notificare.push().observableSubscription.observe(lifecycleOwner) { subscription ->
 
-```gradle
-//
-// root build.gradle
-//
-buildscript {
-    repositories {
-        maven { url 'https://maven.notifica.re/releases' }
-    }
-    dependencies {
-        classpath 're.notifica.gradle:notificare-services:1.0.0'
-    }
-}
-
-allprojects {
-    repositories {
-        maven { url 'https://maven.notifica.re/releases' }
-    }
-}
-
-//
-// app build.gradle
-//
-plugins {
-    // ...
-    id 're.notifica.gradle.notificare-services'
 }
 ```
 
-## Packages
+### Device registration behavior
 
-We have made some changes to existing packages, removed a few and added several others. Here's all the dependencies available:
+In previous versions, the `onDeviceRegistered` event triggered when enabling or disabling remote notifications. With the new immutability of device identifiers, this event will now only trigger once — when the device is initially created.
 
-```gradle
+If you need to track changes when a device switches between a temporary and a push-enabled state (or vice versa), you can listen to the `observableSubscription` property, as demonstrated in the example above.
+
+### Asynchronous functions
+
+Previously, the functions `launch()`, `unlaunch()`, `enableRemoteNotifications()`, and `disableRemoteNotifications()` would complete before their underlying processes were finished, requiring you to listen for events like `onReady()` to know when to continue. Now, these functions are asynchronous, ensuring the entire process is completed during their execution, which allows developers to write simpler control flows.
+
+```diff
+-class ExampleViewModel : ViewModel(), Notificare.Listener {
++class ExampleViewModel : ViewModel() {
+-    init {
+-        Notificare.addListener(this)
+-    }
+-
+-    override fun onCleared() {
+-        super.onCleared()
+-        Notificare.removeListener(this)
+-    }
+-
+-    override fun onReady(application: NotificareApplication) {
+-        // Notificare is ready. Continue...
+-    }
+
+    fun doSomething() {
+-        Notificare.launch()
++        viewModelScope.launch {
++            try {
++                Notificare.launch()
++
++                // Notificare is ready. Continue...
++            } catch (e: Exception) {
++
++            }
++        }
+    }
+}
+```
+
+### Drop support for Huawei Mobile Services
+
+Support for Huawei Mobile Services (HMS) has been discontinued due to limited market adoption and the absence of ongoing development from Huawei. As a result, the `notificare-*-hms` peer dependencies have been removed, and the `notificare-*-gms` modules have been merged into their core modules, streamlining the integration process.
+
+```diff
 dependencies {
-    def notificare_version = '3.0.0'
+-    def notificare_version = '3.0.0'
++    def notificare_version = '4.0.0'
+    
     implementation "re.notifica:notificare:$notificare_version"
 
-    //
     // Optional modules
-    //
-
-    implementation "re.notifica:notificare-assets:$notificare_version"
     implementation "re.notifica:notificare-inbox:$notificare_version"
-    implementation "re.notifica:notificare-loyalty:$notificare_version"
-
-    implementation "re.notifica:notificare-geo:$notificare_version"
-    implementation "re.notifica:notificare-geo-gms:$notificare_version"         // Enable support for Google Mobile Services.
-    implementation "re.notifica:notificare-geo-hms:$notificare_version"         // Enable support for Huawei Mobile Services.
-    implementation "re.notifica:notificare-geo-beacons:$notificare_version"     // Enable support for beacons detection.
-
     implementation "re.notifica:notificare-push:$notificare_version"
-    implementation "re.notifica:notificare-push-gms:$notificare_version"        // Enable support for Google Mobile Services.
-    implementation "re.notifica:notificare-push-hms:$notificare_version"        // Enable support for Huawei Mobile Services.
-
+-   implementation "re.notifica:notificare-push-gms:$notificare_version"
+-   implementation "re.notifica:notificare-push-hms:$notificare_version"
     implementation "re.notifica:notificare-push-ui:$notificare_version"
-    implementation "re.notifica:notificare-push-ui-gms:$notificare_version"     // Enable support for Google Mobile Services.
-    implementation "re.notifica:notificare-push-ui-hms:$notificare_version"     // Enable support for Huawei Mobile Services.
-
-    implementation "re.notifica:notificare-scannables:$notificare_version"
-    implementation "re.notifica:notificare-scannables-gms:$notificare_version"  // Enable support for Google Mobile Services.
-    implementation "re.notifica:notificare-scannables-hms:$notificare_version"  // Enable support for Huawei Mobile Services.
+-   implementation "re.notifica:notificare-push-ui-gms:$notificare_version"
+-   implementation "re.notifica:notificare-push-ui-hms:$notificare_version"
 }
 ```
 
-## Package cherry-picking
+## Migration guides for other versions
 
-In the v2.x iteration, we already took the first steps to a more modular library. In this iteration we took it a whole new level.
+Looking to migrate from an older version of Notificare? Refer to the following guides for more details:
 
-We understand that not every app will take advantage of every bit of functionality provided by our platform. To help reduce your app's size, dependency footprint and automatically included permissions, now you are able to cherry-pick which modules you want to include in your app.
+- [Migrating to 3.0.0](./MIGRATION-3.0.md)
 
-In the hypothetical scenario where you have an app that wants to add push notifications and an in-app inbox, only supporting devices running Google's mobile services, you would include the following dependencies.
-
-```gradle
-dependencies {
-    def notificare_version = '3.0.0'
-    implementation "re.notifica:notificare:$notificare_version"
-
-    implementation "re.notifica:notificare-inbox:$notificare_version"
-
-    implementation "re.notifica:notificare-push:$notificare_version"
-    implementation "re.notifica:notificare-push-gms:$notificare_version"
-
-    implementation "re.notifica:notificare-push-ui:$notificare_version"
-    implementation "re.notifica:notificare-push-ui-gms:$notificare_version"
-}
-```
-
-## Moving forward
-
-Given the foundational changes and large differences in the Public API in the new libraries, we found the best way to cover every detail is to go through the [documentation](https://docs.notifica.re/sdk/v3/android/implementation) for each of the modules you want to include and adjust accordingly.
+---
 
 As always, if you have anything to add or require further assistance, we are available via our [Support Channel](mailto:support@notifica.re).

@@ -7,12 +7,14 @@ import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import re.notifica.Notificare
 import re.notifica.geo.ktx.geo
+import re.notifica.ktx.device
+import re.notifica.models.NotificareApplication
 import re.notifica.push.ktx.push
 import re.notifica.sample.live_activities.LiveActivitiesController
 import timber.log.Timber
 
-class MainApplication : Application() {
-    private val mainScope = MainScope()
+class MainApplication : Application(), Notificare.Listener {
+    private val applicationScope = MainScope()
 
     override fun onCreate() {
         enableStrictMode()
@@ -30,9 +32,15 @@ class MainApplication : Application() {
             LiveActivitiesController.registerLiveActivitiesChannel()
         }
 
-        Notificare.launch()
+        Notificare.addListener(this)
 
-        mainScope.launch {
+        applicationScope.launch {
+            try {
+                Notificare.launch()
+            } catch (e: Exception) {
+                Timber.e(e, "Failed to launch Notificare.")
+            }
+
             try {
                 if (Notificare.canEvaluateDeferredLink()) {
                     val evaluated = Notificare.evaluateDeferredLink()
@@ -42,6 +50,10 @@ class MainApplication : Application() {
                 Timber.e(e, "Failed to evaluate the deferred link.")
             }
         }
+    }
+
+    override fun onReady(application: NotificareApplication) {
+        registerUser()
     }
 
     private fun enableStrictMode() {
@@ -63,5 +75,18 @@ class MainApplication : Application() {
                 .penaltyDeath()
                 .build()
         )
+    }
+
+    private fun registerUser() {
+        applicationScope.launch {
+            val userId = getString(R.string.sample_user_id).ifBlank { null }
+            val userName = getString(R.string.sample_user_name).ifBlank { null }
+
+            try {
+                Notificare.device().updateUser(userId, userName)
+            } catch (e: Exception) {
+                Timber.e(e, "Failed to update the user.")
+            }
+        }
     }
 }

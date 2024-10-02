@@ -1,0 +1,14 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues></ManuallySuppressedIssues>
+  <CurrentIssues>
+    <ID>CyclomaticComplexMethod:AssetDetailsFragment.kt$AssetDetailsFragment$private fun loadAssetDetails()</ID>
+    <ID>MaxLineLength:BeaconsListAdapter.kt$BeaconsListAdapter.ItemViewHolder$NotificareBeacon.Proximity.IMMEDIATE -&gt; binding.proximity.setImageResource(R.drawable.ic_signal_wifi_4_bar)</ID>
+    <ID>PackageNaming:CoffeeBrewerContentState.kt$package re.notifica.sample.live_activities.models</ID>
+    <ID>PackageNaming:CoffeeBrewingState.kt$package re.notifica.sample.live_activities.models</ID>
+    <ID>PackageNaming:CoffeeLiveNotification.kt$package re.notifica.sample.live_activities.ui</ID>
+    <ID>PackageNaming:LiveActivitiesController.kt$package re.notifica.sample.live_activities</ID>
+    <ID>PackageNaming:LiveActivity.kt$package re.notifica.sample.live_activities</ID>
+    <ID>SwallowedException:LiveActivityDismissalWorker.kt$CoffeeBrewerDismissalWorker$e: Exception</ID>
+  </CurrentIssues>
+</SmellBaseline>

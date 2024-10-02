@@ -1,0 +1,21 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues></ManuallySuppressedIssues>
+  <CurrentIssues>
+    <ID>ComplexCondition:LocationUtils.kt$x1 &lt;= location.longitude &amp;&amp; x2 &gt; location.longitude || x1 &gt;= location.longitude &amp;&amp; x2 &lt; location.longitude</ID>
+    <ID>ConstructorParameterNaming:Responses.kt$FetchBeaconsResponse.Beacon$val _id: String</ID>
+    <ID>ConstructorParameterNaming:Responses.kt$FetchRegionsResponse.Region$val _id: String</ID>
+    <ID>CyclomaticComplexMethod:NotificareGeoImpl.kt$NotificareGeoImpl$override fun handleLocationUpdate(location: Location)</ID>
+    <ID>MaxLineLength:LocalStorage.kt$LocalStorage$"Cannot update the beacon session for region with major '${entry.key}' since the corresponding region is not being monitored."</ID>
+    <ID>MaxLineLength:LocalStorage.kt$LocalStorage$"Cannot update the beacon session for region with major '${entry.key}' since there's no ongoing session."</ID>
+    <ID>MaxLineLength:LocationUtils.kt$// we have, most likely, just jumped the dateline (could do further validation to this effect if needed). normalise the numbers.</ID>
+    <ID>MaxLineLength:LocationUtils.kt$if</ID>
+    <ID>MaxLineLength:NotificareGeoImpl.kt$NotificareGeoImpl$"Cannot start the session for beacon '${beacon.name}' since the corresponding region is not being monitored."</ID>
+    <ID>MaxLineLength:NotificareGeoImpl.kt$NotificareGeoImpl$"The monitored regions limit cannot exceed the OS limit of $MAX_MONITORED_REGIONS_LIMIT. Using the OS limit for geofences."</ID>
+    <ID>MaxLineLength:NotificareGeoImpl.kt$NotificareGeoImpl$if</ID>
+    <ID>NestedBlockDepth:LocationUtils.kt$private fun NotificareRegion.AdvancedGeometry.contains(location: Location): Boolean</ID>
+    <ID>SwallowedException:BeaconServiceManager.kt$BeaconServiceManager.Companion$e: Exception</ID>
+    <ID>SwallowedException:NotificareGeoImpl.kt$NotificareGeoImpl$e: Exception</ID>
+    <ID>UseCheckOrError:NotificareGeoImpl.kt$NotificareGeoImpl$throw IllegalStateException("Unable to update location without a device.")</ID>
+  </CurrentIssues>
+</SmellBaseline>

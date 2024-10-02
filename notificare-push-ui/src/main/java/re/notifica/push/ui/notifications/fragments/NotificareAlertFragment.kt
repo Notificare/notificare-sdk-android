@@ -9,11 +9,7 @@ import re.notifica.push.ui.notifications.fragments.base.NotificationFragment
 
 public class NotificareAlertFragment : NotificationFragment() {
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         return FrameLayout(inflater.context)
     }
 }

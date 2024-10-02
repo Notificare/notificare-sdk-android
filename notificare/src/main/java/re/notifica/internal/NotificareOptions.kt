@@ -6,7 +6,7 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.core.os.bundleOf
 import re.notifica.InternalNotificareApi
-import re.notifica.internal.ktx.applicationInfo
+import re.notifica.utilities.content.applicationInfo
 
 public class NotificareOptions internal constructor(context: Context) {
 
@@ -32,10 +32,5 @@ public class NotificareOptions internal constructor(context: Context) {
     public val notificationActionLabelPrefix: String?
         get() {
             return metadata.getString("re.notifica.action_label_prefix", null)
-        }
-
-    public val preferredMobileServices: String?
-        get() {
-            return metadata.getString("re.notifica.preferred_mobile_services", null)
         }
 }

@@ -7,7 +7,7 @@ import android.net.Uri
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import re.notifica.Notificare
-import re.notifica.internal.common.onMainThread
+import re.notifica.utilities.threading.onMainThread
 import re.notifica.models.NotificareNotification
 import re.notifica.push.ui.R
 import re.notifica.push.ui.actions.base.NotificationAction
@@ -35,7 +35,12 @@ internal class NotificationBrowserAction(
             Notificare.createNotificationReply(notification, action)
 
             onMainThread {
-                Notificare.pushUIInternal().lifecycleListeners.forEach { it.onActionExecuted(notification, action) }
+                Notificare.pushUIInternal().lifecycleListeners.forEach {
+                    it.get()?.onActionExecuted(
+                        notification,
+                        action
+                    )
+                }
             }
         } else {
             throw Exception(context.getString(R.string.notificare_action_failed))

@@ -4,18 +4,30 @@ import android.app.PendingIntent
 import android.content.Intent
 import androidx.annotation.Keep
 import androidx.core.app.NotificationCompat
-import org.altbeacon.beacon.*
+import java.util.concurrent.atomic.AtomicInteger
+import org.altbeacon.beacon.BeaconManager
+import org.altbeacon.beacon.BeaconParser
+import org.altbeacon.beacon.Identifier
+import org.altbeacon.beacon.MonitorNotifier
+import org.altbeacon.beacon.RangeNotifier
+import org.altbeacon.beacon.Region
 import org.altbeacon.beacon.service.RangedBeacon
 import re.notifica.InternalNotificareApi
 import re.notifica.Notificare
-import re.notifica.geo.beacons.*
+import re.notifica.geo.beacons.beaconBackgroundScanInterval
+import re.notifica.geo.beacons.beaconForegroundScanInterval
+import re.notifica.geo.beacons.beaconForegroundServiceEnabled
+import re.notifica.geo.beacons.beaconSampleExpiration
+import re.notifica.geo.beacons.beaconServiceNotificationChannel
+import re.notifica.geo.beacons.beaconServiceNotificationContentText
+import re.notifica.geo.beacons.beaconServiceNotificationContentTitle
+import re.notifica.geo.beacons.beaconServiceNotificationProgress
+import re.notifica.geo.beacons.beaconServiceNotificationSmallIcon
 import re.notifica.geo.beacons.ktx.geoInternal
 import re.notifica.geo.internal.BeaconServiceManager
 import re.notifica.geo.ktx.INTENT_ACTION_BEACON_NOTIFICATION_OPENED
 import re.notifica.geo.models.NotificareBeacon
 import re.notifica.geo.models.NotificareRegion
-import re.notifica.internal.NotificareLogger
-import java.util.concurrent.atomic.AtomicInteger
 
 private const val BEACON_LAYOUT_APPLE = "m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24"
 
@@ -61,7 +73,7 @@ public class BeaconServiceManager(
         // Start monitoring every beacon.
         beacons.forEach { startMonitoring(it) }
 
-        NotificareLogger.debug("Started monitoring ${beacons.size} individual beacons in region '${region.name}'.")
+        logger.debug("Started monitoring ${beacons.size} individual beacons in region '${region.name}'.")
     }
 
     private fun startMonitoring(beacon: NotificareBeacon) {
@@ -100,7 +112,7 @@ public class BeaconServiceManager(
             .onEach { beaconManager.stopMonitoring(it) }
 
         if (beacons.isNotEmpty()) {
-            NotificareLogger.debug("Stopped monitoring ${beacons.size} individual beacons in region '${region.name}'.")
+            logger.debug("Stopped monitoring ${beacons.size} individual beacons in region '${region.name}'.")
         }
     }
 
@@ -159,7 +171,7 @@ public class BeaconServiceManager(
     // region MonitorNotifier
 
     override fun didEnterRegion(region: Region) {
-        NotificareLogger.debug("Entered beacon region ${region.id1} / ${region.id2} / ${region.id3}")
+        logger.debug("Entered beacon region ${region.id1} / ${region.id2} / ${region.id3}")
         Notificare.geoInternal().handleBeaconEnter(region.uniqueId, region.id2.toInt(), region.id3?.toInt())
 
 //        if (region.id3 == null) {
@@ -169,7 +181,7 @@ public class BeaconServiceManager(
     }
 
     override fun didExitRegion(region: Region) {
-        NotificareLogger.debug("Exited beacon region ${region.id1} / ${region.id2} / ${region.id3}")
+        logger.debug("Exited beacon region ${region.id1} / ${region.id2} / ${region.id3}")
         Notificare.geoInternal().handleBeaconExit(region.uniqueId, region.id2.toInt(), region.id3?.toInt())
 
 //        if (region.id3 == null) {
@@ -179,7 +191,7 @@ public class BeaconServiceManager(
     }
 
     override fun didDetermineStateForRegion(state: Int, region: Region) {
-        NotificareLogger.debug("State $state for region ${region.id1} / ${region.id2} / ${region.id3}")
+        logger.debug("State $state for region ${region.id1} / ${region.id2} / ${region.id3}")
 
         if (region.id3 == null) {
             // This is the main region. There's no minor.

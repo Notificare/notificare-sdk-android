@@ -1,7 +1,12 @@
 package re.notifica.sample.ui.inbox
 
 import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
@@ -13,8 +18,8 @@ import re.notifica.Notificare
 import re.notifica.inbox.ktx.inbox
 import re.notifica.inbox.models.NotificareInboxItem
 import re.notifica.sample.R
-import re.notifica.sample.databinding.FragmentInboxBinding
 import re.notifica.sample.core.BaseFragment
+import re.notifica.sample.databinding.FragmentInboxBinding
 
 class InboxFragment : BaseFragment() {
     private lateinit var binding: FragmentInboxBinding
@@ -31,7 +36,9 @@ class InboxFragment : BaseFragment() {
 
             if (badge != Notificare.inbox().badge) {
                 AlertDialog.Builder(requireContext())
-                    .setMessage("Badge mismatch.\nLiveData = $badge\nNotificareInbox.badge = ${Notificare.inbox().badge}")
+                    .setMessage(
+                        "Badge mismatch.\nLiveData = $badge\nNotificareInbox.badge = ${Notificare.inbox().badge}"
+                    )
                     .show()
             }
         }
@@ -48,25 +55,29 @@ class InboxFragment : BaseFragment() {
     }
 
     private fun setupMenu() {
-        (requireActivity() as MenuHost).addMenuProvider(object : MenuProvider {
-            override fun onPrepareMenu(menu: Menu) {
-                // Handle for example visibility of menu items
-            }
-
-            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-                menuInflater.inflate(R.menu.inbox, menu)
-            }
-
-            override fun onMenuItemSelected(item: MenuItem): Boolean {
-                when (item.itemId) {
-                    R.id.refresh -> onRefreshClicked()
-                    R.id.read_all -> onReadAllClicked()
-                    R.id.remove_all -> onRemoveAllClicked()
+        (requireActivity() as MenuHost).addMenuProvider(
+            object : MenuProvider {
+                override fun onPrepareMenu(menu: Menu) {
+                    // Handle for example visibility of menu items
                 }
 
-                return true
-            }
-        }, viewLifecycleOwner, Lifecycle.State.RESUMED)
+                override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                    menuInflater.inflate(R.menu.inbox, menu)
+                }
+
+                override fun onMenuItemSelected(item: MenuItem): Boolean {
+                    when (item.itemId) {
+                        R.id.refresh -> onRefreshClicked()
+                        R.id.read_all -> onReadAllClicked()
+                        R.id.remove_all -> onRemoveAllClicked()
+                    }
+
+                    return true
+                }
+            },
+            viewLifecycleOwner,
+            Lifecycle.State.RESUMED
+        )
     }
 
     private fun setupList() {

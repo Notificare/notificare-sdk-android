@@ -11,8 +11,15 @@ android {
     buildTypes {
         getByName("release") {
             isMinifyEnabled = false
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
         }
+    }
+
+    buildFeatures {
+        viewBinding = true
     }
 
     compileOptions {
@@ -23,8 +30,8 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
         freeCompilerArgs += listOf(
-                "-Xexplicit-api=strict",
-                "-opt-in=re.notifica.InternalNotificareApi",
+            "-Xexplicit-api=strict",
+            "-opt-in=re.notifica.InternalNotificareApi",
         )
     }
 
@@ -40,17 +47,25 @@ dependencies {
 
     // Notificare
     implementation(project(":notificare"))
+    implementation(project(":notificare-utilities"))
 
     // Android
     implementation(libs.androidx.activity)
     implementation(libs.androidx.appCompat)
     implementation(libs.androidx.constraintLayout)
+    implementation(libs.androidx.core)
     implementation(libs.androidx.fragment)
+
+    implementation(libs.google.playServices.vision)
 
     // OkHttp
     implementation(libs.okhttp)
 
     // Moshi
     implementation(libs.bundles.moshi)
-    kapt(libs.moshi.codegen)
+    ksp(libs.moshi.codegen)
+
+    // Tests
+    testImplementation(libs.junit)
+    testImplementation(libs.robolectric)
 }

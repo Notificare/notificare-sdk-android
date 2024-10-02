@@ -5,30 +5,37 @@ import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
 import re.notifica.Notificare
-import re.notifica.internal.NotificareLogger
-import re.notifica.internal.NotificareUtils
-import re.notifica.internal.common.onMainThread
-import re.notifica.internal.ktx.packageInfo
-import re.notifica.internal.ktx.parcelable
+import re.notifica.utilities.threading.onMainThread
+import re.notifica.utilities.content.packageInfo
+import re.notifica.utilities.parcel.parcelable
 import re.notifica.models.NotificareNotification
 import re.notifica.push.ui.R
 import re.notifica.push.ui.databinding.NotificareNotificationContainerFragmentBinding
+import re.notifica.push.ui.internal.logger
 import re.notifica.push.ui.ktx.pushUIImplementation
 import re.notifica.push.ui.ktx.pushUIInternal
 import re.notifica.push.ui.models.NotificarePendingResult
 import re.notifica.push.ui.notifications.fragments.NotificareCallbackActionFragment
 import re.notifica.push.ui.notifications.fragments.base.NotificationFragment
+import re.notifica.utilities.content.applicationName
 
 public class NotificationContainerFragment
-    : Fragment(), NotificationFragment.Callback, NotificationDialog.Callback, NotificationActionsDialog.Callback {
+: Fragment(), NotificationFragment.Callback, NotificationDialog.Callback, NotificationActionsDialog.Callback {
 
     private lateinit var binding: NotificareNotificationContainerFragmentBinding
     private lateinit var notification: NotificareNotification
@@ -82,7 +89,7 @@ public class NotificationContainerFragment
 
         notification = savedInstanceState?.parcelable(Notificare.INTENT_EXTRA_NOTIFICATION)
             ?: arguments?.parcelable(Notificare.INTENT_EXTRA_NOTIFICATION)
-                ?: throw IllegalArgumentException("Missing required notification parameter.")
+            ?: throw IllegalArgumentException("Missing required notification parameter.")
 
         action = savedInstanceState?.parcelable(Notificare.INTENT_EXTRA_ACTION)
             ?: arguments?.parcelable(Notificare.INTENT_EXTRA_ACTION)
@@ -92,17 +99,9 @@ public class NotificationContainerFragment
         } catch (e: ClassCastException) {
             throw ClassCastException("Parent activity must implement NotificationContainerFragment.Callback.")
         }
-
-        if (notification.type != NotificareNotification.TYPE_ALERT && notification.actions.isNotEmpty()) {
-            setHasOptionsMenu(true)
-        }
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = NotificareNotificationContainerFragmentBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -111,8 +110,13 @@ public class NotificationContainerFragment
         super.onViewCreated(view, savedInstanceState)
 
         // Inform user that this type has actions attached
-        if (action == null && notification.type != NotificareNotification.TYPE_ALERT && notification.type != NotificareNotification.TYPE_PASSBOOK && notification.actions.isNotEmpty()) {
-            setHasOptionsMenu(true)
+        if (
+            action == null &&
+            notification.type != NotificareNotification.TYPE_ALERT &&
+            notification.type != NotificareNotification.TYPE_PASSBOOK &&
+            notification.actions.isNotEmpty()
+        ) {
+            setupMenu()
         }
 
         if (savedInstanceState != null) return
@@ -125,7 +129,7 @@ public class NotificationContainerFragment
                 val klass = Class.forName(it)
                 klass.getConstructor().newInstance() as Fragment
             } catch (e: Exception) {
-                NotificareLogger.error(
+                logger.error(
                     "Failed to dynamically create the concrete notification fragment.",
                     e
                 )
@@ -164,25 +168,31 @@ public class NotificationContainerFragment
         outState.putParcelable(Notificare.INTENT_EXTRA_ACTION, action)
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
-        inflater.inflate(R.menu.notificare_menu_notification_fragment, menu)
-    }
+    private fun setupMenu() {
+        requireActivity().addMenuProvider(
+            object : MenuProvider {
+                override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                    menuInflater.inflate(R.menu.notificare_menu_notification_fragment, menu)
+                }
 
-    override fun onPrepareOptionsMenu(menu: Menu) {
-        super.onPrepareOptionsMenu(menu)
-        menu.findItem(R.id.notificare_action_show_actions).isVisible = showActionsMenuItem
-    }
+                override fun onPrepareMenu(menu: Menu) {
+                    super.onPrepareMenu(menu)
+                    menu.findItem(R.id.notificare_action_show_actions).isVisible = showActionsMenuItem
+                }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.notificare_action_show_actions -> {
-                showActionsDialog()
-                return true
-            }
-        }
-
-        return super.onOptionsItemSelected(item)
+                override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                    return when (menuItem.itemId) {
+                        R.id.notificare_action_show_actions -> {
+                            showActionsDialog()
+                            true
+                        }
+                        else -> false
+                    }
+                }
+            },
+            viewLifecycleOwner,
+            Lifecycle.State.RESUMED,
+        )
     }
 
     private fun showActionsDialog() {
@@ -197,7 +207,7 @@ public class NotificationContainerFragment
 
             if (shouldShowRequestPermissionRationale(permission)) {
                 AlertDialog.Builder(requireContext())
-                    .setTitle(NotificareUtils.applicationName)
+                    .setTitle(requireContext().applicationName)
                     .setMessage(R.string.notificare_camera_permission_rationale_description)
                     .setCancelable(false)
                     .setPositiveButton(R.string.notificare_dialog_ok_button) { _, _ ->
@@ -219,7 +229,7 @@ public class NotificationContainerFragment
             notification = notification,
             action = action,
         ) ?: run {
-            NotificareLogger.debug("Unable to create an action handler for '${action.type}'.")
+            logger.debug("Unable to create an action handler for '${action.type}'.")
             return
         }
 
@@ -229,7 +239,7 @@ public class NotificationContainerFragment
 
                 onMainThread {
                     Notificare.pushUIInternal().lifecycleListeners.forEach {
-                        it.onActionWillExecute(notification, action)
+                        it.get()?.onActionWillExecute(notification, action)
                     }
                 }
 
@@ -237,7 +247,10 @@ public class NotificationContainerFragment
                 pendingResult = result
                 callback.onNotificationFragmentEndProgress(notification)
 
-                if (result?.requestCode == NotificarePendingResult.CAPTURE_IMAGE_REQUEST_CODE || result?.requestCode == NotificarePendingResult.CAPTURE_IMAGE_AND_KEYBOARD_REQUEST_CODE) {
+                if (
+                    result?.requestCode == NotificarePendingResult.CAPTURE_IMAGE_REQUEST_CODE ||
+                    result?.requestCode == NotificarePendingResult.CAPTURE_IMAGE_AND_KEYBOARD_REQUEST_CODE
+                ) {
                     if (result.imageUri != null) {
                         // We need to wait for the image coming back from the camera activity.
                         takePictureLauncher.launch(result.imageUri)
@@ -250,7 +263,7 @@ public class NotificationContainerFragment
                         onMainThread {
                             val error = Exception(requireContext().getString(R.string.notificare_action_camera_failed))
                             Notificare.pushUIInternal().lifecycleListeners.forEach {
-                                it.onActionFailedToExecute(
+                                it.get()?.onActionFailedToExecute(
                                     notification,
                                     action,
                                     error
@@ -278,7 +291,7 @@ public class NotificationContainerFragment
 
                 onMainThread {
                     Notificare.pushUIInternal().lifecycleListeners.forEach {
-                        it.onActionFailedToExecute(notification, action, e)
+                        it.get()?.onActionFailedToExecute(notification, action, e)
                     }
                 }
             }
@@ -298,7 +311,7 @@ public class NotificationContainerFragment
                     return requestedPermissions.any { it == Manifest.permission.CAMERA }
                 }
             } catch (e: PackageManager.NameNotFoundException) {
-                NotificareLogger.warning("Failed to read the manifest.", e)
+                logger.warning("Failed to read the manifest.", e)
             }
 
             return false
@@ -316,7 +329,7 @@ public class NotificationContainerFragment
 
     private fun handlePendingResult() {
         val pendingResult = pendingResult ?: run {
-            NotificareLogger.debug("No pending result to process.")
+            logger.debug("No pending result to process.")
             return
         }
 
@@ -377,7 +390,7 @@ public class NotificationContainerFragment
         try {
             startActivity(intent)
         } catch (e: ActivityNotFoundException) {
-            NotificareLogger.warning("No activity found to handle intent.", e)
+            logger.warning("No activity found to handle intent.", e)
         }
     }
 
@@ -386,15 +399,15 @@ public class NotificationContainerFragment
     // region NotificationDialog.Callback
 
     override fun onNotificationDialogOkClick() {
-        NotificareLogger.debug("User clicked the OK button.")
+        logger.debug("User clicked the OK button.")
     }
 
     override fun onNotificationDialogCancelClick() {
-        NotificareLogger.debug("User clicked the cancel button.")
+        logger.debug("User clicked the cancel button.")
     }
 
     override fun onNotificationDialogDismiss() {
-        NotificareLogger.debug("User dismissed the dialog.")
+        logger.debug("User dismissed the dialog.")
         // if (notification.getType().equals(NotificareNotification.TYPE_ALERT) || notification.getType().equals(NotificareNotification.TYPE_PASSBOOK)) {
         if (pendingResult == null) {
             callback.onNotificationFragmentFinished()
@@ -402,7 +415,7 @@ public class NotificationContainerFragment
     }
 
     override fun onNotificationDialogActionClick(position: Int) {
-        NotificareLogger.debug("User clicked on action index $position.")
+        logger.debug("User clicked on action index $position.")
 
         if (position >= notification.actions.size) {
             // This is the cancel button
@@ -422,7 +435,7 @@ public class NotificationContainerFragment
     }
 
     override fun onActionDialogCancelClick() {
-        NotificareLogger.debug("Action dialog canceled.")
+        logger.debug("Action dialog canceled.")
     }
 
     override fun onActionDialogCloseClick() {
@@ -460,10 +473,7 @@ public class NotificationContainerFragment
 
         public fun onNotificationFragmentActionCanceled(notification: NotificareNotification)
 
-        public fun onNotificationFragmentActionFailed(
-            notification: NotificareNotification,
-            reason: String?
-        )
+        public fun onNotificationFragmentActionFailed(notification: NotificareNotification, reason: String?)
 
         public fun onNotificationFragmentActionSucceeded(notification: NotificareNotification)
     }

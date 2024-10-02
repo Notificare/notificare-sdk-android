@@ -6,7 +6,6 @@ import kotlinx.parcelize.Parcelize
 import org.json.JSONObject
 import re.notifica.Notificare
 import re.notifica.internal.moshi
-import java.util.*
 
 public typealias NotificareUserData = Map<String, String>
 
@@ -17,16 +16,8 @@ public data class NotificareDevice internal constructor(
     val userId: String?,
     val userName: String?,
     val timeZoneOffset: Double,
-    val osVersion: String,
-    val sdkVersion: String,
-    val appVersion: String,
-    val deviceString: String,
-    val language: String,
-    val region: String,
-    val transport: NotificareTransport,
     val dnd: NotificareDoNotDisturb?,
     val userData: NotificareUserData,
-    val lastRegistered: Date,
 ) : Parcelable {
 
     public fun toJson(): JSONObject {

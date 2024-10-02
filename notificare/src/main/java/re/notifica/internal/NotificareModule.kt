@@ -13,12 +13,13 @@ public abstract class NotificareModule {
 
     public open fun configure() {}
 
+    public open suspend fun clearStorage() {}
+
     public open suspend fun launch() {}
 
     public open suspend fun postLaunch() {}
 
     public open suspend fun unlaunch() {}
-
 
     @InternalNotificareApi
     public enum class Module(private val fqn: String) {
@@ -36,7 +37,6 @@ public abstract class NotificareModule {
         SCANNABLES(fqn = "re.notifica.scannables.internal.NotificareScannablesImpl"),
         GEO(fqn = "re.notifica.geo.internal.NotificareGeoImpl"),
         LOYALTY(fqn = "re.notifica.loyalty.internal.NotificareLoyaltyImpl"),
-        MONETIZE(fqn = "re.notifica.monetize.internal.NotificareMonetizeImpl"),
         IN_APP_MESSAGING(fqn = "re.notifica.iam.internal.NotificareInAppMessagingImpl"),
         USER_INBOX(fqn = "re.notifica.inbox.user.internal.NotificareUserInboxImpl");
 
@@ -74,5 +74,4 @@ public abstract class NotificareModule {
                 }
             }
     }
-
 }

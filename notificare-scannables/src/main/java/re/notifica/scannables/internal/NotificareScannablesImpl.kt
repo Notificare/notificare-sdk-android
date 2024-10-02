@@ -10,39 +10,34 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import re.notifica.Notificare
 import re.notifica.NotificareCallback
-import re.notifica.internal.NotificareLogger
 import re.notifica.internal.NotificareModule
-import re.notifica.internal.common.onMainThread
-import re.notifica.internal.common.putEnumExtra
-import re.notifica.internal.ktx.toCallbackFunction
+import re.notifica.utilities.threading.onMainThread
+import re.notifica.utilities.parcel.putEnumExtra
+import re.notifica.utilities.coroutines.toCallbackFunction
 import re.notifica.internal.network.request.NotificareRequest
 import re.notifica.ktx.device
 import re.notifica.scannables.NotificareScannables
 import re.notifica.scannables.ScannableActivity
 import re.notifica.scannables.internal.network.push.FetchScannableResponse
 import re.notifica.scannables.models.NotificareScannable
+import java.lang.ref.WeakReference
 
 @Keep
 internal object NotificareScannablesImpl : NotificareModule(), NotificareScannables {
-    internal var serviceManager: ServiceManager? = null
-        private set
-
-    private val listeners = mutableListOf<NotificareScannables.ScannableSessionListener>()
-
-    // region Notificare Module
+    private val listeners = mutableListOf<WeakReference<NotificareScannables.ScannableSessionListener>>()
 
     override fun configure() {
-        serviceManager = ServiceManager.create()
+        logger.hasDebugLoggingEnabled = checkNotNull(Notificare.options).debugLoggingEnabled
     }
-
-    // endregion
 
     // region Notificare Scannables Module
 
     override val canStartNfcScannableSession: Boolean
         get() {
             if (!Notificare.isConfigured) {
-                NotificareLogger.warning("You must configure Notificare before executing 'canStartNfcScannableSession'.")
+                logger.warning(
+                    "You must configure Notificare before executing 'canStartNfcScannableSession'."
+                )
                 return false
             }
 
@@ -53,11 +48,17 @@ internal object NotificareScannablesImpl : NotificareModule(), NotificareScannab
         }
 
     override fun addListener(listener: NotificareScannables.ScannableSessionListener) {
-        listeners.add(listener)
+        listeners.add(WeakReference(listener))
     }
 
     override fun removeListener(listener: NotificareScannables.ScannableSessionListener) {
-        listeners.remove(listener)
+        val iterator = listeners.iterator()
+        while (iterator.hasNext()) {
+            val next = iterator.next().get()
+            if (next == null || next == listener) {
+                iterator.remove()
+            }
+        }
     }
 
     override fun startScannableSession(activity: Activity) {
@@ -93,14 +94,14 @@ internal object NotificareScannablesImpl : NotificareModule(), NotificareScannab
     }
 
     override fun fetch(tag: String, callback: NotificareCallback<NotificareScannable>): Unit =
-        toCallbackFunction(::fetch)(tag, callback)
+        toCallbackFunction(::fetch)(tag, callback::onSuccess, callback::onFailure)
 
     // endregion
 
     internal fun notifyListeners(scannable: NotificareScannable) {
         onMainThread {
             listeners.forEach {
-                it.onScannableDetected(scannable)
+                it.get()?.onScannableDetected(scannable)
             }
         }
     }
@@ -108,7 +109,7 @@ internal object NotificareScannablesImpl : NotificareModule(), NotificareScannab
     internal fun notifyListeners(error: Exception) {
         onMainThread {
             listeners.forEach {
-                it.onScannableSessionError(error)
+                it.get()?.onScannableSessionError(error)
             }
         }
     }

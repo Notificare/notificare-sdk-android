@@ -8,18 +8,18 @@ import android.net.Uri
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import re.notifica.Notificare
-import re.notifica.internal.NotificareLogger
-import re.notifica.internal.common.onMainThread
+import re.notifica.utilities.threading.onMainThread
 import re.notifica.models.NotificareNotification
 import re.notifica.push.ui.R
 import re.notifica.push.ui.actions.base.NotificationAction
+import re.notifica.push.ui.internal.logger
 import re.notifica.push.ui.ktx.pushUIInternal
 import re.notifica.push.ui.models.NotificarePendingResult
 
 internal class NotificationAppAction(
     context: Context,
     notification: NotificareNotification,
-    action: NotificareNotification.Action
+    action: NotificareNotification.Action,
 ) : NotificationAction(context, notification, action) {
 
     override suspend fun execute(): NotificarePendingResult? = withContext(Dispatchers.IO) {
@@ -35,7 +35,7 @@ internal class NotificationAppAction(
             try {
                 context.startActivity(intent)
             } catch (e: ActivityNotFoundException) {
-                NotificareLogger.debug("No activity found to handle the action.", e)
+                logger.debug("No activity found to handle the action.", e)
                 throw Exception(context.getString(R.string.notificare_action_failed))
             }
 
@@ -43,7 +43,7 @@ internal class NotificationAppAction(
 
             onMainThread {
                 Notificare.pushUIInternal().lifecycleListeners.forEach {
-                    it.onActionExecuted(
+                    it.get()?.onActionExecuted(
                         notification,
                         action
                     )

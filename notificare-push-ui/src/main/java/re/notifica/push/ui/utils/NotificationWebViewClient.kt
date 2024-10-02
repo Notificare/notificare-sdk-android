@@ -11,15 +11,15 @@ import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import re.notifica.Notificare
-import re.notifica.internal.NotificareLogger
-import re.notifica.internal.common.onMainThread
 import re.notifica.models.NotificareNotification
 import re.notifica.push.ui.closeWindowQueryParameter
+import re.notifica.push.ui.internal.logger
 import re.notifica.push.ui.ktx.pushUIInternal
 import re.notifica.push.ui.notifications.fragments.base.NotificationFragment
 import re.notifica.push.ui.openActionQueryParameter
 import re.notifica.push.ui.openActionsQueryParameter
 import re.notifica.push.ui.urlSchemes
+import re.notifica.utilities.threading.onMainThread
 
 internal open class NotificationWebViewClient(
     private val notification: NotificareNotification,
@@ -59,7 +59,9 @@ internal open class NotificationWebViewClient(
 
         if (loadingError == null) {
             onMainThread {
-                Notificare.pushUIInternal().lifecycleListeners.forEach { it.onNotificationPresented(notification) }
+                Notificare.pushUIInternal().lifecycleListeners.forEach {
+                    it.get()?.onNotificationPresented(notification)
+                }
             }
         }
     }
@@ -72,7 +74,9 @@ internal open class NotificationWebViewClient(
         loadingError = error
 
         onMainThread {
-            Notificare.pushUIInternal().lifecycleListeners.forEach { it.onNotificationFailedToPresent(notification) }
+            Notificare.pushUIInternal().lifecycleListeners.forEach {
+                it.get()?.onNotificationFailedToPresent(notification)
+            }
         }
     }
 
@@ -91,7 +95,10 @@ internal open class NotificationWebViewClient(
                 checkNotNull(Notificare.options).openActionsQueryParameter
             )
 
-            if (openActionsWindowParameter != null && (openActionsWindowParameter == "1" || openActionsWindowParameter == "true")) {
+            if (
+                openActionsWindowParameter != null &&
+                (openActionsWindowParameter == "1" || openActionsWindowParameter == "true")
+            ) {
                 callback.onNotificationFragmentShowActions()
                 return true
             }
@@ -132,7 +139,7 @@ internal open class NotificationWebViewClient(
         if (options.urlSchemes.contains(uri.scheme)) {
             onMainThread {
                 Notificare.pushUIInternal().lifecycleListeners.forEach {
-                    it.onNotificationUrlClicked(notification, uri)
+                    it.get()?.onNotificationUrlClicked(notification, uri)
                 }
             }
 
@@ -175,7 +182,7 @@ internal open class NotificationWebViewClient(
 
                     callback.onNotificationFragmentStartActivity(uriIntent)
                 } catch (e: ActivityNotFoundException) {
-                    NotificareLogger.warning("Could not find an activity capable of opening the URL.", e)
+                    logger.warning("Could not find an activity capable of opening the URL.", e)
                 }
             }
 

@@ -2,8 +2,8 @@ package re.notifica.models
 
 import android.os.Parcelable
 import com.squareup.moshi.JsonClass
+import java.util.Locale
 import kotlinx.parcelize.Parcelize
-import java.util.*
 
 @Parcelize
 @JsonClass(generateAdapter = true)

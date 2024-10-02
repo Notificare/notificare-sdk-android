@@ -18,10 +18,10 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
 import re.notifica.Notificare
-import re.notifica.internal.NotificareLogger
-import re.notifica.internal.ktx.parcelable
+import re.notifica.utilities.parcel.parcelable
 import re.notifica.push.ui.R
 import re.notifica.push.ui.actions.NotificationCallbackAction
+import re.notifica.push.ui.internal.logger
 import re.notifica.push.ui.models.NotificarePendingResult
 import re.notifica.push.ui.notifications.fragments.base.NotificationFragment
 import java.io.ByteArrayOutputStream
@@ -53,7 +53,7 @@ public class NotificareCallbackActionFragment private constructor() : Fragment()
 
         pendingResult = savedInstanceState?.parcelable(EXTRA_PENDING_RESULT)
             ?: arguments?.parcelable(EXTRA_PENDING_RESULT)
-                ?: throw IllegalArgumentException("Missing required pending result parameter.")
+            ?: throw IllegalArgumentException("Missing required pending result parameter.")
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -86,7 +86,10 @@ public class NotificareCallbackActionFragment private constructor() : Fragment()
 
         if (messageEditText != null) {
             messageEditText?.requestFocus()
-            activity?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE or WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
+            activity?.window?.setSoftInputMode(
+                WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE or
+                    WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
+            )
         }
 
         sendButton?.setOnClickListener(::onSendClicked)
@@ -151,12 +154,12 @@ public class NotificareCallbackActionFragment private constructor() : Fragment()
                     mimeType = mimeType,
                 )
 
-                NotificareLogger.debug("Created a notification reply.")
+                logger.debug("Created a notification reply.")
                 callback.onNotificationFragmentEndProgress()
                 callback.onNotificationFragmentActionSucceeded()
                 callback.onNotificationFragmentFinished()
             } catch (e: Exception) {
-                NotificareLogger.error("Failed to create a notification reply.", e)
+                logger.error("Failed to create a notification reply.", e)
                 callback.onNotificationFragmentEndProgress()
                 callback.onNotificationFragmentActionFailed(getString(R.string.notificare_action_failed))
                 callback.onNotificationFragmentFinished()
@@ -166,7 +169,6 @@ public class NotificareCallbackActionFragment private constructor() : Fragment()
 
     public companion object {
         private const val EXTRA_PENDING_RESULT = "re.notifica.extra.PendingResult"
-
         private const val SAMPLE_SIZE_MAX_PIXELS = 307200 // 640 x 480
 
         public fun newInstance(pendingResult: NotificarePendingResult): NotificareCallbackActionFragment {
@@ -189,7 +191,10 @@ public class NotificareCallbackActionFragment private constructor() : Fragment()
                 sampleSize *= 2
             }
 
-            NotificareLogger.debug("Reading bitmap image of ${options.outWidth}x${options.outHeight} pixels with sampleSize $sampleSize")
+            logger.debug(
+                "Reading bitmap image of ${options.outWidth}x${options.outHeight} pixels with sampleSize $sampleSize"
+            )
+
             return sampleSize
         }
 
@@ -215,7 +220,7 @@ public class NotificareCallbackActionFragment private constructor() : Fragment()
                     else -> 0
                 }
             } catch (e: IOException) {
-                NotificareLogger.error("Couldn't read image file.", e)
+                logger.error("Couldn't read image file.", e)
                 0
             }
         }

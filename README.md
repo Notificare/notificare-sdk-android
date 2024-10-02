@@ -7,7 +7,7 @@
 
 The Notificare Android SDK makes it quick and easy to communicate efficiently with many of the Notificare API services and enables you to seamlessly integrate our various features, from Push Notifications to Contextualised Storage.
 
-Get started with our [📚 integration guides](https://docs.notifica.re/sdk/v3/android/setup) and [example projects](#examples), or [📘 browse the SDK reference]() (coming soon).
+Get started with our [📚 integration guides](https://docs.notifica.re/sdk/v3/android/setup) and [example projects](#examples).
 
 
 Table of contents
@@ -35,8 +35,6 @@ Table of contents
 
 **Loyalty**: Harness the power of digital cards that live beyond your app and are always in your customer’s pocket.
 
-**Monetize**: Quickly support in-app purchases in both the App Store and Google Play.
-
 **Assets**: Add powerful contextual marketing features to your apps. Show the right content to the right users at the right time or location. Maximise the content you're already creating without increasing development costs.
 
 **Scannables**: Unlock new content by scanning NFC tags or QR codes that integrate seamlessly in your mobile applications.
@@ -59,7 +57,7 @@ buildscript {
         maven { url 'https://maven.notifica.re/releases' }
     }
     dependencies {
-        classpath 're.notifica.gradle:notificare-services:1.0.1'
+        classpath 're.notifica.gradle:notificare-services:1.1.0'
     }
 }
 
@@ -76,27 +74,22 @@ Apply the plugin and add the following dependencies to your app's `build.gradle`
 apply plugin: 're.notifica.gradle.notificare-services'
 
 dependencies {
-    def notificare_version = '3.0.0'
+    def notificare_version = '4.0.0'
     implementation "re.notifica:notificare:$notificare_version"
 
     // Optional modules
     implementation "re.notifica:notificare-inbox:$notificare_version"
-
     implementation "re.notifica:notificare-push:$notificare_version"
-    implementation "re.notifica:notificare-push-fcm:$notificare_version"
-    implementation "re.notifica:notificare-push-hms:$notificare_version"
-
     implementation "re.notifica:notificare-push-ui:$notificare_version"
-    implementation "re.notifica:notificare-push-ui-fcm:$notificare_version"
-    implementation "re.notifica:notificare-push-ui-hms:$notificare_version"
 }
 ```
 
 ## Getting Started
 
 ### Integration
-Get started with our [📚 integration guides](https://docs.notifica.re/sdk/v3/android/setup) and [example projects](#examples), or [📘 browse the SDK reference]() (coming soon).
+Get started with our [📚 integration guides](https://docs.notifica.re/sdk/v3/android/setup) and [example projects](#examples).
 
 
 ### Examples
 - The [example project](https://github.com/Notificare/notificare-sdk-android/tree/main/sample) demonstrates integrations in a simplified fashion, to quickly understand how a given feature should be implemented.
+- The [Notificare Go](https://github.com/Notificare/notificare-go-android) app demonstrates the integration of the libraries and Notificare's suite of features in a real-world app.

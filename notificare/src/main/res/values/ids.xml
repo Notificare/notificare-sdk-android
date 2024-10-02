@@ -2,5 +2,7 @@
 <resources>
     <item name="notificare_services_application_key" type="string" />
     <item name="notificare_services_application_secret" type="string" />
-    <item name="notificare_services_use_test_api" type="bool" />
+    <item name="notificare_services_hosts_rest_api" type="string" />
+    <item name="notificare_services_hosts_app_links" type="string" />
+    <item name="notificare_services_hosts_short_links" type="string" />
 </resources>
