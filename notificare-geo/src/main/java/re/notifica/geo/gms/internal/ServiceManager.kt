@@ -23,6 +23,7 @@ import re.notifica.InternalNotificareApi
 import re.notifica.Notificare
 import re.notifica.geo.gms.LocationReceiver
 import re.notifica.geo.internal.ServiceManager
+import re.notifica.geo.internal.logger
 import re.notifica.geo.ktx.DEFAULT_GEOFENCE_RESPONSIVENESS
 import re.notifica.geo.ktx.DEFAULT_LOCATION_UPDATES_FASTEST_INTERVAL
 import re.notifica.geo.ktx.DEFAULT_LOCATION_UPDATES_INTERVAL
@@ -30,7 +31,6 @@ import re.notifica.geo.ktx.DEFAULT_LOCATION_UPDATES_SMALLEST_DISPLACEMENT
 import re.notifica.geo.ktx.INTENT_ACTION_INTERNAL_GEOFENCE_TRANSITION
 import re.notifica.geo.ktx.INTENT_ACTION_INTERNAL_LOCATION_UPDATED
 import re.notifica.geo.models.NotificareRegion
-import re.notifica.internal.NotificareLogger
 
 @Keep
 @InternalNotificareApi
@@ -113,17 +113,17 @@ public class ServiceManager : ServiceManager() {
                     )
 
                 try {
-                    NotificareLogger.info("Sending current location as an update intent.")
+                    logger.info("Sending current location as an update intent.")
                     locationPendingIntent.send(Notificare.requireContext(), 0, intent)
                 } catch (e: Exception) {
-                    NotificareLogger.error("Error sending location update broadcast.", e)
+                    logger.error("Error sending location update broadcast.", e)
                 }
             } else {
-                NotificareLogger.warning("No location found yet.")
+                logger.warning("No location found yet.")
             }
 
             if (locationUpdatesStarted) {
-                NotificareLogger.debug("Location updates were previously enabled. Skipping...")
+                logger.debug("Location updates were previously enabled. Skipping...")
                 return@addOnSuccessListener
             }
 
@@ -135,11 +135,11 @@ public class ServiceManager : ServiceManager() {
 
             fusedLocationClient.requestLocationUpdates(request, locationPendingIntent)
                 .addOnSuccessListener {
-                    NotificareLogger.info("Location updates started.")
+                    logger.info("Location updates started.")
                     locationUpdatesStarted = true
                 }
                 .addOnFailureListener {
-                    NotificareLogger.error("Location updates could not be started.", it)
+                    logger.error("Location updates could not be started.", it)
                 }
         }
     }
@@ -147,8 +147,8 @@ public class ServiceManager : ServiceManager() {
     override fun disableLocationUpdates() {
         // Remove all geofences.
         geofencingClient.removeGeofences(geofencingPendingIntent)
-            .addOnSuccessListener { NotificareLogger.debug("Removed all geofences.") }
-            .addOnFailureListener { NotificareLogger.debug("Failed to remove all geofences.") }
+            .addOnSuccessListener { logger.debug("Removed all geofences.") }
+            .addOnFailureListener { logger.debug("Failed to remove all geofences.") }
 
         // Stop listening for location updates.
         fusedLocationClient.removeLocationUpdates(locationPendingIntent)
@@ -190,27 +190,27 @@ public class ServiceManager : ServiceManager() {
             geofencingClient.addGeofences(request, geofencingPendingIntent)
                 .await()
 
-            NotificareLogger.debug("Successfully started monitoring ${geofences.size} geofences.")
+            logger.debug("Successfully started monitoring ${geofences.size} geofences.")
         } catch (e: Exception) {
-            NotificareLogger.error("Failed to start monitoring ${geofences.size} geofences.", e)
+            logger.error("Failed to start monitoring ${geofences.size} geofences.", e)
         }
     }
 
     override suspend fun stopMonitoringRegions(regions: List<NotificareRegion>) {
         try {
             geofencingClient.removeGeofences(regions.map { it.id }).await()
-            NotificareLogger.debug("Successfully stopped monitoring ${regions.size} geofences.")
+            logger.debug("Successfully stopped monitoring ${regions.size} geofences.")
         } catch (e: Exception) {
-            NotificareLogger.error("Failed to stop monitoring ${regions.size} geofences.", e)
+            logger.error("Failed to stop monitoring ${regions.size} geofences.", e)
         }
     }
 
     override suspend fun clearMonitoringRegions() {
         try {
             geofencingClient.removeGeofences(geofencingPendingIntent)
-            NotificareLogger.debug("Successfully stopped monitoring all geofences.")
+            logger.debug("Successfully stopped monitoring all geofences.")
         } catch (e: Exception) {
-            NotificareLogger.error("Failed to stop monitoring all geofences.", e)
+            logger.error("Failed to stop monitoring all geofences.", e)
         }
     }
 }

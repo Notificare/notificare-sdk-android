@@ -48,6 +48,7 @@ dependencies {
 
     // Notificare
     implementation(project(":notificare"))
+    implementation(project(":notificare-utilities"))
 
     // Android
     implementation(libs.androidx.core)

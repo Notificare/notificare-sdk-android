@@ -3,7 +3,7 @@ package re.notifica.assets.internal.network.push
 import com.squareup.moshi.JsonClass
 import re.notifica.Notificare
 import re.notifica.assets.models.NotificareAsset
-import re.notifica.internal.moshi.UseDefaultsWhenNull
+import re.notifica.utilities.moshi.UseDefaultsWhenNull
 
 @JsonClass(generateAdapter = true)
 internal data class FetchAssetsResponse(

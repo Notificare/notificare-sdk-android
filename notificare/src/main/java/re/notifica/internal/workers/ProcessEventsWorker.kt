@@ -7,8 +7,8 @@ import java.util.Calendar
 import java.util.Date
 import java.util.GregorianCalendar
 import re.notifica.Notificare
-import re.notifica.internal.NotificareLogger
-import re.notifica.internal.common.recoverable
+import re.notifica.internal.logger
+import re.notifica.utilities.networking.isRecoverable
 import re.notifica.internal.network.request.NotificareRequest
 import re.notifica.internal.storage.database.entities.NotificareEventEntity
 import re.notifica.internal.storage.database.ktx.toModel
@@ -22,16 +22,16 @@ internal class ProcessEventsWorker(context: Context, params: WorkerParameters) :
         return try {
             Notificare.database.events().find().forEach { processEvent(it) }
 
-            NotificareLogger.debug("Finished processing all the events.")
+            logger.debug("Finished processing all the events.")
             Result.success()
         } catch (e: Exception) {
-            NotificareLogger.warning("Failed to process the stored events.", e)
+            logger.warning("Failed to process the stored events.", e)
             return Result.failure()
         }
     }
 
     private suspend fun processEvent(entity: NotificareEventEntity) {
-        NotificareLogger.debug("Processing event #${entity.id}")
+        logger.debug("Processing event #${entity.id}")
 
         val now = Date()
         val createdAt = Date(entity.timestamp)
@@ -43,7 +43,7 @@ internal class ProcessEventsWorker(context: Context, params: WorkerParameters) :
             }
 
         if (now.after(expiresAt)) {
-            NotificareLogger.debug("Event expired. Removing...")
+            logger.debug("Event expired. Removing...")
             Notificare.database.events().delete(entity)
             return
         }
@@ -53,11 +53,11 @@ internal class ProcessEventsWorker(context: Context, params: WorkerParameters) :
                 .post("/event", entity.toModel())
                 .response()
 
-            NotificareLogger.debug("Event processed. Removing from storage...")
+            logger.debug("Event processed. Removing from storage...")
             Notificare.database.events().delete(entity)
         } catch (e: Exception) {
-            if (e.recoverable) {
-                NotificareLogger.debug("Failed to process event.")
+            if (e.isRecoverable) {
+                logger.debug("Failed to process event.")
 
                 // Increase the attempts counter.
                 entity.retries++
@@ -66,11 +66,11 @@ internal class ProcessEventsWorker(context: Context, params: WorkerParameters) :
                     // Persist the attempts counter.
                     Notificare.database.events().update(entity)
                 } else {
-                    NotificareLogger.debug("Event was retried too many times. Removing...")
+                    logger.debug("Event was retried too many times. Removing...")
                     Notificare.database.events().delete(entity)
                 }
             } else {
-                NotificareLogger.debug("Failed to process event due to an unrecoverable error. Discarding it...")
+                logger.debug("Failed to process event due to an unrecoverable error. Discarding it...")
                 Notificare.database.events().delete(entity)
             }
         }

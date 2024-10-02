@@ -11,15 +11,15 @@ import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import re.notifica.Notificare
-import re.notifica.internal.NotificareLogger
-import re.notifica.internal.common.onMainThread
 import re.notifica.models.NotificareNotification
 import re.notifica.push.ui.closeWindowQueryParameter
+import re.notifica.push.ui.internal.logger
 import re.notifica.push.ui.ktx.pushUIInternal
 import re.notifica.push.ui.notifications.fragments.base.NotificationFragment
 import re.notifica.push.ui.openActionQueryParameter
 import re.notifica.push.ui.openActionsQueryParameter
 import re.notifica.push.ui.urlSchemes
+import re.notifica.utilities.threading.onMainThread
 
 internal open class NotificationWebViewClient(
     private val notification: NotificareNotification,
@@ -182,7 +182,7 @@ internal open class NotificationWebViewClient(
 
                     callback.onNotificationFragmentStartActivity(uriIntent)
                 } catch (e: ActivityNotFoundException) {
-                    NotificareLogger.warning("Could not find an activity capable of opening the URL.", e)
+                    logger.warning("Could not find an activity capable of opening the URL.", e)
                 }
             }
 

@@ -4,10 +4,10 @@ import android.app.Dialog
 import android.os.Bundle
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
-import re.notifica.internal.NotificareLogger
-import re.notifica.internal.ktx.parcelable
+import re.notifica.utilities.parcel.parcelable
 import re.notifica.models.NotificareNotification
 import re.notifica.push.ui.R
+import re.notifica.push.ui.internal.logger
 
 public class NotificationActionsDialog : DialogFragment() {
 
@@ -24,7 +24,7 @@ public class NotificationActionsDialog : DialogFragment() {
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val notification = notification ?: run {
-            NotificareLogger.warning("Notification action dialog created without a notification.")
+            logger.warning("Notification action dialog created without a notification.")
             return super.onCreateDialog(savedInstanceState)
         }
 

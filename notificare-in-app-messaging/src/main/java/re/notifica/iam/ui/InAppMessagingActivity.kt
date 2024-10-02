@@ -10,14 +10,15 @@ import androidx.fragment.app.commit
 import re.notifica.Notificare
 import re.notifica.iam.R
 import re.notifica.iam.databinding.NotificareInAppMessagingActivityBinding
+import re.notifica.iam.internal.logger
 import re.notifica.iam.ktx.INTENT_EXTRA_IN_APP_MESSAGE
 import re.notifica.iam.ktx.inAppMessagingImplementation
 import re.notifica.iam.models.NotificareInAppMessage
-import re.notifica.internal.NotificareLogger
-import re.notifica.internal.common.onMainThread
-import re.notifica.internal.ktx.parcelable
+import re.notifica.utilities.threading.onMainThread
+import re.notifica.utilities.parcel.parcelable
 
 public open class InAppMessagingActivity : AppCompatActivity() {
+
     private lateinit var binding: NotificareInAppMessagingActivityBinding
     private var backgroundTimestamp: Long? = null
 
@@ -44,7 +45,7 @@ public open class InAppMessagingActivity : AppCompatActivity() {
                 Notificare.inAppMessagingImplementation().hasExpiredBackgroundPeriod(backgroundTimestamp)
 
             if (expired) {
-                NotificareLogger.debug(
+                logger.debug(
                     "Dismissing the current in-app message for being in the background for longer than the grace period."
                 )
                 return finish()
@@ -53,7 +54,7 @@ public open class InAppMessagingActivity : AppCompatActivity() {
 
         if (savedInstanceState == null) {
             val klass = getFragmentClass(message) ?: run {
-                NotificareLogger.warning("Unsupported in-app message type '${message.type}'.")
+                logger.warning("Unsupported in-app message type '${message.type}'.")
                 return finish()
             }
 
@@ -74,7 +75,7 @@ public open class InAppMessagingActivity : AppCompatActivity() {
             Notificare.inAppMessagingImplementation().hasExpiredBackgroundPeriod(backgroundTimestamp)
 
         if (expired) {
-            NotificareLogger.debug(
+            logger.debug(
                 "Dismissing the current in-app message for being in the background for longer than the grace period."
             )
             return finish()

@@ -31,10 +31,9 @@ import re.notifica.inbox.internal.database.entities.InboxItemEntity
 import re.notifica.inbox.internal.network.push.InboxResponse
 import re.notifica.inbox.internal.workers.ExpireItemWorker
 import re.notifica.inbox.models.NotificareInboxItem
-import re.notifica.internal.NotificareLogger
 import re.notifica.internal.NotificareModule
-import re.notifica.internal.ktx.coroutineScope
-import re.notifica.internal.ktx.toCallbackFunction
+import re.notifica.utilities.coroutines.notificareCoroutineScope
+import re.notifica.utilities.coroutines.toCallbackFunction
 import re.notifica.internal.network.NetworkException
 import re.notifica.internal.network.request.NotificareRequest
 import re.notifica.ktx.device
@@ -44,14 +43,13 @@ import re.notifica.models.NotificareNotification
 
 @Keep
 internal object NotificareInboxImpl : NotificareModule(), NotificareInbox {
-
     internal lateinit var database: InboxDatabase
 
     private var liveItems: LiveData<List<InboxItemEntity>>? = null
     private val liveItemsObserver = Observer<List<InboxItemEntity>> { entities ->
-        NotificareLogger.debug("Received an inbox live data update.")
+        logger.debug("Received an inbox live data update.")
         if (entities == null) {
-            NotificareLogger.debug("Inbox live data update was null. Skipping...")
+            logger.debug("Inbox live data update was null. Skipping...")
             return@Observer
         }
 
@@ -81,6 +79,8 @@ internal object NotificareInboxImpl : NotificareModule(), NotificareInbox {
     // region Notificare Module
 
     override fun configure() {
+        logger.hasDebugLoggingEnabled = checkNotNull(Notificare.options).debugLoggingEnabled
+
         database = InboxDatabase.create(Notificare.requireContext())
 
         reloadLiveItems()
@@ -107,12 +107,12 @@ internal object NotificareInboxImpl : NotificareModule(), NotificareInbox {
     override val items: SortedSet<NotificareInboxItem>
         get() {
             val application = Notificare.application ?: run {
-                NotificareLogger.warning("Notificare application is not yet available.")
+                logger.warning("Notificare application is not yet available.")
                 return sortedSetOf()
             }
 
             if (application.inboxConfig?.useInbox != true) {
-                NotificareLogger.warning("Notificare inbox functionality is not enabled.")
+                logger.warning("Notificare inbox functionality is not enabled.")
                 return sortedSetOf()
             }
 
@@ -124,17 +124,17 @@ internal object NotificareInboxImpl : NotificareModule(), NotificareInbox {
     override var badge: Int = 0
         get() {
             val application = Notificare.application ?: run {
-                NotificareLogger.warning("Notificare application is not yet available.")
+                logger.warning("Notificare application is not yet available.")
                 return 0
             }
 
             if (application.inboxConfig?.useInbox != true) {
-                NotificareLogger.warning("Notificare inbox functionality is not enabled.")
+                logger.warning("Notificare inbox functionality is not enabled.")
                 return 0
             }
 
             if (application.inboxConfig?.autoBadge != true) {
-                NotificareLogger.warning("Notificare auto badge functionality is not enabled.")
+                logger.warning("Notificare auto badge functionality is not enabled.")
                 return 0
             }
 
@@ -146,20 +146,20 @@ internal object NotificareInboxImpl : NotificareModule(), NotificareInbox {
 
     override fun refresh() {
         val application = Notificare.application ?: run {
-            NotificareLogger.warning("Notificare application not yet available.")
+            logger.warning("Notificare application not yet available.")
             return
         }
 
         if (application.inboxConfig?.useInbox != true) {
-            NotificareLogger.warning("Notificare inbox functionality is not enabled.")
+            logger.warning("Notificare inbox functionality is not enabled.")
             return
         }
 
-        Notificare.coroutineScope.launch {
+        notificareCoroutineScope.launch {
             try {
                 reloadInbox()
             } catch (e: Exception) {
-                NotificareLogger.error("Failed to refresh the inbox.", e)
+                logger.error("Failed to refresh the inbox.", e)
             }
         }
     }
@@ -174,14 +174,14 @@ internal object NotificareInboxImpl : NotificareModule(), NotificareInbox {
         if (item.notification.partial) {
             val entity = cachedEntities.find { it.id == item.id }
             if (entity == null) {
-                NotificareLogger.warning("Unable to find item '${item.id}' in the local database.")
+                logger.warning("Unable to find item '${item.id}' in the local database.")
             } else {
                 entity.notification = notification
 
                 try {
                     database.inbox().update(entity)
                 } catch (e: Exception) {
-                    NotificareLogger.error("Failed to update the item in the local database.", e)
+                    logger.error("Failed to update the item in the local database.", e)
                     throw e
                 }
             }
@@ -194,7 +194,7 @@ internal object NotificareInboxImpl : NotificareModule(), NotificareInbox {
     }
 
     override fun open(item: NotificareInboxItem, callback: NotificareCallback<NotificareNotification>): Unit =
-        toCallbackFunction(NotificareInboxImpl::open)(item, callback)
+        toCallbackFunction(NotificareInboxImpl::open)(item, callback::onSuccess, callback::onFailure)
 
     override suspend fun markAsRead(item: NotificareInboxItem): Unit = withContext(Dispatchers.IO) {
         checkPrerequisites()
@@ -205,7 +205,7 @@ internal object NotificareInboxImpl : NotificareModule(), NotificareInbox {
         // Mark the item as read in the local inbox.
         val entity = cachedEntities.find { it.id == item.id }
         if (entity == null) {
-            NotificareLogger.warning("Unable to find item '${item.id}' in the local database.")
+            logger.warning("Unable to find item '${item.id}' in the local database.")
         } else {
             entity.opened = true
             database.inbox().update(entity)
@@ -216,7 +216,7 @@ internal object NotificareInboxImpl : NotificareModule(), NotificareInbox {
     }
 
     override fun markAsRead(item: NotificareInboxItem, callback: NotificareCallback<Unit>): Unit =
-        toCallbackFunction(NotificareInboxImpl::markAsRead)(item, callback)
+        toCallbackFunction(NotificareInboxImpl::markAsRead)(item, callback::onSuccess, callback::onFailure)
 
     override suspend fun markAllAsRead(): Unit = withContext(Dispatchers.IO) {
         checkPrerequisites()
@@ -236,7 +236,7 @@ internal object NotificareInboxImpl : NotificareModule(), NotificareInbox {
     }
 
     override fun markAllAsRead(callback: NotificareCallback<Unit>): Unit =
-        toCallbackFunction(NotificareInboxImpl::markAllAsRead)(callback)
+        toCallbackFunction(NotificareInboxImpl::markAllAsRead)(callback::onSuccess, callback::onFailure)
 
     override suspend fun remove(item: NotificareInboxItem): Unit = withContext(Dispatchers.IO) {
         checkPrerequisites()
@@ -254,7 +254,7 @@ internal object NotificareInboxImpl : NotificareModule(), NotificareInbox {
     }
 
     override fun remove(item: NotificareInboxItem, callback: NotificareCallback<Unit>): Unit =
-        toCallbackFunction(NotificareInboxImpl::remove)(item, callback)
+        toCallbackFunction(NotificareInboxImpl::remove)(item, callback::onSuccess, callback::onFailure)
 
     override suspend fun clear(): Unit = withContext(Dispatchers.IO) {
         checkPrerequisites()
@@ -270,29 +270,29 @@ internal object NotificareInboxImpl : NotificareModule(), NotificareInbox {
     }
 
     override fun clear(callback: NotificareCallback<Unit>): Unit =
-        toCallbackFunction(NotificareInboxImpl::clear)(callback)
+        toCallbackFunction(NotificareInboxImpl::clear)(callback::onSuccess, callback::onFailure)
 
     // endregion
 
     @Throws
     private fun checkPrerequisites() {
         if (!Notificare.isReady) {
-            NotificareLogger.warning("Notificare is not ready yet.")
+            logger.warning("Notificare is not ready yet.")
             throw NotificareNotReadyException()
         }
 
         val application = Notificare.application ?: run {
-            NotificareLogger.warning("Notificare application is not yet available.")
+            logger.warning("Notificare application is not yet available.")
             throw NotificareApplicationUnavailableException()
         }
 
         if (application.services[NotificareApplication.ServiceKeys.INBOX] != true) {
-            NotificareLogger.warning("Notificare inbox functionality is not enabled.")
+            logger.warning("Notificare inbox functionality is not enabled.")
             throw NotificareServiceUnavailableException(service = NotificareApplication.ServiceKeys.INBOX)
         }
 
         if (application.inboxConfig?.useInbox != true) {
-            NotificareLogger.warning("Notificare inbox functionality is not enabled.")
+            logger.warning("Notificare inbox functionality is not enabled.")
             throw NotificareServiceUnavailableException(service = NotificareApplication.ServiceKeys.INBOX)
         }
     }
@@ -330,28 +330,28 @@ internal object NotificareInboxImpl : NotificareModule(), NotificareInbox {
 
     private suspend fun sync(): Unit = withContext(Dispatchers.IO) {
         val device = Notificare.device().currentDevice ?: run {
-            NotificareLogger.warning("No device registered yet. Skipping...")
+            logger.warning("No device registered yet. Skipping...")
             return@withContext
         }
 
         val mostRecentItem = database.inbox().findMostRecent() ?: run {
-            NotificareLogger.debug("The local inbox contains no items. Checking remotely.")
+            logger.debug("The local inbox contains no items. Checking remotely.")
             reloadInbox()
             return@withContext
         }
 
         try {
-            NotificareLogger.debug("Checking if the inbox has been modified since ${mostRecentItem.time}.")
+            logger.debug("Checking if the inbox has been modified since ${mostRecentItem.time}.")
             NotificareRequest.Builder()
                 .get("/notification/inbox/fordevice/${device.id}")
                 .query("ifModifiedSince", mostRecentItem.time.time.toString())
                 .responseDecodable(InboxResponse::class)
 
-            NotificareLogger.info("The inbox has been modified. Performing a full sync.")
+            logger.info("The inbox has been modified. Performing a full sync.")
             reloadInbox()
         } catch (e: Exception) {
             if (e is NetworkException.ValidationException && e.response.code == 304) {
-                NotificareLogger.debug("The inbox has not been modified. Proceeding with locally stored data.")
+                logger.debug("The inbox has not been modified. Proceeding with locally stored data.")
             } else {
                 // Rethrow the exception to be handled by the caller.
                 throw e
@@ -368,14 +368,14 @@ internal object NotificareInboxImpl : NotificareModule(), NotificareInbox {
         try {
             database.inbox().clear()
         } catch (e: Exception) {
-            NotificareLogger.error("Failed to clear the local inbox.", e)
+            logger.error("Failed to clear the local inbox.", e)
             throw e
         }
     }
 
     private suspend fun requestRemoteInboxItems(step: Int = 0): Unit = withContext(Dispatchers.IO) {
         val device = Notificare.device().currentDevice ?: run {
-            NotificareLogger.warning("Notificare has not been configured yet.")
+            logger.warning("Notificare has not been configured yet.")
             return@withContext
         }
 
@@ -392,10 +392,10 @@ internal object NotificareInboxImpl : NotificareModule(), NotificareInbox {
         }
 
         if (response.count > (step + 1) * 100) {
-            NotificareLogger.debug("Loading more inbox items.")
+            logger.debug("Loading more inbox items.")
             requestRemoteInboxItems(step = step + 1)
         } else {
-            NotificareLogger.debug("Done loading inbox items.")
+            logger.debug("Done loading inbox items.")
         }
     }
 
@@ -408,7 +408,7 @@ internal object NotificareInboxImpl : NotificareModule(), NotificareInbox {
             ?: return
 
         val initialDelayMilliseconds = checkNotNull(earliestExpirationItem.expires).time - now.time
-        NotificareLogger.debug("Scheduling the next expiration in '$initialDelayMilliseconds' milliseconds.")
+        logger.debug("Scheduling the next expiration in '$initialDelayMilliseconds' milliseconds.")
 
         val task = OneTimeWorkRequestBuilder<ExpireItemWorker>()
             .setInitialDelay(initialDelayMilliseconds, TimeUnit.MILLISECONDS)
@@ -429,7 +429,7 @@ internal object NotificareInboxImpl : NotificareModule(), NotificareInbox {
     }
 
     private fun clearNotificationCenter() {
-        NotificareLogger.debug("Removing all messages from the notification center.")
+        logger.debug("Removing all messages from the notification center.")
         NotificationManagerCompat.from(Notificare.requireContext())
             .cancelAll()
     }

@@ -2,7 +2,7 @@ package re.notifica.loyalty.internal.network.push
 
 import com.squareup.moshi.JsonClass
 import java.util.Date
-import re.notifica.internal.moshi.UseDefaultsWhenNull
+import re.notifica.utilities.moshi.UseDefaultsWhenNull
 import re.notifica.loyalty.models.NotificarePass
 
 @JsonClass(generateAdapter = true)

@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import re.notifica.Notificare
+import re.notifica.geo.internal.logger
 import re.notifica.geo.ktx.INTENT_ACTION_BEACONS_RANGED
 import re.notifica.geo.ktx.INTENT_ACTION_BEACON_ENTERED
 import re.notifica.geo.ktx.INTENT_ACTION_BEACON_EXITED
@@ -17,11 +18,11 @@ import re.notifica.geo.ktx.INTENT_EXTRA_REGION
 import re.notifica.geo.models.NotificareBeacon
 import re.notifica.geo.models.NotificareLocation
 import re.notifica.geo.models.NotificareRegion
-import re.notifica.internal.NotificareLogger
-import re.notifica.internal.ktx.parcelable
-import re.notifica.internal.ktx.parcelableArrayList
+import re.notifica.utilities.parcel.parcelable
+import re.notifica.utilities.parcel.parcelableArrayList
 
 public open class NotificareGeoIntentReceiver : BroadcastReceiver() {
+
     override fun onReceive(context: Context, intent: Intent) {
         when (intent.action) {
             Notificare.INTENT_ACTION_LOCATION_UPDATED -> {
@@ -79,32 +80,32 @@ public open class NotificareGeoIntentReceiver : BroadcastReceiver() {
     }
 
     protected open fun onLocationUpdated(context: Context, location: NotificareLocation) {
-        NotificareLogger.debug(
+        logger.debug(
             "Location updated, please override onLocationUpdated if you want to receive these intents."
         )
     }
 
     protected open fun onRegionEntered(context: Context, region: NotificareRegion) {
-        NotificareLogger.debug(
+        logger.debug(
             "Entered a region, please override onRegionEntered if you want to receive these intents."
         )
     }
 
     protected open fun onRegionExited(context: Context, region: NotificareRegion) {
-        NotificareLogger.debug("Exited a region, please override onRegionExited if you want to receive these intents.")
+        logger.debug("Exited a region, please override onRegionExited if you want to receive these intents.")
     }
 
     protected open fun onBeaconEntered(context: Context, beacon: NotificareBeacon) {
-        NotificareLogger.debug(
+        logger.debug(
             "Entered a beacon, please override onBeaconEntered if you want to receive these intents."
         )
     }
 
     protected open fun onBeaconExited(context: Context, beacon: NotificareBeacon) {
-        NotificareLogger.debug("Exited a beacon, please override onBeaconExited if you want to receive these intents.")
+        logger.debug("Exited a beacon, please override onBeaconExited if you want to receive these intents.")
     }
 
     protected open fun onBeaconsRanged(context: Context, region: NotificareRegion, beacons: List<NotificareBeacon>) {
-        NotificareLogger.debug("Ranged beacons, please override onBeaconsRanged if you want to receive these intents.")
+        logger.debug("Ranged beacons, please override onBeaconsRanged if you want to receive these intents.")
     }
 }
