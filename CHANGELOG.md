@@ -1,5 +1,36 @@
 # CHANGELOG
 
+## 4.0.0
+
+- Device identifiers become long-lived
+- Keep weak references for listeners to prevent memory leaks
+- Fix padding discrepancies in alert dialog with actions
+- `launch()`, `unlaunch()`, `enableRemoteNotifications()` and `disableRemoteNotifications()` become suspending functions with a callback alternative
+- Removed peer modules. Main modules now include Google Play Services libraries by default.
+- Add support for customisable hosts
+- Replace `NotificarePushIntentReceiver`'s `onTokenChanged()` with `onSubscriptionIdChanged()`
+- Renamed `NotificarePushService` to `NotificareFirebaseMessagingService`.
+- Replaced `isNotificareNotification` Kotlin extension with `NotificarePush.isNotificareNotification()`.
+- Add `Notificare.push().parseNotificationOpenedIntent(intent)` to ease processing the intent.
+- Add `Notificare.push().parseNotificationActionOpenedIntent(intent)` to ease processing the intent.
+- Allow `configure()` to be called more than once, provided Notificare is unlaunched.
+
+#### Breaking changes
+
+- `NotificareDevice.id` attribute no longer contains the push token. Use `Notificare.push().subscription` instead.
+- The `NotificareDevice` data model was reduced to only publicly relevant attributes.
+- `onDeviceRegistered` only triggers once, when the device is created.
+- `launch()`, `unlaunch()`, `enableRemoteNotifications()` and `disableRemoteNotifications()` become suspending functions that complete after all the work is done.
+- `NotificareTransport` was moved to the push module.
+- Drops support for the monetize module.
+- Drops support for Huawei Mobile Services.
+- Drops support for v1 passes in-app wallet.
+- Removed deprecated `onNotificationReceived(context, notification)`. Use `onNotificationReceived(context, notification, deliveryMechanism)` instead.
+- Removed `INTENT_ACTION_BEACON_NOTIFICATION_OPENED` from the notificare-geo-beacons module. This intent was previously moved to the notificare-geo module.
+- Removed deprecated `Notificare.OnReadyListener`. Use the more complete `Notificare.Listener` instead.
+- Renamed `NotificarePushService` to `NotificareFirebaseMessagingService`.
+- Removed `isNotificareNotification` Kotlin extension.
+
 ## 4.0.0-beta.2
 
 - Changed the `subscriptionId` properties to a more robust data model
@@ -240,4 +271,4 @@ override fun onReady(application: NotificareApplication) {
 
 ## 3.0.0
 
-Please check our [migration guide](./MIGRATION.md) before adopting the v3.x generation.
+Please check our [migration guide](./MIGRATION-3.0.md) before adopting the v3.x generation.
