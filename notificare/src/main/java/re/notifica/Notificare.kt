@@ -404,7 +404,7 @@ public object Notificare {
             .responseDecodable(NotificareUploadResponse::class)
 
         val host = checkNotNull(servicesInfo).hosts.restApi
-        "$host/upload${response.filename}"
+        "https://$host/upload${response.filename}"
     }
 
     @InternalNotificareApi

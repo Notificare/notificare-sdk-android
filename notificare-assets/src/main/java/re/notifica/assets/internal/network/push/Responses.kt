@@ -28,7 +28,7 @@ internal data class FetchAssetsResponse(
                 key = key,
                 url = key?.let { key ->
                     val host = Notificare.servicesInfo?.hosts?.restApi ?: return@let null
-                    "$host/asset/file/$key"
+                    "https://$host/asset/file/$key"
                 },
                 button = button?.let {
                     NotificareAsset.Button(
