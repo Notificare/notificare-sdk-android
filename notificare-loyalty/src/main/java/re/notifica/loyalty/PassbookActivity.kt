@@ -136,7 +136,7 @@ public open class PassbookActivity : AppCompatActivity() {
 
     private fun showWebPassView(serial: String) {
         val host = Notificare.servicesInfo?.hosts?.restApi ?: return
-        val url = "$host/pass/web/$serial?showWebVersion=1"
+        val url = "https://$host/pass/web/$serial?showWebVersion=1"
 
         webView.loadUrl(url)
     }

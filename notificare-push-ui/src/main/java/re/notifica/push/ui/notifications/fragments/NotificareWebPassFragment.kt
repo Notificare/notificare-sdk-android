@@ -61,7 +61,7 @@ public class NotificareWebPassFragment : NotificationFragment() {
         val components = passUrlStr.split("/")
         val id = components.last()
 
-        val url = "$host/pass/web/$id?showWebVersion=1"
+        val url = "https://$host/pass/web/$id?showWebVersion=1"
 
         binding.webView.loadUrl(url)
     }
