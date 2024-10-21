@@ -25,11 +25,11 @@ import okhttp3.logging.HttpLoggingInterceptor
 import re.notifica.InternalNotificareApi
 import re.notifica.Notificare
 import re.notifica.NotificareCallback
-import re.notifica.internal.NotificareLogger
-import re.notifica.internal.ktx.toCallbackFunction
+import re.notifica.internal.logger
 import re.notifica.internal.moshi
 import re.notifica.internal.network.NetworkException
 import re.notifica.internal.network.NotificareHeadersInterceptor
+import re.notifica.utilities.coroutines.toCallbackFunction
 
 @InternalNotificareApi
 public typealias DecodableForFn<T> = (responseCode: Int) -> KClass<T>?
@@ -161,7 +161,6 @@ public class NotificareRequest private constructor(
     }
 
     public class Builder {
-
         private var baseUrl: String? = null
         private var url: String? = null
         private var queryItems = mutableMapOf<String, String?>()
@@ -273,21 +272,21 @@ public class NotificareRequest private constructor(
         }
 
         public fun response(callback: NotificareCallback<Response>): Unit =
-            toCallbackFunction(::response)(callback)
+            toCallbackFunction(::response)(callback::onSuccess, callback::onFailure)
 
         public suspend fun responseString(): String {
             return build().responseString()
         }
 
         public fun responseString(callback: NotificareCallback<String>): Unit =
-            toCallbackFunction(::responseString)(callback)
+            toCallbackFunction(::responseString)(callback::onSuccess, callback::onFailure)
 
         public suspend fun <T : Any> responseDecodable(klass: KClass<T>): T {
             return build().responseDecodable(klass)
         }
 
         public fun <T : Any> responseDecodable(klass: KClass<T>, callback: NotificareCallback<T>): Unit =
-            toCallbackFunction(suspend { responseDecodable(klass) })(callback)
+            toCallbackFunction(suspend { responseDecodable(klass) })(callback::onSuccess, callback::onFailure)
 
         public suspend fun <T : Any> responseDecodable(decodableFor: DecodableForFn<T>): T? {
             return build().responseDecodable(decodableFor)
@@ -330,7 +329,7 @@ public class NotificareRequest private constructor(
             val secret = Notificare.servicesInfo?.applicationSecret
 
             if (key == null || secret == null) {
-                NotificareLogger.warning("Notificare application authentication not configured.")
+                logger.warning("Notificare application authentication not configured.")
                 return null
             }
 

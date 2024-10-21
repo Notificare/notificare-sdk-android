@@ -3,10 +3,10 @@ package re.notifica.push
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import re.notifica.Notificare
-import re.notifica.internal.NotificareLogger
 import re.notifica.push.internal.NotificareNotificationRemoteMessage
 import re.notifica.push.internal.NotificareSystemRemoteMessage
 import re.notifica.push.internal.NotificareUnknownRemoteMessage
+import re.notifica.push.internal.logger
 import re.notifica.push.ktx.push
 import re.notifica.push.ktx.pushInternal
 import re.notifica.push.models.NotificareTransport
@@ -18,17 +18,17 @@ public open class NotificareFirebaseMessagingService : FirebaseMessagingService(
     }
 
     override fun onMessageReceived(message: RemoteMessage) {
-        NotificareLogger.debug("Received a remote notification from FCM.")
+        logger.debug("Received a remote notification from FCM.")
 
         if (Notificare.push().isNotificareNotification(message)) {
             val application = Notificare.application ?: run {
                 @Suppress("detekt:MaxLineLength")
-                NotificareLogger.warning("Notificare application unavailable. Ensure Notificare is configured during the application launch.")
+                logger.warning("Notificare application unavailable. Ensure Notificare is configured during the application launch.")
                 return
             }
 
             if (application.id != message.data["x-application"]) {
-                NotificareLogger.warning("Incoming notification originated from another application.")
+                logger.warning("Incoming notification originated from another application.")
                 return
             }
 

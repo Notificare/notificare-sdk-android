@@ -9,7 +9,7 @@ import kotlinx.parcelize.WriteWith
 import org.json.JSONObject
 import re.notifica.Notificare
 import re.notifica.internal.moshi
-import re.notifica.internal.parcelize.NotificareJsonObjectParceler
+import re.notifica.utilities.parcelize.JsonObjectParceler
 
 @Parcelize
 @JsonClass(generateAdapter = true)
@@ -18,7 +18,7 @@ public data class NotificareLiveActivityUpdate(
     val title: String?,
     val subtitle: String?,
     val message: String?,
-    val content: @WriteWith<NotificareJsonObjectParceler> JSONObject?,
+    val content: @WriteWith<JsonObjectParceler> JSONObject?,
     val final: Boolean,
     val dismissalDate: Date?,
     val timestamp: Date,

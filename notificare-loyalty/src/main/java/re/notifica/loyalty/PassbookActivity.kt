@@ -13,12 +13,12 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import re.notifica.Notificare
 import re.notifica.NotificareCallback
-import re.notifica.internal.NotificareLogger
-import re.notifica.internal.NotificareUtils
-import re.notifica.internal.ktx.parcelable
+import re.notifica.loyalty.internal.logger
+import re.notifica.utilities.parcel.parcelable
 import re.notifica.loyalty.ktx.INTENT_EXTRA_PASSBOOK
 import re.notifica.loyalty.ktx.loyalty
 import re.notifica.loyalty.models.NotificarePass
+import re.notifica.utilities.content.applicationName
 
 public open class PassbookActivity : AppCompatActivity() {
 
@@ -113,7 +113,7 @@ public open class PassbookActivity : AppCompatActivity() {
 
     protected open fun handlePassLoadingError(e: Exception) {
         AlertDialog.Builder(this)
-            .setTitle(NotificareUtils.applicationName)
+            .setTitle(applicationName)
             .setMessage(R.string.notificare_passbook_error_loading_pass)
             .setPositiveButton(R.string.notificare_dialog_ok_button, null)
             .setOnDismissListener { finish() }
@@ -136,7 +136,7 @@ public open class PassbookActivity : AppCompatActivity() {
 
     private fun showWebPassView(serial: String) {
         val host = Notificare.servicesInfo?.hosts?.restApi ?: return
-        val url = "$host/pass/web/$serial?showWebVersion=1"
+        val url = "https://$host/pass/web/$serial?showWebVersion=1"
 
         webView.loadUrl(url)
     }
@@ -150,7 +150,7 @@ public open class PassbookActivity : AppCompatActivity() {
             startActivity(intent)
             finish()
         } catch (e: ActivityNotFoundException) {
-            NotificareLogger.error("Unable to show the Google Pay pass.", e)
+            logger.error("Unable to show the Google Pay pass.", e)
             handlePassLoadingError(e)
         }
     }

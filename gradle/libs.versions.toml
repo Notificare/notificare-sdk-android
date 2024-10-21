@@ -1,6 +1,6 @@
 [versions]
 maven-artifactGroup = "re.notifica"
-maven-artifactVersion = "4.0.0-beta.2"
+maven-artifactVersion = "4.0.0"
 android-compileSdk = "34"
 android-buildTools = "34.0.0"
 android-minSdk = "23"
@@ -41,6 +41,8 @@ ktlint = "12.1.0"
 detekt = "1.23.7"
 junit = "4.13.2"
 robolectric = "4.12.2"
+mockito = "5.13.0"
+androidx-test-core = "1.6.1"
 auth0 = "2.11.0"
 retrofit = "2.11.0"
 
@@ -75,7 +77,6 @@ moshi-codegen = { module = "com.squareup.moshi:moshi-kotlin-codegen", version.re
 okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
 okhttp-loggingInterceptor = { module = "com.squareup.okhttp3:logging-interceptor", version.ref = "okhttp" }
 glide = { module = "com.github.bumptech.glide:glide", version.ref = "glide" }
-glide-compiler = { module = "com.github.bumptech.glide:compiler", version.ref = "glide" }
 glide-ksp = { module = "com.github.bumptech.glide:ksp", version.ref = "glide" }
 altbeacon = { module = "org.altbeacon:android-beacon-library", version.ref = "altbeacon"}
 google-firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "google-firebase" }
@@ -88,6 +89,8 @@ google-playServices-vision = { module = "com.google.android.gms:play-services-vi
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
 junit = { module = "junit:junit", version.ref = "junit"}
 robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
+mockito = { module = "org.mockito:mockito-core", version.ref = "mockito"}
+androidx-test-core = { module = "androidx.test:core", version.ref = "androidx-test-core"}
 auth0 = { module = "com.auth0.android:auth0", version.ref="auth0" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref="retrofit" }
 retrofit-scalars = { module = "com.squareup.retrofit2:converter-scalars", version.ref="retrofit" }

@@ -33,3 +33,12 @@ To install them, please run the following command in root folder:
 ```shell
 git config core.hooksPath .hooks
 ```
+
+#### Commitlint
+
+Our commit-msg hook uses Commitlint to ensure the messages of our commits are in order. 
+This hook requires the installation of Commitlint. To do so, global installation is recommended
+
+```shell
+npm install -g --save-dev @commitlint/{cli,config-conventional}
+```

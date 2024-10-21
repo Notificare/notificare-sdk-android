@@ -8,12 +8,13 @@ import com.google.android.gms.location.Geofence
 import com.google.android.gms.location.GeofencingEvent
 import com.google.android.gms.location.LocationResult
 import re.notifica.Notificare
+import re.notifica.geo.internal.logger
 import re.notifica.geo.ktx.INTENT_ACTION_INTERNAL_GEOFENCE_TRANSITION
 import re.notifica.geo.ktx.INTENT_ACTION_INTERNAL_LOCATION_UPDATED
 import re.notifica.geo.ktx.geoInternal
-import re.notifica.internal.NotificareLogger
 
 internal class LocationReceiver : BroadcastReceiver() {
+
     override fun onReceive(context: Context, intent: Intent) {
         when (intent.action) {
             Notificare.INTENT_ACTION_INTERNAL_LOCATION_UPDATED -> {
@@ -27,7 +28,7 @@ internal class LocationReceiver : BroadcastReceiver() {
             Notificare.INTENT_ACTION_INTERNAL_GEOFENCE_TRANSITION -> {
                 val event = GeofencingEvent.fromIntent(intent) ?: return
                 if (event.hasError()) {
-                    NotificareLogger.warning("Geofencing error: ${event.errorCode}")
+                    logger.warning("Geofencing error: ${event.errorCode}")
                     return
                 }
 
@@ -42,17 +43,17 @@ internal class LocationReceiver : BroadcastReceiver() {
     }
 
     private fun onLocationUpdated(location: Location) {
-        NotificareLogger.debug("Location updated = (${location.latitude}, ${location.longitude})")
+        logger.debug("Location updated = (${location.latitude}, ${location.longitude})")
         Notificare.geoInternal().handleLocationUpdate(location)
     }
 
     private fun onRegionEnter(geofences: List<Geofence>) {
-        NotificareLogger.debug("Received a region enter event for ${geofences.size} geofences.")
+        logger.debug("Received a region enter event for ${geofences.size} geofences.")
         Notificare.geoInternal().handleRegionEnter(geofences.map { it.requestId })
     }
 
     private fun onRegionExit(geofences: List<Geofence>) {
-        NotificareLogger.debug("Received a region exit event for ${geofences.size} geofences.")
+        logger.debug("Received a region exit event for ${geofences.size} geofences.")
         Notificare.geoInternal().handleRegionExit(geofences.map { it.requestId })
     }
 }

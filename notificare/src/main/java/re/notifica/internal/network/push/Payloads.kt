@@ -2,7 +2,7 @@ package re.notifica.internal.network.push
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
-import re.notifica.internal.moshi.EncodeNulls
+import re.notifica.utilities.moshi.EncodeNulls
 import re.notifica.models.NotificareDoNotDisturb
 import re.notifica.models.NotificareUserData
 

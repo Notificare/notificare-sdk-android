@@ -3,7 +3,6 @@ package re.notifica.push.internal
 import android.content.Intent
 import androidx.core.os.bundleOf
 import re.notifica.Notificare
-import re.notifica.internal.NotificareLogger
 import re.notifica.models.NotificareNotification
 import re.notifica.push.models.NotificareNotificationRemoteMessage
 
@@ -28,19 +27,19 @@ internal object InboxIntegration {
             Notificare.requireContext().sendBroadcast(intent)
         } catch (e: Exception) {
             if (e is ClassNotFoundException) {
-                NotificareLogger.debug(
+                logger.debug(
                     "The inbox module is not available. Please include it if you want to leverage the inbox capabilities."
                 )
                 return
             }
 
-            NotificareLogger.debug("Failed to send an inbox broadcast.", e)
+            logger.debug("Failed to send an inbox broadcast.", e)
         }
     }
 
     fun addItemToInbox(message: NotificareNotificationRemoteMessage, notification: NotificareNotification) {
         if (message.inboxItemId == null) {
-            NotificareLogger.debug(
+            logger.debug(
                 "Received a remote message without an inbox item id. Inbox functionality is disabled."
             )
             return
@@ -66,19 +65,19 @@ internal object InboxIntegration {
             Notificare.requireContext().sendBroadcast(intent)
         } catch (e: Exception) {
             if (e is ClassNotFoundException) {
-                NotificareLogger.debug(
+                logger.debug(
                     "The inbox module is not available. Please include it if you want to leverage the inbox capabilities."
                 )
                 return
             }
 
-            NotificareLogger.debug("Failed to send an inbox broadcast.", e)
+            logger.debug("Failed to send an inbox broadcast.", e)
         }
     }
 
     fun markItemAsRead(message: NotificareNotificationRemoteMessage) {
         if (message.inboxItemId == null) {
-            NotificareLogger.debug(
+            logger.debug(
                 "Received a remote message without an inbox item id. Inbox functionality is disabled."
             )
             return
@@ -95,13 +94,13 @@ internal object InboxIntegration {
             Notificare.requireContext().sendBroadcast(intent)
         } catch (e: Exception) {
             if (e is ClassNotFoundException) {
-                NotificareLogger.debug(
+                logger.debug(
                     "The inbox module is not available. Please include it if you want to leverage the inbox capabilities."
                 )
                 return
             }
 
-            NotificareLogger.debug("Failed to send an inbox broadcast.", e)
+            logger.debug("Failed to send an inbox broadcast.", e)
         }
     }
 }

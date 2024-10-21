@@ -12,10 +12,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.commit
 import re.notifica.Notificare
 import re.notifica.NotificareCallback
-import re.notifica.internal.NotificareLogger
-import re.notifica.internal.common.getEnum
-import re.notifica.internal.common.getEnumExtra
-import re.notifica.internal.common.putEnum
+import re.notifica.scannables.internal.logger
+import re.notifica.utilities.parcel.getEnum
+import re.notifica.utilities.parcel.getEnumExtra
+import re.notifica.utilities.parcel.putEnum
 import re.notifica.scannables.ui.QrCodeScannerFragment
 import re.notifica.scannables.ktx.scannables
 import re.notifica.scannables.ktx.scannablesImplementation
@@ -83,7 +83,7 @@ public class ScannableActivity : AppCompatActivity() {
         when (intent.action) {
             NfcAdapter.ACTION_NDEF_DISCOVERED -> {
                 val tag = intent.data ?: run {
-                    NotificareLogger.warning("Discovered a NFC tag but it did not contain a URL.")
+                    logger.warning("Discovered a NFC tag but it did not contain a URL.")
                     return
                 }
 
@@ -105,6 +105,7 @@ public class ScannableActivity : AppCompatActivity() {
                 onBackPressed()
                 true
             }
+
             else -> super.onOptionsItemSelected(item)
         }
     }
@@ -141,7 +142,7 @@ public class ScannableActivity : AppCompatActivity() {
 
             nfcAdapter?.enableForegroundDispatch(this, pendingIntent, null, null)
         } catch (e: Exception) {
-            NotificareLogger.error("Error enabling NFC foreground dispatch.", e)
+            logger.error("Error enabling NFC foreground dispatch.", e)
         }
     }
 
@@ -149,7 +150,7 @@ public class ScannableActivity : AppCompatActivity() {
         try {
             nfcAdapter?.disableForegroundDispatch(this)
         } catch (e: Exception) {
-            NotificareLogger.error("Error disabling NFC foreground dispatch.", e)
+            logger.error("Error disabling NFC foreground dispatch.", e)
         }
     }
 

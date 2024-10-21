@@ -48,6 +48,9 @@ android {
 dependencies {
     implementation(libs.kotlinx.coroutines)
 
+    // Notificare
+    implementation(project(":notificare-utilities"))
+
     // Android
     implementation(libs.androidx.activity)
     implementation(libs.androidx.core)
@@ -64,10 +67,6 @@ dependencies {
     // Moshi
     implementation(libs.bundles.moshi)
     ksp(libs.moshi.codegen)
-
-    // Glide
-    implementation(libs.glide)
-    ksp(libs.glide.compiler)
 
     // Tests
     testImplementation(libs.junit)

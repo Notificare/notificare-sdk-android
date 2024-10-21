@@ -6,10 +6,10 @@ import com.squareup.moshi.JsonReader
 import com.squareup.moshi.JsonWriter
 import com.squareup.moshi.ToJson
 import okhttp3.internal.closeQuietly
+import re.notifica.inbox.user.internal.logger
 import re.notifica.inbox.user.internal.responses.ConsumerUserInboxResponse
 import re.notifica.inbox.user.internal.responses.RawUserInboxResponse
 import re.notifica.inbox.user.models.NotificareUserInboxResponse
-import re.notifica.internal.NotificareLogger
 
 internal class UserInboxResponseAdapter {
 
@@ -36,7 +36,7 @@ internal class UserInboxResponseAdapter {
                 clonedReader.closeQuietly()
             }
         } catch (e: Exception) {
-            NotificareLogger.debug("Unable to parse user inbox response from the raw format.", e)
+            logger.debug("Unable to parse user inbox response from the raw format.", e)
         }
 
         try {
@@ -47,7 +47,7 @@ internal class UserInboxResponseAdapter {
                 items = consumer.items,
             )
         } catch (e: Exception) {
-            NotificareLogger.debug("Unable to parse user inbox response from the consumer format.", e)
+            logger.debug("Unable to parse user inbox response from the consumer format.", e)
             throw e
         }
     }

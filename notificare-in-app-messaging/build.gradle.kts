@@ -47,6 +47,7 @@ dependencies {
 
     // Notificare
     implementation(project(":notificare"))
+    implementation(project(":notificare-utilities"))
 
     // Android
     implementation(libs.androidx.appCompat)
@@ -65,7 +66,7 @@ dependencies {
 
     // Glide
     implementation(libs.glide)
-    ksp(libs.glide.compiler)
+    ksp(libs.glide.ksp)
 
     // Tests
     testImplementation(libs.junit)

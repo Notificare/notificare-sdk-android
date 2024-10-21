@@ -10,7 +10,7 @@ import org.json.JSONObject
 import re.notifica.Notificare
 import re.notifica.internal.moshi
 import re.notifica.internal.parcelize.NotificareExtraParceler
-import re.notifica.internal.parcelize.NotificationContentDataParceler
+import re.notifica.utilities.parcelize.NotificationContentDataParceler
 
 @Parcelize
 @JsonClass(generateAdapter = true)

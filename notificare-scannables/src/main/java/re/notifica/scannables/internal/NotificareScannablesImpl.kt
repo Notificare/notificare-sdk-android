@@ -10,11 +10,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import re.notifica.Notificare
 import re.notifica.NotificareCallback
-import re.notifica.internal.NotificareLogger
 import re.notifica.internal.NotificareModule
-import re.notifica.internal.common.onMainThread
-import re.notifica.internal.common.putEnumExtra
-import re.notifica.internal.ktx.toCallbackFunction
+import re.notifica.utilities.threading.onMainThread
+import re.notifica.utilities.parcel.putEnumExtra
+import re.notifica.utilities.coroutines.toCallbackFunction
 import re.notifica.internal.network.request.NotificareRequest
 import re.notifica.ktx.device
 import re.notifica.scannables.NotificareScannables
@@ -27,12 +26,16 @@ import java.lang.ref.WeakReference
 internal object NotificareScannablesImpl : NotificareModule(), NotificareScannables {
     private val listeners = mutableListOf<WeakReference<NotificareScannables.ScannableSessionListener>>()
 
+    override fun configure() {
+        logger.hasDebugLoggingEnabled = checkNotNull(Notificare.options).debugLoggingEnabled
+    }
+
     // region Notificare Scannables Module
 
     override val canStartNfcScannableSession: Boolean
         get() {
             if (!Notificare.isConfigured) {
-                NotificareLogger.warning(
+                logger.warning(
                     "You must configure Notificare before executing 'canStartNfcScannableSession'."
                 )
                 return false
@@ -91,7 +94,7 @@ internal object NotificareScannablesImpl : NotificareModule(), NotificareScannab
     }
 
     override fun fetch(tag: String, callback: NotificareCallback<NotificareScannable>): Unit =
-        toCallbackFunction(::fetch)(tag, callback)
+        toCallbackFunction(::fetch)(tag, callback::onSuccess, callback::onFailure)
 
     // endregion
 

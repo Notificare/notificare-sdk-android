@@ -6,7 +6,7 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.core.os.bundleOf
 import re.notifica.InternalNotificareApi
-import re.notifica.internal.ktx.applicationInfo
+import re.notifica.utilities.content.applicationInfo
 
 public class NotificareOptions internal constructor(context: Context) {
 

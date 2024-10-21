@@ -11,12 +11,8 @@ import re.notifica.NotificareDeviceModule
 import re.notifica.NotificareDeviceUnavailableException
 import re.notifica.NotificareNotReadyException
 import re.notifica.internal.NOTIFICARE_VERSION
-import re.notifica.internal.NotificareLogger
 import re.notifica.internal.NotificareModule
-import re.notifica.internal.NotificareUtils
-import re.notifica.internal.common.filterNotNull
-import re.notifica.internal.ktx.coroutineScope
-import re.notifica.internal.ktx.toCallbackFunction
+import re.notifica.internal.logger
 import re.notifica.internal.network.push.CreateDevicePayload
 import re.notifica.internal.network.push.CreateDeviceResponse
 import re.notifica.internal.network.push.DeviceDoNotDisturbResponse
@@ -39,6 +35,15 @@ import re.notifica.ktx.session
 import re.notifica.models.NotificareDevice
 import re.notifica.models.NotificareDoNotDisturb
 import re.notifica.models.NotificareUserData
+import re.notifica.utilities.collections.filterNotNull
+import re.notifica.utilities.content.applicationVersion
+import re.notifica.utilities.coroutines.notificareCoroutineScope
+import re.notifica.utilities.coroutines.toCallbackFunction
+import re.notifica.utilities.device.deviceLanguage
+import re.notifica.utilities.device.deviceRegion
+import re.notifica.utilities.device.deviceString
+import re.notifica.utilities.device.osVersion
+import re.notifica.utilities.device.timeZoneOffset
 import java.util.Locale
 
 @Keep
@@ -60,7 +65,7 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
         val storedDevice = storedDevice
 
         if (storedDevice == null) {
-            NotificareLogger.debug("New install detected")
+            logger.debug("New install detected")
 
             createDevice()
             hasPendingDeviceRegistrationEvent = true
@@ -72,7 +77,7 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
             Notificare.eventsImplementation().logApplicationInstall()
             Notificare.eventsImplementation().logApplicationRegistration()
         } else {
-            val isApplicationUpgrade = storedDevice.appVersion != NotificareUtils.applicationVersion
+            val isApplicationUpgrade = storedDevice.appVersion != Notificare.requireContext().applicationVersion
 
             updateDevice()
 
@@ -81,7 +86,7 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
 
             if (isApplicationUpgrade) {
                 // It's not the same version, let's log it as an upgrade.
-                NotificareLogger.debug("New version detected")
+                logger.debug("New version detected")
                 Notificare.eventsImplementation().logApplicationUpgrade()
             }
         }
@@ -126,7 +131,7 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
     )
     @Suppress("DEPRECATION")
     override fun register(userId: String?, userName: String?, callback: NotificareCallback<Unit>): Unit =
-        toCallbackFunction(::register)(userId, userName, callback)
+        toCallbackFunction(::register)(userId, userName, callback::onSuccess, callback::onFailure)
 
     override suspend fun updateUser(userId: String?, userName: String?): Unit = withContext(Dispatchers.IO) {
         checkPrerequisites()
@@ -151,7 +156,7 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
     }
 
     override fun updateUser(userId: String?, userName: String?, callback: NotificareCallback<Unit>): Unit =
-        toCallbackFunction(::updateUser)(userId, userName, callback)
+        toCallbackFunction(::updateUser)(userId, userName, callback::onSuccess, callback::onFailure)
 
     override suspend fun updatePreferredLanguage(preferredLanguage: String?): Unit = withContext(Dispatchers.IO) {
         checkPrerequisites()
@@ -173,8 +178,8 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
             Notificare.sharedPreferences.preferredLanguage = language
             Notificare.sharedPreferences.preferredRegion = region
         } else {
-            val language = NotificareUtils.deviceLanguage
-            val region = NotificareUtils.deviceRegion
+            val language = deviceLanguage
+            val region = deviceRegion
             updateLanguage(language, region)
 
             Notificare.sharedPreferences.preferredLanguage = null
@@ -183,7 +188,7 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
     }
 
     override fun updatePreferredLanguage(preferredLanguage: String?, callback: NotificareCallback<Unit>): Unit =
-        toCallbackFunction(::updatePreferredLanguage)(preferredLanguage, callback)
+        toCallbackFunction(::updatePreferredLanguage)(preferredLanguage, callback::onSuccess, callback::onFailure)
 
     override suspend fun fetchTags(): List<String> = withContext(Dispatchers.IO) {
         checkPrerequisites()
@@ -197,14 +202,14 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
     }
 
     override fun fetchTags(callback: NotificareCallback<List<String>>): Unit =
-        toCallbackFunction(::fetchTags)(callback)
+        toCallbackFunction(::fetchTags)(callback::onSuccess, callback::onFailure)
 
     override suspend fun addTag(tag: String): Unit = withContext(Dispatchers.IO) {
         addTags(listOf(tag))
     }
 
     override fun addTag(tag: String, callback: NotificareCallback<Unit>): Unit =
-        toCallbackFunction(::addTag)(tag, callback)
+        toCallbackFunction(::addTag)(tag, callback::onSuccess, callback::onFailure)
 
     override suspend fun addTags(tags: List<String>): Unit = withContext(Dispatchers.IO) {
         checkPrerequisites()
@@ -216,14 +221,14 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
     }
 
     override fun addTags(tags: List<String>, callback: NotificareCallback<Unit>): Unit =
-        toCallbackFunction(::addTags)(tags, callback)
+        toCallbackFunction(::addTags)(tags, callback::onSuccess, callback::onFailure)
 
     override suspend fun removeTag(tag: String): Unit = withContext(Dispatchers.IO) {
         removeTags(listOf(tag))
     }
 
     override fun removeTag(tag: String, callback: NotificareCallback<Unit>): Unit =
-        toCallbackFunction(::removeTag)(tag, callback)
+        toCallbackFunction(::removeTag)(tag, callback::onSuccess, callback::onFailure)
 
     override suspend fun removeTags(tags: List<String>): Unit = withContext(Dispatchers.IO) {
         checkPrerequisites()
@@ -235,7 +240,7 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
     }
 
     override fun removeTags(tags: List<String>, callback: NotificareCallback<Unit>): Unit =
-        toCallbackFunction(::removeTags)(tags, callback)
+        toCallbackFunction(::removeTags)(tags, callback::onSuccess, callback::onFailure)
 
     override suspend fun clearTags(): Unit = withContext(Dispatchers.IO) {
         checkPrerequisites()
@@ -247,7 +252,7 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
     }
 
     override fun clearTags(callback: NotificareCallback<Unit>): Unit =
-        toCallbackFunction(::clearTags)(callback)
+        toCallbackFunction(::clearTags)(callback::onSuccess, callback::onFailure)
 
     override suspend fun fetchDoNotDisturb(): NotificareDoNotDisturb? = withContext(Dispatchers.IO) {
         checkPrerequisites()
@@ -265,7 +270,7 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
     }
 
     override fun fetchDoNotDisturb(callback: NotificareCallback<NotificareDoNotDisturb?>): Unit =
-        toCallbackFunction(::fetchDoNotDisturb)(callback)
+        toCallbackFunction(::fetchDoNotDisturb)(callback::onSuccess, callback::onFailure)
 
     override suspend fun updateDoNotDisturb(dnd: NotificareDoNotDisturb): Unit = withContext(Dispatchers.IO) {
         checkPrerequisites()
@@ -285,7 +290,7 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
     }
 
     override fun updateDoNotDisturb(dnd: NotificareDoNotDisturb, callback: NotificareCallback<Unit>): Unit =
-        toCallbackFunction(::updateDoNotDisturb)(dnd, callback)
+        toCallbackFunction(::updateDoNotDisturb)(dnd, callback::onSuccess, callback::onFailure)
 
     override suspend fun clearDoNotDisturb(): Unit = withContext(Dispatchers.IO) {
         checkPrerequisites()
@@ -305,7 +310,7 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
     }
 
     override fun clearDoNotDisturb(callback: NotificareCallback<Unit>): Unit =
-        toCallbackFunction(::clearDoNotDisturb)(callback)
+        toCallbackFunction(::clearDoNotDisturb)(callback::onSuccess, callback::onFailure)
 
     override suspend fun fetchUserData(): NotificareUserData = withContext(Dispatchers.IO) {
         checkPrerequisites()
@@ -324,7 +329,7 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
     }
 
     override fun fetchUserData(callback: NotificareCallback<NotificareUserData>): Unit =
-        toCallbackFunction(::fetchUserData)(callback)
+        toCallbackFunction(::fetchUserData)(callback::onSuccess, callback::onFailure)
 
     override suspend fun updateUserData(userData: NotificareUserData): Unit = withContext(Dispatchers.IO) {
         checkPrerequisites()
@@ -344,7 +349,7 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
     }
 
     override fun updateUserData(userData: NotificareUserData, callback: NotificareCallback<Unit>): Unit =
-        toCallbackFunction(::updateUserData)(userData, callback)
+        toCallbackFunction(::updateUserData)(userData, callback::onSuccess, callback::onFailure)
 
     // endregion
 
@@ -367,7 +372,7 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
     @Throws
     private fun checkPrerequisites() {
         if (!Notificare.isReady) {
-            NotificareLogger.warning("Notificare is not ready yet.")
+            logger.warning("Notificare is not ready yet.")
             throw NotificareNotReadyException()
         }
     }
@@ -377,11 +382,11 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
             language = getDeviceLanguage(),
             region = getDeviceRegion(),
             platform = "Android",
-            osVersion = NotificareUtils.osVersion,
+            osVersion = osVersion,
             sdkVersion = NOTIFICARE_VERSION,
-            appVersion = NotificareUtils.applicationVersion,
-            deviceString = NotificareUtils.deviceString,
-            timeZoneOffset = NotificareUtils.timeZoneOffset,
+            appVersion = Notificare.requireContext().applicationVersion,
+            deviceString = deviceString,
+            timeZoneOffset = timeZoneOffset,
             backgroundAppRefresh = true,
         )
 
@@ -412,11 +417,11 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
             language = getDeviceLanguage(),
             region = getDeviceRegion(),
             platform = "Android",
-            osVersion = NotificareUtils.osVersion,
+            osVersion = osVersion,
             sdkVersion = NOTIFICARE_VERSION,
-            appVersion = NotificareUtils.applicationVersion,
-            deviceString = NotificareUtils.deviceString,
-            timeZoneOffset = NotificareUtils.timeZoneOffset,
+            appVersion = Notificare.requireContext().applicationVersion,
+            deviceString = deviceString,
+            timeZoneOffset = timeZoneOffset,
         )
 
         NotificareRequest.Builder()
@@ -442,7 +447,7 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
 
         if (currentDevice.isLongLived) return@withContext
 
-        NotificareLogger.info("Upgrading current device from legacy format.")
+        logger.info("Upgrading current device from legacy format.")
 
         val deviceId = currentDevice.id
         val transport = checkNotNull(currentDevice.transport)
@@ -473,7 +478,7 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
             }
 
         if (response != null) {
-            NotificareLogger.debug("New device identifier created.")
+            logger.debug("New device identifier created.")
         }
 
         storedDevice = StoredDevice(
@@ -493,15 +498,15 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
     }
 
     internal fun getDeviceLanguage(): String {
-        return Notificare.sharedPreferences.preferredLanguage ?: NotificareUtils.deviceLanguage
+        return Notificare.sharedPreferences.preferredLanguage ?: deviceLanguage
     }
 
     internal fun getDeviceRegion(): String {
-        return Notificare.sharedPreferences.preferredRegion ?: NotificareUtils.deviceRegion
+        return Notificare.sharedPreferences.preferredRegion ?: deviceRegion
     }
 
     internal fun registerTestDevice(nonce: String, callback: NotificareCallback<Unit>) {
-        Notificare.coroutineScope.launch {
+        notificareCoroutineScope.launch {
             withContext(Dispatchers.IO) {
                 try {
                     NotificareRequest.Builder()
@@ -554,7 +559,7 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
                 body = DeviceUpdateTimeZonePayload(
                     language = getDeviceLanguage(),
                     region = getDeviceRegion(),
-                    timeZoneOffset = NotificareUtils.timeZoneOffset,
+                    timeZoneOffset = timeZoneOffset,
                 ),
             )
             .response()

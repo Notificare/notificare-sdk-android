@@ -8,13 +8,13 @@ import android.widget.ImageView
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import re.notifica.Notificare
-import re.notifica.internal.NotificareUtils
-import re.notifica.internal.common.onMainThread
-import re.notifica.internal.ktx.parcelable
+import re.notifica.utilities.threading.onMainThread
+import re.notifica.utilities.parcel.parcelable
 import re.notifica.models.NotificareNotification
 import re.notifica.push.ui.databinding.NotificareNotificationImageFragmentBinding
 import re.notifica.push.ui.ktx.pushUIInternal
 import re.notifica.push.ui.notifications.fragments.base.NotificationFragment
+import re.notifica.utilities.image.loadImage
 
 public class NotificareImageFragment : NotificationFragment() {
 
@@ -83,7 +83,7 @@ public class NotificareImageFragment : NotificationFragment() {
         override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
             super.onViewCreated(view, savedInstanceState)
 
-            NotificareUtils.loadImage(content.data as String, view as ImageView)
+            loadImage(requireContext(), content.data as String, view as ImageView)
         }
 
         override fun onSaveInstanceState(outState: Bundle) {

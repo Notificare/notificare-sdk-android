@@ -14,11 +14,10 @@ import re.notifica.NotificareDeviceUnavailableException
 import re.notifica.NotificareEventsModule
 import re.notifica.NotificareInternalEventsModule
 import re.notifica.NotificareNotReadyException
-import re.notifica.internal.NotificareLogger
 import re.notifica.internal.NotificareModule
-import re.notifica.internal.NotificareUtils
-import re.notifica.internal.common.recoverable
-import re.notifica.internal.ktx.toCallbackFunction
+import re.notifica.internal.logger
+import re.notifica.utilities.networking.isRecoverable
+import re.notifica.utilities.coroutines.toCallbackFunction
 import re.notifica.internal.network.request.NotificareRequest
 import re.notifica.internal.storage.database.ktx.toEntity
 import re.notifica.internal.workers.ProcessEventsWorker
@@ -27,6 +26,9 @@ import re.notifica.ktx.session
 import re.notifica.models.NotificareDevice
 import re.notifica.models.NotificareEvent
 import re.notifica.models.NotificareEventData
+import re.notifica.utilities.content.applicationVersion
+import re.notifica.utilities.device.deviceString
+import re.notifica.utilities.device.osVersion
 
 private const val EVENT_APPLICATION_INSTALL = "re.notifica.event.application.Install"
 private const val EVENT_APPLICATION_REGISTRATION = "re.notifica.event.application.Registration"
@@ -69,7 +71,7 @@ internal object NotificareEventsModuleImpl :
     }
 
     override fun logApplicationException(throwable: Throwable, callback: NotificareCallback<Unit>): Unit =
-        toCallbackFunction(::logApplicationException)(throwable, callback)
+        toCallbackFunction(::logApplicationException)(throwable, callback::onSuccess, callback::onFailure)
 
     override suspend fun logNotificationOpen(id: String) {
         log(
@@ -80,7 +82,7 @@ internal object NotificareEventsModuleImpl :
     }
 
     override fun logNotificationOpen(id: String, callback: NotificareCallback<Unit>): Unit =
-        toCallbackFunction(::logNotificationOpen)(id, callback)
+        toCallbackFunction(::logNotificationOpen)(id, callback::onSuccess, callback::onFailure)
 
     override suspend fun logCustom(event: String, data: NotificareEventData?) {
         if (!Notificare.isReady) throw NotificareNotReadyException()
@@ -89,7 +91,7 @@ internal object NotificareEventsModuleImpl :
     }
 
     override fun logCustom(event: String, data: NotificareEventData?, callback: NotificareCallback<Unit>): Unit =
-        toCallbackFunction(::logCustom)(event, data, callback)
+        toCallbackFunction(::logCustom)(event, data, callback::onSuccess, callback::onFailure)
 
     // endregion
 
@@ -143,7 +145,7 @@ internal object NotificareEventsModuleImpl :
 
     internal suspend fun log(event: NotificareEvent): Unit = withContext(Dispatchers.IO) {
         if (!Notificare.isConfigured) {
-            NotificareLogger.debug("Notificare is not configured. Skipping event log...")
+            logger.debug("Notificare is not configured. Skipping event log...")
             return@withContext
         }
 
@@ -152,12 +154,12 @@ internal object NotificareEventsModuleImpl :
                 .post("/event", event)
                 .response()
 
-            NotificareLogger.info("Event '${event.type}' sent successfully.")
+            logger.info("Event '${event.type}' sent successfully.")
         } catch (e: Exception) {
-            NotificareLogger.warning("Failed to send the event: ${event.type}", e)
+            logger.warning("Failed to send the event: ${event.type}", e)
 
-            if (!discardableEvents.contains(event.type) && e.recoverable) {
-                NotificareLogger.info("Queuing event to be sent whenever possible.")
+            if (!discardableEvents.contains(event.type) && e.isRecoverable) {
+                logger.info("Queuing event to be sent whenever possible.")
 
                 Notificare.database.events().insert(event.toEntity())
                 scheduleUploadWorker()
@@ -170,7 +172,7 @@ internal object NotificareEventsModuleImpl :
     }
 
     private fun scheduleUploadWorker() {
-        NotificareLogger.debug("Scheduling a worker to process stored events when there's connectivity.")
+        logger.debug("Scheduling a worker to process stored events when there's connectivity.")
 
         WorkManager
             .getInstance(Notificare.requireContext())
@@ -199,10 +201,10 @@ internal object NotificareEventsModuleImpl :
             userId = device.userId,
             data = mapOf(
                 "platform" to "Android",
-                "osVersion" to NotificareUtils.osVersion,
-                "deviceString" to NotificareUtils.deviceString,
+                "osVersion" to osVersion,
+                "deviceString" to deviceString,
                 "sdkVersion" to Notificare.SDK_VERSION,
-                "appVersion" to NotificareUtils.applicationVersion,
+                "appVersion" to Notificare.requireContext().applicationVersion,
                 "timestamp" to timestamp.toString(),
                 "name" to throwable.message,
                 "reason" to throwable.cause?.toString(),

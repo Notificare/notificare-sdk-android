@@ -7,7 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.webkit.WebChromeClient
 import re.notifica.Notificare
-import re.notifica.internal.common.onMainThread
+import re.notifica.utilities.threading.onMainThread
 import re.notifica.models.NotificareNotification
 import re.notifica.push.ui.databinding.NotificareNotificationWebPassFragmentBinding
 import re.notifica.push.ui.ktx.pushUIInternal
@@ -61,7 +61,7 @@ public class NotificareWebPassFragment : NotificationFragment() {
         val components = passUrlStr.split("/")
         val id = components.last()
 
-        val url = "$host/pass/web/$id?showWebVersion=1"
+        val url = "https://$host/pass/web/$id?showWebVersion=1"
 
         binding.webView.loadUrl(url)
     }
