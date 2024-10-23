@@ -89,6 +89,8 @@ internal class MainFragment : BaseFragment(), Notificare.Listener {
 
     override fun onDestroy() {
         super.onDestroy()
+
+        Notificare.removeListener(this)
         lifecycle.removeObserver(viewModel)
     }
 
