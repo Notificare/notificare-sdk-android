@@ -13,7 +13,7 @@ plugins {
 }
 
 subprojects {
-    if (this.name != "sample") {
+    if (this.name != "sample" && this.name != "sample-user-inbox") {
 
         apply(plugin = "com.android.library")
         apply(plugin = "kotlin-android")

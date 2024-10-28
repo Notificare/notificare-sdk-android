@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <application
+        android:name=".MainApplication"
+        android:allowBackup="false"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.Sample">
+        <activity
+            android:name=".SampleActivity"
+            android:exported="true"
+            android:launchMode="singleTask"
+            android:theme="@style/Theme.Sample">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="re.notifica.intent.action.RemoteMessageOpened" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="re.notifica.intent.action.NotificationOpened" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="re.notifica.intent.action.ActionOpened" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="${applicationId}" />
+            </intent-filter>
+        </activity>
+
+        <receiver
+            android:name=".SamplePushIntentReceiver"
+            android:exported="false" />
+
+        <activity
+            android:name="re.notifica.push.ui.NotificationActivity"
+            android:theme="@style/Theme.App.Notificare.Translucent" />
+
+        <meta-data
+            android:name="re.notifica.debug_logging_enabled"
+            android:value="true" />
+
+        <meta-data
+            android:name="re.notifica.push.notification_small_icon"
+            android:resource="@drawable/ic_rocket_black_24dp" />
+
+        <meta-data
+            android:name="re.notifica.push.ui.show_notification_toasts"
+            android:value="true" />
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="${googleMapsApiKey}" />
+    </application>
+
+</manifest>

@@ -43,6 +43,8 @@ junit = "4.13.2"
 robolectric = "4.12.2"
 mockito = "5.13.0"
 androidx-test-core = "1.6.1"
+auth0 = "2.11.0"
+retrofit = "2.11.0"
 
 [libraries]
 kotlinx-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinx-coroutines" }
@@ -89,6 +91,9 @@ junit = { module = "junit:junit", version.ref = "junit"}
 robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
 mockito = { module = "org.mockito:mockito-core", version.ref = "mockito"}
 androidx-test-core = { module = "androidx.test:core", version.ref = "androidx-test-core"}
+auth0 = { module = "com.auth0.android:auth0", version.ref="auth0" }
+retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref="retrofit" }
+retrofit-scalars = { module = "com.squareup.retrofit2:converter-scalars", version.ref="retrofit" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "android-tools" }
@@ -105,3 +110,4 @@ androidx-lifecycle = ["androidx-lifecycle-livedata", "androidx-lifecycle-process
 androidx-room = ["androidx-room", "androidx-room-runtime"]
 moshi = ["moshi", "moshi-adapters"]
 okhttp = ["okhttp", "okhttp-loggingInterceptor"]
+retrofit = ["retrofit", "retrofit-scalars"]

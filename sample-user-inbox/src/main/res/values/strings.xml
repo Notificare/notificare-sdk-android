@@ -1,0 +1,55 @@
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+    <string name="app_name" translatable="false">Sample Inbox</string>
+    <string name="auth_scheme" translatable="false">auth.re.notifica.sample.user.inbox.app.dev</string>
+
+    <string name="sdk">SDK</string>
+
+    <string name="dialog_yes_button">Yes</string>
+    <string name="dialog_no_button">No</string>
+    <string name="dialog_ok_button">OK</string>
+    <string name="dialog_cancel_button">Cancel</string>
+
+    <string name="permission_notifications_rationale">Allow notifications in order to receive relevant content.</string>
+    <string name="permission_open_os_settings_rationale">Please provide relevant permission in order to activate this functionality.</string>
+
+    <string name="main_fragment_button_login">Login</string>
+    <string name="main_fragment_button_logout">Logout</string>
+
+    <string name="main_fragment_button_launch">Launch</string>
+    <string name="main_fragment_button_unlaunch">Unlaunch</string>
+
+    <string name="main_fragment_application_info_title">Application Info</string>
+    <string name="main_fragment_authentication_title">Authentication</string>
+    <string name="main_fragment_dnd_title">Do not disturb</string>
+    <string name="main_fragment_inbox_title">Inbox</string>
+    <string name="main_fragment_launch_flow_title">Launch Flow</string>
+    <string name="main_fragment_loyalty_title">Loyalty</string>
+    <string name="main_fragment_notifications_title">Notifications</string>
+    <string name="main_fragment_tags_title">Tags</string>
+    <string name="main_fragment_title">User Inbox</string>
+
+    <string name="main_fragment_allowed_ui">Allowed UI</string>
+    <string name="main_fragment_anonymous">Anonymous</string>
+    <string name="main_fragment_configured">Configured</string>
+    <string name="main_fragment_logged_in">Logged in</string>
+    <string name="main_fragment_dnd_end">To</string>
+    <string name="main_fragment_dnd_start">From</string>
+    <string name="main_fragment_enabled">Enabled</string>
+    <string name="main_fragment_fetch">Fetch</string>
+    <string name="main_fragment_permission">Permission</string>
+    <string name="main_fragment_ready">Ready</string>
+    <string name="main_fragment_token">Access Token</string>
+    <string name="main_fragment_device_registered">Device Registered</string>
+    <string name="main_fragment_name">Name</string>
+    <string name="main_fragment_identifier">Identifier</string>
+
+    <string name="inbox_empty_message">You have no notifications in your inbox.</string>
+    <string name="inbox_options_mark_all_as_read">Mark all as read</string>
+    <string name="inbox_options_mark_as_read">Mark 	as read</string>
+    <string name="inbox_options_open">Open</string>
+    <string name="inbox_options_refresh">Refresh</string>
+    <string name="inbox_options_remove_all">Remove all</string>
+    <string name="inbox_options_remove">Remove</string>
+    <string name="inbox_title">Inbox</string>
+
+</resources>
