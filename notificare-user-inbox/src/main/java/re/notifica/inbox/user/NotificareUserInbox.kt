@@ -36,13 +36,13 @@ public interface NotificareUserInbox {
      * Opens an inbox item and retrieves its associated notification.
      *
      * This is a suspending function that opens the provided [NotificareUserInboxItem] and returns the
-     * associated [NotificareNotification]. This operation marks the item as read and sends a notification
+     * associated [NotificareNotification]. This operation marks the item as read by sending a notification
      * open event.
      *
      * @param item The [NotificareUserInboxItem] to be opened.
      * @return The [NotificareNotification] associated with the opened inbox item.
      *
-     * @see NotificareUserInboxItem
+     * @see [NotificareUserInboxItem]
      * @see [NotificareNotification]
      */
     public suspend fun open(item: NotificareUserInboxItem): NotificareNotification
@@ -51,7 +51,7 @@ public interface NotificareUserInbox {
      * Opens an inbox item and retrieves its associated notification with a callback.
      *
      * This method opens the provided [NotificareUserInboxItem] and invokes the provided [NotificareCallback] with the
-     * associated [NotificareNotification]. This operation marks the item as read and sends a notification open event.
+     * associated [NotificareNotification]. This operation marks the item as read by sending a notification open event.
      *
      * @param item The [NotificareUserInboxItem] to be opened.
      * @param callback The [NotificareCallback] to be invoked with the [NotificareNotification] or an error.
@@ -69,7 +69,6 @@ public interface NotificareUserInbox {
      * @param item The [NotificareUserInboxItem] to mark as read.
      *
      * @see [NotificareUserInboxItem]
-     *
      */
     public suspend fun markAsRead(item: NotificareUserInboxItem)
 
@@ -82,7 +81,6 @@ public interface NotificareUserInbox {
      * @param item The [NotificareUserInboxItem] to mark as read.
      *
      * @see [NotificareUserInboxItem]
-     *
      */
     public fun markAsRead(item: NotificareUserInboxItem, callback: NotificareCallback<Unit>)
 

@@ -145,7 +145,7 @@ public object Notificare {
     /**
      * Configures Notificare with the application context using the services info in the provided configuration file.
      *
-     * This method initializes the SDK using the given [Context] and the services info in the provided
+     * This method initializes the SDK using the given context and the services info in the provided
      * `notificare-services.json` file, and prepares it for use.
      *
      * @param context The [Context] to use for configuration.
@@ -160,8 +160,8 @@ public object Notificare {
     /**
      * Configures Notificare with a specific application key and secret.
      *
-     * This method initializes the SDK using the given [Context] along with the provided [applicationKey] and
-     * [applicationSecret].
+     * This method initializes the SDK using the given context along with the provided application Key and
+     * application Secret.
      *
      * @param context The [Context] to use for configuration.
      * @param applicationKey The key for the Notificare application.
@@ -286,7 +286,7 @@ public object Notificare {
      * Launches the Notificare SDK, and all the additional available modules, with a callback.
      * This registers the device as a non-push device.
      *
-     * This method prepares the SDK for use and invokes the provided [callback] once the launch is complete.
+     * This method prepares the SDK for use and invokes the provided callback once the launch is complete.
      *
      * @param callback The callback to invoke when the launch is complete.
      */
@@ -300,7 +300,7 @@ public object Notificare {
      * the servers.
      *
      * This method suspends until the SDK has completed its shutdown process. It destroys all the device's data
-     * permanently
+     * permanently.
      */
     public suspend fun unlaunch(): Unit = withContext(Dispatchers.IO) {
         if (!isReady) {
@@ -407,7 +407,7 @@ public object Notificare {
     /**
      * Fetches the application metadata with a callback.
      *
-     * This method fetches the [NotificareApplication] metadata and invokes the provided [callback] once the data is
+     * This method fetches the [NotificareApplication] metadata and invokes the provided callback once the data is
      * available.
      *
      * @param callback The callback to invoke with the fetched application metadata.
@@ -437,7 +437,7 @@ public object Notificare {
     /**
      * Fetches a notification by its ID with a callback.
      *
-     * This method fetches the [NotificareNotification] and invokes the provided [callback] once the data is available.
+     * This method fetches the [NotificareNotification] and invokes the provided callback once the data is available.
      *
      * @param id The ID of the notification to fetch.
      * @param callback The callback to invoke with the fetched notification.
@@ -471,8 +471,8 @@ public object Notificare {
     /**
      * Fetches a dynamic link from a URI with a callback.
      *
-     * This method fetches the [NotificareDynamicLink] object based on the provided URI and invokes the provided [callback]
-     * once the data is available.
+     * This method fetches the [NotificareDynamicLink] object based on the provided URI and invokes the provided
+     * callback once the data is available.
      *
      * @param uri The URI to fetch the dynamic link from.
      * @param callback The callback to invoke with the fetched dynamic link.
@@ -484,8 +484,8 @@ public object Notificare {
     /**
      * Sends a reply to a notification action.
      *
-     * This method sends a reply to the specified [NotificareNotification] and [action], optionally including a message
-     * and media.
+     * This method sends a reply to the specified [NotificareNotification] and [NotificareNotification.Action],
+     * optionally including a message and media.
      *
      * @param notification The notification to reply to.
      * @param action The action associated with the reply.
@@ -587,7 +587,7 @@ public object Notificare {
     /**
      * Cancels a notification by its ID.
      *
-     * This method cancels a notification with the given [id], removing it from the notification center.
+     * This method cancels a notification with the given ID, removing it from the notification center.
      *
      * @param id The ID of the notification to cancel.
      */
@@ -644,10 +644,10 @@ public object Notificare {
     /**
      * Handles an intent to register the current device as a test device for Notificare services.
      *
-     * This method processes the provided [Intent] and attempts to register the device
+     * This method processes the provided intent and attempts to register the device
      * for testing purposes.
      *
-     * @param intent The [Intent] containing the test device nonce.
+     * @param intent The intent containing the test device nonce.
      * @return `true` if the device registration process was initiated, or `false` if no valid nonce was found in the
      * intent.
      */

@@ -9,7 +9,7 @@ public interface NotificareLoyalty {
     /**
      * Specifies the class responsible for displaying a Passbook-style activity.
      *
-     * This property should be set to a class that extends [PassbookActivity], which is used to present
+     * This property must be set to a class that extends [PassbookActivity], which is used to present
      * pass details to the user. When invoking the `present` method, this class will be used to handle
      * the UI and interaction for displaying the pass.
      */

@@ -11,7 +11,6 @@ public interface NotificareScannables {
      * Indicates whether an NFC scannable session can be started on the current device.
      *
      * Returns `true` if the device supports and is ready for starting an NFC scanning session, otherwise `false`.
-     * This checks for the presence of an NFC sensor and appropriate permissions.
      */
     public val canStartNfcScannableSession: Boolean
 
@@ -71,7 +70,6 @@ public interface NotificareScannables {
     /**
      * Fetches a scannable item by its tag.
      *
-     *
      * @param tag The tag identifier for the scannable item to be fetched.
      * @return The [NotificareScannable] object corresponding to the provided tag.
      *
@@ -81,7 +79,6 @@ public interface NotificareScannables {
 
     /**
      * Fetches a scannable item by its tag with a callback.
-     *
      *
      * @param tag The tag identifier for the scannable item to be fetched.
      * @param callback The [NotificareCallback] to be invoked with the result or error.

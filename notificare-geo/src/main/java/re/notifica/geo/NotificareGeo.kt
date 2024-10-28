@@ -59,6 +59,9 @@ public interface NotificareGeo {
      *
      * This method activates the system to start receiving location updates, monitoring regions, and detecting nearby
      * beacons.
+     * Starting with Android 12 (API level 31), this function requires the developer to explicitly request
+     * location access permission from the user. This request should be made before calling this method.
+     *
      */
     public fun enableLocationUpdates()
 

@@ -39,7 +39,7 @@ public interface NotificarePush {
     /**
      * Provides the current push subscription token.
      *
-     * This property returns the [NotificarePushSubscription] object containing the current user's push subscription
+     * This property returns the [NotificarePushSubscription] object containing the device's current push subscription
      * token, or `null` if no token is available.
      */
     public val subscription: NotificarePushSubscription?
@@ -47,16 +47,19 @@ public interface NotificarePush {
     /**
      * Provides a live data object for observing push subscription changes.
      *
-     * This property returns a [LiveData] object that can be observed to track changes to the user's push subscription
+     * This property returns a [LiveData] object that can be observed to track changes to the device's push subscription
      * token. It emits `null` when no token is available.
      */
     public val observableSubscription: LiveData<NotificarePushSubscription?>
 
     /**
-     * Indicates whether push-related UI is allowed.
+     * Indicates whether the device is capable of receiving remote notifications.
      *
-     * This property returns `true` if the UI related to push notifications is allowed (e.g., in-app message prompts),
-     * and `false` otherwise.
+     * This property returns `true` if the user has granted permission to receive push notifications and the device
+     * has successfully obtained a push token from the notification service. It reflects whether the UI can present
+     * notifications as allowed by the system and user settings.
+     *
+     * @return `true` if the device can receive remote notifications, `false` otherwise.
      */
     public val allowedUI: Boolean
 
@@ -73,6 +76,9 @@ public interface NotificarePush {
      *
      * This suspending function enables remote notifications for the application, allowing push notifications to be
      * received.
+     *
+     * **Note**: Starting with Android 13 (API level 33), this function requires the developer to explicitly request
+     * the `POST_NOTIFICATIONS` permission from the user.
      */
     public suspend fun enableRemoteNotifications()
 
@@ -149,7 +155,8 @@ public interface NotificarePush {
      * Registers a live activity with optional topics.
      *
      * This suspending function registers a live activity identified by the provided `activityId`, optionally
-     * subscribing to a list of topics. Live activities represent ongoing actions that can be updated in real-time.
+     * categorizing it with a list of topics.
+     * Live activities represent ongoing actions that can be updated in real-time.
      *
      * @param activityId The ID of the live activity to register.
      * @param topics A list of topics to subscribe to (optional).
@@ -159,8 +166,8 @@ public interface NotificarePush {
     /**
      * Registers a live activity with optional topics and a callback.
      *
-     * This method registers a live activity identified by the provided `activityId`, optionally subscribing to a list
-     * of topics.
+     * This method registers a live activity identified by the provided `activityId`, optionally categorizing it with a
+     * list of topics.
      * The provided [NotificareCallback] will be invoked upon success or failure.
      *
      * @param activityId The ID of the live activity to register.
