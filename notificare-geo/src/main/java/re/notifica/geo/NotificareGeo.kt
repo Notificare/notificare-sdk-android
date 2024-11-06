@@ -55,13 +55,18 @@ public interface NotificareGeo {
     public val enteredRegions: List<NotificareRegion>
 
     /**
-     * Enables location updates.
+     * Enables location updates, activating location tracking, region monitoring, and beacon detection.
      *
-     * This method activates the system to start receiving location updates, monitoring regions, and detecting nearby
-     * beacons.
-     * Starting with Android 12 (API level 31), this function requires the developer to explicitly request
-     * location access permission from the user. This request should be made before calling this method.
+     * **Note**: This function requires explicit location permissions from the user. Starting with Android 10
+     * (API level 29), background location access requires the ACCESS_BACKGROUND_LOCATION permission. For beacon
+     * detection, Bluetooth permissions are also necessary. Ensure all permissions are requested before invoking
+     * this method.
      *
+     * The behavior varies based on granted permissions:
+     * - **Permission denied**: Clears the device's location information.
+     * - **Foreground location permission granted**: Tracks location only while the app is in use.
+     * - **Background location permission granted**: Enables geofencing capabilities.
+     * - **Background location + Bluetooth permissions granted**: Enables geofencing and beacon detection.
      */
     public fun enableLocationUpdates()
 

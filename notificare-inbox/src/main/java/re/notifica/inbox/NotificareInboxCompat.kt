@@ -11,7 +11,7 @@ import re.notifica.models.NotificareNotification
 public object NotificareInboxCompat {
 
     /**
-     * A sorted set of all inbox items, sorted by the timestamp.
+     * A sorted set of all [NotificareInboxItem], sorted by the timestamp.
      */
     @JvmStatic
     public val items: SortedSet<NotificareInboxItem>
@@ -50,7 +50,7 @@ public object NotificareInboxCompat {
     /**
      * Opens a specified inbox item, marking it as read and returning the associated notification, with a callback.
      *
-     * @param item The inbox item to open.
+     * @param item The [NotificareInboxItem] to open.
      * @return The [NotificareNotification] associated with the inbox item.
      */
     @JvmStatic
@@ -61,7 +61,7 @@ public object NotificareInboxCompat {
     /**
      * Marks the specified inbox item as read, with a callback.
      *
-     * @param item The inbox item to mark as read.
+     * @param item The [NotificareInboxItem] to mark as read.
      */
     @JvmStatic
     public fun markAsRead(item: NotificareInboxItem, callback: NotificareCallback<Unit>) {
@@ -79,7 +79,7 @@ public object NotificareInboxCompat {
     /**
      * Permanently removes the specified inbox item from the inbox, with a callback.
      *
-     * @param item The inbox item to remove.
+     * @param item The [NotificareInboxItem] to remove.
      */
     @JvmStatic
     public fun remove(item: NotificareInboxItem, callback: NotificareCallback<Unit>) {

@@ -11,7 +11,7 @@ public interface NotificareAssets {
      * @param group The name of the group whose assets are to be fetched.
      * @return A list of [NotificareAsset] belonging to the specified group.
      *
-     * @see NotificareAsset for the model class representing an asset.
+     * @see [NotificareAsset] for the model class representing an asset.
      */
     public suspend fun fetch(group: String): List<NotificareAsset>
 
@@ -23,7 +23,7 @@ public interface NotificareAssets {
      *                 This will provide either the list of [NotificareAsset] on success
      *                 or an error on failure.
      *
-     * @see NotificareAsset for the model class representing an asset.
+     * @see [NotificareAsset] for the model class representing an asset.
      */
     public fun fetch(group: String, callback: NotificareCallback<List<NotificareAsset>>)
 }

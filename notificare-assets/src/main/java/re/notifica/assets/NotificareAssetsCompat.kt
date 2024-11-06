@@ -15,7 +15,7 @@ public object NotificareAssetsCompat {
      *                 This will provide either the list of [NotificareAsset] on success
      *                 or an error on failure.
      *
-     * @see NotificareAsset for the model class representing an asset.
+     * @see [NotificareAsset] for the model class representing an asset.
      */
     @JvmStatic
     public fun fetch(group: String, callback: NotificareCallback<List<NotificareAsset>>) {

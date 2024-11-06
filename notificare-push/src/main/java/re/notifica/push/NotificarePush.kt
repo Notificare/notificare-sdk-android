@@ -31,8 +31,7 @@ public interface NotificarePush {
     /**
      * Provides the current push transport information.
      *
-     * This property returns the current [NotificareTransport] being used for push notifications, or `null`
-     * if no transport is available.
+     * This property returns the [NotificareTransport] assigned to the device.
      */
     public val transport: NotificareTransport?
 
@@ -87,6 +86,9 @@ public interface NotificarePush {
      *
      * This method enables remote notifications for the application, allowing push notifications to be received.
      * The provided [NotificareCallback] will be invoked upon success or failure.
+     *
+     * **Note**: Starting with Android 13 (API level 33), this function requires the developer to explicitly request
+     * the `POST_NOTIFICATIONS` permission from the user.
      *
      * @param callback The [NotificareCallback] to be invoked when the operation completes.
      */

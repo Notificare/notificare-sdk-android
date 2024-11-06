@@ -9,7 +9,7 @@ import re.notifica.models.NotificareNotification
 public interface NotificareInbox {
 
     /**
-     * A sorted set of all inbox items, sorted by the timestamp.
+     * A sorted set of all [NotificareInboxItem], sorted by the timestamp.
      */
     public val items: SortedSet<NotificareInboxItem>
 
@@ -38,7 +38,7 @@ public interface NotificareInbox {
     /**
      * Opens a specified inbox item, marking it as read and returning the associated notification.
      *
-     * @param item The inbox item to open.
+     * @param item The [NotificareInboxItem] to open.
      * @return The [NotificareNotification] associated with the inbox item.
      */
     public suspend fun open(item: NotificareInboxItem): NotificareNotification
@@ -46,7 +46,7 @@ public interface NotificareInbox {
     /**
      * Opens a specified inbox item, marking it as read and returning the associated notification, with a callback.
      *
-     * @param item The inbox item to open.
+     * @param item The [NotificareInboxItem] to open.
      * @param callback A callback to handle the resulting [NotificareNotification] or any errors encountered.
      */
     public fun open(item: NotificareInboxItem, callback: NotificareCallback<NotificareNotification>)
@@ -54,14 +54,14 @@ public interface NotificareInbox {
     /**
      * Marks the specified inbox item as read.
      *
-     * @param item The inbox item to mark as read.
+     * @param item The [NotificareInboxItem] to mark as read.
      */
     public suspend fun markAsRead(item: NotificareInboxItem)
 
     /**
      * Marks the specified inbox item as read, with a callback.
      *
-     * @param item The inbox item to mark as read.
+     * @param item The [NotificareInboxItem] to mark as read.
      */
     public fun markAsRead(item: NotificareInboxItem, callback: NotificareCallback<Unit>)
 
@@ -78,14 +78,14 @@ public interface NotificareInbox {
     /**
      * Permanently removes the specified inbox item from the inbox.
      *
-     * @param item The inbox item to remove.
+     * @param item The [NotificareInboxItem] to remove.
      */
     public suspend fun remove(item: NotificareInboxItem)
 
     /**
      * Permanently removes the specified inbox item from the inbox, with a callback.
      *
-     * @param item The inbox item to remove.
+     * @param item The [NotificareInboxItem] to remove.
      */
     public fun remove(item: NotificareInboxItem, callback: NotificareCallback<Unit>)
 

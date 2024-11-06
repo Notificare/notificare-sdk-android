@@ -17,10 +17,10 @@ public interface NotificareScannables {
     /**
      * Adds a listener for scannable session events.
      *
-     * The listener will receive notifications about the scanning process, such as when a scannable item
+     * The listener will receive events about the scanning process, such as when a scannable item
      * is detected or when an error occurs during the session. The listener should implement [ScannableSessionListener].
      *
-     * @param listener The [ScannableSessionListener] to be added for session event notifications.
+     * @param listener The [ScannableSessionListener] to be added for session events.
      *
      * @see [ScannableSessionListener]
      */
@@ -29,7 +29,7 @@ public interface NotificareScannables {
     /**
      * Removes a previously added scannable session listener.
      *
-     * Use this method to stop receiving scannable session event notifications.
+     * Use this method to stop receiving scannable session events.
      *
      * @param listener The [ScannableSessionListener] to be removed.
      *

@@ -80,7 +80,7 @@ public interface NotificareInAppMessaging {
         }
 
         /**
-         * Called when an in-app message failed to be presented.
+         * Called when an in-app message failed to present.
          *
          * @param message The [NotificareInAppMessage] that failed to be presented.
          */

@@ -144,7 +144,8 @@ public open class NotificarePushIntentReceiver : BroadcastReceiver() {
     /**
      * Called when a push notification is received.
      *
-     * Override to handle incoming [NotificareNotification] messages, triggered by the specified [deliveryMechanism].
+     * Override to execute additional actions when a [NotificareNotification] is received as indicated by the specified
+     * [NotificareNotificationDeliveryMechanism].
      *
      * @param context The context in which the receiver is running.
      * @param notification The received [NotificareNotification] object.
@@ -163,8 +164,8 @@ public open class NotificarePushIntentReceiver : BroadcastReceiver() {
     /**
      * Called when a system notification is received.
      *
-     * Override to handle incoming [NotificareSystemNotification] messages, typically used for internal or
-     * system-related notifications managed by the SDK.
+     * Override to handle incoming [NotificareSystemNotification], typically used for internal or system-related
+     * notifications managed by the SDK.
      *
      * @param context The context in which the receiver is running.
      * @param notification The received [NotificareSystemNotification].

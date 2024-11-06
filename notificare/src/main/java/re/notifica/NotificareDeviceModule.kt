@@ -19,8 +19,6 @@ public interface NotificareDeviceModule {
     /**
      * Registers a user for the device.
      *
-     * To modify a single user parameter (e.g., only the `userId` or `userName`), invoke this function with the
-     * parameter you intend to update, setting the other parameter to `null` to retain its existing value.
      * To register the device anonymously, set both `userId` and `userName` to `null`.
      *
      * @param userId Optional user identifier.
@@ -35,8 +33,6 @@ public interface NotificareDeviceModule {
     /**
      * Registers the device with an associated user, with a callback.
      *
-     * To modify a single user parameter (e.g., only the `userId` or `userName`), invoke this function with the
-     * parameter you intend to update, setting the other parameter to `null` to retain its existing value.
      * To register the device anonymously, set both `userId` and `userName` to `null`.
      *
      * @param userId Optional unique identifier for the user.
@@ -52,8 +48,6 @@ public interface NotificareDeviceModule {
     /**
      * Updates the user information for the device.
      *
-     * To modify a single user parameter (e.g., only the `userId` or `userName`), invoke this function with the
-     * parameter you intend to update, setting the other parameter to `null` to retain its existing value.
      * To register the device anonymously, set both `userId` and `userName` to `null`.
      *
      * @param userId Optional user identifier.
@@ -64,8 +58,6 @@ public interface NotificareDeviceModule {
     /**
      * Updates the user information for the device, with a callback.
      *
-     * To modify a single user parameter (e.g., only the `userId` or `userName`), invoke this function with the
-     * parameter you intend to update, setting the other parameter to `null` to retain its existing value.
      * To register the device anonymously, set both `userId` and `userName` to `null`.
      *
      * @param userId Optional user identifier.

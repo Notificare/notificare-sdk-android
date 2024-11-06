@@ -93,7 +93,7 @@ public interface NotificarePushUI {
         /**
          * Called when a notification has been presented.
          *
-         * This method is triggered after the notification has been shown to the user.
+         * This method is triggered when the notification has been shown to the user.
          * Override this method to handle any post-presentation logic.
          *
          * @param notification The [NotificareNotification] that was presented.
