@@ -11,7 +11,7 @@ public object NotificareScannablesCompat {
     /**
      * Indicates whether an NFC scannable session can be started on the current device.
      *
-     * Returns `true` if the device supports and is ready for starting an NFC scanning session, otherwise `false`.
+     * Returns `true` if the device supports NFC scanning, otherwise `false`.
      */
     @JvmStatic
     public val canStartNfcScannableSession: Boolean

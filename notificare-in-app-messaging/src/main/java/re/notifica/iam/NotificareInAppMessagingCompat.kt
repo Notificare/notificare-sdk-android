@@ -29,7 +29,7 @@ public object NotificareInAppMessagingCompat {
      *
      * @param suppressed Set to `true` to suppress in-app messages, or `false` to stop suppressing them.
      * @param evaluateContext Set to `true` to re-evaluate the foreground context when stopping in-app message
-     * suppression,
+     * suppression.
      */
     @JvmStatic
     public fun setMessagesSuppressed(suppressed: Boolean, evaluateContext: Boolean) {

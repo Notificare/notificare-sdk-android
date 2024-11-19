@@ -125,8 +125,7 @@ public open class NotificarePushIntentReceiver : BroadcastReceiver() {
     /**
      * Called when the device's push token changes.
      *
-     * This method is deprecated in favor of [onSubscriptionChanged]. Override to handle token changes for
-     * compatibility with older implementations.
+     * This method is deprecated in favor of [onSubscriptionChanged]. Override to handle token changes.
      *
      * @param context The context in which the receiver is running.
      * @param token The updated push token.
@@ -162,10 +161,10 @@ public open class NotificarePushIntentReceiver : BroadcastReceiver() {
     }
 
     /**
-     * Called when a system notification is received.
+     * Called when a custom system notification is received.
      *
-     * Override to handle incoming [NotificareSystemNotification], typically used for internal or system-related
-     * notifications managed by the SDK.
+     * Override to perform additional actions within the app when receiving custom [NotificareSystemNotification], such
+     * as performing maintenance or app updates.
      *
      * @param context The context in which the receiver is running.
      * @param notification The received [NotificareSystemNotification].
@@ -177,10 +176,10 @@ public open class NotificarePushIntentReceiver : BroadcastReceiver() {
     }
 
     /**
-     * Called when an unknown type of notification is received.
+     * Called when an unknown notification is received.
      *
-     * Override to handle notifications that do not match predefined types. This can be useful for processing
-     * custom or unsupported notification formats.
+     * Override this method to perform additional actions when receiving notifications from other providers. This can
+     * be useful for processing custom or unsupported notification formats.
      *
      * @param context The context in which the receiver is running.
      * @param notification The received [NotificareUnknownNotification].
@@ -209,8 +208,7 @@ public open class NotificarePushIntentReceiver : BroadcastReceiver() {
     /**
      * Called when a push notification action is opened by the user.
      *
-     * Override to handle specific actions associated with a [NotificareNotification], such as custom actions
-     * or URL redirections within the app.
+     * Override to handle a specific action associated with a [NotificareNotification].
      *
      * @param context The context in which the receiver is running.
      * @param notification The [NotificareNotification] containing the action.
@@ -230,7 +228,6 @@ public open class NotificarePushIntentReceiver : BroadcastReceiver() {
      * Called when a live activity update is received.
      *
      * Override to handle updates to live activities, represented by the [NotificareLiveActivityUpdate].
-     * This can include changes in ongoing activities that are dynamically updated.
      *
      * @param context The context in which the receiver is running.
      * @param update The received [NotificareLiveActivityUpdate].

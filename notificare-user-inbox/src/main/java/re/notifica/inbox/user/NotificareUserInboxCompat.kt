@@ -28,7 +28,7 @@ public object NotificareUserInboxCompat {
     /**
      * Parses a [JSONObject] to produce a [NotificareUserInboxResponse].
      *
-     * This method takes a [JSONObject] and converts it into a structured [NotificareUserInboxResponse]
+     * This method takes a [JSONObject] and converts it into a structured [NotificareUserInboxResponse].
      *
      * @param json The [JSONObject] representing the user inbox response.
      * @return A [NotificareUserInboxResponse] object parsed from the provided JSON object.
@@ -44,7 +44,7 @@ public object NotificareUserInboxCompat {
      * Opens an inbox item and retrieves its associated notification with a callback.
      *
      * This method opens the provided [NotificareUserInboxItem] and invokes the provided [NotificareCallback] with the
-     * associated [NotificareNotification]. This operation marks the item as read by sending a notification open event.
+     * associated [NotificareNotification]. This operation marks the item as read.
      *
      * @param item The [NotificareUserInboxItem] to be opened.
      * @param callback The [NotificareCallback] to be invoked with the [NotificareNotification] or an error.

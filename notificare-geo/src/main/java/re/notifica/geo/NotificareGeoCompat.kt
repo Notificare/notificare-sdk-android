@@ -74,8 +74,7 @@ public object NotificareGeoCompat {
     /**
      * Indicates whether location services are enabled.
      *
-     * This property returns `true` if the location services are enabled and accessible by the application, and `false`
-     * otherwise.
+     * This property returns `true` if the location services are enabled by the application, and `false` otherwise.
      */
     @JvmStatic
     public val hasLocationServicesEnabled: Boolean

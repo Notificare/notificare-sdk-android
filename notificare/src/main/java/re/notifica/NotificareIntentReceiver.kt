@@ -66,9 +66,9 @@ public open class NotificareIntentReceiver : BroadcastReceiver() {
     /**
      * Called when the device has been successfully registered with the Notificare platform.
      *
-     * This method is triggered after the device has been registered, making it eligible to receive notifications
-     * and participate in device-specific interactions. Override this method to handle registration events, such as
-     * storing device data or updating the UI.
+     * This method is triggered once after the device has been registered, and will only be triggered again when a new
+     * device is created after an unlaunch() is called.
+     * Override this method to perform additional actions, such as updating user data or updating device attributes.
      *
      * @param context The context in which the receiver is running.
      * @param device The registered [NotificareDevice] instance representing the device's registration details.

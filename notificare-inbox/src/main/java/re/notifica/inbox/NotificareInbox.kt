@@ -19,13 +19,13 @@ public interface NotificareInbox {
     public val badge: Int
 
     /**
-     * A [LiveData] object observing changes to inbox items, suitable for real-time UI updates to reflect inbox state
-     * changes.
+     * A [LiveData] object for observing changes to inbox items, suitable for real-time UI updates to reflect inbox
+     * state changes.
      */
     public val observableItems: LiveData<SortedSet<NotificareInboxItem>>
 
     /**
-     * A [LiveData] object observing changes to the badge count, providing real-time updates when the unread count
+     * A [LiveData] object for observing changes to the badge count, providing real-time updates when the unread count
      * changes.
      */
     public val observableBadge: LiveData<Int>

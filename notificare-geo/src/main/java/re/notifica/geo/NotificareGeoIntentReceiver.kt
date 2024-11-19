@@ -88,8 +88,8 @@ public open class NotificareGeoIntentReceiver : BroadcastReceiver() {
     /**
      * Called when the device's location is updated.
      *
-     * This method provides the latest [NotificareLocation] for the device. Override to handle location updates,
-     * such as updating a map or notifying the user of location-based events.
+     * This method is triggered when receiving a new [NotificareLocation] for the device. Override to receive location
+     * updates and perform additional actions, such as updating a map or notifying the user of location-based events.
      *
      * @param context The context in which the receiver is running.
      * @param location The updated [NotificareLocation] object representing the device's current location.
@@ -103,8 +103,8 @@ public open class NotificareGeoIntentReceiver : BroadcastReceiver() {
     /**
      * Called when the device enters a monitored region.
      *
-     * This method is triggered upon entering a predefined [NotificareRegion]. Override to handle entry events,
-     * such as starting location-based services or updating the app state.
+     * This method is triggered upon entering a predefined [NotificareRegion]. Override to receive region entry events,
+     * and perform additional actions.
      *
      * @param context The context in which the receiver is running.
      * @param region The [NotificareRegion] the device has entered.
@@ -118,8 +118,8 @@ public open class NotificareGeoIntentReceiver : BroadcastReceiver() {
     /**
      * Called when the device exits a monitored region.
      *
-     * This method is triggered upon leaving a predefined [NotificareRegion]. Override to handle exit events,
-     * such as stopping location-based services or logging transitions.
+     * This method is triggered upon leaving a predefined [NotificareRegion]. Override to receive exit events and
+     * perform additional actions.
      *
      * @param context The context in which the receiver is running.
      * @param region The [NotificareRegion] the device has exited.
@@ -131,8 +131,9 @@ public open class NotificareGeoIntentReceiver : BroadcastReceiver() {
     /**
      * Called when the device detects a nearby beacon and enters its proximity.
      *
-     * This method is triggered when the device enters the range of a [NotificareBeacon]. Override to handle
-     * beacon proximity entry events, such as triggering beacon-based notifications or app actions.
+     * This method is triggered when the device enters the range of a [NotificareBeacon]. Override to receive beacon
+     * proximity entry events and perform additional actions, such as triggering beacon-based notifications or
+     * app actions.
      *
      * @param context The context in which the receiver is running.
      * @param beacon The [NotificareBeacon] that the device has entered.
@@ -146,8 +147,9 @@ public open class NotificareGeoIntentReceiver : BroadcastReceiver() {
     /**
      * Called when the device exits the proximity range of a beacon.
      *
-     * This method is triggered when the device leaves the range of a [NotificareBeacon]. Override to handle
-     * beacon proximity exit events, such as stopping beacon-based interactions or logging exit data.
+     * This method is triggered when the device leaves the range of a [NotificareBeacon]. Override to receive beacon
+     * proximity exit events and perform additional actions, such as stopping beacon-based interactions or logging exit
+     * data.
      *
      * @param context The context in which the receiver is running.
      * @param beacon The [NotificareBeacon] that the device has exited.
@@ -160,7 +162,8 @@ public open class NotificareGeoIntentReceiver : BroadcastReceiver() {
      * Called when a range of beacons is detected within a specified region.
      *
      * This method provides a list of [NotificareBeacon] instances within a [NotificareRegion]. Override to handle
-     * ranged beacons, such as updating a list of nearby beacons or performing proximity-based actions.
+     * ranged beacons and perform additional actions, such as updating a list of nearby beacons or performing
+     * proximity-based actions.
      *
      * @param context The context in which the receiver is running.
      * @param region The [NotificareRegion] within which the beacons were ranged.

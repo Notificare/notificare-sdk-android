@@ -290,6 +290,7 @@ public object Notificare {
 
     /**
      * Unlaunches the Notificare SDK.
+     *
      * This method shuts down the SDK, removing all data, both locally and remotely in
      * the servers. It destroys all the device's data permanently.
      */
