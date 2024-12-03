@@ -59,7 +59,7 @@ internal object NotificareInAppMessagingImpl : NotificareModule(), NotificareInA
     override var hasMessagesSuppressed: Boolean = false
 
     override fun setMessagesSuppressed(suppressed: Boolean, evaluateContext: Boolean) {
-        if (suppressed == hasMessagesSuppressed) return
+        if (hasMessagesSuppressed == suppressed) return
 
         hasMessagesSuppressed = suppressed
 
