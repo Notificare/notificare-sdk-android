@@ -65,6 +65,8 @@ internal object NotificareInAppMessagingImpl : NotificareModule(), NotificareInA
 
         if (suppressed) {
             if (delayedMessageJob != null) {
+                logger.info("Clearing delayed in-app message from being presented when suppressed.")
+
                 delayedMessageJob?.cancel()
                 delayedMessageJob = null
             }
