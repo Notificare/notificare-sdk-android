@@ -73,6 +73,8 @@ internal object NotificareUserInboxImpl : NotificareModule(), NotificareUserInbo
         checkPrerequisites()
 
         Notificare.events().logNotificationOpen(item.notification.id)
+
+        Notificare.removeNotificationFromNotificationCenter(item.notification)
     }
 
     override fun markAsRead(
@@ -84,6 +86,8 @@ internal object NotificareUserInboxImpl : NotificareModule(), NotificareUserInbo
         checkPrerequisites()
 
         removeUserInboxItem(item)
+
+        Notificare.removeNotificationFromNotificationCenter(item.notification)
     }
 
     override fun remove(
