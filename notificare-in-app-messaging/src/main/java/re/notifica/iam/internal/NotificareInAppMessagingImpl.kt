@@ -59,12 +59,20 @@ internal object NotificareInAppMessagingImpl : NotificareModule(), NotificareInA
     override var hasMessagesSuppressed: Boolean = false
 
     override fun setMessagesSuppressed(suppressed: Boolean, evaluateContext: Boolean) {
-        val suppressChanged = suppressed != hasMessagesSuppressed
-        val canEvaluate = evaluateContext && suppressChanged && !suppressed
+        if (suppressed == hasMessagesSuppressed) return
 
         hasMessagesSuppressed = suppressed
 
-        if (canEvaluate) {
+        if (suppressed) {
+            if (delayedMessageJob != null) {
+                delayedMessageJob?.cancel()
+                delayedMessageJob = null
+            }
+
+            return
+        }
+
+        if (evaluateContext) {
             evaluateContext(ApplicationContext.FOREGROUND)
         }
     }
