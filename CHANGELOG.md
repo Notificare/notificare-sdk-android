@@ -1,5 +1,12 @@
 # CHANGELOG
 
+## Upcoming Release
+
+- Add documentation to public methods
+- Remove User Inbox messages from the notification center when appropriate
+- Cancel in-app message job immediately upon being suppressed
+- Fix missing `onMessageFinishedPresenting` event when an in-app message action is executed
+
 ## 4.0.0
 
 - Device identifiers become long-lived
