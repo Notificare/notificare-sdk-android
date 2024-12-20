@@ -137,6 +137,9 @@ public abstract class InAppMessagingBaseFragment : Fragment() {
                         it.get()?.onActionExecuted(message, action)
                     }
                 }
+
+                activity?.finish()
+                NotificareImageCache.clear()
             } catch (e: Exception) {
                 logger.warning("Could not find an activity capable of opening the URL.", e)
 
@@ -145,9 +148,9 @@ public abstract class InAppMessagingBaseFragment : Fragment() {
                         it.get()?.onActionFailedToExecute(message, action, e)
                     }
                 }
-            }
 
-            dismiss()
+                dismiss()
+            }
         }
     }
 
