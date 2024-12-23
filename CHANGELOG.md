@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## Upcoming Release
+## 4.0.1
 
 - Add documentation to public methods
 - Remove User Inbox messages from the notification center when appropriate
