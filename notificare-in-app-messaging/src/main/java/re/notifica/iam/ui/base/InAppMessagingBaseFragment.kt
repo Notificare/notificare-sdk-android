@@ -81,14 +81,21 @@ public abstract class InAppMessagingBaseFragment : Fragment() {
         animatedView.animation = animation
     }
 
-    protected fun dismiss() {
-        animate(
-            transition = Transition.EXIT,
-            onAnimationFinished = {
-                activity?.finish()
-                NotificareImageCache.clear()
-            }
-        )
+    protected fun dismiss(animated: Boolean = true) {
+        if (animated) {
+            animate(
+                transition = Transition.EXIT,
+                onAnimationFinished = {
+                    activity?.finish()
+                    NotificareImageCache.clear()
+                }
+            )
+
+            return
+        }
+
+        activity?.finish()
+        NotificareImageCache.clear()
     }
 
     protected fun handleActionClicked(actionType: NotificareInAppMessage.ActionType) {
@@ -138,8 +145,7 @@ public abstract class InAppMessagingBaseFragment : Fragment() {
                     }
                 }
 
-                activity?.finish()
-                NotificareImageCache.clear()
+                dismiss(animated = false)
             } catch (e: Exception) {
                 logger.warning("Could not find an activity capable of opening the URL.", e)
 
