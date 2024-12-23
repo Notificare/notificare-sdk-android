@@ -88,17 +88,41 @@ public object Notificare {
 
     // region Public API
 
+    /**
+     * Specifies the intent receiver class for handling general Notificare intents.
+     *
+     * This property defines the class that will receive and process intents related to Notificare services.
+     * The class must extend [NotificareIntentReceiver].
+     */
     @JvmStatic
     public var intentReceiver: Class<out NotificareIntentReceiver> = NotificareIntentReceiver::class.java
 
+    /**
+     * Indicates whether Notificare has been configured.
+     *
+     * This property returns `true` if Notificare is successfully configured, and `false` otherwise.
+     */
     @JvmStatic
     public val isConfigured: Boolean
         get() = state >= NotificareLaunchState.CONFIGURED
 
+    /**
+     * Indicates whether Notificare is ready.
+     *
+     * This property returns `true` once the SDK has completed the initialization process and is ready for use.
+     */
     @JvmStatic
     public val isReady: Boolean
         get() = state == NotificareLaunchState.READY
 
+    /**
+     * Provides the current application metadata, if available.
+     *
+     * This property returns the [NotificareApplication] object representing the configured application,
+     * or `null` if the application is not yet available.
+     *
+     * @see [NotificareApplication]
+     */
     @JvmStatic
     public var application: NotificareApplication?
         get() {
@@ -117,6 +141,14 @@ public object Notificare {
             }
         }
 
+    /**
+     * Configures Notificare with the application context using the services info in the provided configuration file.
+     *
+     * This method configures the SDK using the given context and the services info in the provided
+     * `notificare-services.json` file, and prepares it for use.
+     *
+     * @param context The [Context] to use for configuration.
+     */
     @JvmStatic
     public fun configure(context: Context) {
         val servicesInfo = loadServicesInfoFromResources(context)
@@ -124,6 +156,16 @@ public object Notificare {
         configure(context, servicesInfo)
     }
 
+    /**
+     * Configures Notificare with a specific application key and secret.
+     *
+     * This method configures the SDK using the given context along with the provided application key and
+     * application secret, and prepares it for use.
+     *
+     * @param context The [Context] to use for configuration.
+     * @param applicationKey The key for the Notificare application.
+     * @param applicationSecret The secret for the Notificare application.
+     */
     @JvmStatic
     public fun configure(context: Context, applicationKey: String, applicationSecret: String) {
         val servicesInfo = NotificareServicesInfo(
@@ -134,11 +176,22 @@ public object Notificare {
         configure(context, servicesInfo)
     }
 
+    /**
+     * Returns the application context used by Notificare.
+     *
+     * This method throws an exception if Notificare is not properly configured.
+     *
+     * @throws IllegalStateException if Notificare is not configured.
+     * @return The [Context] used by Notificare.
+     */
     @JvmStatic
     public fun requireContext(): Context {
         return context?.get() ?: throw IllegalStateException("Cannot find context for Notificare.")
     }
 
+    /**
+     * Launches the Notificare SDK, and all the additional available modules, preparing them for use.
+     */
     public suspend fun launch(): Unit = withContext(Dispatchers.IO) {
         if (state == NotificareLaunchState.NONE) {
             logger.warning("Notificare.configure() has never been called. Cannot launch.")
@@ -225,11 +278,22 @@ public object Notificare {
         }
     }
 
+    /**
+     * Launches the Notificare SDK, and all the additional available modules, with a callback.
+     *
+     * @param callback The callback to invoke when the launch is complete.
+     */
     @JvmStatic
     public fun launch(
         callback: NotificareCallback<Unit>,
     ): Unit = toCallbackFunction(::launch)(callback::onSuccess, callback::onFailure)
 
+    /**
+     * Unlaunches the Notificare SDK.
+     *
+     * This method shuts down the SDK, removing all data, both locally and remotely in
+     * the servers. It destroys all the device's data permanently.
+     */
     public suspend fun unlaunch(): Unit = withContext(Dispatchers.IO) {
         if (!isReady) {
             logger.warning("Cannot un-launch Notificare before it has been launched.")
@@ -269,11 +333,27 @@ public object Notificare {
         }
     }
 
+    /**
+     * Unlaunches the Notificare SDK with a callback.
+     *
+     * This method shuts down the SDK and invokes the provided [callback] once the shutdown is complete. It destroys all
+     * the device's data permanently.
+     *
+     * @param callback The callback to invoke when the SDK is unlaunched.
+     */
     @JvmStatic
     public fun unlaunch(
         callback: NotificareCallback<Unit>,
     ): Unit = toCallbackFunction(::unlaunch)(callback::onSuccess, callback::onFailure)
 
+    /**
+     * Registers a listener to receive SDK lifecycle events.
+     *
+     * This method adds a [Listener] to receive callbacks for important SDK events such as when it is launched and
+     * unlaunched.
+     *
+     * @param listener The [Listener] to register for receiving events.
+     */
     @JvmStatic
     public fun addListener(listener: Listener) {
         listeners.add(WeakReference(listener))
@@ -286,6 +366,13 @@ public object Notificare {
         }
     }
 
+    /**
+     * Unregisters a previously added listener.
+     *
+     * This method removes the specified [Listener] to stop receiving callbacks for SDK events.
+     *
+     * @param listener The [Listener] to remove.
+     */
     @JvmStatic
     public fun removeListener(listener: Listener) {
         val iterator = listeners.iterator()
@@ -298,14 +385,30 @@ public object Notificare {
         logger.debug("Removed a Notificare.Listener (${listeners.size} in total).")
     }
 
+    /**
+     * Fetches the application metadata.
+     *
+     * @return The [NotificareApplication] metadata.
+     */
     public suspend fun fetchApplication(): NotificareApplication = withContext(Dispatchers.IO) {
         fetchApplication(saveToSharedPreferences = true)
     }
 
+    /**
+     * Fetches the application metadata with a callback.
+     *
+     * @param callback The callback to invoke with the fetched application metadata.
+     */
     @JvmStatic
     public fun fetchApplication(callback: NotificareCallback<NotificareApplication>): Unit =
         toCallbackFunction<NotificareApplication>(::fetchApplication)(callback::onSuccess, callback::onFailure)
 
+    /**
+     * Fetches a [NotificareNotification] by its ID.
+     *
+     * @param id The ID of the notification to fetch.
+     * @return The [NotificareNotification] object associated with the provided ID.
+     */
     public suspend fun fetchNotification(id: String): NotificareNotification = withContext(Dispatchers.IO) {
         if (!isConfigured) throw NotificareNotConfiguredException()
 
@@ -316,10 +419,22 @@ public object Notificare {
             .toModel()
     }
 
+    /**
+     * Fetches a [NotificareNotification] by its ID with a callback.
+     *
+     * @param id The ID of the notification to fetch.
+     * @param callback The callback to invoke with the fetched notification.
+     */
     @JvmStatic
     public fun fetchNotification(id: String, callback: NotificareCallback<NotificareNotification>): Unit =
         toCallbackFunction(::fetchNotification)(id, callback::onSuccess, callback::onFailure)
 
+    /**
+     * Fetches a [NotificareDynamicLink] from a [Uri].
+     *
+     * @param uri The URI to fetch the dynamic link from.
+     * @return The [NotificareDynamicLink] object.
+     */
     public suspend fun fetchDynamicLink(uri: Uri): NotificareDynamicLink = withContext(Dispatchers.IO) {
         if (!isConfigured) throw NotificareNotConfiguredException()
 
@@ -334,10 +449,28 @@ public object Notificare {
             .link
     }
 
+    /**
+     * Fetches a [NotificareDynamicLink] from a URI with a callback.
+     *
+     * @param uri The URI to fetch the dynamic link from.
+     * @param callback The callback to invoke with the fetched dynamic link.
+     */
     @JvmStatic
     public fun fetchDynamicLink(uri: Uri, callback: NotificareCallback<NotificareDynamicLink>): Unit =
         toCallbackFunction(::fetchDynamicLink)(uri, callback::onSuccess, callback::onFailure)
 
+    /**
+     * Sends a reply to a notification action.
+     *
+     * This method sends a reply to the specified [NotificareNotification] and [NotificareNotification.Action],
+     * optionally including a message and media.
+     *
+     * @param notification The notification to reply to.
+     * @param action The action associated with the reply.
+     * @param message An optional message to include with the reply.
+     * @param media An optional media file to attach with the reply.
+     * @param mimeType The MIME type of the media.
+     */
     public suspend fun createNotificationReply(
         notification: NotificareNotification,
         action: NotificareNotification.Action,
@@ -369,6 +502,14 @@ public object Notificare {
             .response()
     }
 
+    /**
+     * Calls a notification reply webhook.
+     *
+     * This method sends data to the specified webhook [uri].
+     *
+     * @param uri The webhook URI.
+     * @param data The data to send in the request.
+     */
     public suspend fun callNotificationReplyWebhook(
         uri: Uri,
         data: Map<String, String>
@@ -392,6 +533,15 @@ public object Notificare {
             .response()
     }
 
+    /**
+     * Uploads an asset for a notification reply.
+     *
+     * This method uploads a binary payload as part of a notification reply.
+     *
+     * @param payload The byte array containing the asset data.
+     * @param contentType The MIME type of the asset.
+     * @return The URL of the uploaded asset.
+     */
     public suspend fun uploadNotificationReplyAsset(
         payload: ByteArray,
         contentType: String
@@ -412,6 +562,13 @@ public object Notificare {
         cancelNotification(notification.id)
     }
 
+    /**
+     * Cancels a notification by its ID.
+     *
+     * This method cancels a notification with the given ID, removing it from the notification center.
+     *
+     * @param id The ID of the notification to cancel.
+     */
     @JvmStatic
     public fun cancelNotification(id: String) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
@@ -462,6 +619,16 @@ public object Notificare {
         }
     }
 
+    /**
+     * Handles an intent to register the current device as a test device for Notificare services.
+     *
+     * This method processes the provided intent and attempts to register the device
+     * for testing purposes.
+     *
+     * @param intent The intent containing the test device nonce.
+     * @return `true` if the device registration process was initiated, or `false` if no valid nonce was found in the
+     * intent.
+     */
     @JvmStatic
     public fun handleTestDeviceIntent(intent: Intent): Boolean {
         val nonce = parseTestDeviceNonce(intent) ?: return false
@@ -482,6 +649,15 @@ public object Notificare {
         return true
     }
 
+    /**
+     * Handles an intent for dynamic links.
+     *
+     * This method processes the provided intent in the context of an [Activity] for handling dynamic links.
+     *
+     * @param activity The activity in which the intent is handled.
+     * @param intent The [Intent] to handle.
+     * @return `true` if the intent was handled, `false` otherwise.
+     */
     @JvmStatic
     public fun handleDynamicLinkIntent(activity: Activity, intent: Intent): Boolean {
         val uri = parseDynamicLink(intent) ?: return false
@@ -507,6 +683,13 @@ public object Notificare {
         return true
     }
 
+    /**
+     * Checks if a deferred link exists and can be evaluated.
+     *
+     * This method suspends until it is determined whether the deferred link can be evaluated.
+     *
+     * @return `true` if a deferred link can be evaluated, `false` otherwise.
+     */
     public suspend fun canEvaluateDeferredLink(): Boolean = withContext(Dispatchers.IO) {
         if (sharedPreferences.deferredLinkChecked != false) {
             return@withContext false
@@ -520,11 +703,23 @@ public object Notificare {
         return@withContext deferredLink != null
     }
 
+    /**
+     * Checks if a deferred link exists and can be evaluated.
+     *
+     * This method checks if a deferred link can be evaluated and invokes the provided [callback] with the result.
+     *
+     * @param callback The callback to invoke with the result.
+     */
     @JvmStatic
     public fun canEvaluateDeferredLink(
         callback: NotificareCallback<Boolean>,
     ): Unit = toCallbackFunction(::canEvaluateDeferredLink)(callback::onSuccess, callback::onFailure)
 
+    /**
+     * Evaluates the deferred link, triggering an intent with the resolved deferred link.
+     *
+     * @return `true` if the deferred link was successfully evaluated, `false` otherwise.
+     */
     public suspend fun evaluateDeferredLink(): Boolean = withContext(Dispatchers.IO) {
         if (sharedPreferences.deferredLinkChecked != false) {
             logger.debug("Deferred link already evaluated.")
@@ -570,6 +765,13 @@ public object Notificare {
         return@withContext true
     }
 
+    /**
+     * Evaluates the deferred and triggers an intent with the resolved deferred link with a callback.
+     *
+     * This method evaluates the deferred link and invokes the provided [callback] with the result.
+     *
+     * @param callback The callback to invoke with the result.
+     */
     @JvmStatic
     public fun evaluateDeferredLink(
         callback: NotificareCallback<Boolean>,
@@ -831,11 +1033,31 @@ public object Notificare {
         }
     }
 
+    /**
+     * Interface definition for a listener to be notified of Notificare SDK state changes.
+     *
+     * This interface provides callback methods to listen for when the SDK is ready or unlaunched.
+     */
     public interface Listener {
+
+        /**
+         * Called when the Notificare SDK is fully ready and the application metadata is available.
+         *
+         * This method is invoked after the SDK has been successfully launched and is available for use. You can
+         * override this method to perform actions after the SDK is initialized.
+         *
+         * @param application The [NotificareApplication] containing the application's metadata.
+         */
         @MainThread
         public fun onReady(application: NotificareApplication) {
         }
 
+        /**
+         * Called when the Notificare SDK has been unlaunched.
+         *
+         * This method is invoked after the SDK has been shut down (unlaunched) and is no longer in use.
+         * You can override this method to perform cleanup or handle state changes accordingly.
+         */
         @MainThread
         public fun onUnlaunched() {
         }

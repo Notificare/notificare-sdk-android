@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_navigation"
+    app:startDestination="@id/mainFragment">
+
+    <fragment
+        android:id="@+id/mainFragment"
+        android:name="re.notifica.sample.user.inbox.ui.main.MainFragment"
+        android:label="@string/main_fragment_title"
+        tools:layout="@layout/fragment_main">
+        <action
+            android:id="@+id/action_mainFragment_to_inboxFragment"
+            app:destination="@id/inboxFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/inboxFragment"
+        android:name="re.notifica.sample.user.inbox.ui.inbox.InboxFragment"
+        android:label="@string/inbox_title"
+        tools:layout="@layout/fragment_inbox">
+        <deepLink app:uri="re.notifica.go://notifica.re/inbox" />
+    </fragment>
+</navigation>
