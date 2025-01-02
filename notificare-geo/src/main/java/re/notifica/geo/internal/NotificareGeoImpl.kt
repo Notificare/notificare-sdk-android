@@ -162,34 +162,36 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
         get() {
             if (beaconServiceManager == null) {
                 return NotificareBeaconSupport.Disabled(
-                    "Beacons functionality requires peer dependency notificare-geo-beacons to be included."
+                    reason = "Beacons functionality requires peer dependency notificare-geo-beacons to be included."
                 )
             }
 
             val context = Notificare.requireContext()
 
             if (!context.packageManager.hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
-                return NotificareBeaconSupport.Disabled("Beacons functionality requires Bluetooth LE.")
+                return NotificareBeaconSupport.Disabled(reason = "Beacons functionality requires Bluetooth LE.")
             }
 
             if (!hasBluetoothPermission) {
-                return NotificareBeaconSupport.Disabled("Beacons functionality requires bluetooth permission.")
+                return NotificareBeaconSupport.Disabled(reason = "Beacons functionality requires bluetooth permission.")
             }
 
             if (!hasBluetoothScanPermission) {
-                return NotificareBeaconSupport.Disabled("Beacons functionality requires bluetooth scan permission.")
+                return NotificareBeaconSupport.Disabled(
+                    reason = "Beacons functionality requires bluetooth scan permission."
+                )
             }
 
             val bluetoothManager = context.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager?
             if (bluetoothManager?.adapter?.isEnabled != true) {
                 return NotificareBeaconSupport.Disabled(
-                    "Beacons functionality requires the bluetooth adapter to be enabled."
+                    reason = "Beacons functionality requires the bluetooth adapter to be enabled."
                 )
             }
 
             if (Notificare.application?.regionConfig?.proximityUUID == null) {
                 return NotificareBeaconSupport.Disabled(
-                    "Beacons functionality required the application to be configured with the Proximity UUID."
+                    reason = "Beacons functionality required the application to be configured with the Proximity UUID."
                 )
             }
 
