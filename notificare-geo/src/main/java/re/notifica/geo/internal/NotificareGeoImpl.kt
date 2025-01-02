@@ -31,6 +31,7 @@ import re.notifica.geo.NotificareGeo
 import re.notifica.geo.NotificareGeoIntentReceiver
 import re.notifica.geo.NotificareInternalGeo
 import re.notifica.geo.NotificareLocationHardwareUnavailableException
+import re.notifica.geo.internal.models.NotificareBeaconSupport
 import re.notifica.geo.internal.network.push.BeaconTriggerPayload
 import re.notifica.geo.internal.network.push.FetchBeaconsResponse
 import re.notifica.geo.internal.network.push.FetchRegionsResponse
@@ -157,44 +158,44 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
             }
         }
 
-    private val hasBeaconSupport: Boolean
+    private val beaconSupport: NotificareBeaconSupport
         get() {
+            if (beaconServiceManager == null) {
+                return NotificareBeaconSupport.Disabled(
+                    reason = "Beacons functionality requires peer dependency notificare-geo-beacons to be included."
+                )
+            }
+
             val context = Notificare.requireContext()
 
             if (!context.packageManager.hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
-                logger.warning("Beacons functionality requires Bluetooth LE.")
-                return false
+                return NotificareBeaconSupport.Disabled(reason = "Beacons functionality requires Bluetooth LE.")
             }
 
             if (!hasBluetoothPermission) {
-                logger.warning("Beacons functionality requires bluetooth permission.")
-                return false
+                return NotificareBeaconSupport.Disabled(reason = "Beacons functionality requires bluetooth permission.")
             }
 
             if (!hasBluetoothScanPermission) {
-                logger.warning("Beacons functionality requires bluetooth scan permission.")
-                return false
+                return NotificareBeaconSupport.Disabled(
+                    reason = "Beacons functionality requires bluetooth scan permission."
+                )
             }
 
             val bluetoothManager = context.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager?
             if (bluetoothManager?.adapter?.isEnabled != true) {
-                logger.warning("Beacons functionality requires the bluetooth adapter to be enabled.")
-                return false
+                return NotificareBeaconSupport.Disabled(
+                    reason = "Beacons functionality requires the bluetooth adapter to be enabled."
+                )
             }
 
             if (Notificare.application?.regionConfig?.proximityUUID == null) {
-                logger.warning(
-                    "Beacons functionality required the application to be configured with the Proximity UUID."
+                return NotificareBeaconSupport.Disabled(
+                    reason = "Beacons functionality required the application to be configured with the Proximity UUID."
                 )
-                return false
             }
 
-            if (beaconServiceManager == null) {
-                logger.warning("Beacons functionality requires the notificare-geo-beacons peer module.")
-                return false
-            }
-
-            return true
+            return NotificareBeaconSupport.Enabled
         }
 
     private val monitoredRegionsLimit: Int
@@ -251,10 +252,6 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
 
     override suspend fun launch() {
         beaconServiceManager = BeaconServiceManager.create()
-
-        if (beaconServiceManager == null) {
-            logger.info("To enable beacon support, include the notificare-geo-beacons peer dependency.")
-        }
     }
 
     override suspend fun postLaunch() {
@@ -357,7 +354,7 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
         serviceManager?.disableLocationUpdates()
 
         // Ensure we keep the bluetooth state updated in the API.
-        updateBluetoothState(hasBeaconSupport)
+        updateBluetoothState(beaconSupport.isEnabled)
 
         notificareCoroutineScope.launch {
             try {
@@ -729,7 +726,7 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
 
     private fun enableLocationUpdatesInternal() {
         // Ensure we keep the bluetooth state updated in the API.
-        updateBluetoothState(hasBeaconSupport)
+        updateBluetoothState(beaconSupport.isEnabled)
 
         if (!hasForegroundLocationPermission) {
             notificareCoroutineScope.launch {
@@ -754,17 +751,23 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
         // Start the location updates.
         serviceManager?.enableLocationUpdates()
 
-        if (hasBeaconSupport) {
-            val enteredRegions =
-                localStorage.monitoredRegions.values.filter { localStorage.enteredRegions.contains(it.id) }
-            if (enteredRegions.size > 1) {
-                logger.warning(
-                    "Detected multiple entered regions. Beacon monitoring is limited to a single region at a time."
-                )
+        when (val beaconSupport = beaconSupport) {
+            is NotificareBeaconSupport.Enabled -> {
+                val enteredRegions =
+                    localStorage.monitoredRegions.values.filter { localStorage.enteredRegions.contains(it.id) }
+                if (enteredRegions.size > 1) {
+                    logger.warning(
+                        "Detected multiple entered regions. Beacon monitoring is limited to a single region at a time."
+                    )
+                }
+
+                val region = enteredRegions.firstOrNull()
+                if (region != null) startMonitoringBeacons(region)
             }
 
-            val region = enteredRegions.firstOrNull()
-            if (region != null) startMonitoringBeacons(region)
+            is NotificareBeaconSupport.Disabled -> {
+                logger.warning("Beacon monitoring is not available: ${beaconSupport.reason}")
+            }
         }
     }
 
@@ -921,7 +924,7 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
     }
 
     private fun startMonitoringBeacons(region: NotificareRegion) {
-        if (!hasBeaconSupport) return
+        if (!beaconSupport.isEnabled) return
 
         if (region.major == null) {
             logger.debug("The region '${region.name}' has not been assigned a major.")
