@@ -69,9 +69,7 @@ internal object NotificareInboxImpl : NotificareModule(), NotificareInbox {
         scheduleExpirationTask(entities)
     }
 
-    private val cachedEntities: SortedSet<InboxItemEntity> = sortedSetOf(
-        Comparator { lhs, rhs -> rhs.time.compareTo(lhs.time) }
-    )
+    private val cachedEntities: MutableList<InboxItemEntity> = mutableListOf()
 
     private val _observableItems = MutableLiveData<SortedSet<NotificareInboxItem>>(sortedSetOf())
     private val _observableBadge = MutableLiveData(0)
