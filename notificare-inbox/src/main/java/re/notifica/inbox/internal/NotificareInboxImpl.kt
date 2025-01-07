@@ -1,22 +1,25 @@
 package re.notifica.inbox.internal
 
-import android.os.Handler
-import android.os.Looper
 import androidx.annotation.Keep
 import androidx.core.app.NotificationManagerCompat
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
+import androidx.lifecycle.asLiveData
 import androidx.work.Constraints
 import androidx.work.ExistingWorkPolicy
 import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.workDataOf
+import kotlinx.coroutines.CoroutineScope
 import java.util.Date
 import java.util.SortedSet
 import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.FlowCollector
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import re.notifica.Notificare
@@ -45,13 +48,9 @@ import re.notifica.models.NotificareNotification
 internal object NotificareInboxImpl : NotificareModule(), NotificareInbox {
     internal lateinit var database: InboxDatabase
 
-    private var liveItems: LiveData<List<InboxItemEntity>>? = null
-    private val liveItemsObserver = Observer<List<InboxItemEntity>> { entities ->
-        logger.debug("Received an inbox live data update.")
-        if (entities == null) {
-            logger.debug("Inbox live data update was null. Skipping...")
-            return@Observer
-        }
+    private var itemsCollectJob: Job? = null
+    private val itemsFlowCollector = FlowCollector<List<InboxItemEntity>> { entities ->
+        logger.debug("Received an inbox flow update.")
 
         // Replace the cached copy with the new entities.
         cachedEntities.clear()
@@ -59,11 +58,11 @@ internal object NotificareInboxImpl : NotificareModule(), NotificareInbox {
 
         // Update (observable) items.
         val items = items
-        _observableItems.postValue(items)
+        _itemsStream.value = items
 
         // Update (observable) badge.
         badge = items.count { !it.opened }
-        _observableBadge.postValue(badge)
+        _badgeStream.value = badge
 
         // Schedule the expiration task.
         scheduleExpirationTask(entities)
@@ -71,8 +70,8 @@ internal object NotificareInboxImpl : NotificareModule(), NotificareInbox {
 
     private val cachedEntities: MutableList<InboxItemEntity> = mutableListOf()
 
-    private val _observableItems = MutableLiveData<SortedSet<NotificareInboxItem>>(sortedSetOf())
-    private val _observableBadge = MutableLiveData(0)
+    private val _itemsStream = MutableStateFlow<SortedSet<NotificareInboxItem>>(sortedSetOf())
+    private val _badgeStream = MutableStateFlow(0)
 
     // region Notificare Module
 
@@ -116,7 +115,10 @@ internal object NotificareInboxImpl : NotificareModule(), NotificareInbox {
 
             return cachedEntities
                 .map { it.toInboxItem() }
-                .toSortedSet { lhs, rhs -> rhs.time.compareTo(lhs.time) }
+                .toSortedSet(
+                    compareByDescending<NotificareInboxItem> { it.time }
+                        .thenBy { it.opened }
+                )
         }
 
     override var badge: Int = 0
@@ -139,8 +141,11 @@ internal object NotificareInboxImpl : NotificareModule(), NotificareInbox {
             return field
         }
 
-    override val observableItems: LiveData<SortedSet<NotificareInboxItem>> = _observableItems
-    override val observableBadge: LiveData<Int> = _observableBadge
+    override val observableItems: LiveData<SortedSet<NotificareInboxItem>> = _itemsStream.asLiveData()
+    override val itemsStream: StateFlow<SortedSet<NotificareInboxItem>> = _itemsStream
+
+    override val observableBadge: LiveData<Int> = _badgeStream.asLiveData()
+    override val badgeStream: StateFlow<Int> = _badgeStream
 
     override fun refresh() {
         val application = Notificare.application ?: run {
@@ -311,13 +316,15 @@ internal object NotificareInboxImpl : NotificareModule(), NotificareInbox {
     }
 
     private fun reloadLiveItems() {
-        Handler(Looper.getMainLooper()).post {
-            // Cancel previous observer if applicable.
-            liveItems?.removeObserver(liveItemsObserver)
+        itemsCollectJob?.cancel()
 
-            // Continuously observe inbox's live items.
-            liveItems = database.inbox().getLiveItems().also {
-                it.observeForever(liveItemsObserver)
+        database.inbox().getItemsStream().also { itemsStream ->
+            itemsCollectJob = CoroutineScope(Dispatchers.IO).launch {
+                itemsStream
+                    .catch { e ->
+                        logger.error("Failed to collect inbox items entities flow from the database.", e)
+                    }
+                    .collect(itemsFlowCollector)
             }
         }
     }

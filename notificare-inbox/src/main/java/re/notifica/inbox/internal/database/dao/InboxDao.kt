@@ -1,18 +1,18 @@
 package re.notifica.inbox.internal.database.dao
 
-import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
+import kotlinx.coroutines.flow.Flow
 import re.notifica.inbox.internal.database.entities.InboxItemEntity
 
 @Dao
 internal interface InboxDao {
 
     @Query("SELECT * FROM inbox WHERE (visible IS NULL OR visible == 1) AND (expires IS NULL OR expires > strftime('%s', 'now') || substr(strftime('%f', 'now'), 4))")
-    fun getLiveItems(): LiveData<List<InboxItemEntity>>
+    fun getItemsStream(): Flow<List<InboxItemEntity>>
 
     @Query("SELECT * FROM inbox WHERE id = :id LIMIT 1")
     suspend fun findById(id: String): InboxItemEntity?

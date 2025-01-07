@@ -1,6 +1,7 @@
 package re.notifica.inbox
 
 import androidx.lifecycle.LiveData
+import kotlinx.coroutines.flow.StateFlow
 import java.util.SortedSet
 import re.notifica.NotificareCallback
 import re.notifica.inbox.models.NotificareInboxItem
@@ -25,10 +26,22 @@ public interface NotificareInbox {
     public val observableItems: LiveData<SortedSet<NotificareInboxItem>>
 
     /**
+     * A [StateFlow] object for collecting changes to inbox items, suitable for real-time UI updates to reflect inbox
+     * state changes.
+     */
+    public val itemsStream: StateFlow<SortedSet<NotificareInboxItem>>
+
+    /**
      * A [LiveData] object for observing changes to the badge count, providing real-time updates when the unread count
      * changes.
      */
     public val observableBadge: LiveData<Int>
+
+    /**
+     * A [StateFlow] object for observing changes to the badge count, providing real-time updates when the unread count
+     * changes.
+     */
+    public val badgeStream: StateFlow<Int>
 
     /**
      * Refreshes the inbox data, ensuring the items and badge count reflect the latest server state.
