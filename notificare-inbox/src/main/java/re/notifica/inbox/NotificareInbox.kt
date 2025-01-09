@@ -38,7 +38,7 @@ public interface NotificareInbox {
     public val observableBadge: LiveData<Int>
 
     /**
-     * A [StateFlow] object for observing changes to the badge count, providing real-time updates when the unread count
+     * A [StateFlow] object for collecting changes to the badge count, providing real-time updates when the unread count
      * changes.
      */
     public val badgeStream: StateFlow<Int>
