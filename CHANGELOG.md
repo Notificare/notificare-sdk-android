@@ -3,7 +3,7 @@
 ## Upcoming Release
 
 - Warnings related to missing requirements for Beacons functionality only logged once during `enableLocationUpdates()` flow
-- Introduce `itemsStream` and `badgeStream` Flow properties for push module
+- Introduce `itemsStream` and `badgeStream` Flow properties for inbox module
 
 ## 4.0.1
 
