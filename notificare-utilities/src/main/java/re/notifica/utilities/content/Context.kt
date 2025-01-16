@@ -16,7 +16,7 @@ public val Context.applicationVersion: String
     get() {
         return try {
             val packageInfo = packageManager.getPackageInfo(packageName, 0)
-            packageInfo.versionName
+            packageInfo.versionName ?: "unknown"
         } catch (_: Exception) {
             "unknown"
         }
