@@ -8,6 +8,7 @@ import android.nfc.NfcManager
 import android.os.Build
 import android.os.Bundle
 import android.view.MenuItem
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.commit
 import re.notifica.Notificare
@@ -31,8 +32,20 @@ public class ScannableActivity : AppCompatActivity() {
     private var mode: ScanMode = ScanMode.QR_CODE
     private var handlingScannable = false
 
+    private var onBackPressedCallback = object : OnBackPressedCallback(true) {
+        override fun handleOnBackPressed() {
+            Notificare.scannablesImplementation()
+                .notifyListeners(NotificareUserCancelledScannableSessionException())
+
+            isEnabled = false
+            onBackPressedDispatcher.onBackPressed()
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
 
         mode = savedInstanceState?.getEnum<ScanMode>(EXTRA_MODE)
             ?: intent.getEnumExtra<ScanMode>(EXTRA_MODE)
@@ -92,17 +105,10 @@ public class ScannableActivity : AppCompatActivity() {
         }
     }
 
-    override fun onBackPressed() {
-        Notificare.scannablesImplementation()
-            .notifyListeners(NotificareUserCancelledScannableSessionException())
-
-        super.onBackPressed()
-    }
-
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             android.R.id.home -> {
-                onBackPressed()
+                onBackPressedDispatcher.onBackPressed()
                 true
             }
 

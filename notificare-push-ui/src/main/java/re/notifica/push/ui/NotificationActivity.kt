@@ -58,7 +58,7 @@ public open class NotificationActivity : AppCompatActivity(), NotificationContai
                 }
             }
 
-            onBackPressed()
+            onBackPressedDispatcher.onBackPressed()
             return true
         }
 
