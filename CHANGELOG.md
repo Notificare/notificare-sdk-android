@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## Upcoming release
+
+- Update dependencies
+- Bump sourceCompatibility/targetCompatibility to Java 11
+
+
 ## 4.0.1
 
 - Add documentation to public methods
