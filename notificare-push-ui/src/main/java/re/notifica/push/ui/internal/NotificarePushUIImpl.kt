@@ -1,8 +1,10 @@
 package re.notifica.push.ui.internal
 
 import android.app.Activity
+import android.app.Activity.OVERRIDE_TRANSITION_OPEN
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import androidx.annotation.Keep
 import androidx.browser.customtabs.CustomTabColorSchemeParams
@@ -145,7 +147,13 @@ internal object NotificarePushUIImpl : NotificareModule(), NotificarePushUI, Not
                         .setPackage(Notificare.requireContext().packageName)
 
                     activity.startActivity(intent)
-                    activity.overridePendingTransition(0, 0)
+
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                        activity.overrideActivityTransition(OVERRIDE_TRANSITION_OPEN, 0, 0)
+                    } else {
+                        @Suppress("DEPRECATION")
+                        activity.overridePendingTransition(0, 0)
+                    }
 
                     return@launch
                 }
@@ -394,7 +402,12 @@ internal object NotificarePushUIImpl : NotificareModule(), NotificarePushUI, Not
             .setPackage(Notificare.requireContext().packageName)
 
         activity.startActivity(intent)
-        activity.overridePendingTransition(0, 0)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            activity.overrideActivityTransition(OVERRIDE_TRANSITION_OPEN, 0, 0)
+        } else {
+            @Suppress("DEPRECATION")
+            activity.overridePendingTransition(0, 0)
+        }
     }
 
     internal fun createActionHandler(
