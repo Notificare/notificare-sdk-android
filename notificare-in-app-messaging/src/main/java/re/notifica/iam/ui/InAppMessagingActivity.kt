@@ -2,6 +2,7 @@ package re.notifica.iam.ui
 
 import android.app.Activity
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
@@ -97,7 +98,12 @@ public open class InAppMessagingActivity : AppCompatActivity() {
         super.finish()
 
         // Disable the animation transition.
-        overridePendingTransition(0, 0)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            overrideActivityTransition(OVERRIDE_TRANSITION_CLOSE, 0, 0)
+        } else {
+            @Suppress("DEPRECATION")
+            overridePendingTransition(0, 0)
+        }
 
         onMainThread {
             Notificare.inAppMessagingImplementation().lifecycleListeners.forEach {
@@ -116,7 +122,12 @@ public open class InAppMessagingActivity : AppCompatActivity() {
             )
 
             // Disable the animation transition.
-            activity.overridePendingTransition(0, 0)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                activity.overrideActivityTransition(OVERRIDE_TRANSITION_OPEN, 0, 0)
+            } else {
+                @Suppress("DEPRECATION")
+                activity.overridePendingTransition(0, 0)
+            }
         }
 
         private fun getFragmentClass(message: NotificareInAppMessage): Class<out Fragment>? {
