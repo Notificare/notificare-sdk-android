@@ -10,7 +10,6 @@ import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.workDataOf
-import kotlinx.coroutines.CoroutineScope
 import java.util.Date
 import java.util.SortedSet
 import java.util.concurrent.TimeUnit
@@ -319,7 +318,7 @@ internal object NotificareInboxImpl : NotificareModule(), NotificareInbox {
         itemsCollectJob?.cancel()
 
         database.inbox().getItemsStream().also { itemsStream ->
-            itemsCollectJob = CoroutineScope(Dispatchers.IO).launch {
+            itemsCollectJob = notificareCoroutineScope.launch {
                 itemsStream
                     .catch { e ->
                         logger.error("Failed to collect inbox items entities flow from the database.", e)
