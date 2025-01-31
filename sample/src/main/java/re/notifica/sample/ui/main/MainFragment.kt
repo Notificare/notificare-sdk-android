@@ -335,6 +335,10 @@ class MainFragment : BaseFragment() {
     }
 
     private fun setupObservers() {
+        Notificare.push().observableSubscription.observe(viewLifecycleOwner) { subscription ->
+            binding.notificationsCard.notificationsTokenStatusLabel.text = subscription?.token.toString()
+        }
+
         Notificare.inbox().observableBadge.observe(viewLifecycleOwner) { badge ->
             binding.notificationsCard.inboxBadgeLabel.isVisible = badge > 0
             binding.notificationsCard.inboxBadgeLabel.text = if (badge <= 99) badge.toString() else "99+"
@@ -387,18 +391,21 @@ class MainFragment : BaseFragment() {
                         viewModel.createCoffeeSession()
                     }
                 }
+
                 CoffeeBrewingState.GRINDING -> {
                     binding.coffeeBrewerCard.coffeeBrewerButton.setText(R.string.main_fragment_coffee_brewer_brew)
                     binding.coffeeBrewerCard.coffeeBrewerButton.setOnClickListener {
                         viewModel.continueCoffeeSession()
                     }
                 }
+
                 CoffeeBrewingState.BREWING -> {
                     binding.coffeeBrewerCard.coffeeBrewerButton.setText(R.string.main_fragment_coffee_brewer_serve)
                     binding.coffeeBrewerCard.coffeeBrewerButton.setOnClickListener {
                         viewModel.continueCoffeeSession()
                     }
                 }
+
                 CoffeeBrewingState.SERVED -> {}
             }
         }

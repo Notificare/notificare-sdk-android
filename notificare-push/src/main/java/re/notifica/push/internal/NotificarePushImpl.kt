@@ -24,13 +24,15 @@ import androidx.core.os.bundleOf
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ProcessLifecycleOwner
+import androidx.lifecycle.asLiveData
 import com.google.firebase.messaging.RemoteMessage
 import java.net.URLEncoder
 import java.util.Date
 import java.util.concurrent.atomic.AtomicInteger
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
@@ -104,8 +106,8 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
     internal const val DEFAULT_NOTIFICATION_CHANNEL_ID: String = "notificare_channel_default"
 
     private val notificationSequence = AtomicInteger()
-    private val _observableSubscription = MutableLiveData<NotificarePushSubscription?>()
-    private val _observableAllowedUI = MutableLiveData<Boolean>()
+    private val _subscriptionStream = MutableStateFlow<NotificarePushSubscription?>(null)
+    private val _allowedUIStream = MutableStateFlow(false)
 
     internal lateinit var sharedPreferences: NotificareSharedPreferences
         private set
@@ -160,8 +162,9 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
             logger.warning("Could not find an activity with the '${Notificare.INTENT_ACTION_REMOTE_MESSAGE_OPENED}' action. Notification opens won't work without handling the trampoline intent.")
         }
 
-        // NOTE: The allowedUI is only gettable after the storage has been configured.
-        _observableAllowedUI.postValue(allowedUI)
+        // NOTE: The subscription and allowedUI are only gettable after the storage has been configured.
+        _subscriptionStream.value = subscription
+        _allowedUIStream.value = allowedUI
 
         ProcessLifecycleOwner.get().lifecycle.addObserver(object : DefaultLifecycleObserver {
             override fun onStart(owner: LifecycleOwner) {
@@ -173,7 +176,8 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
     override suspend fun clearStorage() {
         sharedPreferences.clear()
 
-        _observableAllowedUI.postValue(allowedUI)
+        _subscriptionStream.value = subscription
+        _allowedUIStream.value = allowedUI
     }
 
     override suspend fun postLaunch() {
@@ -238,15 +242,12 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
         set(value) {
             if (::sharedPreferences.isInitialized) {
                 sharedPreferences.subscription = value
-                _observableSubscription.postValue(value)
+                _subscriptionStream.value = value
                 return
             }
 
             logger.warning("Calling this method requires Notificare to have been configured.")
         }
-
-    override val observableSubscription: LiveData<NotificarePushSubscription?>
-        get() = _observableSubscription
 
     override var allowedUI: Boolean
         get() {
@@ -260,14 +261,18 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
         private set(value) {
             if (::sharedPreferences.isInitialized) {
                 sharedPreferences.allowedUI = value
-                _observableAllowedUI.postValue(value)
+                _allowedUIStream.value = value
                 return
             }
 
             logger.warning("Calling this method requires Notificare to have been configured.")
         }
 
-    override val observableAllowedUI: LiveData<Boolean> = _observableAllowedUI
+    override val observableSubscription: LiveData<NotificarePushSubscription?> = _subscriptionStream.asLiveData()
+    override val subscriptionStream: StateFlow<NotificarePushSubscription?> = _subscriptionStream
+
+    override val observableAllowedUI: LiveData<Boolean> = _allowedUIStream.asLiveData()
+    override val allowedUIStream: StateFlow<Boolean> = _allowedUIStream
 
     override suspend fun enableRemoteNotifications(): Unit = withContext(Dispatchers.IO) {
         if (!Notificare.isReady) {

@@ -62,6 +62,7 @@
     <string name="main_fragment_register_as_user">Register User</string>
     <string name="main_fragment_register_as_anonymous">Register Anonymous</string>
     <string name="main_fragment_suppressed">Suppressed</string>
+    <string name="main_fragment_token">Token</string>
     <string name="main_fragment_evaluate_context">Evaluate Context</string>
     <string name="main_fragment_user_id">User ID</string>
     <string name="main_fragment_user_name">User Name</string>

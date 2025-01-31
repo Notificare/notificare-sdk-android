@@ -52,6 +52,15 @@
                 app:layout_constraintStart_toEndOf="@+id/notifications_enabled_label" />
 
             <TextView
+                android:id="@+id/notifications_enabled_status_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?attr/textAppearanceBodyMedium"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/notifications_enabled_label"
+                tools:text="True" />
+
+            <TextView
                 android:id="@+id/notifications_allowed_ui_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -72,6 +81,50 @@
                 app:layout_constraintStart_toEndOf="@+id/notifications_allowed_ui_label" />
 
             <TextView
+                android:id="@+id/notifications_allowed_ui_status_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?attr/textAppearanceBodyMedium"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/notifications_allowed_ui_label"
+                tools:text="True" />
+
+            <TextView
+                android:id="@+id/notifications_token_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/main_fragment_token"
+                android:textAppearance="?attr/textAppearanceBodyMedium"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/notifications_allowed_ui_label" />
+
+            <TextView
+                android:id="@+id/notifications_token_sdk_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="@string/sdk"
+                android:textAppearance="?attr/textAppearanceBodyMedium"
+                app:layout_constraintBottom_toBottomOf="@+id/notifications_token_label"
+                app:layout_constraintStart_toEndOf="@+id/notifications_token_label" />
+
+            <TextView
+                android:id="@+id/notifications_token_status_label"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="64dp"
+                android:ellipsize="start"
+                android:maxLines="1"
+                android:textAlignment="textEnd"
+                android:textAppearance="?attr/textAppearanceBodyMedium"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/notifications_token_sdk_label"
+                app:layout_constraintTop_toTopOf="@+id/notifications_token_label"
+                tools:text="12345" />
+
+            <TextView
                 android:id="@+id/notifications_permission_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -80,25 +133,7 @@
                 android:textAppearance="?attr/textAppearanceBodyMedium"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/notifications_allowed_ui_label" />
-
-            <TextView
-                android:id="@+id/notifications_enabled_status_label"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?attr/textAppearanceBodyMedium"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/notifications_enabled_label"
-                tools:text="True" />
-
-            <TextView
-                android:id="@+id/notifications_allowed_ui_status_label"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?attr/textAppearanceBodyMedium"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/notifications_allowed_ui_label"
-                tools:text="True" />
+                app:layout_constraintTop_toBottomOf="@+id/notifications_token_label" />
 
             <TextView
                 android:id="@+id/notifications_permission_status_label"
