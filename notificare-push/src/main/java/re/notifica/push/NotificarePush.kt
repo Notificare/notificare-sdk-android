@@ -3,6 +3,7 @@ package re.notifica.push
 import android.content.Intent
 import androidx.lifecycle.LiveData
 import com.google.firebase.messaging.RemoteMessage
+import kotlinx.coroutines.flow.StateFlow
 import re.notifica.InternalNotificareApi
 import re.notifica.NotificareCallback
 import re.notifica.push.models.NotificareNotificationActionOpenedIntentResult
@@ -44,12 +45,20 @@ public interface NotificarePush {
     public val subscription: NotificarePushSubscription?
 
     /**
-     * Provides a live data object for observing push subscription changes.
+     * Provides a [LiveData] object for observing push subscription changes.
      *
      * This property returns a [LiveData] object that can be observed to track changes to the device's push subscription
-     * token. It emits `null` when no token is available.
+     * token. The initial value is `null`, and it emits the token once it becomes available.
      */
     public val observableSubscription: LiveData<NotificarePushSubscription?>
+
+    /**
+     * Provides a [StateFlow] for observing push subscription changes.
+     *
+     * This property returns a [StateFlow] that can be collected to track changes to the device's push subscription
+     * token. The initial value is `null`, and it emits the token once it becomes available.
+     */
+    public val subscriptionStream: StateFlow<NotificarePushSubscription?>
 
     /**
      * Indicates whether the device is capable of receiving remote notifications.
@@ -63,12 +72,20 @@ public interface NotificarePush {
     public val allowedUI: Boolean
 
     /**
-     * Provides a live data object for observing changes to the allowed UI state.
+     * Provides a [LiveData] object for observing changes to the `allowedUI` state.
      *
-     * This property returns a [LiveData] object that can be observed to track changes in whether push-related UI is
-     * allowed.
+     * This property returns a [LiveData] representation of [allowedUI] and can be observed to track any changes
+     * to whether the device can receive remote notifications.
      */
     public val observableAllowedUI: LiveData<Boolean>
+
+    /**
+     * Provides a [StateFlow] for observing changes to the `allowedUI` state.
+     *
+     * This property returns a [StateFlow] representation of [allowedUI] and can be collected to track any changes
+     * to whether the device can receive remote notifications.
+     */
+    public val allowedUIStream: StateFlow<Boolean>
 
     /**
      * Enables remote notifications.
