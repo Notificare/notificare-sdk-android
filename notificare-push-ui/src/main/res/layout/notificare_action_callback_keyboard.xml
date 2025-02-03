@@ -31,14 +31,14 @@
         android:layout_gravity="bottom|end"
         android:layout_margin="16dp"
         android:background="@drawable/ic_notificare_circle_black"
-        android:backgroundTint="#F0F0F0"
+        android:backgroundTint="?android:attr/colorPrimary"
         android:elevation="6dp"
         android:padding="16dp"
         android:src="@drawable/ic_notificare_send_black_24dp"
-        android:tint="#757575"
+        android:tint="?android:attr/textColorPrimaryInverse"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/notificare_callback_scroll_view"
-        tools:ignore="ContentDescription" />
+        tools:ignore="ContentDescription,UseAppTint" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
