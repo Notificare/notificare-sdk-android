@@ -331,7 +331,7 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
     override fun fetchUserData(callback: NotificareCallback<NotificareUserData>): Unit =
         toCallbackFunction(::fetchUserData)(callback::onSuccess, callback::onFailure)
 
-    override suspend fun updateUserData(userData: NotificareUserData): Unit = withContext(Dispatchers.IO) {
+    override suspend fun updateUserData(userData: Map<String, String?>): Unit = withContext(Dispatchers.IO) {
         checkPrerequisites()
 
         val device = checkNotNull(storedDevice)
@@ -345,10 +345,10 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
             .response()
 
         // Update current device properties.
-        storedDevice = device.copy(userData = userData)
+        storedDevice = device.copy(userData = userData.filterNotNull { it.value })
     }
 
-    override fun updateUserData(userData: NotificareUserData, callback: NotificareCallback<Unit>): Unit =
+    override fun updateUserData(userData: Map<String, String?>, callback: NotificareCallback<Unit>): Unit =
         toCallbackFunction(::updateUserData)(userData, callback::onSuccess, callback::onFailure)
 
     // endregion

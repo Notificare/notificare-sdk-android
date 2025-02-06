@@ -234,7 +234,7 @@ public interface NotificareDeviceModule {
      *
      * @param userData The updated user data to associate with the device.
      */
-    public suspend fun updateUserData(userData: NotificareUserData)
+    public suspend fun updateUserData(userData: Map<String, String?>)
 
     /**
      * Updates the custom user data associated with the device, with a callback.
@@ -242,5 +242,5 @@ public interface NotificareDeviceModule {
      * @param userData The updated user data to associate with the device.
      * @param callback The callback handling the user data update result.
      */
-    public fun updateUserData(userData: NotificareUserData, callback: NotificareCallback<Unit>)
+    public fun updateUserData(userData: Map<String, String?>, callback: NotificareCallback<Unit>)
 }
