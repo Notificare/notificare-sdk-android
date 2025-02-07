@@ -4,6 +4,8 @@ import android.os.Bundle
 import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import re.notifica.Notificare
 import re.notifica.utilities.threading.onMainThread
@@ -33,6 +35,23 @@ public open class NotificationActivity : AppCompatActivity(), NotificationContai
         }
 
         if (savedInstanceState != null) return
+
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, insets ->
+            val customInsets = insets.getInsets(
+                WindowInsetsCompat.Type.systemBars()
+                    or WindowInsetsCompat.Type.displayCutout()
+                    or WindowInsetsCompat.Type.ime()
+            )
+
+            view.setPadding(
+                customInsets.left,
+                customInsets.top,
+                customInsets.right,
+                customInsets.bottom
+            )
+
+            insets
+        }
 
         supportActionBar?.hide()
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
