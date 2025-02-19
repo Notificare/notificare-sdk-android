@@ -4,7 +4,6 @@ import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 import re.notifica.utilities.moshi.EncodeNulls
 import re.notifica.models.NotificareDoNotDisturb
-import re.notifica.models.NotificareUserData
 
 @EncodeNulls
 @JsonClass(generateAdapter = true)
@@ -48,7 +47,7 @@ internal data class UpdateDeviceDoNotDisturbPayload(
 @EncodeNulls
 @JsonClass(generateAdapter = true)
 internal data class UpdateDeviceUserDataPayload(
-    val userData: NotificareUserData,
+    val userData: Map<String, String?>,
 )
 
 @JsonClass(generateAdapter = true)

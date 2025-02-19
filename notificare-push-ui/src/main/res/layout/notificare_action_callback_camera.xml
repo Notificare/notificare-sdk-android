@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/white">
+    android:background="?android:attr/colorBackground">
 
     <ImageView
         android:id="@+id/notificare_callback_image"
@@ -20,11 +21,11 @@
         android:layout_gravity="bottom|end"
         android:layout_margin="16dp"
         android:background="@drawable/ic_notificare_circle_black"
-        android:backgroundTint="#F0F0F0"
+        android:backgroundTint="?android:attr/colorPrimary"
         android:elevation="6dp"
         android:padding="16dp"
         android:src="@drawable/ic_notificare_send_black_24dp"
-        android:tint="#757575"
-        tools:ignore="ContentDescription" />
+        android:tint="?android:attr/textColorPrimaryInverse"
+        tools:ignore="ContentDescription,UseAppTint" />
 
 </FrameLayout>
