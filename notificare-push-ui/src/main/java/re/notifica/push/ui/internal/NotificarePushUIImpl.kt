@@ -1,7 +1,6 @@
 package re.notifica.push.ui.internal
 
 import android.app.Activity
-import android.app.Activity.OVERRIDE_TRANSITION_OPEN
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
@@ -148,9 +147,7 @@ internal object NotificarePushUIImpl : NotificareModule(), NotificarePushUI, Not
 
                     activity.startActivity(intent)
 
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                        activity.overrideActivityTransition(OVERRIDE_TRANSITION_OPEN, 0, 0)
-                    } else {
+                    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
                         @Suppress("DEPRECATION")
                         activity.overridePendingTransition(0, 0)
                     }
@@ -402,9 +399,7 @@ internal object NotificarePushUIImpl : NotificareModule(), NotificarePushUI, Not
             .setPackage(Notificare.requireContext().packageName)
 
         activity.startActivity(intent)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-            activity.overrideActivityTransition(OVERRIDE_TRANSITION_OPEN, 0, 0)
-        } else {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             @Suppress("DEPRECATION")
             activity.overridePendingTransition(0, 0)
         }

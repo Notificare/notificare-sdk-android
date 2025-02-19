@@ -27,6 +27,11 @@ public open class InAppMessagingActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            overrideActivityTransition(OVERRIDE_TRANSITION_OPEN, 0, 0)
+        }
+
         binding = NotificareInAppMessagingActivityBinding.inflate(layoutInflater).also {
             setContentView(it.root)
         }
@@ -122,9 +127,7 @@ public open class InAppMessagingActivity : AppCompatActivity() {
             )
 
             // Disable the animation transition.
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                activity.overrideActivityTransition(OVERRIDE_TRANSITION_OPEN, 0, 0)
-            } else {
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
                 @Suppress("DEPRECATION")
                 activity.overridePendingTransition(0, 0)
             }

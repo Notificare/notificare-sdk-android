@@ -21,6 +21,10 @@ public open class NotificationActivity : AppCompatActivity(), NotificationContai
     private var action: NotificareNotification.Action? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            overrideActivityTransition(OVERRIDE_TRANSITION_OPEN, 0, 0)
+        }
+
         notification = savedInstanceState?.parcelable(Notificare.INTENT_EXTRA_NOTIFICATION)
             ?: intent.parcelable(Notificare.INTENT_EXTRA_NOTIFICATION)
             ?: throw IllegalArgumentException("Missing required notification parameter.")
