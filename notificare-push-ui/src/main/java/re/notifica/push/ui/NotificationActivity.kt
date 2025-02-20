@@ -1,5 +1,6 @@
 package re.notifica.push.ui
 
+import android.os.Build
 import android.os.Bundle
 import android.view.MenuItem
 import android.widget.Toast
@@ -22,6 +23,10 @@ public open class NotificationActivity : AppCompatActivity(), NotificationContai
     private var action: NotificareNotification.Action? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            overrideActivityTransition(OVERRIDE_TRANSITION_OPEN, 0, 0)
+        }
+
         notification = savedInstanceState?.parcelable(Notificare.INTENT_EXTRA_NOTIFICATION)
             ?: intent.parcelable(Notificare.INTENT_EXTRA_NOTIFICATION)
             ?: throw IllegalArgumentException("Missing required notification parameter.")
@@ -77,7 +82,7 @@ public open class NotificationActivity : AppCompatActivity(), NotificationContai
                 }
             }
 
-            onBackPressed()
+            onBackPressedDispatcher.onBackPressed()
             return true
         }
 
@@ -100,7 +105,12 @@ public open class NotificationActivity : AppCompatActivity(), NotificationContai
         finish()
 
         if (supportActionBar == null || supportActionBar?.isShowing == false) {
-            overridePendingTransition(0, 0)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                overrideActivityTransition(OVERRIDE_TRANSITION_CLOSE, 0, 0)
+            } else {
+                @Suppress("DEPRECATION")
+                overridePendingTransition(0, 0)
+            }
         }
     }
 
