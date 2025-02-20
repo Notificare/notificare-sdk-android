@@ -3,14 +3,11 @@ package re.notifica.push.ui.notifications.fragments
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
-import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowInsets
-import android.view.WindowManager
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.ImageView
@@ -88,20 +85,6 @@ public class NotificareCallbackActionFragment private constructor() : Fragment()
 
         if (messageEditText != null) {
             messageEditText?.requestFocus()
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                view.setOnApplyWindowInsetsListener { _, insets ->
-                    val imeHeight = insets.getInsets(WindowInsets.Type.ime()).bottom
-                    view.setPadding(0, 0, 0, imeHeight)
-                    insets
-                }
-            } else {
-                @Suppress("DEPRECATION")
-                activity?.window?.setSoftInputMode(
-                    WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE or
-                        WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
-                )
-            }
         }
 
         sendButton?.setOnClickListener(::onSendClicked)
