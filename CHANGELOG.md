@@ -4,7 +4,11 @@
 
 - Update dependencies
 - Bump sourceCompatibility/targetCompatibility to Java 11
-
+- Warnings related to missing requirements for Beacons functionality only logged once during `enableLocationUpdates()` flow
+- Introduce `itemsStream` and `badgeStream` Flow properties for inbox module
+- Introduce `subscriptionStream` and `allowedUIStream` Flow properties for push module
+- Allow configuring Notificare using a `NotificareServicesInfo` object
+- Allow unsetting user data fields
 
 ## 4.0.1
 

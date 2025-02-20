@@ -177,6 +177,87 @@ public object Notificare {
     }
 
     /**
+     * Configures Notificare with the provided [NotificareServicesInfo] object.
+     *
+     * This method configures the SDK using the given context along with the provided [NotificareServicesInfo] object
+     * containing the application key and application secret, and prepares it for use.
+     *
+     * @param context The [Context] to use for configuration.
+     * @param servicesInfo The [NotificareServicesInfo] object containing the application key and application secret.
+     */
+    @JvmStatic
+    public fun configure(context: Context, servicesInfo: NotificareServicesInfo) {
+        if (state > NotificareLaunchState.CONFIGURED) {
+            logger.warning("Unable to reconfigure Notificare once launched.")
+            return
+        }
+
+        if (state == NotificareLaunchState.CONFIGURED) {
+            logger.info("Reconfiguring Notificare with another set of application keys.")
+        }
+
+        if (servicesInfo.applicationKey.isBlank() || servicesInfo.applicationSecret.isBlank()) {
+            throw IllegalArgumentException("Notificare cannot be configured without an application key and secret.")
+        }
+
+        try {
+            servicesInfo.validate()
+        } catch (e: Exception) {
+            logger.error(
+                "Could not validate the provided services configuration. Please check the contents are valid."
+            )
+
+            throw e
+        }
+
+        this.context = WeakReference(context.applicationContext)
+        this.servicesInfo = servicesInfo
+        this.options = NotificareOptions(context.applicationContext)
+
+        logger.hasDebugLoggingEnabled = checkNotNull(this.options).debugLoggingEnabled
+
+        // Late init modules
+        this.database = NotificareDatabase.create(context.applicationContext)
+        this.sharedPreferences = NotificareSharedPreferences(context.applicationContext)
+
+        NotificareModule.Module.entries.forEach { module ->
+            module.instance?.run {
+                logger.debug("Configuring module: ${module.name.lowercase()}")
+                this.configure()
+            }
+        }
+
+        if (!sharedPreferences.migrated) {
+            logger.debug("Checking if there is legacy data that needs to be migrated.")
+            val migration = SharedPreferencesMigration(context)
+
+            if (migration.hasLegacyData) {
+                migration.migrate()
+                logger.info("Legacy data found and migrated to the new storage format.")
+            }
+
+            sharedPreferences.migrated = true
+        }
+
+        // The default value of the deferred link depends on whether Notificare has a registered device.
+        // Having a registered device means the app ran at least once and we should stop checking for
+        // deferred links.
+        if (sharedPreferences.deferredLinkChecked == null) {
+            sharedPreferences.deferredLinkChecked = sharedPreferences.device != null
+        }
+
+        logger.debug("Notificare configured all services.")
+        state = NotificareLaunchState.CONFIGURED
+
+        if (!servicesInfo.hasDefaultHosts) {
+            logger.info("Notificare configured with customized hosts.")
+            logger.debug("REST API host: ${servicesInfo.hosts.restApi}")
+            logger.debug("AppLinks host: ${servicesInfo.hosts.appLinks}")
+            logger.debug("Short Links host: ${servicesInfo.hosts.shortLinks}")
+        }
+    }
+
+    /**
      * Returns the application context used by Notificare.
      *
      * This method throws an exception if Notificare is not properly configured.
@@ -822,77 +903,6 @@ public object Notificare {
         logger.debug("SDK version: $SDK_VERSION")
         logger.debug("SDK modules: ${enabledModules.joinToString(", ")}")
         logger.debug("/==================================================================================/")
-    }
-
-    private fun configure(context: Context, servicesInfo: NotificareServicesInfo) {
-        if (state > NotificareLaunchState.CONFIGURED) {
-            logger.warning("Unable to reconfigure Notificare once launched.")
-            return
-        }
-
-        if (state == NotificareLaunchState.CONFIGURED) {
-            logger.info("Reconfiguring Notificare with another set of application keys.")
-        }
-
-        if (servicesInfo.applicationKey.isBlank() || servicesInfo.applicationSecret.isBlank()) {
-            throw IllegalArgumentException("Notificare cannot be configured without an application key and secret.")
-        }
-
-        try {
-            servicesInfo.validate()
-        } catch (e: Exception) {
-            logger.error(
-                "Could not validate the provided services configuration. Please check the contents are valid."
-            )
-
-            throw e
-        }
-
-        this.context = WeakReference(context.applicationContext)
-        this.servicesInfo = servicesInfo
-        this.options = NotificareOptions(context.applicationContext)
-
-        logger.hasDebugLoggingEnabled = checkNotNull(this.options).debugLoggingEnabled
-
-        // Late init modules
-        this.database = NotificareDatabase.create(context.applicationContext)
-        this.sharedPreferences = NotificareSharedPreferences(context.applicationContext)
-
-        NotificareModule.Module.entries.forEach { module ->
-            module.instance?.run {
-                logger.debug("Configuring module: ${module.name.lowercase()}")
-                this.configure()
-            }
-        }
-
-        if (!sharedPreferences.migrated) {
-            logger.debug("Checking if there is legacy data that needs to be migrated.")
-            val migration = SharedPreferencesMigration(context)
-
-            if (migration.hasLegacyData) {
-                migration.migrate()
-                logger.info("Legacy data found and migrated to the new storage format.")
-            }
-
-            sharedPreferences.migrated = true
-        }
-
-        // The default value of the deferred link depends on whether Notificare has a registered device.
-        // Having a registered device means the app ran at least once and we should stop checking for
-        // deferred links.
-        if (sharedPreferences.deferredLinkChecked == null) {
-            sharedPreferences.deferredLinkChecked = sharedPreferences.device != null
-        }
-
-        logger.debug("Notificare configured all services.")
-        state = NotificareLaunchState.CONFIGURED
-
-        if (!servicesInfo.hasDefaultHosts) {
-            logger.info("Notificare configured with customized hosts.")
-            logger.debug("REST API host: ${servicesInfo.hosts.restApi}")
-            logger.debug("AppLinks host: ${servicesInfo.hosts.appLinks}")
-            logger.debug("Short Links host: ${servicesInfo.hosts.shortLinks}")
-        }
     }
 
     private fun parseTestDeviceNonce(intent: Intent): String? {
