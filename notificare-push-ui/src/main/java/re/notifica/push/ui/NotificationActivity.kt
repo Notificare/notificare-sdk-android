@@ -74,6 +74,11 @@ public open class NotificationActivity : AppCompatActivity(), NotificationContai
         outState.putParcelable(Notificare.INTENT_EXTRA_ACTION, action)
     }
 
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+    }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == android.R.id.home) {
             onMainThread {
