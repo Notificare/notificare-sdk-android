@@ -39,8 +39,6 @@ public open class NotificationActivity : AppCompatActivity(), NotificationContai
             setContentView(it.root)
         }
 
-        if (savedInstanceState != null) return
-
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, insets ->
             val customInsets = insets.getInsets(
                 WindowInsetsCompat.Type.systemBars()
@@ -57,6 +55,8 @@ public open class NotificationActivity : AppCompatActivity(), NotificationContai
 
             insets
         }
+
+        if (savedInstanceState != null) return
 
         supportActionBar?.hide()
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
