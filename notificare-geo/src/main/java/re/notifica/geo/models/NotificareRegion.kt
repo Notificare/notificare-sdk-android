@@ -1,7 +1,6 @@
 package re.notifica.geo.models
 
 import android.os.Parcelable
-import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.JsonClass
 import kotlinx.parcelize.Parcelize
 import org.json.JSONObject
@@ -22,10 +21,23 @@ public data class NotificareRegion(
     val timeZone: String,
     val timeZoneOffset: Double,
 ) : Parcelable {
-    public companion object;
 
     public val isPolygon: Boolean
         get() = advancedGeometry != null
+
+    public fun toJson(): JSONObject {
+        val jsonStr = adapter.toJson(this)
+        return JSONObject(jsonStr)
+    }
+
+    public companion object {
+        private val adapter = Notificare.moshi.adapter(NotificareRegion::class.java)
+
+        public fun fromJson(json: JSONObject): NotificareRegion {
+            val jsonStr = json.toString()
+            return requireNotNull(adapter.fromJson(jsonStr))
+        }
+    }
 
     @Parcelize
     @JsonClass(generateAdapter = true)
@@ -33,7 +45,20 @@ public data class NotificareRegion(
         val type: String,
         val coordinate: Coordinate,
     ) : Parcelable {
-        public companion object
+
+        public fun toJson(): JSONObject {
+            val jsonStr = adapter.toJson(this)
+            return JSONObject(jsonStr)
+        }
+
+        public companion object {
+            private val adapter = Notificare.moshi.adapter(NotificareRegion.Geometry::class.java)
+
+            public fun fromJson(json: JSONObject): Geometry {
+                val jsonStr = json.toString()
+                return requireNotNull(adapter.fromJson(jsonStr))
+            }
+        }
     }
 
     @Parcelize
@@ -42,7 +67,20 @@ public data class NotificareRegion(
         val type: String,
         val coordinates: List<Coordinate>,
     ) : Parcelable {
-        public companion object
+
+        public fun toJson(): JSONObject {
+            val jsonStr = adapter.toJson(this)
+            return JSONObject(jsonStr)
+        }
+
+        public companion object {
+            private val adapter = Notificare.moshi.adapter(AdvancedGeometry::class.java)
+
+            public fun fromJson(json: JSONObject): AdvancedGeometry {
+                val jsonStr = json.toString()
+                return requireNotNull(adapter.fromJson(jsonStr))
+            }
+        }
     }
 
     @Parcelize
@@ -51,74 +89,19 @@ public data class NotificareRegion(
         val latitude: Double,
         val longitude: Double,
     ) : Parcelable {
-        public companion object
+
+        public fun toJson(): JSONObject {
+            val jsonStr = adapter.toJson(this)
+            return JSONObject(jsonStr)
+        }
+
+        public companion object {
+            private val adapter = Notificare.moshi.adapter(Coordinate::class.java)
+
+            public fun fromJson(json: JSONObject): Coordinate {
+                val jsonStr = json.toString()
+                return requireNotNull(adapter.fromJson(jsonStr))
+            }
+        }
     }
 }
-
-// region JSON: NotificareRegion
-
-public val NotificareRegion.Companion.adapter: JsonAdapter<NotificareRegion>
-    get() = Notificare.moshi.adapter(NotificareRegion::class.java)
-
-public fun NotificareRegion.Companion.fromJson(json: JSONObject): NotificareRegion {
-    val jsonStr = json.toString()
-    return requireNotNull(adapter.fromJson(jsonStr))
-}
-
-public fun NotificareRegion.toJson(): JSONObject {
-    val jsonStr = NotificareRegion.adapter.toJson(this)
-    return JSONObject(jsonStr)
-}
-
-// endregion
-
-// region JSON: NotificareRegion.Geometry
-
-public val NotificareRegion.Geometry.Companion.adapter: JsonAdapter<NotificareRegion.Geometry>
-    get() = Notificare.moshi.adapter(NotificareRegion.Geometry::class.java)
-
-public fun NotificareRegion.Geometry.Companion.fromJson(json: JSONObject): NotificareRegion.Geometry {
-    val jsonStr = json.toString()
-    return requireNotNull(adapter.fromJson(jsonStr))
-}
-
-public fun NotificareRegion.Geometry.toJson(): JSONObject {
-    val jsonStr = NotificareRegion.Geometry.adapter.toJson(this)
-    return JSONObject(jsonStr)
-}
-
-// endregion
-
-// region JSON: NotificareRegion.AdvancedGeometry
-
-public val NotificareRegion.AdvancedGeometry.Companion.adapter: JsonAdapter<NotificareRegion.AdvancedGeometry>
-    get() = Notificare.moshi.adapter(NotificareRegion.AdvancedGeometry::class.java)
-
-public fun NotificareRegion.AdvancedGeometry.Companion.fromJson(json: JSONObject): NotificareRegion.AdvancedGeometry {
-    val jsonStr = json.toString()
-    return requireNotNull(adapter.fromJson(jsonStr))
-}
-
-public fun NotificareRegion.AdvancedGeometry.toJson(): JSONObject {
-    val jsonStr = NotificareRegion.AdvancedGeometry.adapter.toJson(this)
-    return JSONObject(jsonStr)
-}
-
-// endregion
-
-// region JSON: NotificareRegion.Coordinate
-
-public val NotificareRegion.Coordinate.Companion.adapter: JsonAdapter<NotificareRegion.Coordinate>
-    get() = Notificare.moshi.adapter(NotificareRegion.Coordinate::class.java)
-
-public fun NotificareRegion.Coordinate.Companion.fromJson(json: JSONObject): NotificareRegion.Coordinate {
-    val jsonStr = json.toString()
-    return requireNotNull(adapter.fromJson(jsonStr))
-}
-
-public fun NotificareRegion.Coordinate.toJson(): JSONObject {
-    val jsonStr = NotificareRegion.Coordinate.adapter.toJson(this)
-    return JSONObject(jsonStr)
-}
-
-// endregion
