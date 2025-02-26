@@ -9,6 +9,7 @@
 - Introduce `subscriptionStream` and `allowedUIStream` Flow properties for push module
 - Allow configuring Notificare using a `NotificareServicesInfo` object
 - Allow unsetting user data fields
+- Fix crash when rotating the screen when presenting a `NotificareCallbackActionFragment`
 
 ## 4.0.1
 
