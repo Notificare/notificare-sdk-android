@@ -39,8 +39,6 @@ public open class NotificationActivity : AppCompatActivity(), NotificationContai
             setContentView(it.root)
         }
 
-        if (savedInstanceState != null) return
-
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, insets ->
             val customInsets = insets.getInsets(
                 WindowInsetsCompat.Type.systemBars()
@@ -58,6 +56,8 @@ public open class NotificationActivity : AppCompatActivity(), NotificationContai
             insets
         }
 
+        if (savedInstanceState != null) return
+
         supportActionBar?.hide()
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
@@ -72,6 +72,11 @@ public open class NotificationActivity : AppCompatActivity(), NotificationContai
         super.onSaveInstanceState(outState)
         outState.putParcelable(Notificare.INTENT_EXTRA_NOTIFICATION, notification)
         outState.putParcelable(Notificare.INTENT_EXTRA_ACTION, action)
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
