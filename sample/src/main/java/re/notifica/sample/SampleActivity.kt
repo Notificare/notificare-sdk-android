@@ -48,7 +48,7 @@ class SampleActivity :
         this.setSupportActionBar(binding.toolbar)
         binding.toolbar.setupWithNavController(navController)
 
-        if (intent != null) handleIntent(intent)
+        if (intent != null && savedInstanceState == null) handleIntent(intent)
 
         Notificare.pushUI().addLifecycleListener(this)
         Notificare.inAppMessaging().addLifecycleListener(messageLifecycleListener)
