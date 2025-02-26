@@ -102,18 +102,19 @@ internal object NotificareInAppMessagingImpl : NotificareModule(), NotificareInA
             }
 
             override fun onActivityStarted(activity: Activity) {
+                if (activity is InAppMessagingActivity) {
+                    // Keep track of the in-app message being displayed.
+                    // This will occur when the activity is started.
+                    isShowingMessage = true
+                    return
+                }
+
                 currentActivity = WeakReference(activity)
                 foregroundActivitiesCounter++
 
                 // No need to run the check when we already processed the foreground check.
                 if (currentState != ApplicationState.FOREGROUND) {
                     onApplicationForeground(activity)
-                }
-
-                if (activity is InAppMessagingActivity) {
-                    // Keep track of the in-app message being displayed.
-                    // This will occur when the activity is started.
-                    isShowingMessage = true
                 }
             }
 
@@ -126,6 +127,8 @@ internal object NotificareInAppMessagingImpl : NotificareModule(), NotificareInA
             }
 
             override fun onActivityStopped(activity: Activity) {
+                if (activity is InAppMessagingActivity) return
+
                 foregroundActivitiesCounter--
 
                 // Skip when not going into the background.
