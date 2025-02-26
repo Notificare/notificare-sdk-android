@@ -3,7 +3,6 @@ package re.notifica.geo.models
 import android.location.Location
 import android.os.Build
 import android.os.Parcelable
-import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.JsonClass
 import java.util.Date
 import kotlinx.parcelize.Parcelize
@@ -25,7 +24,19 @@ public data class NotificareLocation(
     val timestamp: Date,
 ) : Parcelable {
 
+    public fun toJson(): JSONObject {
+        val jsonStr = adapter.toJson(this)
+        return JSONObject(jsonStr)
+    }
+
     public companion object {
+        private val adapter = Notificare.moshi.adapter(NotificareLocation::class.java)
+
+        public fun fromJson(json: JSONObject): NotificareLocation {
+            val jsonStr = json.toString()
+            return requireNotNull(adapter.fromJson(jsonStr))
+        }
+
         public operator fun invoke(location: Location): NotificareLocation {
             val verticalAccuracy: Double =
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) location.verticalAccuracyMeters.toDouble()
@@ -44,20 +55,3 @@ public data class NotificareLocation(
         }
     }
 }
-
-// region JSON: NotificareLocation
-
-public val NotificareLocation.Companion.adapter: JsonAdapter<NotificareLocation>
-    get() = Notificare.moshi.adapter(NotificareLocation::class.java)
-
-public fun NotificareLocation.Companion.fromJson(json: JSONObject): NotificareLocation {
-    val jsonStr = json.toString()
-    return requireNotNull(adapter.fromJson(jsonStr))
-}
-
-public fun NotificareLocation.toJson(): JSONObject {
-    val jsonStr = NotificareLocation.adapter.toJson(this)
-    return JSONObject(jsonStr)
-}
-
-// endregion

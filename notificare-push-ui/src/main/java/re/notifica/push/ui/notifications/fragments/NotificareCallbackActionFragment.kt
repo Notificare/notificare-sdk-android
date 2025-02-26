@@ -27,7 +27,7 @@ import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.IOException
 
-public class NotificareCallbackActionFragment private constructor() : Fragment() {
+public class NotificareCallbackActionFragment : Fragment() {
 
     private lateinit var pendingResult: NotificarePendingResult
     private lateinit var callback: NotificationFragment.Callback
