@@ -118,7 +118,7 @@ internal object NotificareInAppMessagingImpl : NotificareModule(), NotificareInA
             }
 
             override fun onActivityResumed(activity: Activity) {
-                // no-op
+                currentActivity = WeakReference(activity)
             }
 
             override fun onActivityPaused(activity: Activity) {
