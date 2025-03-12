@@ -71,6 +71,8 @@ public class NotificareCallbackActionFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        callback.onNotificationFragmentCanHideActionsMenu()
+
         imageView = view.findViewById(R.id.notificare_callback_image)
         messageEditText = view.findViewById(R.id.notificare_callback_message)
         sendButton = view.findViewById(R.id.notificare_send_button)
