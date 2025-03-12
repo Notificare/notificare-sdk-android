@@ -177,7 +177,7 @@ public class NotificationContainerFragment
 
                 override fun onPrepareMenu(menu: Menu) {
                     super.onPrepareMenu(menu)
-                    menu.findItem(R.id.notificare_action_show_actions).isVisible = showActionsMenuItem
+                    menu.findItem(R.id.notificare_action_show_actions)?.isVisible = showActionsMenuItem
                 }
 
                 override fun onMenuItemSelected(menuItem: MenuItem): Boolean {

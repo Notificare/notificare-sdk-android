@@ -6,14 +6,19 @@ import android.graphics.Matrix
 import android.os.Bundle
 import android.os.Environment
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.ImageView
 import androidx.core.os.bundleOf
+import androidx.core.view.MenuProvider
 import androidx.exifinterface.media.ExifInterface
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
 import re.notifica.Notificare
@@ -88,11 +93,29 @@ public class NotificareCallbackActionFragment : Fragment() {
         }
 
         sendButton?.setOnClickListener(::onSendClicked)
+
+        removeActionsMenu()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putParcelable(EXTRA_PENDING_RESULT, pendingResult)
+    }
+
+    private fun removeActionsMenu() {
+        requireActivity().addMenuProvider(
+            object : MenuProvider {
+                override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                    menu.clear()
+                }
+
+                override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                    return false
+                }
+            },
+            viewLifecycleOwner,
+            Lifecycle.State.RESUMED,
+        )
     }
 
     private fun renderImage(): Boolean {
