@@ -355,7 +355,7 @@ public class NotificationContainerFragment
 
     override fun onNotificationFragmentCanHideActionsMenu() {
         showActionsMenuItem = false
-        activity?.invalidateOptionsMenu()
+        activity?.invalidateMenu()
     }
 
     override fun onNotificationFragmentStartProgress() {
