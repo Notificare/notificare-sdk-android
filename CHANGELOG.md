@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## Upcoming release
+## 4.1.0
 
 - Update dependencies
 - Bump sourceCompatibility/targetCompatibility to Java 11
