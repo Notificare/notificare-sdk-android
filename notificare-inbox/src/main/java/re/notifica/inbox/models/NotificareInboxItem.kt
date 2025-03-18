@@ -1,7 +1,6 @@
 package re.notifica.inbox.models
 
 import android.os.Parcelable
-import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.JsonClass
 import java.util.Date
 import kotlinx.parcelize.Parcelize
@@ -19,22 +18,18 @@ public data class NotificareInboxItem(
     val opened: Boolean,
     val expires: Date?,
 ) : Parcelable {
-    public companion object
+
+    public fun toJson(): JSONObject {
+        val jsonStr = adapter.toJson(this)
+        return JSONObject(jsonStr)
+    }
+
+    public companion object {
+        private val adapter = Notificare.moshi.adapter(NotificareInboxItem::class.java)
+
+        public fun fromJson(json: JSONObject): NotificareInboxItem {
+            val jsonStr = json.toString()
+            return requireNotNull(adapter.fromJson(jsonStr))
+        }
+    }
 }
-
-// region JSON: NotificareInboxItem
-
-public val NotificareInboxItem.Companion.adapter: JsonAdapter<NotificareInboxItem>
-    get() = Notificare.moshi.adapter(NotificareInboxItem::class.java)
-
-public fun NotificareInboxItem.Companion.fromJson(json: JSONObject): NotificareInboxItem {
-    val jsonStr = json.toString()
-    return requireNotNull(adapter.fromJson(jsonStr))
-}
-
-public fun NotificareInboxItem.toJson(): JSONObject {
-    val jsonStr = NotificareInboxItem.adapter.toJson(this)
-    return JSONObject(jsonStr)
-}
-
-// endregion

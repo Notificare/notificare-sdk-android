@@ -1,5 +1,17 @@
 # CHANGELOG
 
+## 4.1.0
+
+- Update dependencies
+- Bump sourceCompatibility/targetCompatibility to Java 11
+- Warnings related to missing requirements for Beacons functionality only logged once during `enableLocationUpdates()` flow
+- Introduce `itemsStream` and `badgeStream` Flow properties for inbox module
+- Introduce `subscriptionStream` and `allowedUIStream` Flow properties for push module
+- Allow configuring Notificare using a `NotificareServicesInfo` object
+- Allow unsetting user data fields
+- Fix UI behaviour after screen rotation when presenting notifications 
+- Fix crash when rotating the screen when presenting a `NotificareCallbackActionFragment`
+
 ## 4.0.1
 
 - Add documentation to public methods

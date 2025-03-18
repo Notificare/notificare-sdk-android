@@ -1,9 +1,12 @@
 package re.notifica.push.ui
 
+import android.os.Build
 import android.os.Bundle
 import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import re.notifica.Notificare
 import re.notifica.utilities.threading.onMainThread
@@ -20,6 +23,10 @@ public open class NotificationActivity : AppCompatActivity(), NotificationContai
     private var action: NotificareNotification.Action? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            overrideActivityTransition(OVERRIDE_TRANSITION_OPEN, 0, 0)
+        }
+
         notification = savedInstanceState?.parcelable(Notificare.INTENT_EXTRA_NOTIFICATION)
             ?: intent.parcelable(Notificare.INTENT_EXTRA_NOTIFICATION)
             ?: throw IllegalArgumentException("Missing required notification parameter.")
@@ -30,6 +37,23 @@ public open class NotificationActivity : AppCompatActivity(), NotificationContai
         super.onCreate(savedInstanceState)
         binding = NotificareNotificationActivityBinding.inflate(layoutInflater).also {
             setContentView(it.root)
+        }
+
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, insets ->
+            val customInsets = insets.getInsets(
+                WindowInsetsCompat.Type.systemBars()
+                    or WindowInsetsCompat.Type.displayCutout()
+                    or WindowInsetsCompat.Type.ime()
+            )
+
+            view.setPadding(
+                customInsets.left,
+                customInsets.top,
+                customInsets.right,
+                customInsets.bottom
+            )
+
+            insets
         }
 
         if (savedInstanceState != null) return
@@ -50,6 +74,11 @@ public open class NotificationActivity : AppCompatActivity(), NotificationContai
         outState.putParcelable(Notificare.INTENT_EXTRA_ACTION, action)
     }
 
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+    }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == android.R.id.home) {
             onMainThread {
@@ -58,7 +87,7 @@ public open class NotificationActivity : AppCompatActivity(), NotificationContai
                 }
             }
 
-            onBackPressed()
+            onBackPressedDispatcher.onBackPressed()
             return true
         }
 
@@ -81,7 +110,12 @@ public open class NotificationActivity : AppCompatActivity(), NotificationContai
         finish()
 
         if (supportActionBar == null || supportActionBar?.isShowing == false) {
-            overridePendingTransition(0, 0)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                overrideActivityTransition(OVERRIDE_TRANSITION_CLOSE, 0, 0)
+            } else {
+                @Suppress("DEPRECATION")
+                overridePendingTransition(0, 0)
+            }
         }
     }
 

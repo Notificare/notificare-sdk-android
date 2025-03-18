@@ -8,7 +8,6 @@ import android.os.Environment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowManager
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.ImageView
@@ -28,7 +27,7 @@ import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.IOException
 
-public class NotificareCallbackActionFragment private constructor() : Fragment() {
+public class NotificareCallbackActionFragment : Fragment() {
 
     private lateinit var pendingResult: NotificarePendingResult
     private lateinit var callback: NotificationFragment.Callback
@@ -72,6 +71,8 @@ public class NotificareCallbackActionFragment private constructor() : Fragment()
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        callback.onNotificationFragmentCanHideActionsMenu()
+
         imageView = view.findViewById(R.id.notificare_callback_image)
         messageEditText = view.findViewById(R.id.notificare_callback_message)
         sendButton = view.findViewById(R.id.notificare_send_button)
@@ -86,10 +87,6 @@ public class NotificareCallbackActionFragment private constructor() : Fragment()
 
         if (messageEditText != null) {
             messageEditText?.requestFocus()
-            activity?.window?.setSoftInputMode(
-                WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE or
-                    WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
-            )
         }
 
         sendButton?.setOnClickListener(::onSendClicked)

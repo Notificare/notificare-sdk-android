@@ -176,7 +176,7 @@ public object NotificareDeviceCompat {
      * @param callback The callback handling the user data update result.
      */
     @JvmStatic
-    public fun updateUserData(userData: NotificareUserData, callback: NotificareCallback<Unit>) {
+    public fun updateUserData(userData: Map<String, String?>, callback: NotificareCallback<Unit>) {
         Notificare.device().updateUserData(userData, callback)
     }
 }
