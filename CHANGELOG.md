@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 4.2.0
+
+- Recover when a device is removed remotely
+
 ## 4.1.0
 
 - Update dependencies
