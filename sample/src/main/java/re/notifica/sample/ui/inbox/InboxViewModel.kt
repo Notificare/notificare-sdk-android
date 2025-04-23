@@ -84,7 +84,7 @@ class InboxViewModel : BaseViewModel() {
         }
     }
 
-    fun clear() {
+    fun clearInbox() {
         viewModelScope.launch {
             try {
                 Notificare.inbox().clear()

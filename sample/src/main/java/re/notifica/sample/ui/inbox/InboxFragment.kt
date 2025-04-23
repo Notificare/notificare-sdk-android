@@ -117,7 +117,7 @@ class InboxFragment : BaseFragment() {
     }
 
     private fun onRemoveAllClicked() {
-        viewModel.clear()
+        viewModel.clearInbox()
     }
 
     private fun onRefreshClicked() {

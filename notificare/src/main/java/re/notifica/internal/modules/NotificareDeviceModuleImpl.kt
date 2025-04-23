@@ -13,6 +13,7 @@ import re.notifica.NotificareNotReadyException
 import re.notifica.internal.NOTIFICARE_VERSION
 import re.notifica.internal.NotificareModule
 import re.notifica.internal.logger
+import re.notifica.internal.network.NetworkException
 import re.notifica.internal.network.push.CreateDevicePayload
 import re.notifica.internal.network.push.CreateDeviceResponse
 import re.notifica.internal.network.push.DeviceDoNotDisturbResponse
@@ -79,7 +80,32 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
         } else {
             val isApplicationUpgrade = storedDevice.appVersion != Notificare.requireContext().applicationVersion
 
-            updateDevice()
+            try {
+                updateDevice()
+            } catch (e: NetworkException.ValidationException) {
+                if (e.response.code == 404) {
+                    logger.warning("The device was removed from Notificare. Recovering...")
+
+                    logger.debug("Resetting local storage.")
+                    resetLocalStorage()
+
+                    logger.debug("Creating a new device.")
+                    createDevice()
+                    hasPendingDeviceRegistrationEvent = true
+
+                    // Ensure a session exists for the current device.
+                    Notificare.session().launch()
+
+                    // We will log the Install & Registration events here since this will execute
+                    // only one time at the start.
+                    Notificare.eventsImplementation().logApplicationInstall()
+                    Notificare.eventsImplementation().logApplicationRegistration()
+
+                    return
+                }
+
+                throw e
+            }
 
             // Ensure a session exists for the current device.
             Notificare.session().launch()
@@ -90,6 +116,27 @@ internal object NotificareDeviceModuleImpl : NotificareModule(), NotificareDevic
                 Notificare.eventsImplementation().logApplicationUpgrade()
             }
         }
+    }
+
+    private suspend fun resetLocalStorage() {
+        NotificareModule.Module.entries.forEach { module ->
+            module.instance?.run {
+                logger.debug("Resetting module: ${module.name.lowercase()}")
+                try {
+                    this.clearStorage()
+                } catch (e: Exception) {
+                    logger.debug("Failed to reset '${module.name.lowercase()}': $e")
+                    throw e
+                }
+            }
+        }
+
+        Notificare.database.events().clear()
+
+        // Should only clear device-related local storage properties.
+        Notificare.sharedPreferences.device = null
+        Notificare.sharedPreferences.preferredLanguage = null
+        Notificare.sharedPreferences.preferredRegion = null
     }
 
     override suspend fun postLaunch() {
