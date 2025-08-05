@@ -3,8 +3,8 @@ package re.notifica.push.gms.internal
 import androidx.annotation.Keep
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
-import com.google.firebase.ktx.Firebase
-import com.google.firebase.messaging.ktx.messaging
+import com.google.firebase.Firebase
+import com.google.firebase.messaging.messaging
 import kotlinx.coroutines.tasks.await
 import re.notifica.InternalNotificareApi
 import re.notifica.Notificare
