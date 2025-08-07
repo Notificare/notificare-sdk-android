@@ -1,6 +1,6 @@
 [versions]
 maven-artifactGroup = "re.notifica"
-maven-artifactVersion = "4.2.0"
+maven-artifactVersion = "4.2.1"
 android-compileSdk = "36"
 android-buildTools = "35.0.0"
 android-minSdk = "23"
