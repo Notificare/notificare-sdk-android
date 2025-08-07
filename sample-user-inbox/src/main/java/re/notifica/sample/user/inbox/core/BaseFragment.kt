@@ -19,7 +19,7 @@ internal abstract class BaseFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        account = Auth0(
+        account = Auth0.getInstance(
             requireContext().getString(R.string.user_inbox_login_client_id),
             requireContext().getString(R.string.user_inbox_login_domain),
         )
