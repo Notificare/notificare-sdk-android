@@ -56,7 +56,15 @@ public class NotificareVideoFragment : NotificationFragment() {
             }
         }
 
-        binding.webView.loadDataWithBaseURL(null, html, "text/html", "utf-8", null)
+        val referrer = context?.packageName?.let { "https://$it" }
+
+        binding.webView.loadDataWithBaseURL(
+            referrer,
+            html,
+            "text/html",
+            "utf-8",
+            null,
+        )
     }
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
@@ -87,8 +95,8 @@ public class NotificareVideoFragment : NotificationFragment() {
         binding.webView.destroy()
     }
 
-    private fun getYouTubeVideoHtml(videoId: String): String {
-        return """
+    private fun getYouTubeVideoHtml(videoId: String): String =
+        """
             <!DOCTYPE html>
             <html>
             <head>
@@ -137,10 +145,9 @@ public class NotificareVideoFragment : NotificationFragment() {
             </body>
             </html>
         """.trimIndent()
-    }
 
-    private fun getVimeoVideoHtml(videoId: String): String {
-        return """
+    private fun getVimeoVideoHtml(videoId: String): String =
+        """
             <!DOCTYPE html>
             <html>
             <head>
@@ -167,10 +174,9 @@ public class NotificareVideoFragment : NotificationFragment() {
             </body>
             </html>
         """.trimIndent()
-    }
 
-    private fun getHtml5VideoHtml(videoId: String): String {
-        return """
+    private fun getHtml5VideoHtml(videoId: String): String =
+        """
             <!DOCTYPE html>
             <html>
             <head>
@@ -193,7 +199,6 @@ public class NotificareVideoFragment : NotificationFragment() {
             </body>
             </html>
         """.trimIndent()
-    }
 
     public inner class VideoChromeClient : WebChromeClient() {
         override fun onShowCustomView(view: View, callback: CustomViewCallback) {
