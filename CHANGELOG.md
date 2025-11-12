@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## Upcoming release
+
+- Add required referrer for embedded YouTube videos
+
 ## 4.2.1
 
 - Update dependencies
