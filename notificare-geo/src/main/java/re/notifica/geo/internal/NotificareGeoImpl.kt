@@ -745,11 +745,17 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
             return
         }
 
+        val serviceManager = serviceManager
+        if (serviceManager == null || !serviceManager.available) {
+            logger.warning("Google Play Services are not available.")
+            throw IllegalStateException("Google Play Services are not available.")
+        }
+
         // Keep track of the location services status.
         localStorage.locationServicesEnabled = true
 
         // Start the location updates.
-        serviceManager?.enableLocationUpdates()
+        serviceManager.enableLocationUpdates()
 
         when (val beaconSupport = beaconSupport) {
             is NotificareBeaconSupport.Enabled -> {

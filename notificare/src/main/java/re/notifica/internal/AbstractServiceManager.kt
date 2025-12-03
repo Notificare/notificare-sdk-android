@@ -13,20 +13,16 @@ public abstract class AbstractServiceManager {
         @PublishedApi
         internal val factoryLogger: NotificareLogger = logger
 
-        public inline fun <reified T : AbstractServiceManager> create(gms: String): T {
+        public inline fun <reified T : AbstractServiceManager> create(gms: String): T? {
             val implementation: T? = implementation(gms)
 
-            if (implementation != null && implementation.available) {
+            if (implementation != null) {
                 factoryLogger.debug("Detected GMS peer dependency. Setting it as the target platform.")
                 return implementation
             }
 
-            factoryLogger.warning(
-                "No platform dependencies have been detected. Please include one of the platform-specific packages."
-            )
-            throw IllegalStateException(
-                "No platform dependencies have been detected. Please include one of the platform-specific packages."
-            )
+            factoryLogger.warning("No platform dependencies have been detected.")
+            return null
         }
 
         @PublishedApi
