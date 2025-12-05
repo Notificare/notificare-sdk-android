@@ -24,7 +24,7 @@ public abstract class ServiceManager : AbstractServiceManager() {
     internal companion object {
         private const val GMS_FQN = "re.notifica.geo.gms.internal.ServiceManager"
 
-        internal fun create(): ServiceManager {
+        internal fun create(): ServiceManager? {
             return Factory.create(
                 gms = GMS_FQN,
             )

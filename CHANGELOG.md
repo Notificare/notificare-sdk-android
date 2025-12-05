@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## Upcoming release
+
+- Gracefully fail when Google Play Services are unavailable
+
 ## 4.2.2
 
 - Add required referrer for embedded YouTube videos
