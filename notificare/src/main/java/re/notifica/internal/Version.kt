@@ -1,3 +1,3 @@
 package re.notifica.internal
 
-internal const val NOTIFICARE_VERSION = "4.2.2"
+internal const val NOTIFICARE_VERSION = "4.2.3"

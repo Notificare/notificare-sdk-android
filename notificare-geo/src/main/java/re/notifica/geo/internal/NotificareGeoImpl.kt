@@ -256,8 +256,12 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
 
     override suspend fun postLaunch() {
         if (hasLocationServicesEnabled) {
-            logger.debug("Enabling locations updates automatically.")
-            enableLocationUpdatesInternal()
+            try {
+                logger.debug("Enabling locations updates automatically.")
+                enableLocationUpdatesInternal()
+            } catch (e: Exception) {
+                logger.warning("Failed to automatically refresh location updates.", e)
+            }
         }
     }
 
@@ -333,8 +337,12 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
             return
         }
 
-        enableLocationUpdatesInternal()
-        logger.info("Location updates enabled.")
+        try {
+            enableLocationUpdatesInternal()
+            logger.info("Location updates enabled.")
+        } catch (e: Exception) {
+            logger.error("Failed to enable location updates.", e)
+        }
     }
 
     override fun disableLocationUpdates() {
@@ -745,11 +753,17 @@ internal object NotificareGeoImpl : NotificareModule(), NotificareGeo, Notificar
             return
         }
 
+        val serviceManager = serviceManager
+        if (serviceManager == null || !serviceManager.available) {
+            logger.warning("Google Play Services are not available.")
+            throw IllegalStateException("Google Play Services are not available.")
+        }
+
         // Keep track of the location services status.
         localStorage.locationServicesEnabled = true
 
         // Start the location updates.
-        serviceManager?.enableLocationUpdates()
+        serviceManager.enableLocationUpdates()
 
         when (val beaconSupport = beaconSupport) {
             is NotificareBeaconSupport.Enabled -> {

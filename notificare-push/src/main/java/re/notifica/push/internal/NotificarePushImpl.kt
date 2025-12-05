@@ -936,7 +936,11 @@ internal object NotificarePushImpl : NotificareModule(), NotificarePush, Notific
     }
 
     private suspend fun updateDeviceSubscription(): Unit = withContext(Dispatchers.IO) {
-        val serviceManager = checkNotNull(serviceManager)
+        val serviceManager = serviceManager
+        if (serviceManager == null || !serviceManager.available) {
+            logger.warning("Google Play Services are not available.")
+            throw IllegalStateException("Google Play Services are not available.")
+        }
 
         val transport = serviceManager.transport
         val token = serviceManager.getPushToken()
