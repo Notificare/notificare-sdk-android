@@ -1,8 +1,9 @@
 # CHANGELOG
 
-## Upcoming release
+## 4.2.3
 
 - Gracefully fail when Google Play Services are unavailable
+- Fix conflicting flags in location pending intents 
 
 ## 4.2.2
 
