@@ -63,14 +63,14 @@ public class ServiceManager : ServiceManager() {
                 context,
                 0,
                 locationIntent,
-                PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE
             )
         } else {
             PendingIntent.getBroadcast(
                 context,
                 0,
                 locationIntent,
-                PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_UPDATE_CURRENT
+                PendingIntent.FLAG_UPDATE_CURRENT
             )
         }
 
@@ -86,14 +86,14 @@ public class ServiceManager : ServiceManager() {
                 context,
                 0,
                 geofencingIntent,
-                PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE
             )
         } else {
             PendingIntent.getBroadcast(
                 context,
                 0,
                 geofencingIntent,
-                PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_UPDATE_CURRENT
+                PendingIntent.FLAG_UPDATE_CURRENT
             )
         }
 
